@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
@@ -16,7 +17,7 @@ namespace PetRescue.WebApi.Controllers
         public UserController(IUnitOfWork uow) : base(uow)
         {
         }
-        [HttpPut]
+        [HttpPost]
         public IActionResult RegisterUser(UserCreateModel model)
         {
             try
@@ -29,5 +30,22 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        [Authorize]
+        [HttpGet]
+        public IActionResult GetUserDetail()
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"];
+                var userDomain = _uow.GetService<UserDomain>();
+                var result = userDomain.GetUserDetail(token.ToString().Split(" ")[1]);
+                return Success(result);
+            }
+            catch (Exception e)
+            {
+                return Error(e);
+            }
+        }
     }
+   
 }

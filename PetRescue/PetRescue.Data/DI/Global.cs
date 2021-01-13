@@ -22,18 +22,9 @@ namespace PetRescue.Data.DI
                 .AddScoped<DbContext, PetRescueContext>()
                 .AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<UserDomain>()
+                .AddScoped<JWTDomain>()
                 ;
         }
-        private static void ConfigureAutoMapper()
-        {
-            var mapConfig = new MapperConfiguration(config => 
-            {
-                foreach( var c  in MapperConfigs)
-                {
-                    c.Invoke(config);
-                }
-            });
-            G.Mapper = mapConfig.CreateMapper();
-        }
+       
     }
 }

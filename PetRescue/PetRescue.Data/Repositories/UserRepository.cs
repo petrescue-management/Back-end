@@ -3,6 +3,7 @@ using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace PetRescue.Data.Repositories
@@ -12,7 +13,7 @@ namespace PetRescue.Data.Repositories
         User CreateUser(UserCreateModel model);
         User PrepareCreate(UserCreateModel model);
 
-        User FindById(string username, string id);
+        User FindById(string email = null, string id = null);
 
     }
     public partial class UserRepository : BaseRepository<User, string>, IUserRepository
@@ -29,9 +30,17 @@ namespace PetRescue.Data.Repositories
             return user;
         }
 
-        public User FindById(string username, string id)
+        public User FindById(string email = null, string id =  null)
         {
-            throw new NotImplementedException();
+            if(email != null)
+            {
+                return Get().FirstOrDefault(e => e.UserEmail == email);
+            }
+            if(id != null)
+            {
+                return Get().FirstOrDefault(e => e.UserId.ToString() == id);
+            }
+            return null;
         }
 
         public User PrepareCreate(UserCreateModel model)
@@ -42,5 +51,6 @@ namespace PetRescue.Data.Repositories
             };
             return user;  
         }
+
     }
 }

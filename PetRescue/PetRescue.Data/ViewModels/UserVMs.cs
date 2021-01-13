@@ -14,5 +14,14 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("email")]
         public string Email { get; set; }
     }
+    public class UserDetailModel
+    {
+        [JsonProperty("email")]
+        public string Email { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("roles")]
+        public string[] Roles { get; set; }
+    }
 
 }
