@@ -22,6 +22,10 @@ namespace PetRescue.Data.DI
                 .AddScoped<DbContext, PetRescueContext>()
                 .AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<UserDomain>()
+                .AddScoped<ICenterRepository, CenterRepository>()
+                .AddScoped<CenterDomain>()
+                .AddScoped<ICenterRegistrationFormRepository, CenterRegistrationFormRepository>()
+                .AddScoped<CenterRegistrationFormDomain>()
                 ;
         }
         private static void ConfigureAutoMapper()
