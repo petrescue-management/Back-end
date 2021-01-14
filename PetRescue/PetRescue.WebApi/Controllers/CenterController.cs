@@ -20,7 +20,7 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("api/SearchCenter")]
+        [Route("api/search-center")]
         public IActionResult SearchCenter(SearchViewModel model)
         {
             try
@@ -37,7 +37,7 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/GetCenterById/{id}")]
+        [Route("api/get-center-by-id/{id}")]
         public IActionResult GetCenterById(Guid id)
         {
             try
@@ -52,7 +52,7 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpDelete]
-        [Route("api/DeleteCenter")]
+        [Route("api/delete-center")]
         public IActionResult DeleteCenter(Guid id)
         {
             try
@@ -67,7 +67,7 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("api/CreateCenter")]
+        [Route("api/create-center")]
         public IActionResult CreateCenter(CreateCenterModel model)
         {
             try
