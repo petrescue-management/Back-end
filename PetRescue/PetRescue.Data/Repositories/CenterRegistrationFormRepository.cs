@@ -69,13 +69,24 @@ namespace PetRescue.Data.Repositories
 
         public void UpdateCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
         {
+            var form = Get()
+                .Where(f => f.FormId.Equals(model.FormId))
+                .Select(f => new CenterRegistrationForm
+                {
+                    CenterName = f.CenterName,
+                    Phone = f.Phone,
+                    Email = f.Email,
+                    CenterAddress = f.CenterAddress,
+                    Description = f.Description
+                }).FirstOrDefault();
+
             Update(new CenterRegistrationForm { 
                 FormId = model.FormId,
-                CenterName = model.CenterName,
-                Email = model.Email,
-                Phone = model.Phone,
-                CenterAddress = model.CenterAddress,
-                Description = model.Description,
+                CenterName = form.CenterName,
+                Email = form.Email,
+                Phone = form.Phone,
+                CenterAddress = form.CenterAddress,
+                Description = form.Description,
                 CenterRegisterStatus = model.CenterRegisterStatus,
                 UpdatedBy = null,
                 UpdatedAt = DateTime.Now
