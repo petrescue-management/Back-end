@@ -18,12 +18,12 @@ namespace PetRescue.WebApi.Controllers
         {
         }
         [HttpPost]
-        public IActionResult RegisterUser(UserCreateModel model)
+        public IActionResult RegisterUser(String email)
         {
             try
             {
                 var userDomain = _uow.GetService<UserDomain>();
-                string id = userDomain.RegisterUser(model);
+                string id = userDomain.RegisterUser(email);
                 return Success(id);
             }catch(Exception ex)
             {

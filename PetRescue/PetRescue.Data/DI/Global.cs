@@ -27,7 +27,10 @@ namespace PetRescue.Data.DI
                 .AddScoped<CenterDomain>()
                 .AddScoped<ICenterRegistrationFormRepository, CenterRegistrationFormRepository>()
                 .AddScoped<CenterRegistrationFormDomain>()
-
+                .AddScoped<IUserRoleRepository,UserRoleRepository>()
+                .AddScoped<UserRoleDomain>()
+                .AddScoped<IRoleRepository,RoleRepository>()
+                .AddScoped<IUserProfileRepository,UserProfileRepository>()
                 ;
         }
        

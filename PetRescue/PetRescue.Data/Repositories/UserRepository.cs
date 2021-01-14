@@ -10,8 +10,8 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IUserRepository : IBaseRepository<User, string>
     {
-        User CreateUser(UserCreateModel model);
-        User PrepareCreate(UserCreateModel model);
+        User CreateUser(string email);
+        User PrepareCreate(string email);
 
         User FindById(string email = null, string id = null);
 
@@ -22,9 +22,9 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public User CreateUser(UserCreateModel model)
+        public User CreateUser(string email)
         {
-            var user = PrepareCreate(model);
+            var user = PrepareCreate(email);
             Create(user);
             SaveChanges();
             return user;
@@ -36,18 +36,18 @@ namespace PetRescue.Data.Repositories
             {
                 return Get().FirstOrDefault(e => e.UserEmail == email);
             }
-            if(id != null)
+            else if(id != null)
             {
                 return Get().FirstOrDefault(e => e.UserId.ToString() == id);
             }
             return null;
         }
 
-        public User PrepareCreate(UserCreateModel model)
+        public User PrepareCreate(string email)
         {
             User user = new User
             {
-                
+                UserEmail = email
             };
             return user;  
         }
