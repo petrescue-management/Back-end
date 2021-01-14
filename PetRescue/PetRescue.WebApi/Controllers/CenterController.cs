@@ -36,8 +36,8 @@ namespace PetRescue.WebApi.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("api/GetCenterById")]
+        [HttpGet]
+        [Route("api/GetCenterById/{id}")]
         public IActionResult GetCenterById(Guid id)
         {
             try
@@ -51,7 +51,7 @@ namespace PetRescue.WebApi.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpDelete]
         [Route("api/DeleteCenter")]
         public IActionResult DeleteCenter(Guid id)
         {
