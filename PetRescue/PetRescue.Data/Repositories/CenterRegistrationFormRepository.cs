@@ -14,6 +14,8 @@ namespace PetRescue.Data.Repositories
 
         CenterRegistrationForm GetCenterRegistrationFormById(Guid id);
 
+        void UpdateCenterRegistrationForm(UpdateCenterRegistrationFormModel model);
+
     }
     public partial class CenterRegistrationFormRepository : BaseRepository<CenterRegistrationForm, string>, ICenterRegistrationFormRepository
     {
@@ -63,6 +65,23 @@ namespace PetRescue.Data.Repositories
                     UpdatedAt = f.UpdatedAt
                 }).FirstOrDefault();
             return result;
+        }
+
+        public void UpdateCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
+        {
+            Update(new CenterRegistrationForm { 
+                FormId = model.FormId,
+                CenterName = model.CenterName,
+                Email = model.Email,
+                Phone = model.Phone,
+                CenterAddress = model.CenterAddress,
+                Description = model.Description,
+                CenterRegisterStatus = model.CenterRegisterStatus,
+                UpdatedBy = null,
+                UpdatedAt = DateTime.Now
+            });
+
+            SaveChanges();
         }
     }
 }

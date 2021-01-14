@@ -48,5 +48,20 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+
+        [HttpPut]
+        [Route("api/update-center-registration-form")]
+        public IActionResult UpdateCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
+        {
+            try
+            {
+                _uow.GetService<CenterRegistrationFormDomain>().UpdateCenterRegistrationForm(model);
+                return Success("This center registration form is updated !");
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
     }
 }
