@@ -63,5 +63,20 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+
+        [HttpPost]
+        [Route("api/create-center-registration-form")]
+        public IActionResult CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model)
+        {
+            try
+            {
+                string result = _uow.GetService<CenterRegistrationFormDomain>().CreateCenterRegistrationForm(model);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
     }
 }

@@ -9,4 +9,13 @@ namespace PetRescue.Data.ViewModels
         public Guid FormId { get; set; }
         public int CenterRegisterStatus { get; set; }
     }
+
+    public class CreateCenterRegistrationFormModel
+    {
+        public string CenterName { get; set; }
+        public string CenterAddress { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Description { get; set; }
+    }
 }
