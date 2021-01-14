@@ -34,8 +34,8 @@ namespace PetRescue.WebApi.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("api/GetCenterRegistrationFormById")]
+        [HttpGet]
+        [Route("api/GetCenterRegistrationFormById/{id}")]
         public IActionResult GetCenterRegistrationFormById(Guid id)
         {
             try
