@@ -25,10 +25,5 @@ namespace PetRescue.Data.Domains
             var form = uow.GetService<ICenterRegistrationFormRepository>().GetCenterRegistrationFormById(id);
             return form;
         }
-
-        public void UpdateCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
-        {
-            uow.GetService<ICenterRegistrationFormRepository>().UpdateCenterRegistrationForm(model);
-        }
     }
 }
