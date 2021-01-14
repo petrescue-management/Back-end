@@ -30,5 +30,11 @@ namespace PetRescue.Data.Domains
         {
             uow.GetService<ICenterRegistrationFormRepository>().UpdateCenterRegistrationForm(model);
         }
+
+        public string CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model)
+        {
+            string result = uow.GetService<ICenterRegistrationFormRepository>().CreateCenterRegistrationForm(model);
+            return result;
+        }
     }
 }
