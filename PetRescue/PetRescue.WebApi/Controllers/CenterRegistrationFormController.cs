@@ -18,7 +18,7 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("api/SearchCenterRegistrationForm")]
+        [Route("api/search-center-registration-form")]
         public IActionResult SearchCenterRegistrationForm(SearchViewModel model)
         {
             try
@@ -35,7 +35,7 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/GetCenterRegistrationFormById/{id}")]
+        [Route("api/get-center-registration-form-by-id/{id}")]
         public IActionResult GetCenterRegistrationFormById(Guid id)
         {
             try
