@@ -31,7 +31,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=123456");
+                optionsBuilder.UseSqlServer("Server=DESKTOP-SEQC2RA\\\\\\\\PIIMTRAN,1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
             }
         }
 
@@ -43,7 +43,7 @@ namespace PetRescue.Data.Models
             {
                 entity.Property(e => e.CenterId)
                     .HasColumnName("center_id")
-                    .ValueGeneratedNever();
+                    .HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.Address)
                     .IsRequired()
@@ -55,15 +55,12 @@ namespace PetRescue.Data.Models
                     .HasColumnName("center_name")
                     .HasMaxLength(100);
 
-                entity.Property(e => e.CenterStatus)
-                    .IsRequired()
-                    .HasColumnName("center_status")
-                    .HasMaxLength(4)
-                    .IsUnicode(false);
+                entity.Property(e => e.CenterStatus).HasColumnName("center_status");
 
                 entity.Property(e => e.InsertAt)
                     .HasColumnName("insert_at")
-                    .HasColumnType("date");
+                    .HasColumnType("date")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.InsertBy).HasColumnName("insert_by");
 
@@ -86,7 +83,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.FormId)
                     .HasColumnName("form_id")
-                    .ValueGeneratedNever();
+                    .HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.CenterAddress)
                     .IsRequired()
@@ -98,11 +95,7 @@ namespace PetRescue.Data.Models
                     .HasColumnName("center_name")
                     .HasMaxLength(100);
 
-                entity.Property(e => e.CenterRegisterStatus)
-                    .IsRequired()
-                    .HasColumnName("center_register_status")
-                    .HasMaxLength(4)
-                    .IsUnicode(false);
+                entity.Property(e => e.CenterRegisterStatus).HasColumnName("center_register_status");
 
                 entity.Property(e => e.Description).HasColumnName("description");
 
@@ -202,20 +195,24 @@ namespace PetRescue.Data.Models
             {
                 entity.Property(e => e.RescueReportId)
                     .HasColumnName("rescue_report_id")
-                    .ValueGeneratedNever();
+                    .HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.ReportStatus)
-                    .HasColumnName("report_status")
-                    .HasMaxLength(4)
-                    .IsUnicode(false);
+                entity.Property(e => e.InsertedAt)
+                    .HasColumnName("inserted_at")
+                    .HasColumnType("date")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
+
+                entity.Property(e => e.PetAttribute).HasColumnName("pet_attribute");
+
+                entity.Property(e => e.ReportStatus).HasColumnName("report_status");
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")
                     .HasColumnType("date");
 
                 entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
-
-                entity.Property(e => e.UserId).HasColumnName("user_id");
             });
 
             modelBuilder.Entity<RescueReportDetail>(entity =>
