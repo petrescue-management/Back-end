@@ -48,5 +48,20 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+
+        [HttpPut]
+        [Route("api/update-rescue-report")]
+        public IActionResult UpdateRescueReport(UpdateRescueReportModel model)
+        {
+            try
+            {
+                _uow.GetService<RescueReportDomain>().UpdateRescueReport(model);
+                return Success("This rescue report is updated !");
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
     }
 }
