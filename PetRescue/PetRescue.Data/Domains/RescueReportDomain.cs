@@ -24,5 +24,10 @@ namespace PetRescue.Data.Domains
             var report = uow.GetService<IRescueReportRepository>().GetRescueReportById(id);
             return report;
         }
+
+        public void UpdateRescueReport(UpdateRescueReportModel model)
+        {
+            uow.GetService<IRescueReportRepository>().UpdateRescueReport(model);
+        }
     }
 }

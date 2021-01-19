@@ -16,4 +16,10 @@ namespace PetRescue.Data.ViewModels
         public string ImgReportUrl { get; set; }
 
     }
+
+    public class UpdateRescueReportModel
+    {
+        public Guid RescueReportId { get; set; }
+        public int ReportStatus { get; set; }
+    }
 }

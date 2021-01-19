@@ -13,6 +13,8 @@ namespace PetRescue.Data.Repositories
         SearchReturnModel SearchRescueReport(SearchViewModel model);
 
         GetRescueReportByIdViewModel GetRescueReportById(Guid id);
+
+        void UpdateRescueReport(UpdateRescueReportModel model);
     }
     public partial class RescueReportRepository : BaseRepository<RescueReport, string>, IRescueReportRepository
     {
@@ -61,6 +63,33 @@ namespace PetRescue.Data.Repositories
                 TotalCount = records.Count(),
                 Result = result
             };
+        }
+
+        public void UpdateRescueReport(UpdateRescueReportModel model)
+        {
+            var report = Get()
+                .Where(r => r.RescueReportId.Equals(model.RescueReportId))
+                .Select(r => new RescueReport
+                {
+                    RescueReportId = r.RescueReportId,
+                    PetAttribute = r.PetAttribute,
+                    ReportStatus = r.ReportStatus,
+                    InsertedBy = r.InsertedBy,
+                    InsertedAt = r.InsertedAt
+                }).FirstOrDefault();
+
+            Update(new RescueReport
+            {
+                RescueReportId = model.RescueReportId,
+                PetAttribute = report.PetAttribute,
+                ReportStatus = model.ReportStatus,
+                InsertedBy = report.InsertedBy,
+                InsertedAt = report.InsertedAt,
+                UpdatedBy = null,
+                UpdatedAt = DateTime.Now
+            });
+
+            SaveChanges();
         }
     }
 }
