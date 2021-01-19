@@ -33,5 +33,20 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+
+        [HttpGet]
+        [Route("api/get-rescue-report-by-id/{id}")]
+        public IActionResult GetRescueReportById(Guid id)
+        {
+            try
+            {
+                var result = _uow.GetService<RescueReportDomain>().GetRescueReportById(id);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
     }
 }

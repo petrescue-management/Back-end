@@ -11,11 +11,32 @@ namespace PetRescue.Data.Repositories
     public partial interface IRescueReportRepository : IBaseRepository<RescueReport, string>
     {
         SearchReturnModel SearchRescueReport(SearchViewModel model);
+
+        GetRescueReportByIdViewModel GetRescueReportById(Guid id);
     }
     public partial class RescueReportRepository : BaseRepository<RescueReport, string>, IRescueReportRepository
     {
         public RescueReportRepository(DbContext context) : base(context)
         {
+        }
+
+        public GetRescueReportByIdViewModel GetRescueReportById(Guid id)
+        {
+            var result = Get()
+                .Where(r => r.RescueReportId.Equals(id))
+                .Include(r => r.RescueReportDetail)
+                .Select(r => new GetRescueReportByIdViewModel
+                {
+                    RescueReportId = r.RescueReportId,
+                    PetAttribute = r.PetAttribute,
+                    ReportStatus = r.ReportStatus,
+                    ReportDescription = r.RescueReportDetail.ReportDescription,
+                    ImgReportUrl = r.RescueReportDetail.ImgReportUrl,
+                    ReportLocation = r.RescueReportDetail.ReportLocation,
+                    InsertedBy = r.InsertedBy,
+                    InsertedAt = r.InsertedAt
+                }).FirstOrDefault();
+            return result;
         }
 
         public SearchReturnModel SearchRescueReport(SearchViewModel model)
