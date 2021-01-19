@@ -15,8 +15,14 @@ namespace PetRescue.Data.Domains
 
         public SearchReturnModel SearchRescueReport(SearchViewModel model)
         {
-            var forms = uow.GetService<IRescueReportRepository>().SearchRescueReport(model);
-            return forms;
+            var reports = uow.GetService<IRescueReportRepository>().SearchRescueReport(model);
+            return reports;
+        }
+
+        public GetRescueReportByIdViewModel GetRescueReportById(Guid id)
+        {
+            var report = uow.GetService<IRescueReportRepository>().GetRescueReportById(id);
+            return report;
         }
     }
 }
