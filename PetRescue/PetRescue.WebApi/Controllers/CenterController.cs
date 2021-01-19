@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Models;
@@ -19,9 +20,9 @@ namespace PetRescue.WebApi.Controllers
         {
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("api/search-center")]
-        public IActionResult SearchCenter(SearchViewModel model)
+        public IActionResult SearchCenter([FromQuery]SearchViewModel model)
         {
             try
             {
