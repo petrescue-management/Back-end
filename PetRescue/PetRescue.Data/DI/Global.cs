@@ -31,6 +31,8 @@ namespace PetRescue.Data.DI
                 .AddScoped<UserRoleDomain>()
                 .AddScoped<IRoleRepository,RoleRepository>()
                 .AddScoped<IUserProfileRepository,UserProfileRepository>()
+                .AddScoped<IRescueReportRepository, RescueReportRepository>()
+                .AddScoped<RescueReportDomain>()
                 ;
         }
        
