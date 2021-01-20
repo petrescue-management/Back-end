@@ -36,7 +36,6 @@ namespace PetRescue.Data.Repositories
                     RoleId = roleId,
                     InsertedBy = null,
                     InsertedAt = DateTime.Now,
-                    IsActived = true,
                     UpdateAt = null,
                     UpdateBy = null
                 };

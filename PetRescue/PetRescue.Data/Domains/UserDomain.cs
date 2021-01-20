@@ -49,7 +49,7 @@ namespace PetRescue.Data.Domains
             {
                 Email = user.UserEmail,
                 Id = user.UserId.ToString(),
-                Roles = user.UserRole.Where(r => r.IsActived == true).Select(r => r.Role.RoleName).ToArray(),
+                Roles = user.UserRole.Select(r => r.Role.RoleName).ToArray(),
                 FullName = fullname
             };
             return returnResult;

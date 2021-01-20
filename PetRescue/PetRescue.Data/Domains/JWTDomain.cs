@@ -63,7 +63,7 @@ namespace PetRescue.Data.Domains
         private string[] GetRoleUser(string email)
         {
             var userRepo = uow.GetService<IUserRepository>();
-            var roles = userRepo.FindById(email).UserRole.Where(r =>r.IsActived == true).Select(r => r.Role.RoleName).ToArray();
+            var roles = userRepo.FindById(email).UserRole.Select(r => r.Role.RoleName).ToArray();
             return roles;
         }
         private object GeneratedTokenDecriptor(string email, string userId, List<Claim> currentClaims)
