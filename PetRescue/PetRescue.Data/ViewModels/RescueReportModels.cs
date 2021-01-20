@@ -22,4 +22,12 @@ namespace PetRescue.Data.ViewModels
         public Guid RescueReportId { get; set; }
         public int ReportStatus { get; set; }
     }
+
+    public class CreateRescueReportModel
+    {
+        public int PetAttribute { get; set; }
+        public string ReportDescription { get; set; }
+        public string ReportLocation { get; set; }
+        public string ImgReportUrl { get; set; }
+    }
 }

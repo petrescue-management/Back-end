@@ -63,5 +63,20 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+
+        [HttpPost]
+        [Route("api/create-rescue-report")]
+        public IActionResult CreateRescueReport(CreateRescueReportModel model)
+        {
+            try
+            {
+                _uow.GetService<RescueReportDomain>().CreateRescueReport(model);
+                return Success("This rescue report is processing !");
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
     }
 }
