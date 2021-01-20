@@ -15,11 +15,36 @@ namespace PetRescue.Data.Repositories
         GetRescueReportByIdViewModel GetRescueReportById(Guid id);
 
         void UpdateRescueReport(UpdateRescueReportModel model);
+
+        void CreateRescueReport(CreateRescueReportModel model);
     }
     public partial class RescueReportRepository : BaseRepository<RescueReport, string>, IRescueReportRepository
     {
         public RescueReportRepository(DbContext context) : base(context)
         {
+        }
+
+        public void CreateRescueReport(CreateRescueReportModel model)
+        {
+            Guid id = Guid.NewGuid();
+            Create(new RescueReport
+            {
+                RescueReportId = id,
+                PetAttribute = model.PetAttribute,
+                ReportStatus = 1,
+                InsertedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
+                InsertedAt = DateTime.Now
+            });
+
+            var rescue_report_detail_dbset = context.Set<RescueReportDetail>();
+            rescue_report_detail_dbset.Add(new RescueReportDetail
+            {
+                RescueReportId = id,
+                ReportDescription = model.ReportDescription,
+                ReportLocation = model.ReportLocation,
+                ImgReportUrl = model.ImgReportUrl
+            });
+            SaveChanges();
         }
 
         public GetRescueReportByIdViewModel GetRescueReportById(Guid id)

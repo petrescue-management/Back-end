@@ -29,5 +29,10 @@ namespace PetRescue.Data.Domains
         {
             uow.GetService<IRescueReportRepository>().UpdateRescueReport(model);
         }
+
+        public void CreateRescueReport(CreateRescueReportModel model)
+        {
+            uow.GetService<IRescueReportRepository>().CreateRescueReport(model);
+        }
     }
 }
