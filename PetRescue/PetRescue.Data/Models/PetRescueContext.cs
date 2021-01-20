@@ -263,7 +263,9 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.CenterId).HasColumnName("center_id");
 
-                entity.Property(e => e.IsActived).HasColumnName("isActived");
+                entity.Property(e => e.IsBelongToCenter)
+                    .HasColumnName("is_belong_to_center")
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.UserEmail)
                     .IsRequired()
@@ -306,6 +308,12 @@ namespace PetRescue.Data.Models
                     .HasColumnName("phone")
                     .HasMaxLength(15)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.User)
+                    .WithOne(p => p.UserProfile)
+                    .HasForeignKey<UserProfile>(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserProfile_User");
             });
 
             modelBuilder.Entity<UserRole>(entity =>
@@ -321,8 +329,6 @@ namespace PetRescue.Data.Models
                     .HasColumnType("date");
 
                 entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
-
-                entity.Property(e => e.IsActived).HasColumnName("is_actived");
 
                 entity.Property(e => e.UpdateAt)
                     .HasColumnName("update_at")
