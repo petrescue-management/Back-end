@@ -13,6 +13,7 @@ namespace PetRescue.Data.Models
         public Guid UserId { get; set; }
         public string UserEmail { get; set; }
         public Guid? CenterId { get; set; }
+        public bool? IsActived { get; set; }
 
         public virtual ICollection<UserRole> UserRole { get; set; }
     }

@@ -31,7 +31,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-SEQC2RA\\\\\\\\PIIMTRAN,1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
+                optionsBuilder.UseSqlServer("Server=DESKTOP-SEQC2RA\\PIIMTRAN,1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
             }
         }
 
@@ -262,6 +262,8 @@ namespace PetRescue.Data.Models
                     .HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.CenterId).HasColumnName("center_id");
+
+                entity.Property(e => e.IsActived).HasColumnName("isActived");
 
                 entity.Property(e => e.UserEmail)
                     .IsRequired()
