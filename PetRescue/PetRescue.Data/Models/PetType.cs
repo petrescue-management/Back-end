@@ -7,12 +7,12 @@ namespace PetRescue.Data.Models
     {
         public PetType()
         {
-            PetProfile = new HashSet<PetProfile>();
+            PetBreed = new HashSet<PetBreed>();
         }
 
         public Guid PetTypeId { get; set; }
         public string PetTypeName { get; set; }
 
-        public virtual ICollection<PetProfile> PetProfile { get; set; }
+        public virtual ICollection<PetBreed> PetBreed { get; set; }
     }
 }
