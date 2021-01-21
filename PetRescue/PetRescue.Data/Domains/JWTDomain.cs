@@ -36,14 +36,9 @@ namespace PetRescue.Data.Domains
                 user = userRepo.CreateUser(email);
                 if(user != null)
                 {
-                    bool isRoleCreated = AddRoleUserToUser(user.UserId) != null;
-                    if (isRoleCreated)
-                    {
                         var tokenDescriptor = GeneratedTokenDecriptor(email, user.UserId.ToString(), currentClaims);
                         var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
                         return handler.WriteToken(newToken);
-                    }
-                    return null;
                 }
                 return null;
             }
@@ -63,7 +58,7 @@ namespace PetRescue.Data.Domains
         private string[] GetRoleUser(string email)
         {
             var userRepo = uow.GetService<IUserRepository>();
-            var roles = userRepo.FindById(email).UserRole.Where(r =>r.IsActived == true).Select(r => r.Role.RoleName).ToArray();
+            var roles = userRepo.FindById(email).UserRole.Select(r => r.Role.RoleName).ToArray();
             return roles;
         }
         private object GeneratedTokenDecriptor(string email, string userId, List<Claim> currentClaims)

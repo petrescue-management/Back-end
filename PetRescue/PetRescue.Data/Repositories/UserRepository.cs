@@ -15,6 +15,8 @@ namespace PetRescue.Data.Repositories
 
         User FindById(string email = null, string id = null);
 
+        User Edit(User entity, Guid centerId);
+
     }
     public partial class UserRepository : BaseRepository<User, string>, IUserRepository
     {
@@ -36,7 +38,7 @@ namespace PetRescue.Data.Repositories
             {
                 return Get().FirstOrDefault(e => e.UserEmail == email);
             }
-            else if(id != null)
+            if(id != null)
             {
                 return Get().FirstOrDefault(e => e.UserId.ToString() == id);
             }
@@ -47,10 +49,19 @@ namespace PetRescue.Data.Repositories
         {
             User user = new User
             {
-                UserEmail = email
+                UserEmail = email,
+                IsBelongToCenter = false
             };
             return user;  
         }
+
+        public User Edit(User entity, Guid centerId)
+        {
+            entity.CenterId = centerId;
+            entity.IsBelongToCenter = true;
+            return entity;
+        }
+
 
     }
 }

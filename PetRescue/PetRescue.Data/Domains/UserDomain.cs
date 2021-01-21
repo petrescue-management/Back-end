@@ -37,22 +37,113 @@ namespace PetRescue.Data.Domains
                     message = "Not Found User"
                 };
             }
-            bool isHasProfile = userProfileRepo.Get().FirstOrDefault(u => u.UserId == user.UserId) != null;
+            var userProfile = userProfileRepo.FindById(user.UserId);
             var fullname = "";
-            if (isHasProfile)
+            if (userProfile != null)
             {
-                fullname = userProfileRepo.Get().FirstOrDefault(u => u.UserId == user.UserId).LastName + " ";
-                fullname += userProfileRepo.Get().FirstOrDefault(u => u.UserId == user.UserId).FirstName;
+                fullname = userProfile.LastName + " " + userProfile.FirstName;
             }
-            
             var returnResult = new UserDetailModel
             {
                 Email = user.UserEmail,
                 Id = user.UserId.ToString(),
-                Roles = user.UserRole.Where(r => r.IsActived == true).Select(r => r.Role.RoleName).ToArray(),
+                Roles = user.UserRole.Select(r => r.Role.RoleName).ToArray(),
                 FullName = fullname
             };
             return returnResult;
+        }
+        public UserProfile UpdateUserProfile(UserProfileUpdateModel model)
+        {
+            var profileRepo = uow.GetService<IUserProfileRepository>();
+
+            var userProfile = profileRepo.FindById(model.UserId);
+            if(userProfile == null)
+            {
+                var result = profileRepo.Create(model);
+                return result;
+            }
+            else
+            {
+                var result = profileRepo.Edit(userProfile, model);
+                return result;
+            }
+        }
+        public User GetUserById(Guid userId)
+        {
+            var userRepo = uow.GetService<IUserRepository>();
+            return userRepo.FindById(null,userId.ToString());
+        }
+
+        public User UpdateCenter(UserUpdateCenterModel model, User currentUser)
+        {
+            var userRepo = uow.GetService<IUserRepository>();
+            if(currentUser != null)
+            {
+                var newuser = userRepo.Edit(currentUser,model.CenterId);
+                return userRepo.Update(newuser).Entity;
+            }
+            return null;
+        }
+        public User AddRoleToUser(UserRoleUpdateModel model)
+        {
+            var currentUser = GetUserById(model.UserId); // get current user
+                      if (currentUser == null) // current user not found
+            {
+                return null;
+            }//end of if
+            if (currentUser.IsBelongToCenter.Value)
+            {
+                var userRoleDomain = uow.GetService<UserRoleDomain>();
+                var userRole = userRoleDomain.IsExisted(model);
+                if (userRole == null)
+                {
+                    var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
+                    if (newUserRole != null)
+                    {
+                        return currentUser;
+                    }
+                    return null;
+                }
+                return null;
+            }//end of if
+            else
+            {
+                var userRoleDomain = uow.GetService<UserRoleDomain>();
+                var userRole = userRoleDomain.IsExisted(model);
+                if (userRole == null)
+                {
+                    var tempModel = new UserUpdateCenterModel
+                    {
+                        CenterId = model.CenterId,
+                        UserId = model.UserId
+                    };
+                    var tempUser = UpdateCenter(tempModel, currentUser);
+                    if (tempUser != null)
+                    {
+                        var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
+                        if (newUserRole != null)
+                        {
+                            return tempUser;
+                        }
+                        return null;
+                    }
+                    return null;  
+                }
+                else
+                {
+                    var tempModel = new UserUpdateCenterModel
+                    {
+                        CenterId = model.CenterId,
+                        UserId = model.UserId
+                    };
+                    var tempUser = UpdateCenter(tempModel, currentUser);
+                    if (tempUser != null)
+                    {
+                        return tempUser;
+                    }
+                    return null;
+                }
+            }//end of else
         }
     }
 }

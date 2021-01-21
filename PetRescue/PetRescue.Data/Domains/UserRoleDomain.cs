@@ -1,6 +1,7 @@
 ﻿using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
+using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,32 @@ namespace PetRescue.Data.Domains
         {
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
             var roleRepo = uow.GetService<IRoleRepository>();
-            var roleId = roleRepo.Get().FirstOrDefault(r => r.RoleName == roleName).RoleId;
-            var newUserRole = userRoleRepo.CreateRoleForUser(userId, roleId);
-            return newUserRole;
+            var role = roleRepo.FindRoleByName(roleName);
+            if(role != null) 
+                return userRoleRepo.CreateRoleForUser(userId, role.RoleId);
+            return null;
+        }
+        public UserRole EnableRole(UserRoleUpdateModel model)
+        {
+            var userRoleRepo = uow.GetService<IUserRoleRepository>();
+            var userRole = userRoleRepo.FindUserRoleByUserRoleUpdateModel(model);
+            if(userRole != null)
+            {
+                var newUserRole = userRoleRepo.Edit(userRole);
+                return userRoleRepo.Update(newUserRole).Entity;
+            }
+            return null;
+        }
+        public UserRole IsExisted(UserRoleUpdateModel model)
+        {
+            var userRoleRepo = uow.GetService<IUserRoleRepository>();
+            var roleRepo = uow.GetService<IRoleRepository>();
+            var role = roleRepo.FindRoleByName(model.RoleName);
+            if (role != null)
+            {
+                return userRoleRepo.FindUserRoleByUserRoleUpdateModel(model);
+            }
+            return null;
         }
  
     }
