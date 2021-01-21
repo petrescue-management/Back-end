@@ -11,7 +11,7 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface ICenterRepository : IBaseRepository<Center, string>
     {
-        SearchReturnModel SearchCenter(SearchViewModel model);
+        SearchReturnModel SearchCenter(SearchModel model);
 
         Center GetCenterById(Guid id);
 
@@ -30,7 +30,7 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public SearchReturnModel SearchCenter(SearchViewModel model)
+        public SearchReturnModel SearchCenter(SearchModel model)
         {
             var records = Get().AsQueryable();
 

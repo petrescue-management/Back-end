@@ -15,7 +15,7 @@ namespace PetRescue.Data.Domains
         {
         }
 
-        public SearchReturnModel SearchCenter(SearchViewModel model)
+        public SearchReturnModel SearchCenter(SearchModel model)
         {
             var centers = uow.GetService<ICenterRepository>().SearchCenter(model);        
             return centers;
