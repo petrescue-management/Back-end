@@ -49,12 +49,6 @@ namespace PetRescue.Data.Domains
             var userRepo = uow.GetService<IUserRepository>();
             return userRepo.FindById(email);
         }
-        private string AddRoleUserToUser(Guid userid)
-        {
-            var userRoleDomain = uow.GetService<UserRoleDomain>();
-            UserRole newUserRole = userRoleDomain.RegistationRole(userid, RoleConstant.USER);
-            return newUserRole.UserId.ToString();
-        }
         private string[] GetRoleUser(string email)
         {
             var userRepo = uow.GetService<IUserRepository>();

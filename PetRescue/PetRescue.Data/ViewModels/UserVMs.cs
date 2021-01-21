@@ -42,5 +42,16 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("center-id")]
         public Guid CenterId { get; set; }
     }
+    public class UserCreateModel
+    {
+        [JsonProperty("email")]
+        public string Email { get; set; }
+        [JsonProperty("center-id")]
+        public Guid CenterId { get; set; }
+        [JsonProperty("is_belong_to_center")]
+        public bool isBelongToCenter { get; set; }
+        
+           
+    }
 
 }

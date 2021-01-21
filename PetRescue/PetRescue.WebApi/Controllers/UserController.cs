@@ -44,7 +44,7 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var userDomain = _uow.GetService<UserDomain>();
-                string id = userDomain.RegisterUser(email);
+                string id = userDomain.RegisterUser(email).UserId.ToString();
                 _uow.saveChanges();
                 return Success(id);
             }catch(Exception ex)
