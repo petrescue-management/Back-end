@@ -11,7 +11,7 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface ICenterRegistrationFormRepository : IBaseRepository<CenterRegistrationForm, string>
     {
-        SearchReturnModel SearchCenterRegistrationForm(SearchViewModel model);
+        SearchReturnModel SearchCenterRegistrationForm(SearchModel moadel);
 
         CenterRegistrationForm GetCenterRegistrationFormById(Guid id);
 
@@ -26,7 +26,7 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public SearchReturnModel SearchCenterRegistrationForm(SearchViewModel model)
+        public SearchReturnModel SearchCenterRegistrationForm(SearchModel model)
         {
             var records = Get().AsQueryable().Where(f => f.CenterRegistrationStatus == 1);
 

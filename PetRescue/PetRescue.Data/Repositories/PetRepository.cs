@@ -11,7 +11,7 @@ namespace PetRescue.Data.Repositories
     {
         List<PetBreed> GetPetBreedsByTypeId(Guid id, DbSet<PetBreed> model);
 
-        PetBreed GetPetBreedById(Guid id, DbSet<PetBreed> model);
+        PetBreed GetPetBreedById(Guid id, DbSet<PetBreed> service);
     }
 
     public partial class PetRepository : BaseRepository<Pet, string>, IPetRepository
@@ -20,9 +20,9 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public PetBreed GetPetBreedById(Guid id, DbSet<PetBreed> model)
+        public PetBreed GetPetBreedById(Guid id, DbSet<PetBreed> service)
         {
-            var breed = model
+            var breed = service
                .Where(b => b.PetBreedId.Equals(id))
                .Select(b => new PetBreed
                {
@@ -34,9 +34,9 @@ namespace PetRescue.Data.Repositories
             return breed;
         }
 
-        public List<PetBreed> GetPetBreedsByTypeId(Guid id, DbSet<PetBreed> model)
+        public List<PetBreed> GetPetBreedsByTypeId(Guid id, DbSet<PetBreed> service)
         {
-            List<PetBreed> breeds = model
+            List<PetBreed> breeds = service
                 .Where(b => b.PetTypeId.Equals(id))
                 .Select(b => new PetBreed
             {

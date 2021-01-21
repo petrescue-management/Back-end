@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.Repositories;
+﻿using PetRescue.Data.Models;
+using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 using System;
@@ -13,26 +14,30 @@ namespace PetRescue.Data.Domains
         {
         }
 
-        public SearchReturnModel SearchRescueReport(SearchViewModel model)
+        public SearchReturnModel SearchRescueReport(SearchModel model)
         {
             var reports = uow.GetService<IRescueReportRepository>().SearchRescueReport(model);
             return reports;
         }
 
-        public GetRescueReportByIdViewModel GetRescueReportById(Guid id)
+        public RescueReportModel GetRescueReportById(Guid id)
         {
             var report = uow.GetService<IRescueReportRepository>().GetRescueReportById(id);
             return report;
         }
 
-        public void UpdateRescueReport(UpdateRescueReportModel model)
+        public RescueReportModel UpdateRescueReport(UpdateStatusModel model)
         {
-            uow.GetService<IRescueReportRepository>().UpdateRescueReport(model);
+            var update_model = uow.GetService<IRescueReportDetailRepository>().GetRescueReportDetailWithStatus(model);
+            var report = uow.GetService<IRescueReportRepository>().UpdateRescueReport(update_model);
+            return report;
         }
 
-        public void CreateRescueReport(CreateRescueReportModel model)
+        public RescueReportModel CreateRescueReport(CreateRescueReportModel model)
         {
-            uow.GetService<IRescueReportRepository>().CreateRescueReport(model);
+            var report = uow.GetService<IRescueReportRepository>().CreateRescueReport(model);
+            uow.GetService<IRescueReportDetailRepository>().CreateRescueReportDetail(report);
+            return report;           
         }
     }
 }

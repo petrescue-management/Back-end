@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -10,13 +11,13 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IRescueReportRepository : IBaseRepository<RescueReport, string>
     {
-        SearchReturnModel SearchRescueReport(SearchViewModel model);
+        SearchReturnModel SearchRescueReport(SearchModel model);
 
-        GetRescueReportByIdViewModel GetRescueReportById(Guid id);
+        RescueReportModel GetRescueReportById(Guid id);
 
-        void UpdateRescueReport(UpdateRescueReportModel model);
+        RescueReportModel UpdateRescueReport(UpdateRescueReportModel model);
 
-        void CreateRescueReport(CreateRescueReportModel model);
+        RescueReportModel CreateRescueReport(CreateRescueReportModel model);
     }
     public partial class RescueReportRepository : BaseRepository<RescueReport, string>, IRescueReportRepository
     {
@@ -24,49 +25,68 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public void CreateRescueReport(CreateRescueReportModel model)
+        #region Create
+        private RescueReport PrepareCreate(CreateRescueReportModel model)
         {
-            Guid id = Guid.NewGuid();
-            Create(new RescueReport
+
+            var report = new RescueReport
             {
-                RescueReportId = id,
+                RescueReportId = Guid.NewGuid(),
                 PetAttribute = model.PetAttribute,
                 ReportStatus = 1,
                 InsertedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
-                InsertedAt = DateTime.Now
-            });
-
-            var rescue_report_detail_dbset = context.Set<RescueReportDetail>();
-            rescue_report_detail_dbset.Add(new RescueReportDetail
-            {
-                RescueReportId = id,
-                ReportDescription = model.ReportDescription,
-                ReportLocation = model.ReportLocation,
-                ImgReportUrl = model.ImgReportUrl
-            });
-            SaveChanges();
+                InsertedAt = DateTime.UtcNow,
+                UpdatedBy = null,
+                UpdatedAt = null
+                
+            };
+            return report;
         }
 
-        public GetRescueReportByIdViewModel GetRescueReportById(Guid id)
+
+        public RescueReportModel CreateRescueReport(CreateRescueReportModel model)
+        {
+            var report = PrepareCreate(model);
+
+            Create(report);
+            SaveChanges();
+
+            var result = new RescueReportModel
+            {
+                RescueReportId = report.RescueReportId,
+                PetAttribute = report.PetAttribute,
+                ReportStatus = report.ReportStatus,
+                ReportLocation = model.ReportLocation,
+                ReportDescription = model.ReportDescription,
+                ImgReportUrl = model.ImgReportUrl
+            };
+
+            return result;
+
+        }
+        #endregion
+
+        #region GetById
+        public RescueReportModel GetRescueReportById(Guid id)
         {
             var result = Get()
                 .Where(r => r.RescueReportId.Equals(id))
                 .Include(r => r.RescueReportDetail)
-                .Select(r => new GetRescueReportByIdViewModel
+                .Select(r => new RescueReportModel
                 {
                     RescueReportId = r.RescueReportId,
                     PetAttribute = r.PetAttribute,
                     ReportStatus = r.ReportStatus,
                     ReportDescription = r.RescueReportDetail.ReportDescription,
                     ImgReportUrl = r.RescueReportDetail.ImgReportUrl,
-                    ReportLocation = r.RescueReportDetail.ReportLocation,
-                    InsertedBy = r.InsertedBy,
-                    InsertedAt = r.InsertedAt
+                    ReportLocation = r.RescueReportDetail.ReportLocation
                 }).FirstOrDefault();
             return result;
         }
+        #endregion
 
-        public SearchReturnModel SearchRescueReport(SearchViewModel model)
+        #region Search
+        public SearchReturnModel SearchRescueReport(SearchModel model)
         {
             var records = Get().AsQueryable().Where(r => r.ReportStatus == 1);
 
@@ -89,32 +109,40 @@ namespace PetRescue.Data.Repositories
                 Result = result
             };
         }
+        #endregion
 
-        public void UpdateRescueReport(UpdateRescueReportModel model)
-        {
+        #region Update
+       public RescueReportModel UpdateRescueReport(UpdateRescueReportModel model)
+       {
             var report = Get()
-                .Where(r => r.RescueReportId.Equals(model.RescueReportId))
-                .Select(r => new RescueReport
-                {
-                    RescueReportId = r.RescueReportId,
-                    PetAttribute = r.PetAttribute,
-                    ReportStatus = r.ReportStatus,
-                    InsertedBy = r.InsertedBy,
-                    InsertedAt = r.InsertedAt
-                }).FirstOrDefault();
+                    .Where(r => r.RescueReportId.Equals(model.RescueReportId))
+                    .Select(r => new RescueReport
+                    {
+                        RescueReportId = model.RescueReportId,
+                        PetAttribute = r.PetAttribute,
+                        ReportStatus = model.ReportStatus,
+                        InsertedBy = r.InsertedBy,
+                        InsertedAt = r.InsertedAt,
+                        UpdatedBy = null,
+                        UpdatedAt = DateTime.UtcNow
+                    }).FirstOrDefault();
 
-            Update(new RescueReport
-            {
-                RescueReportId = model.RescueReportId,
-                PetAttribute = report.PetAttribute,
-                ReportStatus = model.ReportStatus,
-                InsertedBy = report.InsertedBy,
-                InsertedAt = report.InsertedAt,
-                UpdatedBy = null,
-                UpdatedAt = DateTime.Now
-            });
 
+            Update(report);
             SaveChanges();
-        }
+
+            var result = new RescueReportModel
+            {
+                RescueReportId = report.RescueReportId,
+                PetAttribute = report.PetAttribute,
+                ReportStatus = report.ReportStatus,
+                ReportLocation = model.ReportLocation,
+                ReportDescription = model.ReportDescription,
+                ImgReportUrl = model.ImgReportUrl
+            };
+
+            return result;
+       }
+        #endregion
     }
 }
