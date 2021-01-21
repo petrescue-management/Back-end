@@ -15,11 +15,11 @@ namespace PetRescue.Data.Domains
         public UserDomain(IUnitOfWork uow) : base(uow)
         {
         }
-        public string RegisterUser(string email)
+        public User RegisterUser(string email)
         {
             var userRepo = uow.GetService<IUserRepository>();
             var newUser = userRepo.CreateUser(email);
-            return newUser.UserId.ToString();
+            return newUser;
         }
         public object GetUserDetail(string token)
         {
@@ -84,66 +84,82 @@ namespace PetRescue.Data.Domains
             }
             return null;
         }
+        public User AddRoleManagerToUser(UserRoleUpdateModel model)
+        {
+            var currentUser = GetUserById(model.UserId);
+            if(currentUser == null)
+            {
+                var userRoleDomain = uow.GetService<UserRoleDomain>();
+                var newRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
+                if(newRole != null)
+                {
+                    return currentUser;
+                }
+            }
+            return null;
+        }
         public User AddRoleToUser(UserRoleUpdateModel model)
         {
-            var currentUser = GetUserById(model.UserId); // get current user
-                      if (currentUser == null) // current user not found
-            {
-                return null;
-            }//end of if
-            if (currentUser.IsBelongToCenter.Value)
-            {
-                var userRoleDomain = uow.GetService<UserRoleDomain>();
-                var userRole = userRoleDomain.IsExisted(model);
-                if (userRole == null)
-                {
-                    var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
-                    if (newUserRole != null)
-                    {
-                        return currentUser;
-                    }
-                    return null;
-                }
-                return null;
-            }//end of if
-            else
-            {
-                var userRoleDomain = uow.GetService<UserRoleDomain>();
-                var userRole = userRoleDomain.IsExisted(model);
-                if (userRole == null)
-                {
-                    var tempModel = new UserUpdateCenterModel
-                    {
-                        CenterId = model.CenterId,
-                        UserId = model.UserId
-                    };
-                    var tempUser = UpdateCenter(tempModel, currentUser);
-                    if (tempUser != null)
-                    {
-                        var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
-                        if (newUserRole != null)
-                        {
-                            return tempUser;
-                        }
-                        return null;
-                    }
-                    return null;  
-                }
-                else
-                {
-                    var tempModel = new UserUpdateCenterModel
-                    {
-                        CenterId = model.CenterId,
-                        UserId = model.UserId
-                    };
-                    var tempUser = UpdateCenter(tempModel, currentUser);
-                    if (tempUser != null)
-                    {
-                        return tempUser;
-                    }
-                    return null;
-                }
-            }//end of else
+            var currentUser = GetUserById(model.UserId);
+            return null;
+            // get current user
+            //          if (currentUser == null) // current user not found
+            //{
+            //    return null;
+            //}//end of if
+            //if (currentUser.IsBelongToCenter.Value)
+            //{
+            //    var userRoleDomain = uow.GetService<UserRoleDomain>();
+            //    var userRole = userRoleDomain.IsExisted(model);
+            //    if (userRole == null)
+            //    {
+            //        var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
+            //        if (newUserRole != null)
+            //        {
+            //            return currentUser;
+            //        }
+            //        return null;
+            //    }
+            //    return null;
+            //}//end of if
+            //else
+            //{
+            //    var userRoleDomain = uow.GetService<UserRoleDomain>();
+            //    var userRole = userRoleDomain.IsExisted(model);
+            //    if (userRole == null)
+            //    {
+            //        var tempModel = new UserUpdateCenterModel
+            //        {
+            //            CenterId = model.CenterId,
+            //            UserId = model.UserId
+            //        };
+            //        var tempUser = UpdateCenter(tempModel, currentUser);
+            //        if (tempUser != null)
+            //        {
+            //            var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
+            //            if (newUserRole != null)
+            //            {
+            //                return tempUser;
+            //            }
+            //            return null;
+            //        }
+            //        return null;  
+            //    }
+            //    else
+            //    {
+            //        var tempModel = new UserUpdateCenterModel
+            //        {
+            //            CenterId = model.CenterId,
+            //            UserId = model.UserId
+            //        };
+            //        var tempUser = UpdateCenter(tempModel, currentUser);
+            //        if (tempUser != null)
+            //        {
+            //            return tempUser;
+            //        }
+            //        return null;
+            //    }
+            //}//end of else
         }
     }
 }

@@ -22,6 +22,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 var jwtDomain = _uow.GetService<JWTDomain>();
                 var returnToken = jwtDomain.DecodeJwt(token);
+                _uow.saveChanges();
                 return Success(returnToken);
             }catch(Exception e)
             {

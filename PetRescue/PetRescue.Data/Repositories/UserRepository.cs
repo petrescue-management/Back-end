@@ -17,6 +17,8 @@ namespace PetRescue.Data.Repositories
 
         User Edit(User entity, Guid centerId);
 
+        User CreateUserByModel(UserCreateModel model);
+
     }
     public partial class UserRepository : BaseRepository<User, string>, IUserRepository
     {
@@ -28,7 +30,6 @@ namespace PetRescue.Data.Repositories
         {
             var user = PrepareCreate(email);
             Create(user);
-            SaveChanges();
             return user;
         }
 
@@ -50,7 +51,8 @@ namespace PetRescue.Data.Repositories
             User user = new User
             {
                 UserEmail = email,
-                IsBelongToCenter = false
+                IsBelongToCenter = false,
+
             };
             return user;  
         }
@@ -62,6 +64,17 @@ namespace PetRescue.Data.Repositories
             return entity;
         }
 
-
+        public User CreateUserByModel(UserCreateModel model)
+        {
+            var newUser = new User
+            {
+                UserId = Guid.NewGuid(),
+                CenterId = model.CenterId,
+                IsBelongToCenter = model.isBelongToCenter,
+                UserEmail = model.Email
+            };
+            Create(newUser);
+            return newUser;
+        }
     }
 }

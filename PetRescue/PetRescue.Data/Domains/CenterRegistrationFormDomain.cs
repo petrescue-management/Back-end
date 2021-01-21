@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.Models;
+﻿using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
@@ -78,6 +79,51 @@ namespace PetRescue.Data.Domains
 
             string result = uow.GetService<ICenterRegistrationFormRepository>().CreateCenterRegistrationForm(model);
             return result;
+        }
+
+        public User ProgressingCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
+        {
+            var centerRegistrationRepo = uow.GetService<ICenterRegistrationFormRepository>();
+            var centerRepo = uow.GetService<ICenterRepository>();
+            var userDomain = uow.GetService<UserDomain>();
+            var userRepo = uow.GetService<IUserRepository>();
+            var currentForm = centerRegistrationRepo.GetCenterRegistrationFormById(model.FormId);
+            if(currentForm != null)
+            {
+                if(model.CenterRegisterStatus == CenterRegistrationFormConst.APPROVE)
+                {
+                    //Create Model for create new Center
+                    var newCreateCenterModel = new CreateCenterModel
+                    {
+                        Address = currentForm.CenterAddress,
+                        CenterName = currentForm.CenterName,
+                        Phone = currentForm.Phone,
+                    };
+                    var newCenter = centerRepo.CreateCenterByForm(newCreateCenterModel);// create Center
+
+                    //Create Model for create new User
+                    var newCreateUserModel = new UserCreateModel
+                    {
+                        Email = currentForm.Email,
+                        CenterId = newCenter.CenterId,
+                        isBelongToCenter = UserConst.BELONG,
+                    };
+                    var newUser = userRepo.CreateUserByModel(newCreateUserModel); // create new Account
+                    //Create Model for add Role to User
+                    var newUserRoleUpdateModel = new UserRoleUpdateModel
+                    {
+                        CenterId = newCenter.CenterId,
+                        RoleName = RoleConstant.Manager,
+                        UserId = newUser.UserId
+                    };
+                    var result = userDomain.AddRoleManagerToUser(newUserRoleUpdateModel);
+                    return result;
+                }else if(currentForm.CenterRegistrationStatus == CenterRegistrationFormConst.REJECT)
+                {
+                    
+                }
+            }
+            return null;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -19,6 +20,8 @@ namespace PetRescue.Data.Repositories
         void CreateCenter(CreateCenterModel model);
 
         string UpdateCenter(UpdateCenterModel model);
+
+        Center CreateCenterByForm(CreateCenterModel model);
     }
 
     public partial class CenterRepository : BaseRepository<Center, string>, ICenterRepository
@@ -138,6 +141,24 @@ namespace PetRescue.Data.Repositories
             SaveChanges();
 
             return "Updated your information successfully !";
+        }
+
+        public Center CreateCenterByForm(CreateCenterModel model)
+        {
+            var newCenter = new Center
+            {
+                CenterId = Guid.NewGuid(),
+                Address = model.Address,
+                Phone = model.Phone,
+                CenterName = model.CenterName,
+                CenterStatus = CenterStatus.OPENNING,
+                InsertAt = DateTime.Now,
+                InsertBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
+                UpdateBy = null,
+                UpdateAt = null
+            };
+            Create(newCenter);
+            return newCenter;
         }
     }
 }
