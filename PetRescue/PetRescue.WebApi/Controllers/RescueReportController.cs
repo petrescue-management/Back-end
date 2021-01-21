@@ -19,7 +19,7 @@ namespace PetRescue.WebApi.Controllers
 
         [HttpGet]
         [Route("api/search-rescue-report")]
-        public IActionResult SearchRescueReport([FromQuery] SearchViewModel model)
+        public IActionResult SearchRescueReport([FromQuery] SearchModel model)
         {
             try
             {
@@ -51,12 +51,12 @@ namespace PetRescue.WebApi.Controllers
 
         [HttpPut]
         [Route("api/update-rescue-report")]
-        public IActionResult UpdateRescueReport(UpdateRescueReportModel model)
+        public IActionResult UpdateRescueReport(UpdateStatusModel model)
         {
             try
             {
-                _uow.GetService<RescueReportDomain>().UpdateRescueReport(model);
-                return Success("This rescue report is updated !");
+               var result = _uow.GetService<RescueReportDomain>().UpdateRescueReport(model);
+                return Success(result);
             }
             catch (Exception ex)
             {
@@ -70,8 +70,8 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                _uow.GetService<RescueReportDomain>().CreateRescueReport(model);
-                return Success("This rescue report is processing !");
+                var result = _uow.GetService<RescueReportDomain>().CreateRescueReport(model);
+                return Success(result);
             }
             catch (Exception ex)
             {
