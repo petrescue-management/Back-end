@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Models;
@@ -19,9 +20,9 @@ namespace PetRescue.WebApi.Controllers
         {
         }
 
-        [HttpPost]
-        [Route("api/SearchCenter")]
-        public IActionResult SearchCenter(SearchViewModel model)
+        [HttpGet]
+        [Route("api/search-center")]
+        public IActionResult SearchCenter([FromQuery]SearchModel model)
         {
             try
             {
@@ -36,8 +37,8 @@ namespace PetRescue.WebApi.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("api/GetCenterById")]
+        [HttpGet]
+        [Route("api/get-center-by-id/{id}")]
         public IActionResult GetCenterById(Guid id)
         {
             try
@@ -51,8 +52,8 @@ namespace PetRescue.WebApi.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("api/DeleteCenter")]
+        [HttpDelete]
+        [Route("api/delete-center")]
         public IActionResult DeleteCenter(Guid id)
         {
             try
@@ -67,13 +68,28 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("api/CreateCenter")]
+        [Route("api/create-center")]
         public IActionResult CreateCenter(CreateCenterModel model)
         {
             try
             {
                 _uow.GetService<CenterDomain>().CreateCenter(model);
                 return Success("Created a new center !");
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
+        [HttpPut]
+        [Route("api/update-center")]
+        public IActionResult UpdateCenter(UpdateCenterModel model)
+        {
+            try
+            {
+                var result = _uow.GetService<CenterDomain>().UpdateCenter(model);
+                return Success(result);
             }
             catch (Exception ex)
             {

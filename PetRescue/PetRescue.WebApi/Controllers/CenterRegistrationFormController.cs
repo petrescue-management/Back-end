@@ -17,9 +17,9 @@ namespace PetRescue.WebApi.Controllers
         {
         }
 
-        [HttpPost]
-        [Route("api/SearchCenterRegistrationForm")]
-        public IActionResult SearchCenterRegistrationForm(SearchViewModel model)
+        [HttpGet]
+        [Route("api/search-center-registration-form")]
+        public IActionResult SearchCenterRegistrationForm([FromQuery]SearchModel model)
         {
             try
             {
@@ -34,13 +34,43 @@ namespace PetRescue.WebApi.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("api/GetCenterRegistrationFormById")]
+        [HttpGet]
+        [Route("api/get-center-registration-form-by-id/{id}")]
         public IActionResult GetCenterRegistrationFormById(Guid id)
         {
             try
             {
                 var result = _uow.GetService<CenterRegistrationFormDomain>().GetCenterRegistrationFormById(id);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
+        [HttpPut]
+        [Route("api/update-center-registration-form")]
+        public IActionResult UpdateCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
+        {
+            try
+            {
+                _uow.GetService<CenterRegistrationFormDomain>().UpdateCenterRegistrationForm(model);
+                return Success("This center registration form is updated !");
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("api/create-center-registration-form")]
+        public IActionResult CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model)
+        {
+            try
+            {
+                string result = _uow.GetService<CenterRegistrationFormDomain>().CreateCenterRegistrationForm(model);
                 return Success(result);
             }
             catch (Exception ex)

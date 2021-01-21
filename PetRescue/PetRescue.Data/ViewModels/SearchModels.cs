@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PetRescue.Data.ViewModels
 {
-    public class SearchViewModel
+    public class SearchModel
     {
         public string Keyword { get; set; }
 

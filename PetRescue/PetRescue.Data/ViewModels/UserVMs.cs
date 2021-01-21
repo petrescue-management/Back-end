@@ -5,15 +5,7 @@ using System.Text;
 
 namespace PetRescue.Data.ViewModels
 {
-    public class UserCreateModel
-    {
-        [JsonProperty("username")]
-        public string Username { get; set; }
-        [JsonProperty("password")]
-        public string Password { get; set; }
-        [JsonProperty("email")]
-        public string Email { get; set; }
-    }
+   
     public class UserDetailModel
     {
         [JsonProperty("email")]
@@ -22,6 +14,44 @@ namespace PetRescue.Data.ViewModels
         public string Id { get; set; }
         [JsonProperty("roles")]
         public string[] Roles { get; set; }
+        [JsonProperty("full-name")]
+        public string FullName { get; set; }
+
+    }
+    public class UserProfileUpdateModel
+    {
+        [JsonProperty("user-id")]
+        public Guid UserId { get; set; }
+        [JsonProperty("last-name")]
+        public string LastName { get; set; }
+        [JsonProperty("first-name")]
+        public string FirstName { get; set; }
+        [JsonProperty("dob")]
+        public DateTime DoB { get; set; }
+        [JsonProperty("address")]
+        public string Address { get; set; }
+        [JsonProperty("gender")]
+        public bool Gender { get; set; }
+        [JsonProperty("phone")]
+        public string Phone { get; set; }
+    }
+    public class UserUpdateCenterModel
+    {
+        [JsonProperty("user-id")]
+        public Guid UserId { get; set; }
+        [JsonProperty("center-id")]
+        public Guid CenterId { get; set; }
+    }
+    public class UserCreateModel
+    {
+        [JsonProperty("email")]
+        public string Email { get; set; }
+        [JsonProperty("center-id")]
+        public Guid CenterId { get; set; }
+        [JsonProperty("is_belong_to_center")]
+        public bool isBelongToCenter { get; set; }
+        
+           
     }
 
 }

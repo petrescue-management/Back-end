@@ -1,4 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
 using System;
@@ -21,41 +23,59 @@ namespace PetRescue.Data.Domains
             var result = handler.ReadJwtToken(jwt) as JwtSecurityToken;
             var currentClaims = result.Claims.ToList();
             string email = currentClaims.FirstOrDefault(c => c.Type == "email").Value;
-            string userId = UserIsExisted(email);
-            if (userId != null)
+            User user = UserIsExisted(email);
+            if (user != null)
             {
-                string[] roles = GetRoleUser(email);
-                foreach(string role in roles)
-                {
-                    Claim newClaim = new Claim(ClaimTypes.Role, role);
-                    currentClaims.Add(newClaim);
-                }
-                currentClaims.Add(new Claim(ClaimTypes.Actor, userId));
-                ClaimsIdentity claimsIdentity = new ClaimsIdentity(currentClaims);
-                var key = Encoding.ASCII.GetBytes("Sercret_Key_PetRescue");
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = claimsIdentity,
-                    Issuer = "PetRescue_Issuer",
-                    Audience = "PetRescue_Audience",
-                    Expires = DateTime.UtcNow.AddDays(7),
-                    SigningCredentials = new SigningCredentials( new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-                };
-                var newToken = handler.CreateToken(tokenDescriptor);
+                var tokenDescriptor = GeneratedTokenDecriptor(email, user.UserId.ToString(), currentClaims);
+                var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
                 return handler.WriteToken(newToken);
             }
-            return "User not found";        
+            else
+            {
+                var userRepo = uow.GetService<IUserRepository>();
+                user = userRepo.CreateUser(email);
+                if(user != null)
+                {
+                        var tokenDescriptor = GeneratedTokenDecriptor(email, user.UserId.ToString(), currentClaims);
+                        var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
+                        return handler.WriteToken(newToken);
+                }
+                return null;
+            }
+           
         }
-        private string UserIsExisted(string email)
+        private User UserIsExisted(string email)
         {
             var userRepo = uow.GetService<IUserRepository>();
-            return userRepo.FindById(email).UserId.ToString();
+            return userRepo.FindById(email);
         }
         private string[] GetRoleUser(string email)
         {
             var userRepo = uow.GetService<IUserRepository>();
-            var roles = userRepo.FindById(email).UserRole.Where(r =>r.IsActived == true).Select(r => r.Role.RoleName).ToArray();
+            var roles = userRepo.FindById(email).UserRole.Select(r => r.Role.RoleName).ToArray();
             return roles;
         }
+        private object GeneratedTokenDecriptor(string email, string userId, List<Claim> currentClaims)
+        {
+            string[] roles = GetRoleUser(email);
+            foreach (string role in roles)
+            {
+                Claim newClaim = new Claim(ClaimTypes.Role, role);
+                currentClaims.Add(newClaim);
+            }
+            currentClaims.Add(new Claim(ClaimTypes.Actor, userId));
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(currentClaims);
+            var key = Encoding.ASCII.GetBytes("Sercret_Key_PetRescue");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = claimsIdentity,
+                Issuer = "PetRescue_Issuer",
+                Audience = "PetRescue_Audience",
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            return tokenDescriptor;
+        }
+
     }
 }

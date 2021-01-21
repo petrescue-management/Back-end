@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace PetRescue.Data.Models
+namespace PetRescue.Data.ViewModels
 {
-    public partial class CenterRegistrationForm
+    public class UpdateCenterRegistrationFormModel
     {
-        public Guid CenterRegistrationId { get; set; }
+        public Guid FormId { get; set; }
+        public int CenterRegisterStatus { get; set; }
+    }
+
+    public class CreateCenterRegistrationFormModel
+    {
         public string CenterName { get; set; }
         public string CenterAddress { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Description { get; set; }
-        public int CenterRegistrationStatus { get; set; }
-        public Guid? UpdatedBy { get; set; }
-        public DateTime? UpdatedAt { get; set; }
     }
 }

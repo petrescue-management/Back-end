@@ -12,5 +12,7 @@ namespace PetRescue.Data.Models
         public string Address { get; set; }
         public string Phone { get; set; }
         public bool Gender { get; set; }
+
+        public virtual User User { get; set; }
     }
 }

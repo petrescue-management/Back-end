@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -10,13 +11,17 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface ICenterRepository : IBaseRepository<Center, string>
     {
-        SearchReturnModel SearchCenter(SearchViewModel model);
+        SearchReturnModel SearchCenter(SearchModel model);
 
         Center GetCenterById(Guid id);
 
         void DeleteCenter(Guid id);
 
         void CreateCenter(CreateCenterModel model);
+
+        string UpdateCenter(UpdateCenterModel model);
+
+        Center CreateCenterByForm(CreateCenterModel model);
     }
 
     public partial class CenterRepository : BaseRepository<Center, string>, ICenterRepository
@@ -25,7 +30,7 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public SearchReturnModel SearchCenter(SearchViewModel model)
+        public SearchReturnModel SearchCenter(SearchModel model)
         {
             var records = Get().AsQueryable();
 
@@ -109,6 +114,51 @@ namespace PetRescue.Data.Repositories
                 UpdateAt = null
             });
             SaveChanges();
+        }
+
+        public string UpdateCenter(UpdateCenterModel model)
+        {
+            var center = Get()
+              .Where(c => c.CenterId.Equals(model.CenterId))
+               .Select(c => new Center
+               {
+                   InsertBy = c.InsertBy,
+                   InsertAt = c.InsertAt
+               }).FirstOrDefault();
+
+            Update(new Center
+            {
+                CenterId = model.CenterId,
+                CenterName = model.CenterName,
+                Address = model.Address,
+                CenterStatus = model.CenterStatus,
+                Phone = model.Phone,
+                InsertBy = center.InsertBy,
+                InsertAt = center.InsertAt,
+                UpdateBy = null,
+                UpdateAt = DateTime.Now
+            });
+            SaveChanges();
+
+            return "Updated your information successfully !";
+        }
+
+        public Center CreateCenterByForm(CreateCenterModel model)
+        {
+            var newCenter = new Center
+            {
+                CenterId = Guid.NewGuid(),
+                Address = model.Address,
+                Phone = model.Phone,
+                CenterName = model.CenterName,
+                CenterStatus = CenterStatus.OPENNING,
+                InsertAt = DateTime.Now,
+                InsertBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
+                UpdateBy = null,
+                UpdateAt = null
+            };
+            Create(newCenter);
+            return newCenter;
         }
     }
 }
