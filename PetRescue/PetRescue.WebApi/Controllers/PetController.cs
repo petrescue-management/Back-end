@@ -17,12 +17,12 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/get-breeds-by-type")]
-        public IActionResult GetBreedsByType([FromQuery] Guid id)
+        [Route("api/get-pet-breeds-by-type-id")]
+        public IActionResult GetPetBreedsByTypeId([FromQuery] Guid id)
         {
             try
             {
-                var result = _uow.GetService<PetDomain>().GetBreedsByType(id);
+                var result = _uow.GetService<PetDomain>().GetPetBreedsByTypeId(id);
                 if (result != null)
                     return Success(result);
                 return Success("This type do not have any breeds !");
@@ -34,12 +34,12 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/get-breed-by-id")]
-        public IActionResult GetBreedById([FromQuery] Guid id)
+        [Route("api/get-pet_breed-by-id")]
+        public IActionResult GetPetBreedById([FromQuery] Guid id)
         {
             try
             {
-                var result = _uow.GetService<PetDomain>().GetBreedById(id);
+                var result = _uow.GetService<PetDomain>().GetPetBreedById(id);
                 return Success(result);
             }
             catch (Exception ex)
