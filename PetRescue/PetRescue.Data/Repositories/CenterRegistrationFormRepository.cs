@@ -28,19 +28,19 @@ namespace PetRescue.Data.Repositories
 
         public SearchReturnModel SearchCenterRegistrationForm(SearchViewModel model)
         {
-            var records = Get().AsQueryable().Where(f => f.CenterRegisterStatus == 1);
+            var records = Get().AsQueryable().Where(f => f.CenterRegistrationStatus == 1);
 
             List<CenterRegistrationForm> result = records
                 .Skip((model.PageIndex - 1) * 10)
                 .Take(10)
                 .Select(f => new CenterRegistrationForm {
-                    FormId = f.FormId,
+                    CenterRegistrationId = f.CenterRegistrationId,
                     CenterName = f.CenterName,
                     Email = f.Email,
                     Phone = f.Phone,
                     CenterAddress = f.CenterAddress,
                     Description = f.Description,
-                    CenterRegisterStatus = f.CenterRegisterStatus,
+                    CenterRegistrationStatus = f.CenterRegistrationStatus,
                     UpdatedBy = f.UpdatedBy,
                     UpdatedAt = f.UpdatedAt
                 }).ToList();
@@ -54,16 +54,16 @@ namespace PetRescue.Data.Repositories
         public CenterRegistrationForm GetCenterRegistrationFormById(Guid id)
         {
             var result = Get()
-                .Where(f => f.FormId.Equals(id))
+                .Where(f => f.CenterRegistrationId.Equals(id))
                 .Select(f => new CenterRegistrationForm
                 {
-                    FormId = f.FormId,
+                    CenterRegistrationId = f.CenterRegistrationId,
                     CenterName = f.CenterName,
                     Email = f.Email,
                     Phone = f.Phone,
                     CenterAddress = f.CenterAddress,
                     Description = f.Description,
-                    CenterRegisterStatus = f.CenterRegisterStatus,
+                    CenterRegistrationStatus = f.CenterRegistrationStatus,
                     UpdatedBy = f.UpdatedBy,
                     UpdatedAt = f.UpdatedAt
                 }).FirstOrDefault();
@@ -73,7 +73,7 @@ namespace PetRescue.Data.Repositories
         public void UpdateCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
         {
             var form = Get()
-                .Where(f => f.FormId.Equals(model.FormId))
+                .Where(f => f.CenterRegistrationId.Equals(model.FormId))
                 .Select(f => new CenterRegistrationForm
                 {
                     CenterName = f.CenterName,
@@ -84,13 +84,13 @@ namespace PetRescue.Data.Repositories
                 }).FirstOrDefault();
 
             Update(new CenterRegistrationForm { 
-                FormId = model.FormId,
+                CenterRegistrationId = model.FormId,
                 CenterName = form.CenterName,
                 Email = form.Email,
                 Phone = form.Phone,
                 CenterAddress = form.CenterAddress,
                 Description = form.Description,
-                CenterRegisterStatus = model.CenterRegisterStatus,
+                CenterRegistrationStatus = model.CenterRegisterStatus,
                 UpdatedBy = null,
                 UpdatedAt = DateTime.Now
             });
@@ -144,13 +144,13 @@ namespace PetRescue.Data.Repositories
 
             Create(new CenterRegistrationForm
             {
-                FormId = Guid.NewGuid(),
+                CenterRegistrationId = Guid.NewGuid(),
                 CenterName = model.CenterName,
                 Email = model.Email,
                 Phone = model.Phone,
                 CenterAddress = model.CenterAddress,
                 Description = model.Description,
-                CenterRegisterStatus = 1,
+                CenterRegistrationStatus = 1,
                 UpdatedBy = null,
                 UpdatedAt = null
             });

@@ -81,5 +81,20 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+
+        [HttpPut]
+        [Route("api/update-center")]
+        public IActionResult UpdateCenter(UpdateCenterModel model)
+        {
+            try
+            {
+                var result = _uow.GetService<CenterDomain>().UpdateCenter(model);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
     }
 }
