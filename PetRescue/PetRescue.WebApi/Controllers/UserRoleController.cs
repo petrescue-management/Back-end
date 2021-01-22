@@ -46,19 +46,6 @@ namespace PetRescue.WebApi.Controllers
         //    }
         //}
         #endregion
-        [HttpGet]
-        public IActionResult Test(String htmlString)
-        {                //MailArguments mailArguments = MailFormat.MailApproveRegistrationCenter("pjnochjo3095@gmail.com");
-                //MailExtensions.Send(mailArguments, null, true, null);
-            try
-            {
-
-
-                return Success("Done");
-            }
-            catch (Exception e) {
-                return Error(e);
-            }
-        }
+       
     }
 }
