@@ -11,7 +11,7 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface ICenterRegistrationFormRepository : IBaseRepository<CenterRegistrationForm, string>
     {
-        SearchReturnModel SearchCenterRegistrationForm(SearchModel moadel);
+        SearchReturnModel SearchCenterRegistrationForm(SearchModel model);
 
         CenterRegistrationForm GetCenterRegistrationFormById(Guid id);
 
