@@ -56,23 +56,16 @@ namespace PetRescue.Data.Repositories
         {
             var report = Get()
                 .Where(r => r.RescueReportId.Equals(model.Id))
-                .Select(r => new RescueReportDetail
+                .Select(r => new UpdateRescueReportModel
                 {
                     RescueReportId = model.Id,
+                    ReportStatus = model.Status,
                     ReportLocation = r.ReportLocation,
                     ReportDescription = r.ReportDescription,
                     ImgReportUrl = r.ImgReportUrl
                 }).FirstOrDefault();
 
-            var result = new UpdateRescueReportModel
-            {
-                RescueReportId = model.Id,
-                ReportStatus = model.Status,
-                ReportLocation = report.ReportLocation,
-                ReportDescription = report.ReportDescription,
-                ImgReportUrl = report.ImgReportUrl
-            };
-            return result;
+            return report;
         }
         #endregion
     }
