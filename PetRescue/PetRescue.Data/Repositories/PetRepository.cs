@@ -9,7 +9,6 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IPetRepository : IBaseRepository<Pet, string>
     {
-        
     }
 
     public partial class PetRepository : BaseRepository<Pet, string>, IPetRepository
