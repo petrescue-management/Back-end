@@ -28,8 +28,7 @@ namespace PetRescue.Data.Domains
 
         public RescueReportModel UpdateRescueReport(UpdateStatusModel model)
         {
-            var update_model = uow.GetService<IRescueReportDetailRepository>().GetRescueReportDetailWithStatus(model);
-            var report = uow.GetService<IRescueReportRepository>().UpdateRescueReport(update_model);
+            var report = uow.GetService<IRescueReportRepository>().UpdateRescueReport(model);
             return report;
         }
 
