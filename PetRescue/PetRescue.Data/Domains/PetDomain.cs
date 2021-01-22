@@ -1,6 +1,7 @@
 ﻿using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
+using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,18 +14,40 @@ namespace PetRescue.Data.Domains
         {
         }
 
-        public List<PetBreed> GetPetBreedsByTypeId(Guid id)
+        public List<PetBreedModel> GetPetBreedsByTypeId(Guid id)
         {
-            var breed_service = uow.GetService<IPetBreedRepository>().Get();
-            var breeds = uow.GetService<IPetRepository>().GetPetBreedsByTypeId(id, breed_service);
+            var breeds = uow.GetService<IPetBreedRepository>().GetPetBreedsByTypeId(id);
             return breeds;
         }
 
-        public PetBreed GetPetBreedById(Guid id)
+        public PetBreedModel GetPetBreedById(Guid id)
         {
-            var breed_service = uow.GetService<IPetBreedRepository>().Get();
-            var breed = uow.GetService<IPetRepository>().GetPetBreedById(id, breed_service);
+            var breed = uow.GetService<IPetBreedRepository>().GetPetBreedById(id);
             return breed;
+        }
+
+        public List<PetFurColorModel> GetAllPetFurColors()
+        {
+            var colors = uow.GetService<IPetFurColorRepository>().GetAllPetFurColors();
+            return colors;
+        }
+
+        public PetFurColorModel GetPetFurColorById(Guid id)
+        {
+            var color = uow.GetService<IPetFurColorRepository>().GetPetFurColorById(id);
+            return color;
+        }
+
+        public List<PetTypeModel> GetAllPetTypes()
+        {
+            var types = uow.GetService<IPetTypeRepository>().GetAllPetTypes();
+            return types;
+        }
+
+        public PetTypeModel GetPetTypeById(Guid id)
+        {
+            var type = uow.GetService<IPetTypeRepository>().GetPetTypeById(id);
+            return type;
         }
     }
 }
