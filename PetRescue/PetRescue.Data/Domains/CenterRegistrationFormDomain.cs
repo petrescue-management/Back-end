@@ -81,7 +81,7 @@ namespace PetRescue.Data.Domains
             return result;
         }
 
-        public User ProgressingCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
+        public CenterRegistrationForm ProcressingCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
         {
             var centerRegistrationRepo = uow.GetService<ICenterRegistrationFormRepository>();
             var centerRepo = uow.GetService<ICenterRepository>();
@@ -90,37 +90,59 @@ namespace PetRescue.Data.Domains
             var currentForm = centerRegistrationRepo.GetCenterRegistrationFormById(model.FormId);
             if(currentForm != null)
             {
-                if(model.CenterRegisterStatus == CenterRegistrationFormConst.APPROVE)
+                //Update status of Registration form (Approve)=>Update Form status => Create Center => Create  User => Add Role => send mail 
+                if (model.CenterRegisterStatus == CenterRegistrationFormConst.APPROVE)
                 {
-                    //Create Model for create new Center
-                    var newCreateCenterModel = new CreateCenterModel
+                    var context = uow.GetService<PetRescueContext>();
+                    using (var transaction = context.Database.BeginTransaction())
                     {
-                        Address = currentForm.CenterAddress,
-                        CenterName = currentForm.CenterName,
-                        Phone = currentForm.Phone,
-                    };
-                    var newCenter = centerRepo.CreateCenterByForm(newCreateCenterModel);// create Center
+                        
+                        try
+                        {
+                            //Update Center registration form
+                            currentForm = centerRegistrationRepo.UpdateCenterRegistrationStatus(currentForm, model.CenterRegisterStatus);
+                            //Create Model for create new Center
+                            var newCreateCenterModel = new CreateCenterModel
+                            {
+                                Address = currentForm.CenterAddress,
+                                CenterName = currentForm.CenterName,
+                                Phone = currentForm.Phone,
+                            };
+                            var newCenter = centerRepo.CreateCenterByForm(newCreateCenterModel);// create Center
 
-                    //Create Model for create new User
-                    var newCreateUserModel = new UserCreateModel
-                    {
-                        Email = currentForm.Email,
-                        CenterId = newCenter.CenterId,
-                        isBelongToCenter = UserConst.BELONG,
-                    };
-                    var newUser = userRepo.CreateUserByModel(newCreateUserModel); // create new Account
-                    //Create Model for add Role to User
-                    var newUserRoleUpdateModel = new UserRoleUpdateModel
-                    {
-                        CenterId = newCenter.CenterId,
-                        RoleName = RoleConstant.Manager,
-                        UserId = newUser.UserId
-                    };
-                    var result = userDomain.AddRoleManagerToUser(newUserRoleUpdateModel);
-                    return result;
-                }else if(currentForm.CenterRegistrationStatus == CenterRegistrationFormConst.REJECT)
+                            //Create Model for create new User
+                            var newCreateUserModel = new UserCreateModel
+                            {
+                                Email = currentForm.Email,
+                                CenterId = newCenter.CenterId,
+                                isBelongToCenter = UserConst.BELONG,
+                            };
+                            var newUser = userRepo.CreateUserByModel(newCreateUserModel); // create new Account
+                            //Create Model for add Role to User
+                            var newUserRoleUpdateModel = new UserRoleUpdateModel
+                            {
+                                CenterId = newCenter.CenterId,
+                                RoleName = RoleConstant.Manager,
+                                UserId = newUser.UserId,
+                            };
+                            userDomain.AddRoleManagerToUser(newUserRoleUpdateModel);
+                            transaction.Commit();
+                            return currentForm;
+                        }
+                        catch (Exception e)
+                        {
+                            transaction.Rollback();
+                            throw (e);
+                        }
+
+                    }
+                  
+                }
+                //Update status of Registration form (Reject)=>Update form status => send main,
+                else if (model.CenterRegisterStatus == CenterRegistrationFormConst.REJECT)
                 {
-                    
+                    currentForm = centerRegistrationRepo.UpdateCenterRegistrationStatus(currentForm, model.CenterRegisterStatus);
+                    return currentForm;
                 }
             }
             return null;

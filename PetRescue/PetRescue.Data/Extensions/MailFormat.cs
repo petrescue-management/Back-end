@@ -8,8 +8,8 @@ namespace PetRescue.Data.Extensions
 
     public partial class MailFormat
     {
-       public static MailArguments MailApproveRegistrationCenter(string mailTo)
-        {
+        public static MailArguments MailModel (string mailTo, string formatMail)
+       {
             var mailArguments = new MailArguments
             {
                 MailFrom = MailConstant.MAIL,
@@ -19,10 +19,10 @@ namespace PetRescue.Data.Extensions
                 Port = MailConstant.PORT,
                 SmtpHost = MailConstant.HOST,
                 Name = MailConstant.NAME,
-                Message = MailConstant.ApproveRegistrationCenter(mailTo)
+                Message = formatMail
                 
             };
             return mailArguments;
-        }
+       }
     }
 }
