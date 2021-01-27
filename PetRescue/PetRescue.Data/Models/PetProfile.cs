@@ -11,13 +11,13 @@ namespace PetRescue.Data.Models
         public int? PetAge { get; set; }
         public double Weight { get; set; }
         public string Description { get; set; }
-        public Guid PetBreedId { get; set; }
-        public Guid PetFurColorId { get; set; }
-        public bool IsVaccinated { get; set; }
-        public bool IsSterilized { get; set; }
+        public Guid? PetBreedId { get; set; }
+        public Guid? PetFurColorId { get; set; }
+        public bool? IsVaccinated { get; set; }
+        public bool? IsSterilized { get; set; }
 
         public virtual PetBreed PetBreed { get; set; }
-        public virtual PetFurColor PetBreedNavigation { get; set; }
+        public virtual PetFurColor PetFurColor { get; set; }
         public virtual Pet Pet { get; set; }
     }
 }

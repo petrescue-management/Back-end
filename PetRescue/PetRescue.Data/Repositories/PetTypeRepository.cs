@@ -13,12 +13,31 @@ namespace PetRescue.Data.Repositories
         List<PetTypeModel> GetAllPetTypes();
 
         PetTypeModel GetPetTypeById(Guid id);
+        PetType Create(PetTypeCreateModel model);
+        PetType PrepareCreate(PetTypeCreateModel model);
+        PetType Edit(PetType entity, PetTypeUpdateModel model);
     }
 
     public partial class PetTypeRepository : BaseRepository<Models.PetType, string>, IPetTypeRepository
     {
         public PetTypeRepository(DbContext context) : base(context)
         {
+        }
+
+        public PetType Create(PetTypeCreateModel model)
+        {
+            var newPetType = PrepareCreate(model);
+            Create(newPetType);
+            return newPetType;
+        }
+
+        public PetType Edit(PetType entity, PetTypeUpdateModel model)
+        {
+           if(model.PetTypeName != null)
+            {
+                entity.PetTypeName = model.PetTypeName;
+            }
+            return entity;
         }
 
         public List<PetTypeModel> GetAllPetTypes()
@@ -44,6 +63,16 @@ namespace PetRescue.Data.Repositories
                }).FirstOrDefault();
 
             return type;
+        }
+
+        public PetType PrepareCreate(PetTypeCreateModel model)
+        {
+            var newPetType = new PetType
+            {
+                PetTypeId = Guid.NewGuid(),
+                PetTypeName = model.PetTypeName
+            };
+            return newPetType;
         }
     }
 }

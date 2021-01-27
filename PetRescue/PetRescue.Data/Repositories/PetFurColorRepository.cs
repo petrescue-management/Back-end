@@ -13,12 +13,31 @@ namespace PetRescue.Data.Repositories
         List<PetFurColorModel> GetAllPetFurColors();
 
         PetFurColorModel GetPetFurColorById(Guid id);
+
+        PetFurColor Create(PetFurColorCreateModel model);
+        PetFurColor PrepareCreate(PetFurColorCreateModel model);
+        PetFurColor Edit(PetFurColorUpdateModel model, PetFurColor entity);
+
+        PetFurColor Remove(Guid petFurColorId);
     }
 
     public partial class PetFurColorRepository : BaseRepository<PetFurColor, string>, IPetFurColorRepository
     {
         public PetFurColorRepository(DbContext context) : base(context)
         {
+        }
+
+        public PetFurColor Create(PetFurColorCreateModel model)
+        {
+            var newPetFurColor = PrepareCreate(model);
+            Create(newPetFurColor);
+            return newPetFurColor;
+        }
+
+        public PetFurColor Edit(PetFurColorUpdateModel model, PetFurColor entity)
+        {
+            entity.PetFurColorName = model.PetFurColorName;
+            return  entity;
         }
 
         public List<PetFurColorModel> GetAllPetFurColors()
@@ -44,6 +63,21 @@ namespace PetRescue.Data.Repositories
                }).FirstOrDefault();
 
             return color;
+        }
+
+        public PetFurColor PrepareCreate(PetFurColorCreateModel model)
+        {
+            var newPetFurColor = new PetFurColor
+            {
+                PetFurColorId = Guid.NewGuid(),
+                PetFurColorName = model.PetFurColorName
+            };
+            return newPetFurColor;
+        }
+
+        public PetFurColor Remove(Guid petFurColorId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
