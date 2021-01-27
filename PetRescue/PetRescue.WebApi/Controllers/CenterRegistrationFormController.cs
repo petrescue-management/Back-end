@@ -94,28 +94,28 @@ namespace PetRescue.WebApi.Controllers
                 {
                     if(newForm.CenterRegistrationStatus == CenterRegistrationFormConst.APPROVE)
                     {
-                        MailArguments mailArguments = MailFormat.MailModel("pjnochjo3095@gmail.com", MailConstant.ApproveRegistrationCenter("pjnochjo3095@gmail.com"));
+                        MailArguments mailArguments = MailFormat.MailModel(newForm.Email, MailConstant.ApproveRegistrationCenter(newForm.Email));
                         bool result =  MailExtensions.Send(mailArguments, null, true, null);
                         if (result)
                         {
                             _uow.saveChanges();
                             return Success(newForm.CenterRegistrationStatus);
                         }
-                        return Error("null");
+                        return BadRequest();
                     }
                     else if(newForm.CenterRegistrationStatus == CenterRegistrationFormConst.REJECT)
                     {
-                        MailArguments mailArguments = MailFormat.MailModel("pjnochjo3095@gmail.com", MailConstant.RejectRegistrationCenter("pjnochjo3095@gmail.com"));
+                        MailArguments mailArguments = MailFormat.MailModel(newForm.Email, MailConstant.RejectRegistrationCenter(newForm.Email));
                         bool result = MailExtensions.Send(mailArguments, null, true, null);
                         if (result)
                         {
                             _uow.saveChanges();
                             return Success(newForm.CenterRegistrationStatus);
                         }
-                        return Error("null");
+                        return BadRequest();
                     }
                 }
-                return Error("Null");
+                return BadRequest();
                 
             }catch(Exception e)
             {
