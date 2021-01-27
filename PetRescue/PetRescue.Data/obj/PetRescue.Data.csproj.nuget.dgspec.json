@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Nhut Nguyen\\Desktop\\CN9\\PetRescue\\PetRescue.Data\\PetRescue.Data.csproj": {}
+    "D:\\Study\\CAPSTONE\\Back-end\\PetRescue\\PetRescue.Data\\PetRescue.Data.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Nhut Nguyen\\Desktop\\CN9\\PetRescue\\PetRescue.Data\\PetRescue.Data.csproj": {
+    "D:\\Study\\CAPSTONE\\Back-end\\PetRescue\\PetRescue.Data\\PetRescue.Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Nhut Nguyen\\Desktop\\CN9\\PetRescue\\PetRescue.Data\\PetRescue.Data.csproj",
+        "projectUniqueName": "D:\\Study\\CAPSTONE\\Back-end\\PetRescue\\PetRescue.Data\\PetRescue.Data.csproj",
         "projectName": "PetRescue.Data",
-        "projectPath": "C:\\Users\\Nhut Nguyen\\Desktop\\CN9\\PetRescue\\PetRescue.Data\\PetRescue.Data.csproj",
-        "packagesPath": "C:\\Users\\Nhut Nguyen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Nhut Nguyen\\Desktop\\CN9\\PetRescue\\PetRescue.Data\\obj\\",
+        "projectPath": "D:\\Study\\CAPSTONE\\Back-end\\PetRescue\\PetRescue.Data\\PetRescue.Data.csproj",
+        "packagesPath": "C:\\Users\\piimt\\.nuget\\packages\\",
+        "outputPath": "D:\\Study\\CAPSTONE\\Back-end\\PetRescue\\PetRescue.Data\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Nhut Nguyen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\piimt\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,6 +22,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "D:\\_packages": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -43,6 +44,10 @@
             "AutoMapper": {
               "target": "Package",
               "version": "[10.1.1, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Core": {
+              "target": "Package",
+              "version": "[2.2.5, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",

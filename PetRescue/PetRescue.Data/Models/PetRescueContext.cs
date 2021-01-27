@@ -36,7 +36,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-SEQC2RA\\PIIMTRAN,1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
+                optionsBuilder.UseSqlServer("Server=DESKTOP-SEQC2RA\\PIIMTRAN;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
             }
         }
 
@@ -72,11 +72,9 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")
-                    .HasMaxLength(10);
+                    .HasColumnType("date");
 
-                entity.Property(e => e.UpdatedBy)
-                    .HasColumnName("updated_by")
-                    .HasMaxLength(10);
+                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
                 entity.HasOne(d => d.AdoptionRegister)
                     .WithOne(p => p.Adoption)
@@ -329,13 +327,13 @@ namespace PetRescue.Data.Models
                     .WithMany(p => p.PetProfile)
                     .HasForeignKey(d => d.PetBreedId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PetProfile_PetBreed");
+                    .HasConstraintName("FK_PetProfile_PetBreed1");
 
-                entity.HasOne(d => d.PetBreedNavigation)
+                entity.HasOne(d => d.PetFurColor)
                     .WithMany(p => p.PetProfile)
-                    .HasForeignKey(d => d.PetBreedId)
+                    .HasForeignKey(d => d.PetFurColorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PetProfile_PetFurColor");
+                    .HasConstraintName("FK_PetProfile_PetFurColor1");
             });
 
             modelBuilder.Entity<PetType>(entity =>

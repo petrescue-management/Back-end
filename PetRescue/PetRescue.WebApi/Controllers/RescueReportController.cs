@@ -19,7 +19,7 @@ namespace PetRescue.WebApi.Controllers
 
         [HttpGet]
         [Route("api/search-rescue-report")]
-        public IActionResult SearchRescueReport([FromHeader] SearchModel model)
+        public IActionResult SearchRescueReport([FromQuery] SearchModel model)
         {
             try
             {

@@ -38,3 +38,23 @@ C:\Users\Nhut Nguyen\Desktop\CN9\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp
 C:\Users\Nhut Nguyen\Desktop\CN9\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.dll
 C:\Users\Nhut Nguyen\Desktop\CN9\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.pdb
 C:\Users\Nhut Nguyen\Desktop\CN9\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.genruntimeconfig.cache
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\bin\Debug\netcoreapp2.2\appsettings.Development.json
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\bin\Debug\netcoreapp2.2\appsettings.json
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\bin\Debug\netcoreapp2.2\PetRescue.WebApi.deps.json
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\bin\Debug\netcoreapp2.2\PetRescue.WebApi.runtimeconfig.json
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\bin\Debug\netcoreapp2.2\PetRescue.WebApi.runtimeconfig.dev.json
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\bin\Debug\netcoreapp2.2\PetRescue.WebApi.dll
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\bin\Debug\netcoreapp2.2\PetRescue.WebApi.pdb
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\bin\Debug\netcoreapp2.2\PetRescue.Data.dll
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\bin\Debug\netcoreapp2.2\PetRescue.Data.pdb
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.csprojAssemblyReference.cache
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.AssemblyInfoInputs.cache
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.AssemblyInfo.cs
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.csproj.CoreCompileInputs.cache
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.RazorAssemblyInfo.cache
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.RazorAssemblyInfo.cs
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.RazorTargetAssemblyInfo.cache
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.csproj.CopyComplete
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.dll
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.pdb
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.WebApi\obj\Debug\netcoreapp2.2\PetRescue.WebApi.genruntimeconfig.cache
