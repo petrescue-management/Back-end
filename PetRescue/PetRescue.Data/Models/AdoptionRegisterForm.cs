@@ -20,10 +20,10 @@ namespace PetRescue.Data.Models
         public bool HaveAgreement { get; set; }
         public int HavePet { get; set; }
         public int AdoptionRegisterStatus { get; set; }
-        public Guid InsertedBy { get; set; }
-        public DateTime InsertedAt { get; set; }
-        public Guid? UpdatedBy { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public Guid? InsertedBy { get; set; }
+        public DateTime? InsertedAt { get; set; }
+        public Guid UpdatedBy { get; set; }
+        public DateTime UpdateAt { get; set; }
 
         public virtual Adoption Adoption { get; set; }
     }

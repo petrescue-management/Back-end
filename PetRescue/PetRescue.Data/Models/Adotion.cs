@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PetRescue.Data.Models
 {
-    public partial class Adoption
+    public partial class Adotion
     {
         public Guid AdoptionRegisterId { get; set; }
         public int AdoptionStatus { get; set; }

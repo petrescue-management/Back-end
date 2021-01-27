@@ -84,18 +84,14 @@ namespace PetRescue.Data.Domains
             }
             return null;
         }
-        public User AddRoleManagerToUser(UserRoleUpdateModel model)
+        public string AddRoleManagerToUser(UserRoleUpdateModel model)
         {
-            var currentUser = GetUserById(model.UserId);
-            if(currentUser == null)
-            {
                 var userRoleDomain = uow.GetService<UserRoleDomain>();
                 var newRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
                 if(newRole != null)
                 {
-                    return currentUser;
+                    return model.UserId.ToString();
                 }
-            }
             return null;
         }
         public User AddRoleToUser(UserRoleUpdateModel model)
