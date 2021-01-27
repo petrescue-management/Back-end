@@ -15,7 +15,7 @@ namespace PetRescue.Data.Repositories
 
         RescueReportModel GetRescueReportById(Guid id);
 
-        RescueReportModel UpdateRescueReport(UpdateRescueReportModel model);
+        RescueReportModel UpdateRescueReport(UpdateStatusModel model);
 
         RescueReportModel CreateRescueReport(CreateRescueReportModel model);
     }
@@ -112,15 +112,15 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region Update
-       public RescueReportModel UpdateRescueReport(UpdateRescueReportModel model)
+       public RescueReportModel UpdateRescueReport(UpdateStatusModel model)
        {
             var report = Get()
-                    .Where(r => r.RescueReportId.Equals(model.RescueReportId))
+                    .Where(r => r.RescueReportId.Equals(model.Id))
                     .Select(r => new RescueReport
                     {
-                        RescueReportId = model.RescueReportId,
+                        RescueReportId = model.Id,
                         PetAttribute = r.PetAttribute,
-                        ReportStatus = model.ReportStatus,
+                        ReportStatus = model.Status,
                         InsertedBy = r.InsertedBy,
                         InsertedAt = r.InsertedAt,
                         UpdatedBy = null,
@@ -131,15 +131,18 @@ namespace PetRescue.Data.Repositories
             Update(report);
             SaveChanges();
 
-            var result = new RescueReportModel
-            {
-                RescueReportId = report.RescueReportId,
-                PetAttribute = report.PetAttribute,
-                ReportStatus = report.ReportStatus,
-                ReportLocation = model.ReportLocation,
-                ReportDescription = model.ReportDescription,
-                ImgReportUrl = model.ImgReportUrl
-            };
+            var result = Get()
+                    .Where(r => r.RescueReportId.Equals(model.Id))
+                    .Include(r => r.RescueReportDetail)
+                    .Select(r => new RescueReportModel
+                    {
+                        RescueReportId = model.Id,
+                        PetAttribute = r.PetAttribute,
+                        ReportStatus = r.ReportStatus,
+                        ReportLocation = r.RescueReportDetail.ReportLocation,
+                        ReportDescription = r.RescueReportDetail.ReportDescription,
+                        ImgReportUrl = r.RescueReportDetail.ImgReportUrl
+                    }).FirstOrDefault();
 
             return result;
        }

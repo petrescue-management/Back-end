@@ -15,8 +15,8 @@ namespace PetRescue.Data.Models
         {
         }
 
+        public virtual DbSet<Adoption> Adoption { get; set; }
         public virtual DbSet<AdoptionRegisterForm> AdoptionRegisterForm { get; set; }
-        public virtual DbSet<Adotion> Adotion { get; set; }
         public virtual DbSet<Center> Center { get; set; }
         public virtual DbSet<CenterRegistrationForm> CenterRegistrationForm { get; set; }
         public virtual DbSet<Pet> Pet { get; set; }
@@ -36,13 +36,54 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-SEQC2RA\\\\\\\\PIIMTRAN,1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
+                optionsBuilder.UseSqlServer("Server=DESKTOP-SEQC2RA\\PIIMTRAN,1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+
+            modelBuilder.Entity<Adoption>(entity =>
+            {
+                entity.HasKey(e => e.AdoptionRegisterId)
+                    .HasName("PK_Adotion");
+
+                entity.Property(e => e.AdoptionRegisterId)
+                    .HasColumnName("adoption_register_id")
+                    .HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.AdoptedAt)
+                    .HasColumnName("adopted_at")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.AdoptionStatus).HasColumnName("adoption_status");
+
+                entity.Property(e => e.InsertedAt)
+                    .HasColumnName("inserted_at")
+                    .HasColumnType("date")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
+
+                entity.Property(e => e.ReturnedAt)
+                    .HasColumnName("returned_at")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasColumnName("updated_by")
+                    .HasMaxLength(10);
+
+                entity.HasOne(d => d.AdoptionRegister)
+                    .WithOne(p => p.Adoption)
+                    .HasForeignKey<Adoption>(d => d.AdoptionRegisterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Adotion_AdoptionRegisterForm");
+            });
 
             modelBuilder.Entity<AdoptionRegisterForm>(entity =>
             {
@@ -107,46 +148,6 @@ namespace PetRescue.Data.Models
                     .IsRequired()
                     .HasColumnName("user_name")
                     .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<Adotion>(entity =>
-            {
-                entity.HasKey(e => e.AdoptionRegisterId);
-
-                entity.Property(e => e.AdoptionRegisterId)
-                    .HasColumnName("adoption_register_id")
-                    .HasDefaultValueSql("(newid())");
-
-                entity.Property(e => e.AdoptedAt)
-                    .HasColumnName("adopted_at")
-                    .HasColumnType("date");
-
-                entity.Property(e => e.AdoptionStatus).HasColumnName("adoption_status");
-
-                entity.Property(e => e.InsertedAt)
-                    .HasColumnName("inserted_at")
-                    .HasColumnType("date")
-                    .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
-
-                entity.Property(e => e.ReturnedAt)
-                    .HasColumnName("returned_at")
-                    .HasColumnType("date");
-
-                entity.Property(e => e.UpdatedAt)
-                    .HasColumnName("updated_at")
-                    .HasMaxLength(10);
-
-                entity.Property(e => e.UpdatedBy)
-                    .HasColumnName("updated_by")
-                    .HasMaxLength(10);
-
-                entity.HasOne(d => d.AdoptionRegister)
-                    .WithOne(p => p.Adotion)
-                    .HasForeignKey<Adotion>(d => d.AdoptionRegisterId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Adotion_AdoptionRegisterForm");
             });
 
             modelBuilder.Entity<Center>(entity =>

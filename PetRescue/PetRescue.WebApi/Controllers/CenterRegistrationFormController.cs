@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 using System;
@@ -19,7 +22,7 @@ namespace PetRescue.WebApi.Controllers
 
         [HttpGet]
         [Route("api/search-center-registration-form")]
-        public IActionResult SearchCenterRegistrationForm([FromQuery]SearchModel model)
+        public IActionResult SearchCenterRegistrationForm([FromHeader] SearchModel model)
         {
             try
             {
@@ -76,6 +79,47 @@ namespace PetRescue.WebApi.Controllers
             catch (Exception ex)
             {
                 return Error(ex);
+            }
+        }
+        //[Authorize(Roles ="sysadmin")]
+        [HttpPost]
+        [Route("api/procressing-center-registration-form")]
+        public IActionResult ProcressingCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
+        {
+            try
+            {
+                var centerRegistrationFormDomain = _uow.GetService<CenterRegistrationFormDomain>();
+                var newForm = centerRegistrationFormDomain.ProcressingCenterRegistrationForm(model);
+                if(newForm!= null)
+                {
+                    if(newForm.CenterRegistrationStatus == CenterRegistrationFormConst.APPROVE)
+                    {
+                        MailArguments mailArguments = MailFormat.MailModel(newForm.Email, MailConstant.ApproveRegistrationCenter(newForm.Email));
+                        bool result =  MailExtensions.Send(mailArguments, null, true, null);
+                        if (result)
+                        {
+                            _uow.saveChanges();
+                            return Success(newForm.CenterRegistrationStatus);
+                        }
+                        return BadRequest();
+                    }
+                    else if(newForm.CenterRegistrationStatus == CenterRegistrationFormConst.REJECT)
+                    {
+                        MailArguments mailArguments = MailFormat.MailModel(newForm.Email, MailConstant.RejectRegistrationCenter(newForm.Email));
+                        bool result = MailExtensions.Send(mailArguments, null, true, null);
+                        if (result)
+                        {
+                            _uow.saveChanges();
+                            return Success(newForm.CenterRegistrationStatus);
+                        }
+                        return BadRequest();
+                    }
+                }
+                return BadRequest();
+                
+            }catch(Exception e)
+            {
+                return Error(e);
             }
         }
     }

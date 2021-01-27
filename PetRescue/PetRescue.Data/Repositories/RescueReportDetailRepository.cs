@@ -11,7 +11,6 @@ namespace PetRescue.Data.Repositories
     public partial interface IRescueReportDetailRepository : IBaseRepository<RescueReportDetail, string>
     {
         RescueReportDetailModel CreateRescueReportDetail(RescueReportModel model);
-        UpdateRescueReportModel GetRescueReportDetailWithStatus(UpdateStatusModel model);
     }
 
     public partial class RescueReportDetailRepository : BaseRepository<RescueReportDetail, string>, IRescueReportDetailRepository
@@ -43,31 +42,6 @@ namespace PetRescue.Data.Repositories
             var result = new RescueReportDetailModel
             {
                 RescueReportId = report.RescueReportId,
-                ReportLocation = report.ReportLocation,
-                ReportDescription = report.ReportDescription,
-                ImgReportUrl = report.ImgReportUrl
-            };
-            return result;
-        }
-        #endregion
-
-        #region GetWithStatus
-        public UpdateRescueReportModel GetRescueReportDetailWithStatus(UpdateStatusModel model)
-        {
-            var report = Get()
-                .Where(r => r.RescueReportId.Equals(model.Id))
-                .Select(r => new RescueReportDetail
-                {
-                    RescueReportId = model.Id,
-                    ReportLocation = r.ReportLocation,
-                    ReportDescription = r.ReportDescription,
-                    ImgReportUrl = r.ImgReportUrl
-                }).FirstOrDefault();
-
-            var result = new UpdateRescueReportModel
-            {
-                RescueReportId = model.Id,
-                ReportStatus = model.Status,
                 ReportLocation = report.ReportLocation,
                 ReportDescription = report.ReportDescription,
                 ImgReportUrl = report.ImgReportUrl

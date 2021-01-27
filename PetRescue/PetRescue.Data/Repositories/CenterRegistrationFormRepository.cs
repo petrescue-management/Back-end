@@ -11,7 +11,7 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface ICenterRegistrationFormRepository : IBaseRepository<CenterRegistrationForm, string>
     {
-        SearchReturnModel SearchCenterRegistrationForm(SearchModel moadel);
+        SearchReturnModel SearchCenterRegistrationForm(SearchModel model);
 
         CenterRegistrationForm GetCenterRegistrationFormById(Guid id);
 
@@ -19,6 +19,8 @@ namespace PetRescue.Data.Repositories
 
         string CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model);
 
+        CenterRegistrationForm UpdateCenterRegistrationStatus(CenterRegistrationForm entity, int status);
+        
     }
     public partial class CenterRegistrationFormRepository : BaseRepository<CenterRegistrationForm, string>, ICenterRegistrationFormRepository
     {
@@ -115,6 +117,12 @@ namespace PetRescue.Data.Repositories
 
             SaveChanges();
             return "This center registration form is processing !";
+        }
+
+        public CenterRegistrationForm UpdateCenterRegistrationStatus(CenterRegistrationForm entity, int status)
+        {
+            entity.CenterRegistrationStatus = status;
+            return Update(entity).Entity;
         }
     }
 }

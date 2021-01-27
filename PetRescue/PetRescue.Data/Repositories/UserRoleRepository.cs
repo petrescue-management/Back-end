@@ -28,7 +28,6 @@ namespace PetRescue.Data.Repositories
         {
             var userRole = PrepareCreateRole(userId, roleId);
             Create(userRole);
-            
             return userRole;
         }
 
