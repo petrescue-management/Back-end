@@ -17,7 +17,7 @@ namespace PetRescue.Data.Models
         public bool IsSterilized { get; set; }
 
         public virtual PetBreed PetBreed { get; set; }
-        public virtual PetFurColor PetBreedNavigation { get; set; }
+        public virtual PetFurColor PetFurColor { get; set; }
         public virtual Pet Pet { get; set; }
     }
 }

@@ -71,12 +71,10 @@ namespace PetRescue.Data.Models
                     .HasColumnType("date");
 
                 entity.Property(e => e.UpdatedAt)
-                    .HasColumnName("updated_at")
-                    .HasMaxLength(10);
+                  .HasColumnName("updated_at")
+                  .HasColumnType("date");
 
-                entity.Property(e => e.UpdatedBy)
-                    .HasColumnName("updated_by")
-                    .HasMaxLength(10);
+                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
                 entity.HasOne(d => d.AdoptionRegister)
                     .WithOne(p => p.Adoption)
@@ -329,13 +327,13 @@ namespace PetRescue.Data.Models
                     .WithMany(p => p.PetProfile)
                     .HasForeignKey(d => d.PetBreedId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PetProfile_PetBreed");
+                    .HasConstraintName("FK_PetProfile_PetBreed1");
 
-                entity.HasOne(d => d.PetBreedNavigation)
+                entity.HasOne(d => d.PetFurColor)
                     .WithMany(p => p.PetProfile)
-                    .HasForeignKey(d => d.PetBreedId)
+                    .HasForeignKey(d => d.PetFurColorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PetProfile_PetFurColor");
+                    .HasConstraintName("FK_PetProfile_PetFurColor1");
             });
 
             modelBuilder.Entity<PetType>(entity =>

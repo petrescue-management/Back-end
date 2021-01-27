@@ -22,7 +22,7 @@ namespace PetRescue.WebApi.Controllers
 
         [HttpGet]
         [Route("api/search-center")]
-        public IActionResult SearchCenter([FromHeader] SearchModel model)
+        public IActionResult SearchCenter([FromQuery] SearchModel model)
         {
             try
             {
