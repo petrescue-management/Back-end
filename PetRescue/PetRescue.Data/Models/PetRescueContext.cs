@@ -47,7 +47,7 @@ namespace PetRescue.Data.Models
             modelBuilder.Entity<Adoption>(entity =>
             {
                 entity.HasKey(e => e.AdoptionRegisterId)
-                    .HasName("PK_Adotion");
+                    .HasName("PK_Adoption");
 
                 entity.Property(e => e.AdoptionRegisterId)
                     .HasColumnName("adoption_register_id")
@@ -80,7 +80,7 @@ namespace PetRescue.Data.Models
                     .WithOne(p => p.Adoption)
                     .HasForeignKey<Adoption>(d => d.AdoptionRegisterId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Adotion_AdoptionRegisterForm");
+                    .HasConstraintName("FK_Adoption_AdoptionRegisterForm");
             });
 
             modelBuilder.Entity<AdoptionRegisterForm>(entity =>
