@@ -77,8 +77,8 @@ namespace PetRescue.WebApi.Controllers
         #region PROCESS FORM
         //[Authorize(Roles ="sysadmin")]
         [HttpPost]
-        [Route("api/procressing-center-registration-form")]
-        public IActionResult ProcressingCenterRegistrationForm(UpdateStatusModel model)
+        [Route("api/procress-center-registration-form")]
+        public IActionResult ProcressCenterRegistrationForm(UpdateStatusModel model)
         {
             try
             {

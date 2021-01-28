@@ -23,19 +23,17 @@ namespace PetRescue.Data.Domains
             if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
                 records = records.Where(c => c.CenterName.Contains(model.Keyword));
 
-            List<Center> result = records
+            List<CenterModel> result = records
                 .Skip((model.PageIndex - 1) * 10)
                 .Take(10)
-                .Select(c => new Center
+                .Select(c => new CenterModel
                 {
                     CenterId = c.CenterId,
                     CenterName = c.CenterName,
                     Address = c.Address,
                     CenterStatus = c.CenterStatus,
                     Phone = c.Phone,
-                    InsertBy = c.InsertBy,
                     InsertAt = c.InsertAt,
-                    UpdateBy = c.UpdateBy,
                     UpdateAt = c.UpdateAt
                 }).ToList();
             return new SearchReturnModel
