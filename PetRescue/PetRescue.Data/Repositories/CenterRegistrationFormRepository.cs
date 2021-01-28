@@ -11,15 +11,12 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface ICenterRegistrationFormRepository : IBaseRepository<CenterRegistrationForm, string>
     {
-        SearchReturnModel SearchCenterRegistrationForm(SearchModel model);
 
-        CenterRegistrationForm GetCenterRegistrationFormById(Guid id);
+        CenterRegistrationFormModel GetCenterRegistrationFormById(Guid id);
 
-        void UpdateCenterRegistrationForm(UpdateCenterRegistrationFormModel model);
+        CenterRegistrationFormModel CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model);
 
-        string CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model);
-
-        CenterRegistrationForm UpdateCenterRegistrationStatus(CenterRegistrationForm entity, int status);
+        CenterRegistrationFormModel UpdateCenterRegistrationStatus(UpdateStatusModel model);
         
     }
     public partial class CenterRegistrationFormRepository : BaseRepository<CenterRegistrationForm, string>, ICenterRegistrationFormRepository
@@ -28,36 +25,12 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public SearchReturnModel SearchCenterRegistrationForm(SearchModel model)
-        {
-            var records = Get().AsQueryable().Where(f => f.CenterRegistrationStatus == 1);
-
-            List<CenterRegistrationForm> result = records
-                .Skip((model.PageIndex - 1) * 10)
-                .Take(10)
-                .Select(f => new CenterRegistrationForm {
-                    CenterRegistrationId = f.CenterRegistrationId,
-                    CenterName = f.CenterName,
-                    Email = f.Email,
-                    Phone = f.Phone,
-                    CenterAddress = f.CenterAddress,
-                    Description = f.Description,
-                    CenterRegistrationStatus = f.CenterRegistrationStatus,
-                    UpdatedBy = f.UpdatedBy,
-                    UpdatedAt = f.UpdatedAt
-                }).ToList();
-            return new SearchReturnModel
-            {
-                TotalCount = records.Count(),
-                Result = result
-            };
-        }
-
-        public CenterRegistrationForm GetCenterRegistrationFormById(Guid id)
+        #region GET BY ID
+        public CenterRegistrationFormModel GetCenterRegistrationFormById(Guid id)
         {
             var result = Get()
                 .Where(f => f.CenterRegistrationId.Equals(id))
-                .Select(f => new CenterRegistrationForm
+                .Select(f => new CenterRegistrationFormModel
                 {
                     CenterRegistrationId = f.CenterRegistrationId,
                     CenterName = f.CenterName,
@@ -65,44 +38,16 @@ namespace PetRescue.Data.Repositories
                     Phone = f.Phone,
                     CenterAddress = f.CenterAddress,
                     Description = f.Description,
-                    CenterRegistrationStatus = f.CenterRegistrationStatus,
-                    UpdatedBy = f.UpdatedBy,
-                    UpdatedAt = f.UpdatedAt
+                    CenterRegistrationStatus = f.CenterRegistrationStatus
                 }).FirstOrDefault();
             return result;
         }
+        #endregion
 
-        public void UpdateCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
+        #region CREATE
+        private CenterRegistrationForm PrepareCreate(CreateCenterRegistrationFormModel model)
         {
-            var form = Get()
-                .Where(f => f.CenterRegistrationId.Equals(model.FormId))
-                .Select(f => new CenterRegistrationForm
-                {
-                    CenterName = f.CenterName,
-                    Phone = f.Phone,
-                    Email = f.Email,
-                    CenterAddress = f.CenterAddress,
-                    Description = f.Description
-                }).FirstOrDefault();
-
-            Update(new CenterRegistrationForm { 
-                CenterRegistrationId = model.FormId,
-                CenterName = form.CenterName,
-                Email = form.Email,
-                Phone = form.Phone,
-                CenterAddress = form.CenterAddress,
-                Description = form.Description,
-                CenterRegistrationStatus = model.CenterRegisterStatus,
-                UpdatedBy = null,
-                UpdatedAt = DateTime.Now
-            });
-
-            SaveChanges();
-        }
-
-        public string CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model)
-        {       
-            Create(new CenterRegistrationForm
+            var form = new CenterRegistrationForm
             {
                 CenterRegistrationId = Guid.NewGuid(),
                 CenterName = model.CenterName,
@@ -113,16 +58,71 @@ namespace PetRescue.Data.Repositories
                 CenterRegistrationStatus = 1,
                 UpdatedBy = null,
                 UpdatedAt = null
-            });
+            };
 
-            SaveChanges();
-            return "This center registration form is processing !";
+            return form;
         }
 
-        public CenterRegistrationForm UpdateCenterRegistrationStatus(CenterRegistrationForm entity, int status)
+        public CenterRegistrationFormModel CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model)
         {
-            entity.CenterRegistrationStatus = status;
-            return Update(entity).Entity;
+            var form = PrepareCreate(model);
+            Create(form);
+
+            var result = GetResult(form);
+
+            return result;
         }
+        #endregion
+
+        #region UPDATE STATUS
+        private CenterRegistrationForm PrepareUpdate(UpdateStatusModel model)
+        {
+            var form = Get()
+                  .Where(r => r.CenterRegistrationId.Equals(model.Id))
+                  .Select(r => new CenterRegistrationForm
+                  {
+                      CenterRegistrationId = model.Id,
+                      CenterName = r.CenterName,
+                      Email = r.Email,
+                      Phone = r.Phone,
+                      CenterAddress = r.CenterAddress,
+                      Description = r.Description,
+                      CenterRegistrationStatus = model.Status,
+                      UpdatedBy = null,
+                      UpdatedAt = null
+                  }).FirstOrDefault();
+
+            return form;
+        }
+
+        public CenterRegistrationFormModel UpdateCenterRegistrationStatus(UpdateStatusModel model)
+        {
+
+            var form = PrepareUpdate(model);
+
+            Update(form);
+
+            var result = GetResult(form);
+
+            return result;
+        }
+        #endregion
+
+        #region GET RESULT
+        private CenterRegistrationFormModel GetResult(CenterRegistrationForm form)
+        {
+            var result = new CenterRegistrationFormModel
+            {
+                CenterRegistrationId = form.CenterRegistrationId,
+                CenterName = form.CenterName,
+                Email = form.Email,
+                Phone = form.Phone,
+                CenterAddress = form.CenterAddress,
+                Description = form.Description,
+                CenterRegistrationStatus = form.CenterRegistrationStatus
+            };
+            return result;
+        }
+        #endregion
     }
 }
