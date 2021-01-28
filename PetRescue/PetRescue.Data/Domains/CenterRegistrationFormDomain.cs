@@ -20,12 +20,12 @@ namespace PetRescue.Data.Domains
         public SearchReturnModel SearchCenterRegistrationForm(SearchModel model)
         {
             var records = uow.GetService<ICenterRegistrationFormRepository>().Get()
-                .Where(f => f.CenterRegistrationStatus == 1);
+                .Where(f => f.CenterRegistrationStatus == CenterRegistrationFormStatusConst.PROCESSING);
 
-            List<CenterRegistrationForm> result = records
+            List<CenterRegistrationFormModel> result = records
                 .Skip((model.PageIndex - 1) * 10)
                 .Take(10)
-                .Select(f => new CenterRegistrationForm
+                .Select(f => new CenterRegistrationFormModel
                 {
                     CenterRegistrationId = f.CenterRegistrationId,
                     CenterName = f.CenterName,
@@ -34,7 +34,6 @@ namespace PetRescue.Data.Domains
                     CenterAddress = f.CenterAddress,
                     Description = f.Description,
                     CenterRegistrationStatus = f.CenterRegistrationStatus,
-                    UpdatedBy = f.UpdatedBy,
                     UpdatedAt = f.UpdatedAt
                 }).ToList();
             return new SearchReturnModel

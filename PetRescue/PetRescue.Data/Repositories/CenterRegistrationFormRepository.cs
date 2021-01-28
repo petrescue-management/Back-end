@@ -38,7 +38,8 @@ namespace PetRescue.Data.Repositories
                     Phone = f.Phone,
                     CenterAddress = f.CenterAddress,
                     Description = f.Description,
-                    CenterRegistrationStatus = f.CenterRegistrationStatus
+                    CenterRegistrationStatus = f.CenterRegistrationStatus,
+                    UpdatedAt = f.UpdatedAt
                 }).FirstOrDefault();
             return result;
         }
@@ -119,7 +120,8 @@ namespace PetRescue.Data.Repositories
                 Phone = form.Phone,
                 CenterAddress = form.CenterAddress,
                 Description = form.Description,
-                CenterRegistrationStatus = form.CenterRegistrationStatus
+                CenterRegistrationStatus = form.CenterRegistrationStatus,
+                UpdatedAt = form.UpdatedAt
             };
             return result;
         }

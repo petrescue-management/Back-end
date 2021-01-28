@@ -15,6 +15,7 @@ namespace PetRescue.Data.ViewModels
         public string Phone { get; set; }
         public string Description { get; set; }
         public int CenterRegistrationStatus { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
     public class CreateCenterRegistrationFormModel
     {
