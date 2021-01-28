@@ -13,6 +13,9 @@ namespace PetRescue.Data.ViewModels
         public string ReportDescription { get; set; }
         public string ReportLocation { get; set; }
         public string ImgReportUrl { get; set; }
+        public DateTime InsertedAt { get; set; }
+        public Guid? UpdatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
     }
 

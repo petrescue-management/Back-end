@@ -19,7 +19,7 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        #region Create
+        #region CREATE
         private RescueReportDetail PrepareCreate(RescueReportModel model)
         {
             var report = new RescueReportDetail
@@ -37,7 +37,6 @@ namespace PetRescue.Data.Repositories
             var report = PrepareCreate(model);
 
             Create(report);
-            SaveChanges();
 
             var result = new RescueReportDetailModel
             {
