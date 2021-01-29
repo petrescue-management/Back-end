@@ -56,7 +56,7 @@ namespace PetRescue.Data.Repositories
                 {
                     UserId = userId,
                     RoleId = roleId,
-                    InsertedBy = null,
+                    InsertedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
                     InsertedAt = DateTime.Now,
                     UpdateAt = null,
                     UpdateBy = null

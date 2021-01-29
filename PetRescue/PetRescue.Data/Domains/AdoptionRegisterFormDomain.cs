@@ -31,7 +31,7 @@ namespace PetRescue.Data.Domains
                     Email = a.Email,
                     Job = a.Job,
                     Address = a.Address,
-                    IsAddress = a.IsAddress,
+                    HouseType = a.HouseType,
                     FrequencyAtHome = a.FrequencyAtHome,
                     HaveChildren = a.HaveChildren,
                     ChildAge = a.ChildAge,

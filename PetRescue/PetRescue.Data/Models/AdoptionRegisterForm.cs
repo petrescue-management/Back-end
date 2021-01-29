@@ -12,7 +12,7 @@ namespace PetRescue.Data.Models
         public string Email { get; set; }
         public string Job { get; set; }
         public string Address { get; set; }
-        public int IsAddress { get; set; }
+        public int HouseType { get; set; }
         public int FrequencyAtHome { get; set; }
         public bool HaveChildren { get; set; }
         public int? ChildAge { get; set; }

@@ -36,7 +36,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-SEQC2RA\\PIIMTRAN,1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
+                optionsBuilder.UseSqlServer("Server=petrescueserver.database.windows.net;Database=PetRescue;User Id=petrescue;Password=Admin123");
             }
         }
 
@@ -47,7 +47,7 @@ namespace PetRescue.Data.Models
             modelBuilder.Entity<Adoption>(entity =>
             {
                 entity.HasKey(e => e.AdoptionRegisterId)
-                    .HasName("PK_Adoption");
+                    .HasName("PK_Adotion");
 
                 entity.Property(e => e.AdoptionRegisterId)
                     .HasColumnName("adoption_register_id")
@@ -71,8 +71,8 @@ namespace PetRescue.Data.Models
                     .HasColumnType("date");
 
                 entity.Property(e => e.UpdatedAt)
-                  .HasColumnName("updated_at")
-                  .HasColumnType("date");
+                    .HasColumnName("updated_at")
+                    .HasColumnType("date");
 
                 entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
@@ -80,7 +80,7 @@ namespace PetRescue.Data.Models
                     .WithOne(p => p.Adoption)
                     .HasForeignKey<Adoption>(d => d.AdoptionRegisterId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Adoption_AdoptionRegisterForm");
+                    .HasConstraintName("FK_Adotion_AdoptionRegisterForm");
             });
 
             modelBuilder.Entity<AdoptionRegisterForm>(entity =>
@@ -114,14 +114,14 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.HavePet).HasColumnName("have_pet");
 
+                entity.Property(e => e.HouseType).HasColumnName("house_type");
+
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
                     .HasColumnType("date")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
-
-                entity.Property(e => e.IsAddress).HasColumnName("is_address");
 
                 entity.Property(e => e.Job)
                     .IsRequired()
@@ -250,6 +250,12 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
+                entity.HasOne(d => d.Center)
+                    .WithMany(p => p.Pet)
+                    .HasForeignKey(d => d.CenterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Pet_Center");
+
                 entity.HasOne(d => d.PetNavigation)
                     .WithOne(p => p.Pet)
                     .HasForeignKey<Pet>(d => d.PetId)
@@ -301,6 +307,10 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.Description)
                     .HasColumnName("description")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ImageUrl)
+                    .HasColumnName("image_url")
                     .IsUnicode(false);
 
                 entity.Property(e => e.IsSterilized).HasColumnName("is_sterilized");
