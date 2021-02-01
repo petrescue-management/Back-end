@@ -39,18 +39,35 @@ namespace PetRescue.Data.Domains
             }
             var userProfile = userProfileRepo.FindById(user.UserId);
             var fullname = "";
-            if (userProfile != null)
+            if(userProfile != null)
             {
-                fullname = userProfile.LastName + " " + userProfile.FirstName;
+                var returnResult = new UserDetailModel
+                {
+                    Email = user.UserEmail,
+                    Id = user.UserId.ToString(),
+                    Roles = user.UserRole.Select(r => r.Role.RoleName).ToArray(),
+                    CenterId = user.CenterId,
+                    Address = userProfile.Address,
+                    Phone = userProfile.Phone,
+                    DoB  = userProfile.Dob,
+                    FirstName = userProfile.FirstName,
+                    Gender = userProfile.Gender,
+                    LastName = userProfile.LastName
+                };
+                return returnResult;
             }
-            var returnResult = new UserDetailModel
+            else
             {
-                Email = user.UserEmail,
-                Id = user.UserId.ToString(),
-                Roles = user.UserRole.Select(r => r.Role.RoleName).ToArray(),
-                FullName = fullname
-            };
-            return returnResult;
+                var returnResult = new UserDetailModel
+                {
+                    Email = user.UserEmail,
+                    Id = user.UserId.ToString(),
+                    Roles = user.UserRole.Select(r => r.Role.RoleName).ToArray(),
+                    CenterId = user.CenterId,
+                };
+                return returnResult;
+            }
+            
         }
         public UserProfile UpdateUserProfile(UserProfileUpdateModel model)
         {
