@@ -11,8 +11,8 @@ namespace PetRescue.Data.Models
         public DateTime? ReturnedAt { get; set; }
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
-        public string UpdatedBy { get; set; }
-        public string UpdatedAt { get; set; }
+        public Guid? UpdatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual AdoptionRegisterForm AdoptionRegister { get; set; }
     }

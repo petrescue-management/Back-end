@@ -8,7 +8,7 @@ using System.Text;
 
 namespace PetRescue.Data.Repositories
 {
-    public partial interface IPetTypeRepository : IBaseRepository<Models.PetType, string>
+    public partial interface IPetTypeRepository : IBaseRepository<PetType, string>
     {
         List<PetTypeModel> GetAllPetTypes();
 
@@ -18,7 +18,7 @@ namespace PetRescue.Data.Repositories
         PetType Edit(PetType entity, PetTypeUpdateModel model);
     }
 
-    public partial class PetTypeRepository : BaseRepository<Models.PetType, string>, IPetTypeRepository
+    public partial class PetTypeRepository : BaseRepository<PetType, string>, IPetTypeRepository
     {
         public PetTypeRepository(DbContext context) : base(context)
         {

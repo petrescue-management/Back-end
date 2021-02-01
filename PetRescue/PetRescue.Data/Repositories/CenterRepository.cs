@@ -11,17 +11,15 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface ICenterRepository : IBaseRepository<Center, string>
     {
-        SearchReturnModel SearchCenter(SearchModel model);
 
-        Center GetCenterById(Guid id);
+        CenterModel GetCenterById(Guid id);
 
-        void DeleteCenter(Guid id);
+        CenterModel DeleteCenter(Guid id);
 
-        void CreateCenter(CreateCenterModel model);
 
-        string UpdateCenter(UpdateCenterModel model);
+        CenterModel UpdateCenter(UpdateCenterModel model);
 
-        Center CreateCenterByForm(CreateCenterModel model);
+        CenterModel CreateCenter(CreateCenterModel model);
     }
 
     public partial class CenterRepository : BaseRepository<Center, string>, ICenterRepository
@@ -30,56 +28,28 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public SearchReturnModel SearchCenter(SearchModel model)
-        {
-            var records = Get().AsQueryable();
-
-            if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
-                records = records.Where(c => c.CenterName.Contains(model.Keyword));
-
-            List<Center> result = records
-                .Skip((model.PageIndex - 1) * 10)
-                .Take(10)
-                .Select(c => new Center
-                {
-                    CenterId = c.CenterId,
-                    CenterName = c.CenterName,
-                    Address = c.Address,
-                    CenterStatus = c.CenterStatus,
-                    Phone = c.Phone,
-                    InsertBy = c.InsertBy,
-                    InsertAt = c.InsertAt,
-                    UpdateBy = c.UpdateBy,
-                    UpdateAt = c.UpdateAt
-                }).ToList();
-            return new SearchReturnModel
-            {
-                TotalCount = records.Count(),
-                Result = result
-            };
-        }
-
-        public Center GetCenterById(Guid id)
+        #region GET BY ID
+        public CenterModel GetCenterById(Guid id)
         {
             var result = Get()
                 .Where(c => c.CenterId.Equals(id))
-                .Select(c => new Center
+                .Select(c => new CenterModel
                 {
                     CenterId = c.CenterId,
                     CenterName = c.CenterName,
                     Address = c.Address,
                     CenterStatus = c.CenterStatus,
                     Phone = c.Phone,
-                    InsertBy = c.InsertBy,
                     InsertAt = c.InsertAt,
-                    UpdateBy = c.UpdateBy,
                     UpdateAt = c.UpdateAt
                 }).FirstOrDefault();
 
             return result;
         }
+        #endregion
 
-        public void DeleteCenter(Guid id)
+        #region DELETE
+        private Center PrepareDelete(Guid id)
         {
             var center = Get()
                 .Where(c => c.CenterId.Equals(id))
@@ -88,37 +58,32 @@ namespace PetRescue.Data.Repositories
                     CenterId = c.CenterId,
                     CenterName = c.CenterName,
                     Address = c.Address,
-                    CenterStatus = 3,
+                    CenterStatus = CenterStatusConst.CLOSED,
                     Phone = c.Phone,
                     InsertBy = c.InsertBy,
                     InsertAt = c.InsertAt,
                     UpdateBy = c.UpdateBy,
                     UpdateAt = DateTime.Now
                 }).FirstOrDefault();
+
+            return center;
+        }
+        public CenterModel DeleteCenter(Guid id)
+        {
+            var center = PrepareDelete(id);
             Update(center);
-            SaveChanges();
-        }
 
-        public void CreateCenter(CreateCenterModel model)
-        {
-            Create(new Center
-            {
-                CenterId = Guid.NewGuid(),
-                CenterName = model.CenterName,
-                Address = model.Address,
-                CenterStatus = 1,
-                Phone = model.Phone,
-                InsertBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
-                InsertAt = DateTime.Now,
-                UpdateBy = null,
-                UpdateAt = null
-            });
-            SaveChanges();
-        }
 
-        public string UpdateCenter(UpdateCenterModel model)
+            var result = GetResult(center);
+            return result;
+        }
+        #endregion
+
+        #region UPDATE
+
+        private Center PrepareUpdate(UpdateCenterModel model)
         {
-            var center = Get()
+            var old_center = Get()
               .Where(c => c.CenterId.Equals(model.CenterId))
                .Select(c => new Center
                {
@@ -126,39 +91,78 @@ namespace PetRescue.Data.Repositories
                    InsertAt = c.InsertAt
                }).FirstOrDefault();
 
-            Update(new Center
+            var update_center = new Center
             {
                 CenterId = model.CenterId,
                 CenterName = model.CenterName,
                 Address = model.Address,
                 CenterStatus = model.CenterStatus,
                 Phone = model.Phone,
-                InsertBy = center.InsertBy,
-                InsertAt = center.InsertAt,
+                InsertBy = old_center.InsertBy,
+                InsertAt = old_center.InsertAt,
                 UpdateBy = null,
                 UpdateAt = DateTime.Now
-            });
-            SaveChanges();
+            };
 
-            return "Updated your information successfully !";
+            return update_center;
         }
 
-        public Center CreateCenterByForm(CreateCenterModel model)
+        public CenterModel UpdateCenter(UpdateCenterModel model)
         {
-            var newCenter = new Center
+
+            var center = PrepareUpdate(model);
+            Update(center);
+
+            var result = GetResult(center);
+            return result;
+        }
+
+        #endregion
+
+        #region CREATE
+        private Center PrepareCreate(CreateCenterModel model)
+        {
+            var center = new Center
             {
                 CenterId = Guid.NewGuid(),
                 Address = model.Address,
                 Phone = model.Phone,
                 CenterName = model.CenterName,
-                CenterStatus = CenterStatus.OPENNING,
+                CenterStatus = CenterStatusConst.OPENNING,
                 InsertAt = DateTime.Now,
                 InsertBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
                 UpdateBy = null,
                 UpdateAt = null
             };
-            Create(newCenter);
-            return newCenter;
+            return center;
         }
+
+        public CenterModel CreateCenter(CreateCenterModel model)
+        {
+            var center = PrepareCreate(model);
+            Create(center);
+
+            var result = GetResult(center);
+
+            return result;
+        }
+        #endregion
+
+        #region GET RESULT
+        private CenterModel GetResult(Center center)
+        {
+            var result = new CenterModel
+            {
+                CenterId = center.CenterId,
+                CenterName = center.CenterName,
+                Address = center.Address,
+                CenterStatus = center.CenterStatus,
+                Phone = center.Phone,
+                InsertAt = center.InsertAt,
+                UpdateAt = center.UpdateAt
+            };
+            return result;
+        }
+        #endregion
     }
 }

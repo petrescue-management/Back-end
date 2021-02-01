@@ -20,9 +20,10 @@ namespace PetRescue.WebApi.Controllers
         {
         }
 
+        #region SEARCH
         [HttpGet]
         [Route("api/search-center")]
-        public IActionResult SearchCenter([FromHeader] SearchModel model)
+        public IActionResult SearchCenter([FromQuery] SearchModel model)
         {
             try
             {
@@ -36,7 +37,9 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        #endregion
 
+        #region GET BY ID
         [HttpGet]
         [Route("api/get-center-by-id/{id}")]
         public IActionResult GetCenterById(Guid id)
@@ -51,44 +54,17 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        #endregion
 
+        #region DELETE
         [HttpDelete]
         [Route("api/delete-center")]
         public IActionResult DeleteCenter(Guid id)
         {
             try
             {
-                _uow.GetService<CenterDomain>().DeleteCenter(id);
-                return Success("This center is deleted !");
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
-
-        [HttpPost]
-        [Route("api/create-center")]
-        public IActionResult CreateCenter(CreateCenterModel model)
-        {
-            try
-            {
-                _uow.GetService<CenterDomain>().CreateCenter(model);
-                return Success("Created a new center !");
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
-
-        [HttpPut]
-        [Route("api/update-center")]
-        public IActionResult UpdateCenter(UpdateCenterModel model)
-        {
-            try
-            {
-                var result = _uow.GetService<CenterDomain>().UpdateCenter(model);
+                var result = _uow.GetService<CenterDomain>().DeleteCenter(id);
+                _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)
@@ -96,5 +72,24 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        #endregion
+
+        #region UPDATE
+        [HttpPut]
+        [Route("api/update-center")]
+        public IActionResult UpdateCenter(UpdateCenterModel model)
+        {
+            try
+            {
+                var result = _uow.GetService<CenterDomain>().UpdateCenter(model);
+                _uow.saveChanges();
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+        #endregion
     }
 }

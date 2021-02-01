@@ -20,6 +20,7 @@ namespace PetRescue.WebApi.Controllers
         {
         }
 
+        #region SEARCH
         [HttpGet]
         [Route("api/search-center-registration-form")]
         public IActionResult SearchCenterRegistrationForm([FromHeader] SearchModel model)
@@ -36,7 +37,9 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        #endregion
 
+        #region GET BY ID
         [HttpGet]
         [Route("api/get-center-registration-form-by-id/{id}")]
         public IActionResult GetCenterRegistrationFormById(Guid id)
@@ -51,22 +54,9 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        #endregion
 
-        [HttpPut]
-        [Route("api/update-center-registration-form")]
-        public IActionResult UpdateCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
-        {
-            try
-            {
-                _uow.GetService<CenterRegistrationFormDomain>().UpdateCenterRegistrationForm(model);
-                return Success("This center registration form is updated !");
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
-
+        #region CREATE
         [HttpPost]
         [Route("api/create-center-registration-form")]
         public IActionResult CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model)
@@ -74,6 +64,7 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 string result = _uow.GetService<CenterRegistrationFormDomain>().CreateCenterRegistrationForm(model);
+                _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)
@@ -81,36 +72,38 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        #endregion
+
+        #region PROCESS FORM
         //[Authorize(Roles ="sysadmin")]
         [HttpPost]
-        [Route("api/procressing-center-registration-form")]
-        public IActionResult ProcressingCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
+        [Route("api/procress-center-registration-form")]
+        public IActionResult ProcressCenterRegistrationForm(UpdateStatusModel model)
         {
             try
             {
-                var centerRegistrationFormDomain = _uow.GetService<CenterRegistrationFormDomain>();
-                var newForm = centerRegistrationFormDomain.ProcressingCenterRegistrationForm(model);
-                if(newForm!= null)
+                var form = _uow.GetService<CenterRegistrationFormDomain>().ProcressCenterRegistrationForm(model);
+                if(form != null)
                 {
-                    if(newForm.CenterRegistrationStatus == CenterRegistrationFormConst.APPROVE)
+                    if(form.CenterRegistrationStatus == CenterRegistrationFormStatusConst.APPROVED)
                     {
-                        MailArguments mailArguments = MailFormat.MailModel(newForm.Email, MailConstant.ApproveRegistrationCenter(newForm.Email));
+                        MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(form.Email));
                         bool result =  MailExtensions.Send(mailArguments, null, true, null);
                         if (result)
                         {
                             _uow.saveChanges();
-                            return Success(newForm.CenterRegistrationStatus);
+                            return Success(form.CenterRegistrationStatus);
                         }
                         return BadRequest();
                     }
-                    else if(newForm.CenterRegistrationStatus == CenterRegistrationFormConst.REJECT)
+                    else if(form.CenterRegistrationStatus == CenterRegistrationFormStatusConst.REJECTED)
                     {
-                        MailArguments mailArguments = MailFormat.MailModel(newForm.Email, MailConstant.RejectRegistrationCenter(newForm.Email));
+                        MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email));
                         bool result = MailExtensions.Send(mailArguments, null, true, null);
                         if (result)
                         {
                             _uow.saveChanges();
-                            return Success(newForm.CenterRegistrationStatus);
+                            return Success(form.CenterRegistrationStatus);
                         }
                         return BadRequest();
                     }
@@ -122,5 +115,6 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e);
             }
         }
+        #endregion
     }
 }

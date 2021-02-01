@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace PetRescue.Data.Models
+namespace PetRescue.Data.ViewModels
 {
-    public partial class AdoptionRegisterForm
+    public class AdoptionRegisterFormModel
     {
         public Guid AdoptionRegisterId { get; set; }
         public Guid PetId { get; set; }
@@ -25,6 +26,5 @@ namespace PetRescue.Data.Models
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public virtual Adoption Adoption { get; set; }
     }
 }

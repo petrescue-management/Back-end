@@ -21,3 +21,15 @@ C:\Users\Nhut Nguyen\Desktop\CN9\PetRescue\PetRescue.Data\obj\Debug\netcoreapp2.
 C:\Users\Nhut Nguyen\Desktop\CN9\PetRescue\PetRescue.Data\obj\Debug\netcoreapp2.2\PetRescue.Data.dll
 C:\Users\Nhut Nguyen\Desktop\CN9\PetRescue\PetRescue.Data\obj\Debug\netcoreapp2.2\PetRescue.Data.pdb
 C:\Users\Nhut Nguyen\Desktop\CN9\PetRescue\PetRescue.Data\obj\Debug\netcoreapp2.2\PetRescue.Data.genruntimeconfig.cache
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\bin\Debug\netcoreapp2.2\PetRescue.Data.deps.json
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\bin\Debug\netcoreapp2.2\PetRescue.Data.runtimeconfig.json
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\bin\Debug\netcoreapp2.2\PetRescue.Data.runtimeconfig.dev.json
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\bin\Debug\netcoreapp2.2\PetRescue.Data.dll
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\bin\Debug\netcoreapp2.2\PetRescue.Data.pdb
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\obj\Debug\netcoreapp2.2\PetRescue.Data.AssemblyInfoInputs.cache
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\obj\Debug\netcoreapp2.2\PetRescue.Data.AssemblyInfo.cs
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\obj\Debug\netcoreapp2.2\PetRescue.Data.csproj.CoreCompileInputs.cache
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\obj\Debug\netcoreapp2.2\PetRescue.Data.dll
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\obj\Debug\netcoreapp2.2\PetRescue.Data.pdb
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\obj\Debug\netcoreapp2.2\PetRescue.Data.genruntimeconfig.cache
+D:\Study\CAPSTONE\Back-end\PetRescue\PetRescue.Data\obj\Debug\netcoreapp2.2\PetRescue.Data.csprojAssemblyReference.cache

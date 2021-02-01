@@ -11,11 +11,10 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IRescueReportRepository : IBaseRepository<RescueReport, string>
     {
-        SearchReturnModel SearchRescueReport(SearchModel model);
 
         RescueReportModel GetRescueReportById(Guid id);
 
-        RescueReportModel UpdateRescueReport(UpdateStatusModel model);
+        RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model);
 
         RescueReportModel CreateRescueReport(CreateRescueReportModel model);
     }
@@ -25,7 +24,7 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        #region Create
+        #region CREATE
         private RescueReport PrepareCreate(CreateRescueReportModel model)
         {
 
@@ -49,7 +48,6 @@ namespace PetRescue.Data.Repositories
             var report = PrepareCreate(model);
 
             Create(report);
-            SaveChanges();
 
             var result = new RescueReportModel
             {
@@ -66,7 +64,7 @@ namespace PetRescue.Data.Repositories
         }
         #endregion
 
-        #region GetById
+        #region GET BY ID
         public RescueReportModel GetRescueReportById(Guid id)
         {
             var result = Get()
@@ -85,35 +83,9 @@ namespace PetRescue.Data.Repositories
         }
         #endregion
 
-        #region Search
-        public SearchReturnModel SearchRescueReport(SearchModel model)
+        #region UPDATE STATUS
+        private RescueReport PrepareUpdate(UpdateStatusModel model)
         {
-            var records = Get().AsQueryable().Where(r => r.ReportStatus == 1);
-
-            List<RescueReport> result = records
-                .Skip((model.PageIndex - 1) * 10)
-                .Take(10)
-                .Select(r => new RescueReport
-                {
-                    RescueReportId = r.RescueReportId,
-                    PetAttribute = r.PetAttribute,
-                    ReportStatus = r.ReportStatus,
-                    InsertedBy = r.InsertedBy,
-                    InsertedAt = r.InsertedAt,
-                    UpdatedBy = r.UpdatedBy,
-                    UpdatedAt = r.UpdatedAt
-                }).ToList();
-            return new SearchReturnModel
-            {
-                TotalCount = records.Count(),
-                Result = result
-            };
-        }
-        #endregion
-
-        #region Update
-       public RescueReportModel UpdateRescueReport(UpdateStatusModel model)
-       {
             var report = Get()
                     .Where(r => r.RescueReportId.Equals(model.Id))
                     .Select(r => new RescueReport
@@ -127,9 +99,13 @@ namespace PetRescue.Data.Repositories
                         UpdatedAt = DateTime.UtcNow
                     }).FirstOrDefault();
 
+            return report;
+        }
+       public RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model)
+       {
+            var report = PrepareUpdate(model);
 
             Update(report);
-            SaveChanges();
 
             var result = Get()
                     .Where(r => r.RescueReportId.Equals(model.Id))
@@ -147,5 +123,6 @@ namespace PetRescue.Data.Repositories
             return result;
        }
         #endregion
+
     }
 }

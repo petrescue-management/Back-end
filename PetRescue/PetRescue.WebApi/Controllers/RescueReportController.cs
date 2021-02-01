@@ -17,9 +17,10 @@ namespace PetRescue.WebApi.Controllers
         {
         }
 
+        #region SEARCH
         [HttpGet]
         [Route("api/search-rescue-report")]
-        public IActionResult SearchRescueReport([FromHeader] SearchModel model)
+        public IActionResult SearchRescueReport([FromQuery] SearchModel model)
         {
             try
             {
@@ -33,7 +34,9 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        #endregion
 
+        #region GET BY ID
         [HttpGet]
         [Route("api/get-rescue-report-by-id/{id}")]
         public IActionResult GetRescueReportById(Guid id)
@@ -48,14 +51,17 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        #endregion
 
+        #region UPDATE STATUS
         [HttpPut]
-        [Route("api/update-rescue-report")]
-        public IActionResult UpdateRescueReport(UpdateStatusModel model)
+        [Route("api/update-rescue-report-status")]
+        public IActionResult UpdateRescueReportStatus(UpdateStatusModel model)
         {
             try
             {
-               var result = _uow.GetService<RescueReportDomain>().UpdateRescueReport(model);
+               var result = _uow.GetService<RescueReportDomain>().UpdateRescueReportStatus(model);
+                _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)
@@ -63,7 +69,9 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        #endregion
 
+        #region CREATE
         [HttpPost]
         [Route("api/create-rescue-report")]
         public IActionResult CreateRescueReport(CreateRescueReportModel model)
@@ -71,6 +79,7 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var result = _uow.GetService<RescueReportDomain>().CreateRescueReport(model);
+                _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)
@@ -78,5 +87,6 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        #endregion
     }
 }

@@ -15,28 +15,60 @@ namespace PetRescue.Data.Domains
         {
         }
 
+        #region SEARCH
         public SearchReturnModel SearchCenter(SearchModel model)
         {
-            var centers = uow.GetService<ICenterRepository>().SearchCenter(model);        
-            return centers;
-        }
+            var records = uow.GetService<ICenterRepository>().Get().AsQueryable();
 
-        public Center GetCenterById(Guid id)
+            if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
+                records = records.Where(c => c.CenterName.Contains(model.Keyword));
+
+            List<CenterModel> result = records
+                .Skip((model.PageIndex - 1) * 10)
+                .Take(10)
+                .Select(c => new CenterModel
+                {
+                    CenterId = c.CenterId,
+                    CenterName = c.CenterName,
+                    Address = c.Address,
+                    CenterStatus = c.CenterStatus,
+                    Phone = c.Phone,
+                    InsertAt = c.InsertAt,
+                    UpdateAt = c.UpdateAt
+                }).ToList();
+            return new SearchReturnModel
+            {
+                TotalCount = records.Count(),
+                Result = result
+            };
+        }
+        #endregion
+
+        #region GET BY ID
+        public CenterModel GetCenterById(Guid id)
         {
             var center = uow.GetService<ICenterRepository>().GetCenterById(id);
             return center;
         }
+        #endregion
 
-        public void DeleteCenter(Guid id)
+        #region DELETE
+        public CenterModel DeleteCenter(Guid id)
         {
-            uow.GetService<ICenterRepository>().DeleteCenter(id);
+            var center = uow.GetService<ICenterRepository>().DeleteCenter(id);
+            return center;
         }
+        #endregion
 
-        public void CreateCenter(CreateCenterModel model)
+        #region CREATE
+        public CenterModel CreateCenter(CreateCenterModel model)
         {
-            uow.GetService<ICenterRepository>().CreateCenter(model);
+            var center = uow.GetService<ICenterRepository>().CreateCenter(model);
+            return center;
         }
+        #endregion
 
+        #region UPDATE
         public string UpdateCenter(UpdateCenterModel model)
         {
             //call CenterService
@@ -62,8 +94,9 @@ namespace PetRescue.Data.Domains
             if (check_dup_address.Any())
                 return "This address is already registered !";
 
-            var result = center_service.UpdateCenter(model);
-            return result;
+            var center = center_service.UpdateCenter(model);
+            return center.CenterId.ToString();
         }
+        #endregion
     }
 }

@@ -16,23 +16,43 @@ namespace PetRescue.Data.Domains
         {
         }
 
+        #region SEARCH
         public SearchReturnModel SearchCenterRegistrationForm(SearchModel model)
         {
-            var forms = uow.GetService<ICenterRegistrationFormRepository>().SearchCenterRegistrationForm(model);
-            return forms;
-        }
+            var records = uow.GetService<ICenterRegistrationFormRepository>().Get()
+                .Where(f => f.CenterRegistrationStatus == CenterRegistrationFormStatusConst.PROCESSING);
 
-        public CenterRegistrationForm GetCenterRegistrationFormById(Guid id)
+            List<CenterRegistrationFormModel> result = records
+                .Skip((model.PageIndex - 1) * 10)
+                .Take(10)
+                .Select(f => new CenterRegistrationFormModel
+                {
+                    CenterRegistrationId = f.CenterRegistrationId,
+                    CenterName = f.CenterName,
+                    Email = f.Email,
+                    Phone = f.Phone,
+                    CenterAddress = f.CenterAddress,
+                    Description = f.Description,
+                    CenterRegistrationStatus = f.CenterRegistrationStatus,
+                    UpdatedAt = f.UpdatedAt
+                }).ToList();
+            return new SearchReturnModel
+            {
+                TotalCount = records.Count(),
+                Result = result
+            };
+        }
+        #endregion
+
+        #region GET BY ID
+        public CenterRegistrationFormModel GetCenterRegistrationFormById(Guid id)
         {
             var form = uow.GetService<ICenterRegistrationFormRepository>().GetCenterRegistrationFormById(id);
             return form;
         }
+        #endregion
 
-        public void UpdateCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
-        {
-            uow.GetService<ICenterRegistrationFormRepository>().UpdateCenterRegistrationForm(model);
-        }
-
+        #region CREATE
         public string CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model)
         {
             //call UserService
@@ -77,47 +97,51 @@ namespace PetRescue.Data.Domains
             if (check_dup_address.Any())
                 return "This address is already registered !";
 
-            string result = uow.GetService<ICenterRegistrationFormRepository>().CreateCenterRegistrationForm(model);
-            return result;
+            var form = uow.GetService<ICenterRegistrationFormRepository>().CreateCenterRegistrationForm(model);
+            return form.CenterRegistrationId.ToString();
         }
+        #endregion
 
-        public CenterRegistrationForm ProcressingCenterRegistrationForm(UpdateCenterRegistrationFormModel model)
+        #region PROCESS FORM
+        public CenterRegistrationFormModel ProcressCenterRegistrationForm(UpdateStatusModel model)
         {
-            var centerRegistrationRepo = uow.GetService<ICenterRegistrationFormRepository>();
-            var centerRepo = uow.GetService<ICenterRepository>();
+            var center_registration_form_service = uow.GetService<ICenterRegistrationFormRepository>();
+            var center_service = uow.GetService<ICenterRepository>();
             var userDomain = uow.GetService<UserDomain>();
             var userRepo = uow.GetService<IUserRepository>();
-            var currentForm = centerRegistrationRepo.GetCenterRegistrationFormById(model.FormId);
-            if(currentForm != null)
+            var form = center_registration_form_service.GetCenterRegistrationFormById(model.Id);
+            if(form != null)
             {
-                //Update status of Registration form (Approve)=>Update Form status => Create Center => Create  User => Add Role => send mail 
-                if (model.CenterRegisterStatus == CenterRegistrationFormConst.APPROVE)
+                //Status == Approved
+                if (model.Status == CenterRegistrationFormStatusConst.APPROVED)
                 {
                     var context = uow.GetService<PetRescueContext>();
                     using (var transaction = context.Database.BeginTransaction())
-                    {
-                        
+                    {             
                         try
                         {
-                            //Update Center registration form
-                            currentForm = centerRegistrationRepo.UpdateCenterRegistrationStatus(currentForm, model.CenterRegisterStatus);
-                            //Create Model for create new Center
-                            var newCreateCenterModel = new CreateCenterModel
+                            //update Status
+                            form = center_registration_form_service.UpdateCenterRegistrationStatus(model);
+
+                            //create Center
+                            var newCenter = center_service.CreateCenter(new CreateCenterModel
                             {
-                                Address = currentForm.CenterAddress,
-                                CenterName = currentForm.CenterName,
-                                Phone = currentForm.Phone,
-                            };
-                            var newCenter = centerRepo.CreateCenterByForm(newCreateCenterModel);// create Center
+                                Address = form.CenterAddress,
+                                CenterName = form.CenterName,
+                                Phone = form.Phone,
+                            });
 
                             //Create Model for create new User
                             var newCreateUserModel = new UserCreateModel
                             {
-                                Email = currentForm.Email,
+                                Email = form.Email,
                                 CenterId = newCenter.CenterId,
                                 isBelongToCenter = UserConst.BELONG,
                             };
-                            var newUser = userRepo.CreateUserByModel(newCreateUserModel); // create new Account
+                            // create new Account
+                            var newUser = userRepo.CreateUserByModel(newCreateUserModel);
+
+
                             //Create Model for add Role to User
                             var newUserRoleUpdateModel = new UserRoleUpdateModel
                             {
@@ -127,7 +151,7 @@ namespace PetRescue.Data.Domains
                             };
                             userDomain.AddRoleManagerToUser(newUserRoleUpdateModel);
                             transaction.Commit();
-                            return currentForm;
+                            return form;
                         }
                         catch (Exception e)
                         {
@@ -138,14 +162,16 @@ namespace PetRescue.Data.Domains
                     }
                   
                 }
-                //Update status of Registration form (Reject)=>Update form status => send main,
-                else if (model.CenterRegisterStatus == CenterRegistrationFormConst.REJECT)
+
+                //Status = Rejected
+                else if (model.Status == CenterRegistrationFormStatusConst.REJECTED)
                 {
-                    currentForm = centerRegistrationRepo.UpdateCenterRegistrationStatus(currentForm, model.CenterRegisterStatus);
-                    return currentForm;
+                    form = center_registration_form_service.UpdateCenterRegistrationStatus(model);
+                    return form;
                 }
             }
             return null;
         }
+        #endregion
     }
 }

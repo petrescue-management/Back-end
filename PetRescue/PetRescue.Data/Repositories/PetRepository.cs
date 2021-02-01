@@ -68,7 +68,7 @@ namespace PetRescue.Data.Repositories
                 CenterId = model.CenterId,
                 PetStatus = model.PetStatus,
                 InsertedAt = DateTime.UtcNow,
-                InsertedBy = null,
+                InsertedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
                 UpdatedAt = null,
                 UpdatedBy = null,
             };
