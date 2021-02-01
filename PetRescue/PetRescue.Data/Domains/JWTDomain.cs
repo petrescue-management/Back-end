@@ -52,17 +52,25 @@ namespace PetRescue.Data.Domains
         private string[] GetRoleUser(string email)
         {
             var userRepo = uow.GetService<IUserRepository>();
-            var roles = userRepo.FindById(email).UserRole.Select(r => r.Role.RoleName).ToArray();
-            return roles;
+            var roles = userRepo.FindById(email);
+            if(roles != null)
+            {
+                return roles.UserRole.Select(r => r.Role.RoleName).ToArray();
+            }
+            return null;
         }
         private object GeneratedTokenDecriptor(string email, string userId, List<Claim> currentClaims)
         {
             string[] roles = GetRoleUser(email);
-            foreach (string role in roles)
+            if (roles != null)
             {
-                Claim newClaim = new Claim(ClaimTypes.Role, role);
-                currentClaims.Add(newClaim);
+                foreach (string role in roles)
+                {
+                    Claim newClaim = new Claim(ClaimTypes.Role, role);
+                    currentClaims.Add(newClaim);
+                }
             }
+           
             currentClaims.Add(new Claim(ClaimTypes.Actor, userId));
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(currentClaims);
             var key = Encoding.ASCII.GetBytes("Sercret_Key_PetRescue");
