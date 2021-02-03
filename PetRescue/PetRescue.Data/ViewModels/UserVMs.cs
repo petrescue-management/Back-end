@@ -14,36 +14,36 @@ namespace PetRescue.Data.ViewModels
         public string Id { get; set; }
         [JsonProperty("roles")]
         public string[] Roles { get; set; }
-        [JsonProperty("center-id")]
+        [JsonProperty("centerId")]
         public Guid? CenterId { get; set; }
-        [JsonProperty("last-name")]
+        [JsonProperty("lastName")]
         public string LastName { get; set; }
-        [JsonProperty("first-name")]
+        [JsonProperty("firstName")]
         public string FirstName { get; set; }
         [JsonProperty("dob")]
         public DateTime DoB { get; set; }
         [JsonProperty("address")]
         public string Address { get; set; }
         [JsonProperty("gender")]
-        public bool Gender { get; set; }
+        public byte Gender { get; set; }
         [JsonProperty("phone")]
         public string Phone { get; set; }
 
     }
     public class UserProfileUpdateModel
     {
-        [JsonProperty("user-id")]
+        [JsonProperty("userId")]
         public Guid UserId { get; set; }
-        [JsonProperty("last-name")]
+        [JsonProperty("lastName")]
         public string LastName { get; set; }
-        [JsonProperty("first-name")]
+        [JsonProperty("firstName")]
         public string FirstName { get; set; }
         [JsonProperty("dob")]
         public DateTime DoB { get; set; }
         [JsonProperty("address")]
         public string Address { get; set; }
         [JsonProperty("gender")]
-        public bool Gender { get; set; }
+        public byte Gender { get; set; }
         [JsonProperty("phone")]
         public string Phone { get; set; }
     }
@@ -53,21 +53,19 @@ namespace PetRescue.Data.ViewModels
     }
     public class UserUpdateCenterModel
     {
-        [JsonProperty("user-id")]
+        [JsonProperty("userId")]
         public Guid UserId { get; set; }
-        [JsonProperty("center-id")]
+        [JsonProperty("centerId")]
         public Guid CenterId { get; set; }
     }
     public class UserCreateModel
     {
         [JsonProperty("email")]
         public string Email { get; set; }
-        [JsonProperty("center-id")]
+        [JsonProperty("centerId")]
         public Guid CenterId { get; set; }
-        [JsonProperty("is_belong_to_center")]
-        public bool isBelongToCenter { get; set; }
-        
-           
+        [JsonProperty("isBelongToCenter")]
+        public bool IsBelongToCenter { get; set; }
     }
 
 }

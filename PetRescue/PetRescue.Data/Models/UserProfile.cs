@@ -11,7 +11,7 @@ namespace PetRescue.Data.Models
         public DateTime Dob { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
-        public bool Gender { get; set; }
+        public byte Gender { get; set; }
 
         public virtual User User { get; set; }
     }

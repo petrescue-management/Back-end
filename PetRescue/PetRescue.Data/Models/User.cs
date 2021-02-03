@@ -14,6 +14,7 @@ namespace PetRescue.Data.Models
         public string UserEmail { get; set; }
         public Guid? CenterId { get; set; }
         public bool? IsBelongToCenter { get; set; }
+        public string UrlImage { get; set; }
 
         public virtual UserProfile UserProfile { get; set; }
         public virtual ICollection<UserRole> UserRole { get; set; }

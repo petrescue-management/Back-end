@@ -9,6 +9,6 @@ namespace PetRescue.Data.ViewModels
     {
         [Required]
         public Guid Id { get; set; }
-        public int Status { get; set; }
+        public byte Status { get; set; }
     }
 }

@@ -8,11 +8,11 @@ namespace PetRescue.Data.ViewModels
 {
     public class UserRoleUpdateModel
     {
-        [JsonProperty("user-id")]
+        [JsonProperty("userId")]
         public Guid UserId { get; set; }
-        [JsonProperty("role-name")]
+        [JsonProperty("roleName")]
         public string RoleName { get; set; }
-        [JsonProperty("center-id")]
+        [JsonProperty("centerId")]
         public Guid CenterId { get; set; }
         
     }

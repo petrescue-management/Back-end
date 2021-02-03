@@ -36,7 +36,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=petrescueserver.database.windows.net;Database=PetRescue;User Id=petrescue;Password=Admin123");
+                optionsBuilder.UseSqlServer("Server=petrescueserver.database.windows.net;Database=PetRescue;Trusted_Connection=False;Encrypt=True;User Id=petrescue;Password=Admin123");
             }
         }
 
@@ -157,7 +157,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.Address)
                     .IsRequired()
                     .HasColumnName("address")
-                    .HasMaxLength(80);
+                    .HasMaxLength(150);
 
                 entity.Property(e => e.CenterName)
                     .IsRequired()
@@ -197,7 +197,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.CenterAddress)
                     .IsRequired()
                     .HasColumnName("center_address")
-                    .HasMaxLength(80);
+                    .HasMaxLength(150);
 
                 entity.Property(e => e.CenterName)
                     .IsRequired()
@@ -394,14 +394,14 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.ImgReportUrl)
                     .IsRequired()
                     .HasColumnName("img_report_url")
-                    .HasMaxLength(50);
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ReportDescription).HasColumnName("report_description");
 
                 entity.Property(e => e.ReportLocation)
                     .IsRequired()
                     .HasColumnName("report_location")
-                    .HasMaxLength(80);
+                    .HasMaxLength(150);
 
                 entity.HasOne(d => d.RescueReport)
                     .WithOne(p => p.RescueReportDetail)
@@ -435,6 +435,10 @@ namespace PetRescue.Data.Models
                     .HasColumnName("is_belong_to_center")
                     .HasDefaultValueSql("((1))");
 
+                entity.Property(e => e.UrlImage)
+                    .HasColumnName("url_image")
+                    .IsUnicode(false);
+
                 entity.Property(e => e.UserEmail)
                     .IsRequired()
                     .HasColumnName("user_email")
@@ -453,7 +457,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.Address)
                     .IsRequired()
                     .HasColumnName("address")
-                    .HasMaxLength(80);
+                    .HasMaxLength(150);
 
                 entity.Property(e => e.Dob)
                     .HasColumnName("dob")
