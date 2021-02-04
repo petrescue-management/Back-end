@@ -70,25 +70,27 @@ namespace PetRescue.Data.Extensions
                     switch (field)
                     {
                         case PetFieldConst.INFO:
-                            obj["pet_id"] = model.PetId.ToString();
-                            obj["center_id"] = model.CenterId.ToString();
-                            obj["pet_status"] = model.PetStatus.ToString();
-                            obj["pet_name"] = model.PetNavigation.PetName;
-                            obj["pet_type_name"] = model.PetNavigation.PetBreed.PetType.PetTypeName;
+                            obj["petId"] = model.PetId.ToString();
+                            obj["centerId"] = model.CenterId.ToString();
+                            obj["petStatus"] = model.PetStatus.ToString();
+                            obj["petName"] = model.PetNavigation.PetName;
+                            obj["petTypeName"] = model.PetNavigation.PetBreed.PetType.PetTypeName;
+                            obj["imageUrl"] = model.PetNavigation.ImageUrl;
                             break;
                         case PetFieldConst.DETAIL:
-                            obj["pet_id"] = model.PetId.ToString();
-                            obj["center_id"] = model.CenterId.ToString();
-                            obj["pet_status"] = model.PetStatus.ToString();
-                            obj["pet_name"] = model.PetNavigation.PetName;
-                            obj["pet_type_name"] = model.PetNavigation.PetBreed.PetType.PetTypeName;
-                            obj["pet_gender"] = model.PetNavigation.PetGender.ToString();
-                            obj["pet_age"] = model.PetNavigation.PetAge.ToString();
+                            obj["petId"] = model.PetId.ToString();
+                            obj["centerId"] = model.CenterId.ToString();
+                            obj["petStatus"] = model.PetStatus.ToString();
+                            obj["petName"] = model.PetNavigation.PetName;
+                            obj["petTypeName"] = model.PetNavigation.PetBreed.PetType.PetTypeName;
+                            obj["petGender"] = model.PetNavigation.PetGender.ToString();
+                            obj["petAge"] = model.PetNavigation.PetAge.ToString();
                             obj["weight"] = model.PetNavigation.Weight.ToString();
-                            obj["is_vaccinated"] = model.PetNavigation.IsVaccinated.ToString();
-                            obj["is_sterilized"] = model.PetNavigation.IsSterilized.ToString();
-                            obj["pet_breed_name"] = model.PetNavigation.PetBreed.PetBreedName;
-                            obj["pet_fur_color_name"] = model.PetNavigation.PetFurColor.PetFurColorName;
+                            obj["isVaccinated"] = model.PetNavigation.IsVaccinated.ToString();
+                            obj["isSterilized"] = model.PetNavigation.IsSterilized.ToString();
+                            obj["petBreedName"] = model.PetNavigation.PetBreed.PetBreedName;
+                            obj["petFurColorName"] = model.PetNavigation.PetFurColor.PetFurColorName;
+                            obj["imageUrl"] = model.PetNavigation.ImageUrl;
                             break;
                     }
                     listResult.Add(obj);
@@ -96,7 +98,7 @@ namespace PetRescue.Data.Extensions
             }
             var result = new Dictionary<string, object>();
             result["result"] = listResult;
-            result["total_page"] = total;
+            result["totalPages"] = total;
             return result;
         }
     }

@@ -12,10 +12,10 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IPetRepository : IBaseRepository<Pet, string>
     {
-        Pet Create(PetCreateModel model);
-        Pet Edit(Pet entity, PetDetailModel model);
+        Pet Create(PetCreateModel model, Guid insertBy);
+        Pet Edit(Pet entity, PetDetailModel model, Guid updateBy);
         Pet Delete (Pet entity);
-        Pet PrepareCreate(PetCreateModel model);
+        Pet PrepareCreate(PetCreateModel model, Guid insertBy);
     }
 
     public partial class PetRepository : BaseRepository<Pet, string>, IPetRepository
@@ -24,10 +24,10 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public Pet Create(PetCreateModel model)
+        public Pet Create(PetCreateModel model, Guid insertBy)
         {
 
-            var newPet = PrepareCreate(model);
+            var newPet = PrepareCreate(model,insertBy);
             Create(newPet);
             return newPet;
         }
@@ -37,9 +37,9 @@ namespace PetRescue.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public Pet Edit(Pet entity, PetDetailModel model)
+        public Pet Edit(Pet entity, PetDetailModel model, Guid updateBy)
         {
-           if(model.Description != null)
+            if(model.Description != null)
                 entity.PetNavigation.Description = model.Description;
             if (ValidationExtensions.IsNotNull(model.IsSterilized))
                 entity.PetNavigation.IsSterilized = model.IsSterilized;
@@ -57,10 +57,12 @@ namespace PetRescue.Data.Repositories
                 entity.PetNavigation.PetName = model.PetName;
             if (ValidationExtensions.IsNotNull(model.Weight))
                 entity.PetNavigation.Weight = model.Weight;
+            entity.UpdatedBy = updateBy;
+            entity.UpdatedAt = DateTime.UtcNow;
             return entity;
         }
 
-        public Pet PrepareCreate(PetCreateModel model)
+        public Pet PrepareCreate(PetCreateModel model,Guid insertBy)
         {
             var newPet = new Pet
             {
@@ -68,7 +70,7 @@ namespace PetRescue.Data.Repositories
                 CenterId = model.CenterId,
                 PetStatus = model.PetStatus,
                 InsertedAt = DateTime.UtcNow,
-                InsertedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
+                InsertedBy = insertBy,
                 UpdatedAt = null,
                 UpdatedBy = null,
             };

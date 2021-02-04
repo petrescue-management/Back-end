@@ -45,7 +45,8 @@ namespace PetRescue.Data.Repositories
                 PetFurColorId = model.PetFurColorId,
                 PetGender = model.PetGender,
                 PetName = model.PetName,
-                Weight = model.Weight
+                Weight = model.Weight,
+                ImageUrl = model.ImageUrl
             };
             return newPetProfile;
         }

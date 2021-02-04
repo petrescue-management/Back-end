@@ -32,7 +32,7 @@ namespace PetRescue.Data.ViewModels
     public class CreateRescueReportModel
     {
         [Required]
-        public int PetAttribute { get; set; }
+        public byte PetAttribute { get; set; }
         public string ReportDescription { get; set; }
         public string ReportLocation { get; set; }
         public string ImgReportUrl { get; set; }

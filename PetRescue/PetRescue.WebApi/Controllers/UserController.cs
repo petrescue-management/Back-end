@@ -72,26 +72,26 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         //[Authorize(Roles = [RoleConstant.Manager, RoleConstant.Admin])]
-        [HttpPost("create-role-for-user")]
-        public IActionResult CreateRoleForUser(UserRoleUpdateModel model)
-        {
-            try
-            {
+        //[HttpPost("create-role-for-user")]
+        //public IActionResult CreateRoleForUser(UserRoleUpdateModel model)
+        //{
+        //    try
+        //    {
                 
-                var userDomain = _uow.GetService<UserDomain>();
-                var tempUser = userDomain.AddRoleToUser(model);
-                if(tempUser != null)
-                {
-                    _uow.saveChanges();
-                    return Success(tempUser.IsBelongToCenter);
-                }
-                return null;
-            }
-            catch (Exception e)
-            {
-                return Error(e);
-            }
-        }
+        //        var userDomain = _uow.GetService<UserDomain>();
+        //        var tempUser = userDomain.AddRoleToUser(model);
+        //        if(tempUser != null)
+        //        {
+        //            _uow.saveChanges();
+        //            return Success(tempUser.IsBelongToCenter);
+        //        }
+        //        return null;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return Error(e);
+        //    }
+        //}
         #endregion
 
     }

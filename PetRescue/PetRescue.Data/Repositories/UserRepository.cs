@@ -70,7 +70,7 @@ namespace PetRescue.Data.Repositories
             {
                 UserId = Guid.NewGuid(),
                 CenterId = model.CenterId,
-                IsBelongToCenter = model.isBelongToCenter,
+                IsBelongToCenter = model.IsBelongToCenter,
                 UserEmail = model.Email
             };
             Create(newUser);

@@ -136,7 +136,7 @@ namespace PetRescue.Data.Domains
                             {
                                 Email = form.Email,
                                 CenterId = newCenter.CenterId,
-                                isBelongToCenter = UserConst.BELONG,
+                                IsBelongToCenter = UserConst.BELONG,
                             };
                             // create new Account
                             var newUser = userRepo.CreateUserByModel(newCreateUserModel);

@@ -2,6 +2,7 @@
 //using FirebaseAdmin.Auth;
 //using FirebaseAdmin.Messaging;
 //using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PetRescue.Data.Domains;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -19,13 +21,30 @@ namespace PetRescue.WebApi.Controllers
     [ApiController]
     public class PetController : BaseController
     {
+        
         public PetController(IUnitOfWork uow) : base(uow)
         {
+        }
+       
+        [Authorize]
+        [HttpGet]
+        [Route("test")]
+        public IActionResult Test()
+        {
+            System.Security.Claims.ClaimsPrincipal currentUser = this.User;
+            try
+            {
+                return Success(currentUser);
+            }
+            catch(Exception e)
+            {
+                return Error(e);
+            }
         }
         #region GET
         //[HttpGet]
         //[Route("api/send-message")]
-       
+
         //[Authorize(Roles ="manager")]
         [HttpGet]
         [Route("api/get-pet-breeds-by-type-id/{id}")]
@@ -154,8 +173,9 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+                var currentUser = Guid.NewGuid();
                 var petDomain = _uow.GetService<PetDomain>();
-                var newPet = petDomain.CreateNewPet(model);
+                var newPet = petDomain.CreateNewPet(model,currentUser);
                 if(newPet != null)
                 {
                     _uow.saveChanges();
@@ -301,8 +321,9 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+                var currentUser = Guid.NewGuid();
                 var petDomain = _uow.GetService<PetDomain>();
-                var newPet = petDomain.UpdatePet(model);
+                var newPet = petDomain.UpdatePet(model, currentUser);
                 if (newPet != null)
                 {
                     _uow.saveChanges();
