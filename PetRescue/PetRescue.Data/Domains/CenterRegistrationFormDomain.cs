@@ -19,12 +19,15 @@ namespace PetRescue.Data.Domains
         #region SEARCH
         public SearchReturnModel SearchCenterRegistrationForm(SearchModel model)
         {
-            var records = uow.GetService<ICenterRegistrationFormRepository>().Get()
-                .Where(f => f.CenterRegistrationStatus == CenterRegistrationFormStatusConst.PROCESSING);
+            var records = uow.GetService<ICenterRegistrationFormRepository>().Get().AsQueryable();
+
+
+            if (model.Status != 0)
+                records = records.Where(f => f.CenterRegistrationStatus.Equals(model.Status));
 
             List<CenterRegistrationFormModel> result = records
-                .Skip((model.PageIndex - 1) * 10)
-                .Take(10)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
                 .Select(f => new CenterRegistrationFormModel
                 {
                     CenterRegistrationId = f.CenterRegistrationId,

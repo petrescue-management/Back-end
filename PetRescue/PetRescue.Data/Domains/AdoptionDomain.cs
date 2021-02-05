@@ -23,9 +23,13 @@ namespace PetRescue.Data.Domains
             if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
                 records = records.Where(a => a.AdoptionRegister.UserName.Contains(model.Keyword));
 
+
+            if (model.Status != 0)
+                records = records.Where(a => a.AdoptionStatus.Equals(model.Status));
+
             List<AdoptionModel> result = records
-                .Skip((model.PageIndex - 1) * 10)
-                .Take(10)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
                 .Include(a => a.AdoptionRegister)
                 .Select(a => new AdoptionModel
                 {

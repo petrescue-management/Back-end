@@ -17,11 +17,15 @@ namespace PetRescue.Data.Domains
         #region SEARCH
         public SearchReturnModel SearchAdoptionRegisterForm(SearchModel model)
         {
-            var records = uow.GetService<IAdoptionRegisterFormRepository>().Get();
+            var records = uow.GetService<IAdoptionRegisterFormRepository>().Get().AsQueryable();
+
+
+            if (model.Status != 0)
+                records = records.Where(a => a.AdoptionRegisterStatus.Equals(model.Status));
 
             List<AdoptionRegisterFormModel> result = records
-                .Skip((model.PageIndex - 1) * 10)
-                .Take(10)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
                 .Select(a => new AdoptionRegisterFormModel
                 {
                     AdoptionRegisterId = a.AdoptionRegisterId,
