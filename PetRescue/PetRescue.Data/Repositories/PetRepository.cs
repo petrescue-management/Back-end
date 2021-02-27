@@ -12,10 +12,10 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IPetRepository : IBaseRepository<Pet, string>
     {
-        Pet Create(PetCreateModel model, Guid insertBy);
+        Pet Create(PetCreateModel model, Guid insertBy, Guid centerId);
         Pet Edit(Pet entity, PetDetailModel model, Guid updateBy);
         Pet Delete (Pet entity);
-        Pet PrepareCreate(PetCreateModel model, Guid insertBy);
+        Pet PrepareCreate(PetCreateModel model, Guid insertBy, Guid centerId);
     }
 
     public partial class PetRepository : BaseRepository<Pet, string>, IPetRepository
@@ -24,10 +24,10 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public Pet Create(PetCreateModel model, Guid insertBy)
+        public Pet Create(PetCreateModel model, Guid insertBy, Guid centerId)
         {
 
-            var newPet = PrepareCreate(model,insertBy);
+            var newPet = PrepareCreate(model,insertBy, centerId);
             Create(newPet);
             return newPet;
         }
@@ -41,10 +41,6 @@ namespace PetRescue.Data.Repositories
         {
             if(model.Description != null)
                 entity.PetNavigation.Description = model.Description;
-            if (ValidationExtensions.IsNotNull(model.IsSterilized))
-                entity.PetNavigation.IsSterilized = model.IsSterilized;
-            if (ValidationExtensions.IsNotNull(model.IsVaccinated))
-                entity.PetNavigation.IsVaccinated = model.IsVaccinated;
             if (model.PetAge != null)
                 entity.PetNavigation.PetAge = model.PetAge;
             if (model.PetBreedId != null)
@@ -53,21 +49,23 @@ namespace PetRescue.Data.Repositories
                 entity.PetNavigation.PetFurColorId = model.PetFurColorId;
             if (ValidationExtensions.IsNotNull(model.PetGender))
                 entity.PetNavigation.PetGender = model.PetGender;
-            if (model.PetName != null)
+            if (ValidationExtensions.IsNotNullOrEmpty(model.PetName))
                 entity.PetNavigation.PetName = model.PetName;
             if (ValidationExtensions.IsNotNull(model.Weight))
                 entity.PetNavigation.Weight = model.Weight;
+            entity.PetNavigation.IsSterilized = model.IsSterilized;
+            entity.PetNavigation.IsVaccinated = model.IsVaccinated;
             entity.UpdatedBy = updateBy;
             entity.UpdatedAt = DateTime.UtcNow;
             return entity;
         }
 
-        public Pet PrepareCreate(PetCreateModel model,Guid insertBy)
+        public Pet PrepareCreate(PetCreateModel model,Guid insertBy, Guid centerId)
         {
             var newPet = new Pet
             {
                 PetId = Guid.NewGuid(),
-                CenterId = model.CenterId,
+                CenterId = centerId,
                 PetStatus = model.PetStatus,
                 InsertedAt = DateTime.UtcNow,
                 InsertedBy = insertBy,

@@ -2,10 +2,12 @@
 //using FirebaseAdmin.Auth;
 //using FirebaseAdmin.Messaging;
 //using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PetRescue.Data.Domains;
+using PetRescue.Data.Models;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 using System;
@@ -13,7 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -21,30 +23,11 @@ namespace PetRescue.WebApi.Controllers
     [ApiController]
     public class PetController : BaseController
     {
-        
         public PetController(IUnitOfWork uow) : base(uow)
         {
         }
        
-        [Authorize]
-        [HttpGet]
-        [Route("test")]
-        public IActionResult Test()
-        {
-            System.Security.Claims.ClaimsPrincipal currentUser = this.User;
-            try
-            {
-                return Success(currentUser);
-            }
-            catch(Exception e)
-            {
-                return Error(e);
-            }
-        }
         #region GET
-        //[HttpGet]
-        //[Route("api/send-message")]
-
         //[Authorize(Roles ="manager")]
         [HttpGet]
         [Route("api/get-pet-breeds-by-type-id/{id}")]
@@ -59,7 +42,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         //[Authorize(Roles ="manager")]
@@ -74,7 +57,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         //[Authorize(Roles ="manager")]
@@ -91,7 +74,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         //[Authorize(Roles ="manager")]
@@ -106,7 +89,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         //[Authorize(Roles ="manager")]
@@ -123,7 +106,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         //[Authorize(Roles ="manager")]
@@ -147,6 +130,7 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+                
                 var petDomain = _uow.GetService<PetDomain>();
                 if (fields.Length == 0)
                 {
@@ -173,9 +157,11 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var currentUser = Guid.NewGuid();
+                
+                var currentUserId  = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var petDomain = _uow.GetService<PetDomain>();
-                var newPet = petDomain.CreateNewPet(model,currentUser);
+                var newPet = petDomain.CreateNewPet(model,Guid.Parse(currentUserId), Guid.Parse(currentCenterId));
                 if(newPet != null)
                 {
                     _uow.saveChanges();
@@ -232,7 +218,7 @@ namespace PetRescue.WebApi.Controllers
         //[Authorize(Roles =("sysadmin"))]
         [HttpPost]
         [Route("api/create-new-pet-fur-color")]
-        public IActionResult CreatFurColor([FromBody] PetFurColorCreateModel model)
+        public IActionResult CreateFurColor([FromBody] PetFurColorCreateModel model)
         {
             try 
             {
@@ -321,9 +307,9 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var currentUser = Guid.NewGuid();
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var petDomain = _uow.GetService<PetDomain>();
-                var newPet = petDomain.UpdatePet(model, currentUser);
+                var newPet = petDomain.UpdatePet(model, Guid.Parse(currentUserId));
                 if (newPet != null)
                 {
                     _uow.saveChanges();

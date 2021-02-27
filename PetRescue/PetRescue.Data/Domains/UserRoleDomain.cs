@@ -14,13 +14,13 @@ namespace PetRescue.Data.Domains
         public UserRoleDomain(IUnitOfWork uow) : base(uow)
         {
         }
-        public UserRole RegistationRole(Guid userId, string roleName)
+        public UserRole RegistationRole(Guid userId, string roleName, Guid insertBy)
         {
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
             var roleRepo = uow.GetService<IRoleRepository>();
             var role = roleRepo.FindRoleByName(roleName);
             if(role != null) 
-                return userRoleRepo.CreateRoleForUser(userId, role.RoleId);
+                return userRoleRepo.CreateRoleForUser(userId, role.RoleId, insertBy);
             return null;
         }
         public UserRole EnableRole(UserRoleUpdateModel model)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
@@ -62,6 +63,7 @@ namespace PetRescue.Data.Domains
         private object GeneratedTokenDecriptor(string email, string userId, List<Claim> currentClaims)
         {
             string[] roles = GetRoleUser(email);
+            string centerId = UserIsExisted(email).CenterId.ToString();
             if (roles != null)
             {
                 foreach (string role in roles)
@@ -72,6 +74,10 @@ namespace PetRescue.Data.Domains
             }
            
             currentClaims.Add(new Claim(ClaimTypes.Actor, userId));
+            if (ValidationExtensions.IsNotNullOrEmptyOrWhiteSpace(centerId))
+            {
+                currentClaims.Add(new Claim("centerId", centerId));
+            }
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(currentClaims);
             var key = Encoding.ASCII.GetBytes("Sercret_Key_PetRescue");
             var tokenDescriptor = new SecurityTokenDescriptor

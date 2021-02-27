@@ -38,7 +38,6 @@ namespace PetRescue.Data.Domains
                 };
             }
             var userProfile = userProfileRepo.FindById(user.UserId);
-            var fullname = "";
             if(userProfile != null)
             {
                 var returnResult = new UserDetailModel
@@ -101,10 +100,10 @@ namespace PetRescue.Data.Domains
             }
             return null;
         }
-        public string AddRoleManagerToUser(UserRoleUpdateModel model)
+        public string AddRoleManagerToUser(UserRoleUpdateModel model, Guid insertBy)
         {
                 var userRoleDomain = uow.GetService<UserRoleDomain>();
-                var newRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
+                var newRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName, insertBy);
                 if(newRole != null)
                 {
                     return model.UserId.ToString();

@@ -8,6 +8,7 @@ using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -43,6 +44,7 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+                
                 var userDomain = _uow.GetService<UserDomain>();
                 string id = userDomain.RegisterUser(email).UserId.ToString();
                 _uow.saveChanges();

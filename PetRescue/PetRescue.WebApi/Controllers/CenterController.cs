@@ -8,6 +8,7 @@ using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -34,7 +35,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         #endregion
@@ -51,7 +52,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         #endregion
@@ -63,13 +64,15 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var result = _uow.GetService<CenterDomain>().DeleteCenter(id);
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+
+                var result = _uow.GetService<CenterDomain>().DeleteCenter(id, Guid.Parse(currentUserId));
                 _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         #endregion
@@ -81,13 +84,14 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var result = _uow.GetService<CenterDomain>().UpdateCenter(model);
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _uow.GetService<CenterDomain>().UpdateCenter(model, Guid.Parse(currentUserId));
                 _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         #endregion

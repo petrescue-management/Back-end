@@ -9,6 +9,7 @@ using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -34,7 +35,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         #endregion
@@ -51,7 +52,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         #endregion
@@ -69,7 +70,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         #endregion
@@ -82,7 +83,8 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var form = _uow.GetService<CenterRegistrationFormDomain>().ProcressCenterRegistrationForm(model);
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var form = _uow.GetService<CenterRegistrationFormDomain>().ProcressCenterRegistrationForm(model, Guid.Parse(currentUserId));
                 if(form != null)
                 {
                     if(form.CenterRegistrationStatus == CenterRegistrationFormStatusConst.APPROVED)
@@ -112,7 +114,7 @@ namespace PetRescue.WebApi.Controllers
                 
             }catch(Exception e)
             {
-                return Error(e);
+                return Error(e.Message);
             }
         }
         #endregion

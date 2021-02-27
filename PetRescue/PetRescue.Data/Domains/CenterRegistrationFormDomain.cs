@@ -106,7 +106,7 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region PROCESS FORM
-        public CenterRegistrationFormModel ProcressCenterRegistrationForm(UpdateStatusModel model)
+        public CenterRegistrationFormModel ProcressCenterRegistrationForm(UpdateStatusModel model, Guid insertBy)
         {
             var center_registration_form_service = uow.GetService<ICenterRegistrationFormRepository>();
             var center_service = uow.GetService<ICenterRepository>();
@@ -124,7 +124,7 @@ namespace PetRescue.Data.Domains
                         try
                         {
                             //update Status
-                            form = center_registration_form_service.UpdateCenterRegistrationStatus(model);
+                            form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
 
                             //create Center
                             var newCenter = center_service.CreateCenter(new CreateCenterModel
@@ -132,7 +132,7 @@ namespace PetRescue.Data.Domains
                                 Address = form.CenterAddress,
                                 CenterName = form.CenterName,
                                 Phone = form.Phone,
-                            });
+                            }, insertBy);
 
                             //Create Model for create new User
                             var newCreateUserModel = new UserCreateModel
@@ -152,7 +152,7 @@ namespace PetRescue.Data.Domains
                                 RoleName = RoleConstant.Manager,
                                 UserId = newUser.UserId,
                             };
-                            userDomain.AddRoleManagerToUser(newUserRoleUpdateModel);
+                            userDomain.AddRoleManagerToUser(newUserRoleUpdateModel, insertBy);
                             transaction.Commit();
                             return form;
                         }
@@ -161,15 +161,12 @@ namespace PetRescue.Data.Domains
                             transaction.Rollback();
                             throw (e);
                         }
-
-                    }
-                  
+                    }  
                 }
-
                 //Status = Rejected
                 else if (model.Status == CenterRegistrationFormStatusConst.REJECTED)
                 {
-                    form = center_registration_form_service.UpdateCenterRegistrationStatus(model);
+                    form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
                     return form;
                 }
             }

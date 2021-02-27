@@ -64,7 +64,7 @@ namespace PetRescue.Data.Domains
             }
             return query.GetData(filter, page, limit, totalPage, fields);
         }
-        public Pet CreateNewPet(PetCreateModel model, Guid insertBy)
+        public Pet CreateNewPet(PetCreateModel model, Guid insertBy, Guid centerId)
         {
             var petRepo = uow.GetService<IPetRepository>();
             var context = uow.GetService<PetRescueContext>();
@@ -72,7 +72,7 @@ namespace PetRescue.Data.Domains
             {
                 try
                 {
-                    var newPet = petRepo.Create(model, insertBy);
+                    var newPet = petRepo.Create(model, insertBy, centerId);
                     if (newPet != null)
                     {
                         //Create model for pet profile

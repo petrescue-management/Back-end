@@ -57,23 +57,23 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region DELETE
-        public CenterModel DeleteCenter(Guid id)
+        public CenterModel DeleteCenter(Guid id, Guid updateBy)
         {
-            var center = uow.GetService<ICenterRepository>().DeleteCenter(id);
+            var center = uow.GetService<ICenterRepository>().DeleteCenter(id, updateBy);
             return center;
         }
         #endregion
 
         #region CREATE
-        public CenterModel CreateCenter(CreateCenterModel model)
+        public CenterModel CreateCenter(CreateCenterModel model, Guid insertBy)
         {
-            var center = uow.GetService<ICenterRepository>().CreateCenter(model);
+            var center = uow.GetService<ICenterRepository>().CreateCenter(model, insertBy);
             return center;
         }
         #endregion
 
         #region UPDATE
-        public string UpdateCenter(UpdateCenterModel model)
+        public string UpdateCenter(UpdateCenterModel model, Guid currentUserId)
         {
             //call CenterService
             var center_service = uow.GetService<ICenterRepository>();
@@ -98,7 +98,7 @@ namespace PetRescue.Data.Domains
             if (check_dup_address.Any())
                 return "This address is already registered !";
 
-            var center = center_service.UpdateCenter(model);
+            var center = center_service.UpdateCenter(model, currentUserId);
             return center.CenterId.ToString();
         }
         #endregion
