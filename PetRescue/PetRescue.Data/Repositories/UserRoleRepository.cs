@@ -12,8 +12,8 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IUserRoleRepository: IBaseRepository<UserRole, string>
     {
-        UserRole CreateRoleForUser(Guid userId, Guid roleId);
-        UserRole PrepareCreateRole(Guid userId, Guid roleId);
+        UserRole CreateRoleForUser(Guid userId, Guid roleId, Guid insertBy);
+        UserRole PrepareCreateRole(Guid userId, Guid roleId, Guid insertBy);
 
         UserRole FindUserRoleByUserRoleUpdateModel(UserRoleUpdateModel model);
 
@@ -24,9 +24,9 @@ namespace PetRescue.Data.Repositories
         public UserRoleRepository(DbContext context) : base(context)
         {
         }
-        public UserRole CreateRoleForUser(Guid userId, Guid roleId)
+        public UserRole CreateRoleForUser(Guid userId, Guid roleId, Guid insertBy)
         {
-            var userRole = PrepareCreateRole(userId, roleId);
+            var userRole = PrepareCreateRole(userId, roleId, insertBy);
             Create(userRole);
             return userRole;
         }
@@ -49,14 +49,14 @@ namespace PetRescue.Data.Repositories
             
         }
 
-        public UserRole PrepareCreateRole(Guid userId, Guid roleId)
+        public UserRole PrepareCreateRole(Guid userId, Guid roleId, Guid insertBy)
         {
             
                 UserRole userRole = new UserRole
                 {
                     UserId = userId,
                     RoleId = roleId,
-                    InsertedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
+                    InsertedBy = insertBy,
                     InsertedAt = DateTime.Now,
                     UpdateAt = null,
                     UpdateBy = null

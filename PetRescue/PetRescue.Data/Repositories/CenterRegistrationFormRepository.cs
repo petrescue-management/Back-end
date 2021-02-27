@@ -16,7 +16,7 @@ namespace PetRescue.Data.Repositories
 
         CenterRegistrationFormModel CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model);
 
-        CenterRegistrationFormModel UpdateCenterRegistrationStatus(UpdateStatusModel model);
+        CenterRegistrationFormModel UpdateCenterRegistrationStatus(UpdateStatusModel model, Guid insertBy);
         
     }
     public partial class CenterRegistrationFormRepository : BaseRepository<CenterRegistrationForm, string>, ICenterRegistrationFormRepository
@@ -76,7 +76,7 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region UPDATE STATUS
-        private CenterRegistrationForm PrepareUpdate(UpdateStatusModel model)
+        private CenterRegistrationForm PrepareUpdate(UpdateStatusModel model, Guid updateBy)
         {
             var form = Get()
                   .Where(r => r.CenterRegistrationId.Equals(model.Id))
@@ -89,22 +89,17 @@ namespace PetRescue.Data.Repositories
                       CenterAddress = r.CenterAddress,
                       Description = r.Description,
                       CenterRegistrationStatus = model.Status,
-                      UpdatedBy = null,
+                      UpdatedBy = updateBy,
                       UpdatedAt = null
                   }).FirstOrDefault();
-
             return form;
         }
 
-        public CenterRegistrationFormModel UpdateCenterRegistrationStatus(UpdateStatusModel model)
+        public CenterRegistrationFormModel UpdateCenterRegistrationStatus(UpdateStatusModel model, Guid updateBy)
         {
-
-            var form = PrepareUpdate(model);
-
+            var form = PrepareUpdate(model, updateBy);
             Update(form);
-
             var result = GetResult(form);
-
             return result;
         }
         #endregion

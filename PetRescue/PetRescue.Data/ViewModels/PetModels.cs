@@ -50,8 +50,6 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("petStatus")]
         public byte PetStatus { get; set; }
-        [JsonProperty("centerId")]
-        public Guid CenterId { get; set; }
         [JsonProperty("petName")]
         public string PetName { get; set; }
         [JsonProperty("petGender")]
@@ -128,8 +126,7 @@ namespace PetRescue.Data.ViewModels
         public Guid PetFurColorId { get; set; }
         [JsonProperty("petFurColorName")]
         public string PetFurColorName { get; set; }
-        [JsonProperty("petTypeId")]
-        public Guid PetTypeId { get; set; }
+
     }
 }
 

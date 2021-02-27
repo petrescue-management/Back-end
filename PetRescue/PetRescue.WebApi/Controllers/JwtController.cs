@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Uow;
 using System;
 using System.Collections.Generic;
@@ -21,12 +22,16 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var jwtDomain = _uow.GetService<JWTDomain>();
-                var returnToken = jwtDomain.DecodeJwt(token);
-                _uow.saveChanges();
-                return Success(returnToken);
+                if (ValidationExtensions.IsNotNullOrEmptyOrWhiteSpace(token))
+                {
+                    var returnToken = jwtDomain.DecodeJwt(token);
+                    _uow.saveChanges();
+                    return Success(returnToken);
+                }
+                return BadRequest();
             }catch(Exception e)
             {
-                return Error(e);
+                return Error(e.Message);
             }
         }
     }

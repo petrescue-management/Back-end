@@ -54,17 +54,17 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model)
+        public RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model, Guid updateBy)
         {
-            var report = uow.GetService<IRescueReportRepository>().UpdateRescueReportStatus(model);
+            var report = uow.GetService<IRescueReportRepository>().UpdateRescueReportStatus(model, updateBy);
             return report;
         }
         #endregion
 
         #region CREATE
-        public RescueReportModel CreateRescueReport(CreateRescueReportModel model)
+        public RescueReportModel CreateRescueReport(CreateRescueReportModel model, Guid insertBy)
         {
-            var report = uow.GetService<IRescueReportRepository>().CreateRescueReport(model);
+            var report = uow.GetService<IRescueReportRepository>().CreateRescueReport(model, insertBy);
             uow.GetService<IRescueReportDetailRepository>().CreateRescueReportDetail(report);
             return report;           
         }
