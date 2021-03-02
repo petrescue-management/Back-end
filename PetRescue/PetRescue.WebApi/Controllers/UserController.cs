@@ -39,14 +39,15 @@ namespace PetRescue.WebApi.Controllers
         }
         #endregion
         #region Post
-        [HttpPost("{email}")]
-        public IActionResult RegisterUser([FromQuery]String email)
+        [HttpPost]
+        [Route("/api/users/{email}")]
+        public IActionResult RegisterUser(UserCreateByAppModel model)
         {
             try
             {
                 
                 var userDomain = _uow.GetService<UserDomain>();
-                string id = userDomain.RegisterUser(email).UserId.ToString();
+                string id = userDomain.RegisterUser(model).UserId.ToString();
                 _uow.saveChanges();
                 return Success(id);
             }catch(Exception ex)

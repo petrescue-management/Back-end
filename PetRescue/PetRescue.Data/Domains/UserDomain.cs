@@ -15,10 +15,10 @@ namespace PetRescue.Data.Domains
         public UserDomain(IUnitOfWork uow) : base(uow)
         {
         }
-        public User RegisterUser(string email)
+        public User RegisterUser(UserCreateByAppModel model)
         {
             var userRepo = uow.GetService<IUserRepository>();
-            var newUser = userRepo.CreateUser(email);
+            var newUser = userRepo.CreateUser(model);
             return newUser;
         }
         public object GetUserDetail(string token)
@@ -51,7 +51,8 @@ namespace PetRescue.Data.Domains
                     DoB  = userProfile.Dob,
                     FirstName = userProfile.FirstName,
                     Gender = userProfile.Gender,
-                    LastName = userProfile.LastName
+                    LastName = userProfile.LastName,
+                    ImgUrl = userProfile.ImageUrl
                 };
                 return returnResult;
             }
