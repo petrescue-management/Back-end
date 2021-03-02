@@ -28,6 +28,8 @@ namespace PetRescue.Data.ViewModels
         public byte Gender { get; set; }
         [JsonProperty("phone")]
         public string Phone { get; set; }
+        [JsonProperty("imgUrl")]
+        public string ImgUrl { get; set; }
 
     }
     public class UserProfileUpdateModel
@@ -46,6 +48,8 @@ namespace PetRescue.Data.ViewModels
         public byte Gender { get; set; }
         [JsonProperty("phone")]
         public string Phone { get; set; }
+        [JsonProperty("imgUrl")]
+        public string ImgUrl { get; set; }
     }
     public class UserProfileViewModel
     {
@@ -66,6 +70,11 @@ namespace PetRescue.Data.ViewModels
         public Guid CenterId { get; set; }
         [JsonProperty("isBelongToCenter")]
         public bool IsBelongToCenter { get; set; }
+    }
+    public class UserCreateByAppModel
+    {
+        [JsonProperty("email")]
+        public string Email { get; set; }
     }
 
 }

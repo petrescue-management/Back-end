@@ -61,11 +61,14 @@ namespace PetRescue.Data.Extensions
         private static object SelectedField(this IQueryable<Pet> query, string[] fields, int total)
         {
             var models = query.ToList();
-            var listResult = new List<Dictionary<string, string>>();
+            var listResult = new List<Dictionary<string, object>>();
             foreach (var model in models)
             {
-                var obj = new Dictionary<string, string>();
-                foreach(string field in fields)
+                var obj = new Dictionary<string, object>();
+                var petTypeObj = new Dictionary<string, string>();
+                petTypeObj["petTypeId"] = model.PetNavigation.PetBreed.PetType.PetTypeId.ToString();
+                petTypeObj["petTypeName"] = model.PetNavigation.PetBreed.PetType.PetTypeName;
+                foreach (string field in fields)
                 {
                     switch (field)
                     {
@@ -74,7 +77,7 @@ namespace PetRescue.Data.Extensions
                             obj["centerId"] = model.CenterId.ToString();
                             obj["petStatus"] = model.PetStatus.ToString();
                             obj["petName"] = model.PetNavigation.PetName;
-                            obj["petTypeName"] = model.PetNavigation.PetBreed.PetType.PetTypeName;
+                            obj["petType"] = petTypeObj;
                             obj["imageUrl"] = model.PetNavigation.ImageUrl;
                             break;
                         case PetFieldConst.DETAIL:
@@ -82,7 +85,7 @@ namespace PetRescue.Data.Extensions
                             obj["centerId"] = model.CenterId.ToString();
                             obj["petStatus"] = model.PetStatus.ToString();
                             obj["petName"] = model.PetNavigation.PetName;
-                            obj["petTypeName"] = model.PetNavigation.PetBreed.PetType.PetTypeName;
+                            obj["petType"] = petTypeObj;
                             obj["petGender"] = model.PetNavigation.PetGender.ToString();
                             obj["petAge"] = model.PetNavigation.PetAge.ToString();
                             obj["weight"] = model.PetNavigation.Weight.ToString();
@@ -97,8 +100,8 @@ namespace PetRescue.Data.Extensions
                 }
             }
             var result = new Dictionary<string, object>();
-            result["result"] = listResult;
             result["totalPages"] = total;
+            result["result"] = listResult;
             return result;
         }
     }

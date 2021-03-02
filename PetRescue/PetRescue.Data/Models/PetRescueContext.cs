@@ -435,10 +435,6 @@ namespace PetRescue.Data.Models
                     .HasColumnName("is_belong_to_center")
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.UrlImage)
-                    .HasColumnName("url_image")
-                    .IsUnicode(false);
-
                 entity.Property(e => e.UserEmail)
                     .IsRequired()
                     .HasColumnName("user_email")
@@ -469,6 +465,10 @@ namespace PetRescue.Data.Models
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Gender).HasColumnName("gender");
+
+                entity.Property(e => e.ImageUrl)
+                    .HasColumnName("image_url")
+                    .IsUnicode(false);
 
                 entity.Property(e => e.LastName)
                     .IsRequired()
