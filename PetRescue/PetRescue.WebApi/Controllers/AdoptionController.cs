@@ -50,12 +50,12 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpPut]
-        [Route("api/update-adoption")]
-        public IActionResult UpdateAdoption(UpdateStatusModel model)
+        [Route("api/update-adoption-status")]
+        public IActionResult UpdateAdoptionStatus(UpdateStatusModel model)
         {
             try
             {
-                var result = _uow.GetService<AdoptionDomain>().UpdateAdoption(model);
+                var result = _uow.GetService<AdoptionDomain>().UpdateAdoptionStatus(model);
                 _uow.saveChanges();
                 return Success(result);
             }

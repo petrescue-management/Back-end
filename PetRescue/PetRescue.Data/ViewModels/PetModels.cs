@@ -21,6 +21,7 @@ namespace PetRescue.Data.ViewModels
         public bool IsSterilized { get; set; }
         public int PetStatus { get; set; }
         public Guid CenterId { get; set; }
+        public string ImgUrl { get; set; }
     }
     public class PetFilter
     {

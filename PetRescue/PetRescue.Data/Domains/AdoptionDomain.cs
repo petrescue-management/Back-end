@@ -52,16 +52,20 @@ namespace PetRescue.Data.Domains
         }
         #endregion
 
+        #region GET BY ID
         public AdoptionModel GetAdoptionById(Guid id)
         {
             var adoption = uow.GetService<IAdoptionRepository>().GetAdoptionById(id);
             return adoption;
         }
+        #endregion
 
-        public AdoptionModel UpdateAdoption(UpdateStatusModel model)
+        #region UPDATE STATUS
+        public AdoptionModel UpdateAdoptionStatus(UpdateStatusModel model)
         {
-            var adoption = uow.GetService<IAdoptionRepository>().UpdateAdoption(model);
+            var adoption = uow.GetService<IAdoptionRepository>().UpdateAdoptionStatus(model);
             return adoption;
         }
+        #endregion
     }
 }

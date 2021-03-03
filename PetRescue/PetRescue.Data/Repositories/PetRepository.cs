@@ -16,6 +16,8 @@ namespace PetRescue.Data.Repositories
         Pet Edit(Pet entity, PetDetailModel model, Guid updateBy);
         Pet Delete (Pet entity);
         Pet PrepareCreate(PetCreateModel model, Guid insertBy, Guid centerId);
+
+        PetModel GetPetById(Guid id);
     }
 
     public partial class PetRepository : BaseRepository<Pet, string>, IPetRepository
@@ -75,6 +77,32 @@ namespace PetRescue.Data.Repositories
             return newPet;
         }
 
-       
+       public PetModel GetPetById(Guid id)
+        {
+            var result = Get()
+               .Where(p => p.PetId.Equals(id))
+               .Include(p => p.PetNavigation)
+               .ThenInclude(p => p.PetBreed)
+               .Include(p => p.PetNavigation.PetFurColor)
+               .Select(p => new PetModel
+               {
+                   PetId = p.PetId,
+                   CenterId = p.CenterId,
+                   Description = p.PetNavigation.Description,
+                   PetAge = p.PetNavigation.PetAge,
+                   PetBreedId = p.PetNavigation.PetBreedId,
+                   PetBreedName = p.PetNavigation.PetBreed.PetBreedName,
+                   PetFurColorId = p.PetNavigation.PetFurColorId,
+                   PetFurColorName = p.PetNavigation.PetFurColor.PetFurColorName,
+                   PetGender = p.PetNavigation.PetGender,
+                   PetName = p.PetNavigation.PetName,
+                   PetStatus = p.PetStatus,
+                   Weight = p.PetNavigation.Weight,
+                   IsSterilized = p.PetNavigation.IsSterilized,
+                   IsVaccinated = p.PetNavigation.IsVaccinated,
+                   ImgUrl = p.PetNavigation.ImageUrl
+               }).FirstOrDefault();
+            return result;
+        }
     }
 }
