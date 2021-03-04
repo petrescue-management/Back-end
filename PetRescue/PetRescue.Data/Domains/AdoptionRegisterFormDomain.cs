@@ -27,7 +27,6 @@ namespace PetRescue.Data.Domains
             List<AdoptionRegisterFormModel> result = new List<AdoptionRegisterFormModel>();
             foreach (var record in records.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize))
             {
-                //PetModel pet = pet_service.GetPetById(record.PetId);
                 
                 result.Add(new AdoptionRegisterFormModel
                 {
@@ -65,6 +64,37 @@ namespace PetRescue.Data.Domains
         public AdoptionRegisterFormModel GetAdoptionRegisterFormById(Guid id)
         {
             var form = uow.GetService<IAdoptionRegisterFormRepository>().GetAdoptionRegisterFormById(id);
+            var pet_service = uow.GetService<IPetRepository>();
+            var result = new AdoptionRegisterFormModel
+            {
+                AdoptionRegisterId = form.AdoptionRegisterId,
+                Pet = pet_service.GetPetById(form.PetId),
+                UserName = form.UserName,
+                Phone = form.Phone,
+                Email = form.Email,
+                Job = form.Job,
+                Address = form.Address,
+                HouseType = form.HouseType,
+                FrequencyAtHome = form.FrequencyAtHome,
+                HaveChildren = form.HaveChildren,
+                ChildAge = form.ChildAge,
+                BeViolentTendencies = form.BeViolentTendencies,
+                HaveAgreement = form.HaveAgreement,
+                HavePet = form.HavePet,
+                AdoptionRegisterStatus = form.AdoptionRegisterStatus,
+                InsertedBy = form.InsertedBy,
+                InsertedAt = form.InsertedAt,
+                UpdatedBy = form.UpdatedBy,
+                UpdateAt = form.UpdateAt
+            };
+            return result;
+        }
+        #endregion
+
+        #region UPDATE STATUS
+        public AdoptionRegisterFormModel UpdateAdoptionRegisterFormStatus(UpdateStatusModel model)
+        {
+            var form = uow.GetService<IAdoptionRegisterFormRepository>().UpdateAdoptionRegisterFormStatus(model);
             var pet_service = uow.GetService<IPetRepository>();
             var result = new AdoptionRegisterFormModel
             {

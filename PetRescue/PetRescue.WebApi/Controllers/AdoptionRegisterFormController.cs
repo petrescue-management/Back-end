@@ -48,5 +48,22 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+
+
+        [HttpPut]
+        [Route("api/update-adoption-register-form-status")]
+        public IActionResult UpdateAdoptionRegisterFormStatus(UpdateStatusModel model)
+        {
+            try
+            {
+                var result = _uow.GetService<AdoptionRegisterFormDomain>().UpdateAdoptionRegisterFormStatus(model);
+                _uow.saveChanges();
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
     }
 }
