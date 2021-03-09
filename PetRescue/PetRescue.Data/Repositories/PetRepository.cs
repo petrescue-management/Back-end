@@ -12,10 +12,12 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IPetRepository : IBaseRepository<Pet, string>
     {
-        Pet Create(PetCreateModel model);
-        Pet Edit(Pet entity, PetDetailModel model);
+        Pet Create(PetCreateModel model, Guid insertBy, Guid centerId);
+        Pet Edit(Pet entity, PetDetailModel model, Guid updateBy);
         Pet Delete (Pet entity);
-        Pet PrepareCreate(PetCreateModel model);
+        Pet PrepareCreate(PetCreateModel model, Guid insertBy, Guid centerId);
+
+        PetModel GetPetById(Guid id);
     }
 
     public partial class PetRepository : BaseRepository<Pet, string>, IPetRepository
@@ -24,10 +26,10 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public Pet Create(PetCreateModel model)
+        public Pet Create(PetCreateModel model, Guid insertBy, Guid centerId)
         {
 
-            var newPet = PrepareCreate(model);
+            var newPet = PrepareCreate(model,insertBy, centerId);
             Create(newPet);
             return newPet;
         }
@@ -37,14 +39,10 @@ namespace PetRescue.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public Pet Edit(Pet entity, PetDetailModel model)
+        public Pet Edit(Pet entity, PetDetailModel model, Guid updateBy)
         {
-           if(model.Description != null)
+            if(model.Description != null)
                 entity.PetNavigation.Description = model.Description;
-            if (ValidationExtensions.IsNotNull(model.IsSterilized))
-                entity.PetNavigation.IsSterilized = model.IsSterilized;
-            if (ValidationExtensions.IsNotNull(model.IsVaccinated))
-                entity.PetNavigation.IsVaccinated = model.IsVaccinated;
             if (model.PetAge != null)
                 entity.PetNavigation.PetAge = model.PetAge;
             if (model.PetBreedId != null)
@@ -53,28 +51,58 @@ namespace PetRescue.Data.Repositories
                 entity.PetNavigation.PetFurColorId = model.PetFurColorId;
             if (ValidationExtensions.IsNotNull(model.PetGender))
                 entity.PetNavigation.PetGender = model.PetGender;
-            if (model.PetName != null)
+            if (ValidationExtensions.IsNotNullOrEmpty(model.PetName))
                 entity.PetNavigation.PetName = model.PetName;
             if (ValidationExtensions.IsNotNull(model.Weight))
                 entity.PetNavigation.Weight = model.Weight;
+            entity.PetNavigation.IsSterilized = model.IsSterilized;
+            entity.PetNavigation.IsVaccinated = model.IsVaccinated;
+            entity.UpdatedBy = updateBy;
+            entity.UpdatedAt = DateTime.UtcNow;
             return entity;
         }
 
-        public Pet PrepareCreate(PetCreateModel model)
+        public Pet PrepareCreate(PetCreateModel model,Guid insertBy, Guid centerId)
         {
             var newPet = new Pet
             {
                 PetId = Guid.NewGuid(),
-                CenterId = model.CenterId,
+                CenterId = centerId,
                 PetStatus = model.PetStatus,
                 InsertedAt = DateTime.UtcNow,
-                InsertedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
+                InsertedBy = insertBy,
                 UpdatedAt = null,
                 UpdatedBy = null,
             };
             return newPet;
         }
 
-       
+       public PetModel GetPetById(Guid id)
+        {
+            var result = Get()
+               .Where(p => p.PetId.Equals(id))
+               .Include(p => p.PetNavigation)
+               .ThenInclude(p => p.PetBreed)
+               .Include(p => p.PetNavigation.PetFurColor)
+               .Select(p => new PetModel
+               {
+                   PetId = p.PetId,
+                   CenterId = p.CenterId,
+                   Description = p.PetNavigation.Description,
+                   PetAge = p.PetNavigation.PetAge,
+                   PetBreedId = p.PetNavigation.PetBreedId,
+                   PetBreedName = p.PetNavigation.PetBreed.PetBreedName,
+                   PetFurColorId = p.PetNavigation.PetFurColorId,
+                   PetFurColorName = p.PetNavigation.PetFurColor.PetFurColorName,
+                   PetGender = p.PetNavigation.PetGender,
+                   PetName = p.PetNavigation.PetName,
+                   PetStatus = p.PetStatus,
+                   Weight = p.PetNavigation.Weight,
+                   IsSterilized = p.PetNavigation.IsSterilized,
+                   IsVaccinated = p.PetNavigation.IsVaccinated,
+                   ImgUrl = p.PetNavigation.ImageUrl
+               }).FirstOrDefault();
+            return result;
+        }
     }
 }

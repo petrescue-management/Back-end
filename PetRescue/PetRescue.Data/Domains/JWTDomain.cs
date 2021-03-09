@@ -1,8 +1,10 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
+using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -23,22 +25,55 @@ namespace PetRescue.Data.Domains
             var result = handler.ReadJwtToken(jwt) as JwtSecurityToken;
             var currentClaims = result.Claims.ToList();
             string email = currentClaims.FirstOrDefault(c => c.Type == "email").Value;
+            string urlImg = currentClaims.FirstOrDefault(c => c.Type == "picture").Value;
+            string fullName = currentClaims.FirstOrDefault(c => c.Type == "name").Value;
+            string[] listStr = fullName.Split(" ");
+            string lastName = "";
+            string firstName = "";
+            for(int index =0; index < listStr.Length; index++)
+            {
+                if(index == 0)
+                {
+                    lastName += listStr[0];
+                }
+                else
+                {
+                    firstName += " " + listStr[index];
+                }
+            }
             User user = UserIsExisted(email);
             if (user != null)
             {
-                var tokenDescriptor = GeneratedTokenDecriptor(email, user.UserId.ToString(), currentClaims);
+                var tokenDescriptor = GeneratedTokenDecriptor(user, currentClaims);
                 var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
                 return handler.WriteToken(newToken);
             }
             else
             {
                 var userRepo = uow.GetService<IUserRepository>();
-                user = userRepo.CreateUser(email);
+                var userProfileRepo = uow.GetService<IUserProfileRepository>();
+                var newUserModel = new UserCreateByAppModel
+                {
+                    Email = email,    
+                };
+                user = userRepo.CreateUser(newUserModel);
                 if(user != null)
                 {
-                        var tokenDescriptor = GeneratedTokenDecriptor(email, user.UserId.ToString(), currentClaims);
-                        var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
-                        return handler.WriteToken(newToken);
+                    var newUpdateProfileModel = new UserProfileUpdateModel
+                    {
+                        FirstName = firstName,
+                        LastName = lastName,
+                        UserId = user.UserId,
+                        Address= "",
+                        DoB = DateTime.UtcNow,
+                        Gender = 0,
+                        Phone = "",
+                        ImgUrl = urlImg
+                    };
+                    userProfileRepo.Create(newUpdateProfileModel);
+                    var tokenDescriptor = GeneratedTokenDecriptor(user, currentClaims);
+                    var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
+                    return handler.WriteToken(newToken);
                 }
                 return null;
             }
@@ -59,9 +94,9 @@ namespace PetRescue.Data.Domains
             }
             return null;
         }
-        private object GeneratedTokenDecriptor(string email, string userId, List<Claim> currentClaims)
+        private object GeneratedTokenDecriptor(User currentUser, List<Claim> currentClaims)
         {
-            string[] roles = GetRoleUser(email);
+            string[] roles = GetRoleUser(currentUser.UserEmail);
             if (roles != null)
             {
                 foreach (string role in roles)
@@ -70,8 +105,11 @@ namespace PetRescue.Data.Domains
                     currentClaims.Add(newClaim);
                 }
             }
-           
-            currentClaims.Add(new Claim(ClaimTypes.Actor, userId));
+            currentClaims.Add(new Claim(ClaimTypes.Actor, currentUser.UserId.ToString()));
+            if(ValidationExtensions.IsNotNull(currentUser.CenterId))
+            {
+                currentClaims.Add(new Claim("centerId", currentUser.CenterId.ToString()));
+            }
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(currentClaims);
             var key = Encoding.ASCII.GetBytes("Sercret_Key_PetRescue");
             var tokenDescriptor = new SecurityTokenDescriptor

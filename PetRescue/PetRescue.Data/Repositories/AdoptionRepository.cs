@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -12,7 +13,7 @@ namespace PetRescue.Data.Repositories
     {
         AdoptionModel GetAdoptionById(Guid id);
 
-        AdoptionModel UpdateAdoption(UpdateStatusModel model);
+        AdoptionModel UpdateAdoptionStatus(UpdateStatusModel model);
 
         AdoptionModel CreateAdoption(AdoptionRegisterFormModel model);
     }
@@ -43,60 +44,55 @@ namespace PetRescue.Data.Repositories
         }
         #endregion
 
-        #region UPDATE
-        public AdoptionModel UpdateAdoption(UpdateStatusModel model)
+        #region UPDATE STATUS
+        private Adoption PrepareUpdate(UpdateStatusModel model)
         {
             Adoption adoption;
 
-            if (model.Status == 2)
+            if (model.Status == AdoptionStatusConst.ADOPTED)
             {
                 adoption = Get()
-                   .Where(a => a.AdoptionRegisterId.Equals(model.Id))
-                   .Include(a => a.AdoptionRegister)
-                   .Select(a => new Adoption
-                   {
-                       AdoptionRegisterId = a.AdoptionRegisterId,
-                       AdoptedAt = DateTime.UtcNow,
-                       ReturnedAt = null,
-                       AdoptionRegister = a.AdoptionRegister,
-                       InsertedBy = a.InsertedBy,
-                       InsertedAt = a.InsertedAt,
-                       UpdatedBy = a.InsertedBy,
-                       UpdatedAt = DateTime.UtcNow,
-                       AdoptionStatus = model.Status
-                   }).FirstOrDefault();
+               .Where(a => a.AdoptionRegisterId.Equals(model.Id))
+               .Select(a => new Adoption
+               {
+                   AdoptionRegisterId = a.AdoptionRegisterId,
+                   AdoptionStatus = model.Status,
+                   AdoptedAt = DateTime.UtcNow,
+                   ReturnedAt = null,
+                   AdoptionRegister = a.AdoptionRegister,
+                   InsertedBy = a.InsertedBy,
+                   InsertedAt = a.InsertedAt,
+                   UpdatedBy = null,
+                   UpdatedAt = DateTime.UtcNow
+               }).FirstOrDefault();
             }
             else
             {
                 adoption = Get()
-                  .Where(a => a.AdoptionRegisterId.Equals(model.Id))
-                  .Include(a => a.AdoptionRegister)
-                  .Select(a => new Adoption
-                  {
-                      AdoptionRegisterId = a.AdoptionRegisterId,
-                      AdoptedAt = null,
-                      ReturnedAt = DateTime.UtcNow,
-                      AdoptionRegister = a.AdoptionRegister,
-                      InsertedBy = a.InsertedBy,
-                      InsertedAt = a.InsertedAt,
-                      UpdatedBy = a.InsertedBy,
-                      UpdatedAt = DateTime.UtcNow,
-                      AdoptionStatus = model.Status
-                  }).FirstOrDefault();
+               .Where(a => a.AdoptionRegisterId.Equals(model.Id))
+               .Select(a => new Adoption
+               {
+                   AdoptionRegisterId = a.AdoptionRegisterId,
+                   AdoptionStatus = model.Status,
+                   AdoptedAt = a.AdoptedAt,
+                   ReturnedAt = DateTime.UtcNow,
+                   AdoptionRegister = a.AdoptionRegister,
+                   InsertedBy = a.InsertedBy,
+                   InsertedAt = a.InsertedAt,
+                   UpdatedBy = null,
+                   UpdatedAt = DateTime.UtcNow
+               }).FirstOrDefault();
             }
+            
+            return adoption;
+        }
+        public AdoptionModel UpdateAdoptionStatus(UpdateStatusModel model)
+        {
+            Adoption adoption = PrepareUpdate(model);         
 
             Update(adoption);
 
-            var result = new AdoptionModel
-            {
-                AdoptionRegisterId = model.Id,
-                OwnerId = adoption.AdoptionRegister.InsertedBy,
-                OwnerName = adoption.AdoptionRegister.UserName,
-                PetId = adoption.AdoptionRegister.PetId,
-                AdoptionStatus = model.Status,
-                AdoptedAt = adoption.AdoptedAt,
-                ReturnedAt = adoption.ReturnedAt
-            };
+            var result = GetResult(adoption);
 
             return result;
         }
@@ -124,15 +120,23 @@ namespace PetRescue.Data.Repositories
             var adoption = PrepareCreate(model);
             Create(adoption);
 
+            var result = GetResult(adoption);
+            return result;
+        }
+        #endregion
+
+        #region GET RESULT
+        private AdoptionModel GetResult(Adoption adoption)
+        {
             var result = new AdoptionModel
             {
                 AdoptionRegisterId = adoption.AdoptionRegisterId,
-                OwnerId = model.InsertedBy,
-                OwnerName = model.UserName,
-                PetId = model.PetId,
+                OwnerId = adoption.AdoptionRegister.InsertedBy,
+                OwnerName = adoption.AdoptionRegister.UserName,
+                PetId = adoption.AdoptionRegister.PetId,
                 AdoptionStatus = adoption.AdoptionStatus,
-                AdoptedAt = null,
-                ReturnedAt = null
+                AdoptedAt = adoption.AdoptedAt,
+                ReturnedAt = adoption.ReturnedAt
             };
             return result;
         }

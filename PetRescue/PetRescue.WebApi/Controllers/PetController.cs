@@ -2,9 +2,12 @@
 //using FirebaseAdmin.Auth;
 //using FirebaseAdmin.Messaging;
 //using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PetRescue.Data.Domains;
+using PetRescue.Data.Models;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 using System;
@@ -12,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -22,10 +26,8 @@ namespace PetRescue.WebApi.Controllers
         public PetController(IUnitOfWork uow) : base(uow)
         {
         }
-        #region GET
-        //[HttpGet]
-        //[Route("api/send-message")]
        
+        #region GET
         //[Authorize(Roles ="manager")]
         [HttpGet]
         [Route("api/get-pet-breeds-by-type-id/{id}")]
@@ -40,7 +42,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         //[Authorize(Roles ="manager")]
@@ -55,7 +57,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         //[Authorize(Roles ="manager")]
@@ -72,7 +74,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         //[Authorize(Roles ="manager")]
@@ -87,7 +89,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         //[Authorize(Roles ="manager")]
@@ -104,7 +106,7 @@ namespace PetRescue.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex);
+                return Error(ex.Message);
             }
         }
         //[Authorize(Roles ="manager")]
@@ -128,6 +130,7 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+                
                 var petDomain = _uow.GetService<PetDomain>();
                 if (fields.Length == 0)
                 {
@@ -154,8 +157,11 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+                
+                var currentUserId  = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var petDomain = _uow.GetService<PetDomain>();
-                var newPet = petDomain.CreateNewPet(model);
+                var newPet = petDomain.CreateNewPet(model,Guid.Parse(currentUserId), Guid.Parse(currentCenterId));
                 if(newPet != null)
                 {
                     _uow.saveChanges();
@@ -212,7 +218,7 @@ namespace PetRescue.WebApi.Controllers
         //[Authorize(Roles =("sysadmin"))]
         [HttpPost]
         [Route("api/create-new-pet-fur-color")]
-        public IActionResult CreatFurColor([FromBody] PetFurColorCreateModel model)
+        public IActionResult CreateFurColor([FromBody] PetFurColorCreateModel model)
         {
             try 
             {
@@ -301,8 +307,9 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var petDomain = _uow.GetService<PetDomain>();
-                var newPet = petDomain.UpdatePet(model);
+                var newPet = petDomain.UpdatePet(model, Guid.Parse(currentUserId));
                 if (newPet != null)
                 {
                     _uow.saveChanges();

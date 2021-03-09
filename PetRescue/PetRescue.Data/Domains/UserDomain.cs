@@ -15,10 +15,10 @@ namespace PetRescue.Data.Domains
         public UserDomain(IUnitOfWork uow) : base(uow)
         {
         }
-        public User RegisterUser(string email)
+        public User RegisterUser(UserCreateByAppModel model)
         {
             var userRepo = uow.GetService<IUserRepository>();
-            var newUser = userRepo.CreateUser(email);
+            var newUser = userRepo.CreateUser(model);
             return newUser;
         }
         public object GetUserDetail(string token)
@@ -38,19 +38,36 @@ namespace PetRescue.Data.Domains
                 };
             }
             var userProfile = userProfileRepo.FindById(user.UserId);
-            var fullname = "";
-            if (userProfile != null)
+            if(userProfile != null)
             {
-                fullname = userProfile.LastName + " " + userProfile.FirstName;
+                var returnResult = new UserDetailModel
+                {
+                    Email = user.UserEmail,
+                    Id = user.UserId.ToString(),
+                    Roles = user.UserRole.Select(r => r.Role.RoleName).ToArray(),
+                    CenterId = user.CenterId,
+                    Address = userProfile.Address,
+                    Phone = userProfile.Phone,
+                    DoB  = userProfile.Dob,
+                    FirstName = userProfile.FirstName,
+                    Gender = userProfile.Gender,
+                    LastName = userProfile.LastName,
+                    ImgUrl = userProfile.ImageUrl
+                };
+                return returnResult;
             }
-            var returnResult = new UserDetailModel
+            else
             {
-                Email = user.UserEmail,
-                Id = user.UserId.ToString(),
-                Roles = user.UserRole.Select(r => r.Role.RoleName).ToArray(),
-                FullName = fullname
-            };
-            return returnResult;
+                var returnResult = new UserDetailModel
+                {
+                    Email = user.UserEmail,
+                    Id = user.UserId.ToString(),
+                    Roles = user.UserRole.Select(r => r.Role.RoleName).ToArray(),
+                    CenterId = user.CenterId,
+                };
+                return returnResult;
+            }
+            
         }
         public UserProfile UpdateUserProfile(UserProfileUpdateModel model)
         {
@@ -84,78 +101,78 @@ namespace PetRescue.Data.Domains
             }
             return null;
         }
-        public string AddRoleManagerToUser(UserRoleUpdateModel model)
+        public string AddRoleManagerToUser(UserRoleUpdateModel model, Guid insertBy)
         {
                 var userRoleDomain = uow.GetService<UserRoleDomain>();
-                var newRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
+                var newRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName, insertBy);
                 if(newRole != null)
                 {
                     return model.UserId.ToString();
                 }
             return null;
         }
-        public User AddRoleToUser(UserRoleUpdateModel model)
-        {
-            var currentUser = GetUserById(model.UserId);
-            return null;
-            // get current user
-            //          if (currentUser == null) // current user not found
-            //{
-            //    return null;
-            //}//end of if
-            //if (currentUser.IsBelongToCenter.Value)
-            //{
-            //    var userRoleDomain = uow.GetService<UserRoleDomain>();
-            //    var userRole = userRoleDomain.IsExisted(model);
-            //    if (userRole == null)
-            //    {
-            //        var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
-            //        if (newUserRole != null)
-            //        {
-            //            return currentUser;
-            //        }
-            //        return null;
-            //    }
-            //    return null;
-            //}//end of if
-            //else
-            //{
-            //    var userRoleDomain = uow.GetService<UserRoleDomain>();
-            //    var userRole = userRoleDomain.IsExisted(model);
-            //    if (userRole == null)
-            //    {
-            //        var tempModel = new UserUpdateCenterModel
-            //        {
-            //            CenterId = model.CenterId,
-            //            UserId = model.UserId
-            //        };
-            //        var tempUser = UpdateCenter(tempModel, currentUser);
-            //        if (tempUser != null)
-            //        {
-            //            var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
-            //            if (newUserRole != null)
-            //            {
-            //                return tempUser;
-            //            }
-            //            return null;
-            //        }
-            //        return null;  
-            //    }
-            //    else
-            //    {
-            //        var tempModel = new UserUpdateCenterModel
-            //        {
-            //            CenterId = model.CenterId,
-            //            UserId = model.UserId
-            //        };
-            //        var tempUser = UpdateCenter(tempModel, currentUser);
-            //        if (tempUser != null)
-            //        {
-            //            return tempUser;
-            //        }
-            //        return null;
-            //    }
-            //}//end of else
-        }
+        //public User AddRoleToUser(UserRoleUpdateModel model)
+        //{
+        //    var currentUser = GetUserById(model.UserId);
+        //    return null;
+        //    // get current user
+        //    //          if (currentUser == null) // current user not found
+        //    //{
+        //    //    return null;
+        //    //}//end of if
+        //    //if (currentUser.IsBelongToCenter.Value)
+        //    //{
+        //    //    var userRoleDomain = uow.GetService<UserRoleDomain>();
+        //    //    var userRole = userRoleDomain.IsExisted(model);
+        //    //    if (userRole == null)
+        //    //    {
+        //    //        var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
+        //    //        if (newUserRole != null)
+        //    //        {
+        //    //            return currentUser;
+        //    //        }
+        //    //        return null;
+        //    //    }
+        //    //    return null;
+        //    //}//end of if
+        //    //else
+        //    //{
+        //    //    var userRoleDomain = uow.GetService<UserRoleDomain>();
+        //    //    var userRole = userRoleDomain.IsExisted(model);
+        //    //    if (userRole == null)
+        //    //    {
+        //    //        var tempModel = new UserUpdateCenterModel
+        //    //        {
+        //    //            CenterId = model.CenterId,
+        //    //            UserId = model.UserId
+        //    //        };
+        //    //        var tempUser = UpdateCenter(tempModel, currentUser);
+        //    //        if (tempUser != null)
+        //    //        {
+        //    //            var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
+        //    //            if (newUserRole != null)
+        //    //            {
+        //    //                return tempUser;
+        //    //            }
+        //    //            return null;
+        //    //        }
+        //    //        return null;  
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        var tempModel = new UserUpdateCenterModel
+        //    //        {
+        //    //            CenterId = model.CenterId,
+        //    //            UserId = model.UserId
+        //    //        };
+        //    //        var tempUser = UpdateCenter(tempModel, currentUser);
+        //    //        if (tempUser != null)
+        //    //        {
+        //    //            return tempUser;
+        //    //        }
+        //    //        return null;
+        //    //    }
+        //    //}//end of else
+        //}
     }
 }

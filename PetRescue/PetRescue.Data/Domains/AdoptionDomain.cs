@@ -23,9 +23,13 @@ namespace PetRescue.Data.Domains
             if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
                 records = records.Where(a => a.AdoptionRegister.UserName.Contains(model.Keyword));
 
+
+            if (model.Status != 0)
+                records = records.Where(a => a.AdoptionStatus.Equals(model.Status));
+
             List<AdoptionModel> result = records
-                .Skip((model.PageIndex - 1) * 10)
-                .Take(10)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
                 .Include(a => a.AdoptionRegister)
                 .Select(a => new AdoptionModel
                 {
@@ -48,16 +52,20 @@ namespace PetRescue.Data.Domains
         }
         #endregion
 
+        #region GET BY ID
         public AdoptionModel GetAdoptionById(Guid id)
         {
             var adoption = uow.GetService<IAdoptionRepository>().GetAdoptionById(id);
             return adoption;
         }
+        #endregion
 
-        public AdoptionModel UpdateAdoption(UpdateStatusModel model)
+        #region UPDATE STATUS
+        public AdoptionModel UpdateAdoptionStatus(UpdateStatusModel model)
         {
-            var adoption = uow.GetService<IAdoptionRepository>().UpdateAdoption(model);
+            var adoption = uow.GetService<IAdoptionRepository>().UpdateAdoptionStatus(model);
             return adoption;
         }
+        #endregion
     }
 }

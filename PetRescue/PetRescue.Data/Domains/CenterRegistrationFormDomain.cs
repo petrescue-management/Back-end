@@ -19,12 +19,15 @@ namespace PetRescue.Data.Domains
         #region SEARCH
         public SearchReturnModel SearchCenterRegistrationForm(SearchModel model)
         {
-            var records = uow.GetService<ICenterRegistrationFormRepository>().Get()
-                .Where(f => f.CenterRegistrationStatus == CenterRegistrationFormStatusConst.PROCESSING);
+            var records = uow.GetService<ICenterRegistrationFormRepository>().Get().AsQueryable();
+
+
+            if (model.Status != 0)
+                records = records.Where(f => f.CenterRegistrationStatus.Equals(model.Status));
 
             List<CenterRegistrationFormModel> result = records
-                .Skip((model.PageIndex - 1) * 10)
-                .Take(10)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
                 .Select(f => new CenterRegistrationFormModel
                 {
                     CenterRegistrationId = f.CenterRegistrationId,
@@ -103,7 +106,7 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region PROCESS FORM
-        public CenterRegistrationFormModel ProcressCenterRegistrationForm(UpdateStatusModel model)
+        public CenterRegistrationFormModel ProcressCenterRegistrationForm(UpdateStatusModel model, Guid insertBy)
         {
             var center_registration_form_service = uow.GetService<ICenterRegistrationFormRepository>();
             var center_service = uow.GetService<ICenterRepository>();
@@ -121,7 +124,7 @@ namespace PetRescue.Data.Domains
                         try
                         {
                             //update Status
-                            form = center_registration_form_service.UpdateCenterRegistrationStatus(model);
+                            form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
 
                             //create Center
                             var newCenter = center_service.CreateCenter(new CreateCenterModel
@@ -129,14 +132,14 @@ namespace PetRescue.Data.Domains
                                 Address = form.CenterAddress,
                                 CenterName = form.CenterName,
                                 Phone = form.Phone,
-                            });
+                            }, insertBy);
 
                             //Create Model for create new User
                             var newCreateUserModel = new UserCreateModel
                             {
                                 Email = form.Email,
                                 CenterId = newCenter.CenterId,
-                                isBelongToCenter = UserConst.BELONG,
+                                IsBelongToCenter = UserConst.BELONG,
                             };
                             // create new Account
                             var newUser = userRepo.CreateUserByModel(newCreateUserModel);
@@ -149,7 +152,7 @@ namespace PetRescue.Data.Domains
                                 RoleName = RoleConstant.Manager,
                                 UserId = newUser.UserId,
                             };
-                            userDomain.AddRoleManagerToUser(newUserRoleUpdateModel);
+                            userDomain.AddRoleManagerToUser(newUserRoleUpdateModel, insertBy);
                             transaction.Commit();
                             return form;
                         }
@@ -158,15 +161,12 @@ namespace PetRescue.Data.Domains
                             transaction.Rollback();
                             throw (e);
                         }
-
-                    }
-                  
+                    }  
                 }
-
                 //Status = Rejected
                 else if (model.Status == CenterRegistrationFormStatusConst.REJECTED)
                 {
-                    form = center_registration_form_service.UpdateCenterRegistrationStatus(model);
+                    form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
                     return form;
                 }
             }

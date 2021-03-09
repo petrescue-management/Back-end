@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PetRescue.Data.ConstantHelper;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
@@ -88,6 +89,61 @@ namespace PetRescue.Data.Extensions
                 return check;
             }
             
+        }
+        public static bool SendBySendGrid(MailArguments mailArgs, List<Attachment> attachments, Dictionary<string, string> headers)
+        {
+            try
+            {
+                MailMessage message = new MailMessage();
+                message.IsBodyHtml = true;
+                message.Subject = mailArgs.Subject;
+                message.To.Add(mailArgs.MailTo);
+                message.Body = mailArgs.Message;
+                message.From = new MailAddress(mailArgs.MailFrom, "Rescue Them");
+                if (ValidationExtensions.IsNotNullOrEmpty(headers))
+                {
+                    foreach (var header in headers)
+                    {
+                        message.Headers.Add(header.Key, header.Value);
+                    }
+                }
+                if (ValidationExtensions.IsNotNullOrEmptyOrWhiteSpace(mailArgs.Bcc))
+                {
+                    string[] bccIds = mailArgs.Bcc.Split(",");
+                    if (ValidationExtensions.IsNotNullOrEmpty(bccIds))
+                    {
+                        foreach (var bcc in bccIds)
+                        {
+                            message.Bcc.Add(bcc);
+                        }
+                    }
+                }
+                if (ValidationExtensions.IsNotNull(attachments))
+                {
+                    foreach (var attachment in attachments)
+                    {
+                        if (ValidationExtensions.IsNotNull(attachment))
+                        {
+                            message.Attachments.Add(attachment);
+                        }
+                    }
+                }
+                SmtpClient client = new SmtpClient(mailArgs.SmtpHost) 
+                {
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential("apikey", mailArgs.Password),
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    Port = mailArgs.Port,
+                    Timeout = 99999,
+                    EnableSsl = false
+                };
+                client.Send(message);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
     
