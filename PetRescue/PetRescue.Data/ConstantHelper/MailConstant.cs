@@ -7,10 +7,19 @@ namespace PetRescue.Data.ConstantHelper
     public class MailConstant
     {
         public const string MAIL = "petrescue2021@gmail.com";
-        public const string PASSWORD = "pet012345";
+        public const string PASSWORD = "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";
         public const int PORT = 587;
-        public const string HOST = "smtp.gmail.com";
+        public const string HOST = "smtp.sendgrid.net";
         public const string NAME = "PetResuce";
+
+        public const string APPROVE_REGISTRATION_FORM = "Pet Rescue approve your registration form";
+        public const string REJECT_REGISTRATION_FORM = "Pet Rescue reject your registration form";
+
+        //public const string MAIL = "petrescue2021@gmail.com";
+        //public const string PASSWORD = "pet012345";
+        //public const int PORT = 587;
+        //public const string HOST = "smtp.gmail.com";
+        //public const string NAME = "PetResuce";
 
         public static string ApproveRegistrationCenter(string mailTo)
         {

@@ -8,14 +8,14 @@ namespace PetRescue.Data.Extensions
 
     public partial class MailFormat
     {
-        public static MailArguments MailModel (string mailTo, string formatMail)
+        public static MailArguments MailModel (string mailTo, string formatMail, string subject)
        {
             var mailArguments = new MailArguments
             {
                 MailFrom = MailConstant.MAIL,
                 Password = MailConstant.PASSWORD,
                 MailTo = mailTo,
-                Subject = "PetRescue Approve the Registration Center",
+                Subject = subject,
                 Port = MailConstant.PORT,
                 SmtpHost = MailConstant.HOST,
                 Name = MailConstant.NAME,

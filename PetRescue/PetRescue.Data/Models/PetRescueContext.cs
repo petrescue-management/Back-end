@@ -441,6 +441,11 @@ namespace PetRescue.Data.Models
                     .HasColumnName("is_belong_to_center")
                     .HasDefaultValueSql("((1))");
 
+                entity.Property(e => e.Password)
+                    .HasColumnName("password")
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.UserEmail)
                     .IsRequired()
                     .HasColumnName("user_email")
