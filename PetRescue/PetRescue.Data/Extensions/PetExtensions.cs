@@ -75,7 +75,7 @@ namespace PetRescue.Data.Extensions
                         case PetFieldConst.INFO:
                             obj["petId"] = model.PetId.ToString();
                             obj["centerId"] = model.CenterId.ToString();
-                            obj["petStatus"] = model.PetStatus.ToString();
+                            obj["petStatus"] = model.PetStatus;
                             obj["petName"] = model.PetNavigation.PetName;
                             obj["petType"] = petTypeObj;
                             obj["imageUrl"] = model.PetNavigation.ImageUrl;
@@ -83,14 +83,14 @@ namespace PetRescue.Data.Extensions
                         case PetFieldConst.DETAIL:
                             obj["petId"] = model.PetId.ToString();
                             obj["centerId"] = model.CenterId.ToString();
-                            obj["petStatus"] = model.PetStatus.ToString();
+                            obj["petStatus"] = model.PetStatus;
                             obj["petName"] = model.PetNavigation.PetName;
                             obj["petType"] = petTypeObj;
-                            obj["petGender"] = model.PetNavigation.PetGender.ToString();
-                            obj["petAge"] = model.PetNavigation.PetAge.ToString();
-                            obj["weight"] = model.PetNavigation.Weight.ToString();
-                            obj["isVaccinated"] = model.PetNavigation.IsVaccinated.ToString();
-                            obj["isSterilized"] = model.PetNavigation.IsSterilized.ToString();
+                            obj["petGender"] = model.PetNavigation.PetGender;
+                            obj["petAge"] = model.PetNavigation.PetAge;
+                            obj["weight"] = model.PetNavigation.Weight;
+                            obj["isVaccinated"] = model.PetNavigation.IsVaccinated;
+                            obj["isSterilized"] = model.PetNavigation.IsSterilized;
                             obj["petBreedName"] = model.PetNavigation.PetBreed.PetBreedName;
                             obj["petFurColorName"] = model.PetNavigation.PetFurColor.PetFurColorName;
                             obj["imageUrl"] = model.PetNavigation.ImageUrl;
