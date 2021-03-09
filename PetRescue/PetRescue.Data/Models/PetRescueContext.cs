@@ -146,6 +146,12 @@ namespace PetRescue.Data.Models
                     .IsRequired()
                     .HasColumnName("user_name")
                     .HasMaxLength(50);
+
+                entity.HasOne(d => d.Pet)
+                    .WithMany(p => p.AdoptionRegisterForm)
+                    .HasForeignKey(d => d.PetId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AdoptionRegisterForm_Pet");
             });
 
             modelBuilder.Entity<Center>(entity =>

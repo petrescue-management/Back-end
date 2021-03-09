@@ -5,6 +5,11 @@ namespace PetRescue.Data.Models
 {
     public partial class Pet
     {
+        public Pet()
+        {
+            AdoptionRegisterForm = new HashSet<AdoptionRegisterForm>();
+        }
+
         public Guid PetId { get; set; }
         public byte PetStatus { get; set; }
         public Guid CenterId { get; set; }
@@ -15,5 +20,6 @@ namespace PetRescue.Data.Models
 
         public virtual Center Center { get; set; }
         public virtual PetProfile PetNavigation { get; set; }
+        public virtual ICollection<AdoptionRegisterForm> AdoptionRegisterForm { get; set; }
     }
 }
