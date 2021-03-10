@@ -45,12 +45,12 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                
+
                 var userDomain = _uow.GetService<UserDomain>();
                 string id = userDomain.RegisterUser(model).UserId.ToString();
                 _uow.saveChanges();
                 return Success(id);
-            }catch(Exception ex)
+            } catch (Exception ex)
             {
                 return Error(ex);
             }
@@ -63,15 +63,27 @@ namespace PetRescue.WebApi.Controllers
             {
                 var userDomain = _uow.GetService<UserDomain>();
                 UserProfile newUserProfile = userDomain.UpdateUserProfile(model);
-                if(newUserProfile != null)
+                if (newUserProfile != null)
                 {
                     _uow.saveChanges();
                     return Success(newUserProfile.UserId);
                 }
                 return Error("Can't update");
-            }catch(Exception e)
+            } catch (Exception e)
             {
                 return Error(e);
+            }
+        }
+        [HttpPost("login-by-sysadmin")]
+        public IActionResult LoginBySystemAdmin([FromBody] UserLoginBySysadminModel  model)
+        {
+            try
+            {
+                var userDomain = _uow.GetService<UserDomain>();
+                return Success(userDomain.LoginBySysAdmin(model));
+            }catch(Exception ex)
+            {
+                return Error(ex.Message);
             }
         }
         //[Authorize(Roles = [RoleConstant.Manager, RoleConstant.Admin])]

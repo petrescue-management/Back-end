@@ -1,11 +1,9 @@
-﻿//using FirebaseAdmin;
-//using FirebaseAdmin.Auth;
-//using FirebaseAdmin.Messaging;
-//using Google.Apis.Auth.OAuth2;
+﻿
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Models;
 using PetRescue.Data.Uow;
@@ -26,7 +24,6 @@ namespace PetRescue.WebApi.Controllers
         public PetController(IUnitOfWork uow) : base(uow)
         {
         }
-       
         #region GET
         //[Authorize(Roles ="manager")]
         [HttpGet]
@@ -323,48 +320,5 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         #endregion
-       
-        //public class Notification1
-        //{
-        //    private string serverKey = "AAAA4kDCFr8:APA91bGSoL_h6JYN5CZ7bDhwYW97wU19Hsj_sCTZCUTrYLRvAxnKrVeznIt090oOu7oVymF2dSNkB3d5FRAGdVLDOcS1dK1wTbn64TJ2eYu4C34lW2C5X-CkkjUDW_W19kWnAagSNMG1";
-        //    private string senderId = "971749070527";
-        //    private string webAddr = "https://fcm.googleapis.com/fcm/send";
-
-        //    public string SendNotification(string DeviceToken, string title, string msg)
-        //    {
-        //        var result = "-1";
-        //        var httpWebRequest = (HttpWebRequest)WebRequest.Create(webAddr);
-        //        httpWebRequest.ContentType = "application/json";
-        //        httpWebRequest.Headers.Add(string.Format("Authorization: key={0}", serverKey));
-        //        httpWebRequest.Headers.Add(string.Format("Sender: id={0}", senderId));
-        //        httpWebRequest.Method = "POST";
-
-        //        var payload = new
-        //        {
-        //            to = DeviceToken,
-        //            priority = "high",
-        //            content_available = true,
-        //            notification = new
-        //            {
-        //                body = msg,
-        //                title = title
-        //            },
-        //        };
-        //        using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-        //        {
-        //            string json = JsonConvert.SerializeObject(payload);
-        //            streamWriter.Write(json);
-        //            streamWriter.Flush();
-        //        }
-
-        //        var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-        //        using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-        //        {
-        //            result = streamReader.ReadToEnd();
-        //        }
-        //        return result;
-        //    }
-        //}
-
     }
 }

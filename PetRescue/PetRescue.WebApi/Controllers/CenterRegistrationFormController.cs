@@ -9,6 +9,8 @@ using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -89,8 +91,8 @@ namespace PetRescue.WebApi.Controllers
                 {
                     if(form.CenterRegistrationStatus == CenterRegistrationFormStatusConst.APPROVED)
                     {
-                        MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(form.Email));
-                        bool result =  MailExtensions.Send(mailArguments, null, true, null);
+                        MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(form.Email), MailConstant.APPROVE_REGISTRATION_FORM);
+                        bool result =  MailExtensions.SendBySendGrid(mailArguments, null, null);
                         if (result)
                         {
                             _uow.saveChanges();
@@ -100,8 +102,8 @@ namespace PetRescue.WebApi.Controllers
                     }
                     else if(form.CenterRegistrationStatus == CenterRegistrationFormStatusConst.REJECTED)
                     {
-                        MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email));
-                        bool result = MailExtensions.Send(mailArguments, null, true, null);
+                        MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email), MailConstant.REJECT_REGISTRATION_FORM);
+                        bool result = MailExtensions.SendBySendGrid(mailArguments, null, null);
                         if (result)
                         {
                             _uow.saveChanges();
@@ -118,5 +120,33 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         #endregion
+        //[HttpGet]
+        //[Route("Test212")]
+        //public IActionResult Test()
+        //{
+        //    try
+        //    {
+        //        MailMessage message = new MailMessage();
+        //        message.IsBodyHtml = true;
+        //        message.Subject = "Subject";
+        //        message.To.Add("pjnochjo3095@gmail.com");
+        //        message.Body = MailConstant.ApproveRegistrationCenter("petrescue2021@gmail.com");
+        //        message.From = new MailAddress("petrescue2021@gmail.com", "Rescue Them");
+        //        SmtpClient client = new SmtpClient("smtp.sendgrid.net");
+        //        client.UseDefaultCredentials = false;
+        //        client.Credentials = new NetworkCredential("apikey", "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");
+        //        client.DeliveryMethod = SmtpDeliveryMethod.Network;
+        //        client.Port = 587; // I have tried with 25 and 2525
+        //        client.Timeout = 99999;
+        //        client.EnableSsl = false;
+        //        client.Send(message);
+        //        return Success("Ok");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Error(ex.Message);
+        //    }
+            
+        //}
     }
 }
