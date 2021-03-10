@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.ConstantHelper;
+﻿using Microsoft.AspNetCore.Hosting;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
@@ -12,8 +13,10 @@ namespace PetRescue.Data.Domains
 {
     public class CenterRegistrationFormDomain : BaseDomain
     {
-        public CenterRegistrationFormDomain(IUnitOfWork uow) : base(uow)
+        private readonly IHostingEnvironment env;
+        public CenterRegistrationFormDomain(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
+            env = environment;
         }
 
         #region SEARCH
@@ -125,7 +128,6 @@ namespace PetRescue.Data.Domains
                         {
                             //update Status
                             form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
-
                             //create Center
                             var newCenter = center_service.CreateCenter(new CreateCenterModel
                             {

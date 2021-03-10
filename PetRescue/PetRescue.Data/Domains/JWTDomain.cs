@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿
+using Microsoft.IdentityModel.Tokens;
 using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
@@ -16,6 +17,7 @@ namespace PetRescue.Data.Domains
 {
     public class JWTDomain : BaseDomain
     {
+      
         public JWTDomain(IUnitOfWork uow) : base(uow)
         {
         }
