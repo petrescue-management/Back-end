@@ -7,8 +7,8 @@ namespace PetRescue.Data.Models
     {
         public Guid PetId { get; set; }
         public string PetName { get; set; }
-        public byte PetGender { get; set; }
-        public byte? PetAge { get; set; }
+        public int PetGender { get; set; }
+        public int? PetAge { get; set; }
         public double Weight { get; set; }
         public string Description { get; set; }
         public Guid PetBreedId { get; set; }

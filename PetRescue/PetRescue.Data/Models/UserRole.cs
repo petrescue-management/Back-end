@@ -7,8 +7,8 @@ namespace PetRescue.Data.Models
     {
         public Guid RoleId { get; set; }
         public Guid UserId { get; set; }
-        public Guid InsertedBy { get; set; }
-        public DateTime InsertedAt { get; set; }
+        public Guid? InsertedBy { get; set; }
+        public DateTime? InsertedAt { get; set; }
         public Guid? UpdateBy { get; set; }
         public DateTime? UpdateAt { get; set; }
 
