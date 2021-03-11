@@ -67,6 +67,8 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 string result = _uow.GetService<CenterRegistrationFormDomain>().CreateCenterRegistrationForm(model);
+                if (result.Contains("is already"))
+                    return BadRequest(result);
                 _uow.saveChanges();
                 return Success(result);
             }
