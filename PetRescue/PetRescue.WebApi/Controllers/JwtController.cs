@@ -2,6 +2,7 @@
 using PetRescue.Data.Domains;
 using PetRescue.Data.Extensions;
 using PetRescue.Data.Uow;
+using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,19 @@ namespace PetRescue.WebApi.Controllers
             }catch(Exception e)
             {
                 return Error(e.Message);
+            }
+        }
+        [HttpPost("login-by-sysadmin")]
+        public IActionResult LoginBySystemAdmin([FromBody] UserLoginBySysadminModel model)
+        {
+            try
+            {
+                var jwtDomain = _uow.GetService<JWTDomain>();
+                return Success(jwtDomain.LoginBySysAdmin(model));
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
             }
         }
     }
