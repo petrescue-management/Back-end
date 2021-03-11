@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace PetRescue.Data.Domains
@@ -123,6 +124,38 @@ namespace PetRescue.Data.Domains
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             return tokenDescriptor;
+        }
+        private string GenarateHash(string UserPassword)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(UserPassword);
+            SHA256Managed PasswordHash = new SHA256Managed();
+
+            byte[] hash = PasswordHash.ComputeHash(bytes);
+
+            return Convert.ToBase64String(hash);
+        }
+
+        public string LoginBySysAdmin(UserLoginBySysadminModel model)
+        {
+            string hashedPassword = GenarateHash(model.Password);
+            var userRepo = uow.GetService<IUserRepository>();
+            var jwtDomain = uow.GetService<JWTDomain>();
+            var currentUser = userRepo.FindById(model.Email);
+            if (currentUser != null)
+            {
+                if (currentUser.Password.Equals(hashedPassword))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+                    var result = new JwtSecurityToken();
+                    var currentClaims = result.Claims.ToList();
+                    currentClaims.Add(new Claim(ClaimTypes.Email, currentUser.UserEmail));
+                    var tokenDescriptor = jwtDomain.GeneratedTokenDecriptor(currentUser, currentClaims);
+                    var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
+                    return handler.WriteToken(newToken);
+                }
+                return null;
+            }
+            return null;
         }
 
     }

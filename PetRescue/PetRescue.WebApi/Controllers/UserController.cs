@@ -74,18 +74,6 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e);
             }
         }
-        [HttpPost("login-by-sysadmin")]
-        public IActionResult LoginBySystemAdmin([FromBody] UserLoginBySysadminModel  model)
-        {
-            try
-            {
-                var userDomain = _uow.GetService<UserDomain>();
-                return Success(userDomain.LoginBySysAdmin(model));
-            }catch(Exception ex)
-            {
-                return Error(ex.Message);
-            }
-        }
         //[Authorize(Roles = [RoleConstant.Manager, RoleConstant.Admin])]
         //[HttpPost("create-role-for-user")]
         //public IActionResult CreateRoleForUser(UserRoleUpdateModel model)

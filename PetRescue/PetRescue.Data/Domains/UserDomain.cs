@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.Models;
+﻿using Microsoft.IdentityModel.Tokens;
+using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -112,30 +114,7 @@ namespace PetRescue.Data.Domains
                 }
             return null;
         }
-        private string GenarateHash(string UserPassword)
-        {
-            byte[] bytes = Encoding.UTF8.GetBytes(UserPassword);
-            SHA256Managed PasswordHash = new SHA256Managed();
-
-            byte[] hash = PasswordHash.ComputeHash(bytes);
-
-            return Convert.ToBase64String(hash);
-        }
-        public bool LoginBySysAdmin (UserLoginBySysadminModel model)
-        {
-            string hashedPassword = GenarateHash(model.Password);
-            var userRepo = uow.GetService<IUserRepository>();
-            var currentUser = userRepo.FindById(model.Email);
-            if (currentUser != null)
-            {
-                if (currentUser.Password.Equals(hashedPassword))
-                {
-                    return true;
-                }
-                return false;
-            }
-            return false;
-        }
+       
         //public User AddRoleToUser(UserRoleUpdateModel model)
         //{
         //    var currentUser = GetUserById(model.UserId);
