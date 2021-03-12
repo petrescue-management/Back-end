@@ -1,5 +1,7 @@
 ﻿using FirebaseAdmin;
 using FirebaseAdmin.Messaging;
+using FireSharp.Config;
+using FireSharp.Response;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -59,6 +61,7 @@ namespace PetRescue.WebApi.Controllers
                         { "AdditionalData2", "data 2" },
                         { "AdditionalData3", "data 3" },
                     },
+                    
                     Token = "dnegPYwnNlreULLtzT0ao8:APA91bEL7-VXXE_GuENU26gNHAmR-lUfTnYYTNPgeWPtbOHM9-Ir4vHFxaO4k2YoQ5TKz4PtT9340lBbDZ80Qyve3eIzDUrVvoy-PbciJqFIac8vPPPTP8G5YVoSPF2VHG1Qod8hdjmn",
                 };
                 //FirebaseMessaging.GetMessaging(app).SubscribeToTopicAsync
@@ -74,6 +77,30 @@ namespace PetRescue.WebApi.Controllers
             {
                 return Error(ex.Message);
             }
+        }
+        [HttpGet]
+        [Route("test2")]
+        public async Task<IActionResult> TestDataBase()
+        {
+            try
+            {
+                var client = new FireSharp.FirebaseClient(FCMConfig.config);
+                var data = new Dictionary<string,object>();
+                var content = new Dictionary<string, string>();
+                content.Add("Name", "test1");
+                content.Add("Description", "test2");
+                content.Add("Subdescription", "test3");
+                PushResponse response = client.Push("Centers",content);
+                
+                FirebaseResponse response1 = client.Get("Centers");
+                dynamic data1 = JsonConvert.DeserializeObject<dynamic>(response1.Body);
+                return Success(data1);
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+            
         }
         public class Notification1
         {

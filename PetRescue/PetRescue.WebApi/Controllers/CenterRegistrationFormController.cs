@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FirebaseAdmin;
+using FirebaseAdmin.Messaging;
+using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.ConstantHelper;
@@ -19,8 +23,10 @@ namespace PetRescue.WebApi.Controllers
     [ApiController]
     public class CenterRegistrationFormController : BaseController
     {
-        public CenterRegistrationFormController(IUnitOfWork uow) : base(uow)
+        private readonly IHostingEnvironment _env;
+        public CenterRegistrationFormController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
+            _env = environment;
         }
 
         #region SEARCH
@@ -62,11 +68,44 @@ namespace PetRescue.WebApi.Controllers
         #region CREATE
         [HttpPost]
         [Route("api/create-center-registration-form")]
-        public IActionResult CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model)
+        public async Task<IActionResult> CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model)
         {
             try
             {
+                string path = _env.ContentRootPath + FCMConfig.FILE_NAME;
                 string result = _uow.GetService<CenterRegistrationFormDomain>().CreateCenterRegistrationForm(model);
+
+                var userDomain = _uow.GetService<UserDomain>();
+                var listToken = userDomain.GetListDeviceTokenByRoleAndApplication(RoleConstant.Admin, ApplicationNameHelper.SYSTEMADMINAPP);
+                //send notification to sysadmin
+                if (listToken.Count > 0)
+                {
+                    FirebaseApp app = null;
+                    app = FirebaseApp.Create(new AppOptions()
+                    {
+                        Credential = GoogleCredential.FromFile(path)
+                    }, "PetRescue");
+                    
+                    app = FirebaseApp.GetInstance("PetRescue");
+                    var fcm = FirebaseAdmin.Messaging.FirebaseMessaging.GetMessaging(app);
+                    var regisregistration_ids = new List<string>();
+                    Message message = new Message()
+                    {
+
+                        Notification = new Notification
+                        {
+                            Title = "You have a new Center Registration ",
+                            Body = "New center registration form is created",
+
+                        },
+                    };
+                    foreach (var token in listToken)
+                    {
+                        message.Token = token.DeviceToken;
+                        await fcm.SendAsync(message);
+                    }
+                    app.Delete();
+                }
                 if (result.Contains("is already"))
                     return BadRequest(result);
                 _uow.saveChanges();
@@ -89,6 +128,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var form = _uow.GetService<CenterRegistrationFormDomain>().ProcressCenterRegistrationForm(model, Guid.Parse(currentUserId));
+
                 if(form != null)
                 {
                     if(form.CenterRegistrationStatus == CenterRegistrationFormStatusConst.APPROVED)

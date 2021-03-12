@@ -41,7 +41,13 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var jwtDomain = _uow.GetService<JWTDomain>();
-                return Success(jwtDomain.LoginBySysAdmin(model));
+                var result = jwtDomain.LoginBySysAdmin(model);
+                if(result != null)
+                {
+                    _uow.saveChanges();
+                    return Success(result);
+                }
+                return BadRequest("");
             }
             catch (Exception ex)
             {

@@ -114,6 +114,24 @@ namespace PetRescue.Data.Domains
                 }
             return null;
         }
+        public List<NotificationToken> GetListDeviceTokenByRoleAndApplication(string roleName, string applicationName) 
+        {
+            var userRoleRepo = uow.GetService<IUserRoleRepository>();
+            var roleRepo = uow.GetService<IRoleRepository>();
+            var notificationTokenRepo = uow.GetService<INotificationTokenRepository>();
+            var roleId = roleRepo.Get().FirstOrDefault(r => r.RoleName.Equals(roleName)).RoleId;
+            var listUserRole = userRoleRepo.Get().Where(s => s.RoleId.Equals(roleId)).ToList();
+            var listNotificationToken = new List<NotificationToken>();
+            foreach (var userRole in listUserRole)
+            {
+                var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(userRole.UserId) && s.ApplicationName.Equals(applicationName));
+                if(notificationToken != null)
+                {
+                    listNotificationToken.Add(notificationToken);
+                }
+            }
+            return listNotificationToken;
+        }
        
         //public User AddRoleToUser(UserRoleUpdateModel model)
         //{

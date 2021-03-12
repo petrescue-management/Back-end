@@ -122,6 +122,7 @@ namespace PetRescue.Data.Domains
                 if (model.Status == CenterRegistrationFormStatusConst.APPROVED)
                 {
                     var context = uow.GetService<PetRescueContext>();
+                    // Make a transaction
                     using (var transaction = context.Database.BeginTransaction())
                     {             
                         try
@@ -135,28 +136,50 @@ namespace PetRescue.Data.Domains
                                 CenterName = form.CenterName,
                                 Phone = form.Phone,
                             }, insertBy);
-
-                            //Create Model for create new User
-                            var newCreateUserModel = new UserCreateModel
+                            //Find user
+                            var currentUser = userRepo.FindById(form.Email);
+                            if(currentUser == null) //not found user
                             {
-                                Email = form.Email,
-                                CenterId = newCenter.CenterId,
-                                IsBelongToCenter = UserConst.BELONG,
-                            };
-                            // create new Account
-                            var newUser = userRepo.CreateUserByModel(newCreateUserModel);
-
-
-                            //Create Model for add Role to User
-                            var newUserRoleUpdateModel = new UserRoleUpdateModel
+                                //Create Model for create new User
+                                var newCreateUserModel = new UserCreateModel
+                                {
+                                    Email = form.Email,
+                                    CenterId = newCenter.CenterId,
+                                    IsBelongToCenter = UserConst.BELONG,
+                                };
+                                // create new Role for newUser
+                                var newUser = userRepo.CreateUserByModel(newCreateUserModel);
+                                var newUserRoleUpdateModel = new UserRoleUpdateModel
+                                {
+                                    CenterId = newCenter.CenterId,
+                                    RoleName = RoleConstant.Manager,
+                                    UserId = newUser.UserId,
+                                };
+                                userDomain.AddRoleManagerToUser(newUserRoleUpdateModel, insertBy);
+                                transaction.Commit();
+                                return form;
+                            }
+                            else // found user
                             {
-                                CenterId = newCenter.CenterId,
-                                RoleName = RoleConstant.Manager,
-                                UserId = newUser.UserId,
-                            };
-                            userDomain.AddRoleManagerToUser(newUserRoleUpdateModel, insertBy);
-                            transaction.Commit();
-                            return form;
+                                //Create Model for update user
+                                var userUpdateModel = new UserUpdateModel
+                                {
+                                    IsBelongToCenter = UserConst.BELONG,
+                                    CenterId = newCenter.CenterId
+                                };
+                                currentUser = userRepo.UpdateUserModel(currentUser, userUpdateModel);
+                                userRepo.Update(currentUser);
+                                //Create new Role for currentUser
+                                var userRoleUpdateModel = new UserRoleUpdateModel
+                                {
+                                    CenterId = newCenter.CenterId,
+                                    RoleName = RoleConstant.Manager,
+                                    UserId = currentUser.UserId,
+                                };
+                                userDomain.AddRoleManagerToUser(userRoleUpdateModel, insertBy);
+                                transaction.Commit();
+                                return form;
+                            }                           
                         }
                         catch (Exception e)
                         {
@@ -175,5 +198,9 @@ namespace PetRescue.Data.Domains
             return null;
         }
         #endregion
+        public NotificationToken SendInformationCenter()
+        {
+            return null;
+        }
     }
 }
