@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Uow;
@@ -17,13 +18,15 @@ namespace PetRescue.WebApi.Controllers
         {
         }
 
+        [Authorize(Roles = "manager")]
         [HttpGet]
         [Route("api/search-adoption-register-form")]
         public IActionResult SearchAdoptionRegisterForm([FromQuery] SearchModel model)
         {
             try
             {
-                var result = _uow.GetService<AdoptionRegisterFormDomain>().SearchAdoptionRegisterForm(model);
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var result = _uow.GetService<AdoptionRegisterFormDomain>().SearchAdoptionRegisterForm(model, currentCenterId);
                 if (result != null)
                     return Success(result);
                 return Success("Do not have any adoption register forms !");

@@ -26,8 +26,8 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _uow.GetService<AdoptionDomain>().SearchAdoption(model, currentUserId);
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var result = _uow.GetService<AdoptionDomain>().SearchAdoption(model, currentCenterId);
                 if (result != null)
                     return Success(result);
                 return Success("Do not have any adoptions !");
