@@ -53,7 +53,7 @@ namespace PetRescue.Data.ViewModels
     }
     public class UserProfileViewModel
     {
-        
+
     }
     public class UserUpdateCenterModel
     {
@@ -82,6 +82,17 @@ namespace PetRescue.Data.ViewModels
         public string Email { get; set; }
         [JsonProperty("password")]
         public string Password { get; set; }
+        [JsonProperty("deviceToken")]
+        public string DeviceToken { get; set; }
+        [JsonProperty("applicationName")]
+        public string applicationName { get; set; }
+    }
+    public class UserUpdateModel
+    {
+        [JsonProperty("centerId")]
+        public Guid CenterId { get; set; }
+        [JsonProperty("isBelongToCenter")]
+        public bool IsBelongToCenter { get; set; }
     }
 
 }

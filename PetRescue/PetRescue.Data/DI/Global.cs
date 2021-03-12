@@ -23,35 +23,29 @@ namespace PetRescue.Data.DI
                 .AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<UserDomain>()
                 .AddScoped<JWTDomain>()
-
                 .AddScoped<ICenterRepository, CenterRepository>()
                 .AddScoped<CenterDomain>()
-
                 .AddScoped<ICenterRegistrationFormRepository, CenterRegistrationFormRepository>()
                 .AddScoped<CenterRegistrationFormDomain>()
-
-                .AddScoped<IUserRoleRepository,UserRoleRepository>()
+                .AddScoped<IUserRoleRepository, UserRoleRepository>()
                 .AddScoped<UserRoleDomain>()
-                .AddScoped<IRoleRepository,RoleRepository>()
-                .AddScoped<IUserProfileRepository,UserProfileRepository>()
-
+                .AddScoped<IRoleRepository, RoleRepository>()
+                .AddScoped<IUserProfileRepository, UserProfileRepository>()
                 .AddScoped<IRescueReportRepository, RescueReportRepository>()
                 .AddScoped<IRescueReportDetailRepository, RescueReportDetailRepository>()
                 .AddScoped<RescueReportDomain>()
-
                 .AddScoped<IPetBreedRepository, PetBreedRepository>()
                 .AddScoped<IPetFurColorRepository, PetFurColorRepository>()
                 .AddScoped<IPetTypeRepository, PetTypeRepository>()
                 .AddScoped<IPetProfileRepository, PetProfileRepository>()
                 .AddScoped<IPetRepository, PetRepository>()
                 .AddScoped<PetDomain>()
-
-
                 .AddScoped<IAdoptionRepository, AdoptionRepository>()
                 .AddScoped<AdoptionDomain>()
-
                  .AddScoped<IAdoptionRegisterFormRepository, AdoptionRegisterFormRepository>()
                 .AddScoped<AdoptionRegisterFormDomain>()
+                .AddScoped<INotificationTokenRepository, NotificationTokenRepository>()
+                .AddScoped<NotificationTokenDomain>();
                 ;
         }
        

@@ -18,7 +18,7 @@ namespace PetRescue.Data.Repositories
         User Edit(User entity, Guid centerId);
 
         User CreateUserByModel(UserCreateModel model);
-
+        User UpdateUserModel(User entity, UserUpdateModel model);
     }
     public partial class UserRepository : BaseRepository<User, string>, IUserRepository
     {
@@ -74,6 +74,13 @@ namespace PetRescue.Data.Repositories
             };
             Create(newUser);
             return newUser;
+        }
+
+        public User UpdateUserModel(User entity, UserUpdateModel model)
+        {
+            entity.CenterId = model.CenterId;
+            entity.IsBelongToCenter = model.IsBelongToCenter;
+            return entity;
         }
     }
 }

@@ -7,6 +7,7 @@ namespace PetRescue.Data.Models
     {
         public User()
         {
+            NotificationToken = new HashSet<NotificationToken>();
             UserRole = new HashSet<UserRole>();
         }
 
@@ -17,6 +18,7 @@ namespace PetRescue.Data.Models
         public bool? IsBelongToCenter { get; set; }
 
         public virtual UserProfile UserProfile { get; set; }
+        public virtual ICollection<NotificationToken> NotificationToken { get; set; }
         public virtual ICollection<UserRole> UserRole { get; set; }
     }
 }

@@ -141,10 +141,32 @@ namespace PetRescue.Data.Domains
             var userRepo = uow.GetService<IUserRepository>();
             var jwtDomain = uow.GetService<JWTDomain>();
             var currentUser = userRepo.FindById(model.Email);
+            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             if (currentUser != null)
             {
                 if (currentUser.Password.Equals(hashedPassword))
                 {
+                    var currentNotificationToken = notificationTokenDomain.FindByApplicationNameAndUserId(currentUser.UserId, model.applicationName);
+                    if (currentNotificationToken == null) {
+                        notificationTokenDomain.CreateNotificationToken(new NotificationTokenCreateModel
+                        {
+                            UserId = currentUser.UserId,
+                            ApplicationName = model.applicationName,
+                            DeviceToken = model.DeviceToken
+                        });
+                    }
+                    else
+                    {
+                        if (!currentNotificationToken.DeviceToken.Equals(model.DeviceToken))
+                        {
+                            notificationTokenDomain.UpdateNotificationToken(new NotificationTokenUpdateModel
+                            {
+                                Id = currentNotificationToken.Id,
+                                DeviceToken = model.DeviceToken
+                            });
+                        }
+                    }
+                    //Generator token for user
                     var handler = new JwtSecurityTokenHandler();
                     var result = new JwtSecurityToken();
                     var currentClaims = result.Claims.ToList();
