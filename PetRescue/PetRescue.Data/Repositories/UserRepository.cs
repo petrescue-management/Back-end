@@ -19,6 +19,7 @@ namespace PetRescue.Data.Repositories
 
         User CreateUserByModel(UserCreateModel model);
         User UpdateUserModel(User entity, UserUpdateModel model);
+        UserModel GetUserById(Guid id);
     }
     public partial class UserRepository : BaseRepository<User, string>, IUserRepository
     {
@@ -75,12 +76,26 @@ namespace PetRescue.Data.Repositories
             Create(newUser);
             return newUser;
         }
-
         public User UpdateUserModel(User entity, UserUpdateModel model)
         {
             entity.CenterId = model.CenterId;
             entity.IsBelongToCenter = model.IsBelongToCenter;
             return entity;
+        public UserModel GetUserById(Guid id)
+        {
+            return Get().Where(u => u.UserId.Equals(id))
+                .Include(u => u.UserProfile)
+                .Select(u => new UserModel { 
+                UserId = u.UserId,
+                UserEmail = u.UserEmail,
+                FirstName = u.UserProfile.FirstName,
+                LastName = u.UserProfile.LastName,
+                Dob = u.UserProfile.Dob,
+                Gender = u.UserProfile.Gender,
+                Phone = u.UserProfile.Phone,
+                Address = u.UserProfile.Address,
+                ImageUrl = u.UserProfile.ImageUrl
+                }).FirstOrDefault();
         }
     }
 }

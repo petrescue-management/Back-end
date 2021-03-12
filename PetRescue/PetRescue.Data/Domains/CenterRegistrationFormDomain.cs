@@ -73,7 +73,7 @@ namespace PetRescue.Data.Domains
 
             //check Duplicate email
             var check_dup_email = user_service.Get()
-               .Where(u => u.UserEmail.Equals(model.Email));
+               .Where(u => u.IsBelongToCenter == true && u.UserEmail.Contains(model.Email));
 
             //check Duplicate address
             var check_dup_address = center_service.Get()

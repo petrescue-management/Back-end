@@ -16,7 +16,7 @@ namespace PetRescue.Data.Repositories
 
         RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model, Guid updateBy);
 
-        RescueReportModel CreateRescueReport(CreateRescueReportModel model, Guid insertBy);
+        RescueReportModel CreateRescueReport(CreateRescueReportModel model, Guid insertedBy);
     }
     public partial class RescueReportRepository : BaseRepository<RescueReport, string>, IRescueReportRepository
     {
@@ -25,7 +25,7 @@ namespace PetRescue.Data.Repositories
         }
 
         #region CREATE
-        private RescueReport PrepareCreate(CreateRescueReportModel model, Guid insertBy)
+        private RescueReport PrepareCreate(CreateRescueReportModel model, Guid insertedBy)
         {
 
             var report = new RescueReport
@@ -33,7 +33,7 @@ namespace PetRescue.Data.Repositories
                 RescueReportId = Guid.NewGuid(),
                 PetAttribute = model.PetAttribute,
                 ReportStatus = 1,
-                InsertedBy = insertBy,
+                InsertedBy = insertedBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
                 UpdatedAt = null
@@ -43,9 +43,9 @@ namespace PetRescue.Data.Repositories
         }
 
 
-        public RescueReportModel CreateRescueReport(CreateRescueReportModel model, Guid insertBy)
+        public RescueReportModel CreateRescueReport(CreateRescueReportModel model, Guid insertedBy)
         {
-            var report = PrepareCreate(model, insertBy);
+            var report = PrepareCreate(model, insertedBy);
 
             Create(report);
 

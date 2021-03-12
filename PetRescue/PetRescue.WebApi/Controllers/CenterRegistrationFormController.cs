@@ -74,6 +74,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 string path = _env.ContentRootPath + FCMConfig.FILE_NAME;
                 string result = _uow.GetService<CenterRegistrationFormDomain>().CreateCenterRegistrationForm(model);
+
                 var userDomain = _uow.GetService<UserDomain>();
                 var listToken = userDomain.GetListDeviceTokenByRoleAndApplication(RoleConstant.Admin, ApplicationNameHelper.SYSTEMADMINAPP);
                 //send notification to sysadmin
@@ -105,6 +106,8 @@ namespace PetRescue.WebApi.Controllers
                     }
                     app.Delete();
                 }
+                if (result.Contains("is already"))
+                    return BadRequest(result);
                 _uow.saveChanges();
                 return Success(result);
             }
