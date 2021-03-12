@@ -81,6 +81,7 @@ namespace PetRescue.Data.Repositories
             entity.CenterId = model.CenterId;
             entity.IsBelongToCenter = model.IsBelongToCenter;
             return entity;
+        }
         public UserModel GetUserById(Guid id)
         {
             return Get().Where(u => u.UserId.Equals(id))
