@@ -21,9 +21,7 @@ namespace PetRescue.Data.Domains
             var records = uow.GetService<IAdoptionRepository>().Get().AsQueryable();
             var pet_service = uow.GetService<IPetRepository>();
             var user_service = uow.GetService<IUserRepository>();
-
-            if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
-                records = records.Where(a => a.AdoptionRegister.UserName.Contains(model.Keyword));
+          
 
 
             if (model.Status != 0)
@@ -42,6 +40,13 @@ namespace PetRescue.Data.Domains
                     AdoptedAt = a.AdoptedAt,
                     ReturnedAt = a.ReturnedAt
                 }).ToList();
+
+            if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
+                foreach(var adoption in result)
+                {
+                    if (!adoption.Pet.PetName.Contains(model.Keyword))
+                        result.Remove(adoption);
+                }
 
             return new SearchReturnModel
             {
