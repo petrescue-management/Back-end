@@ -16,13 +16,13 @@ namespace PetRescue.Data.Domains
         }
 
         #region SEARCH
-        public SearchReturnModel SearchAdoption(SearchModel model,Guid currentUserId)
+        public SearchReturnModel SearchAdoption(SearchModel model,string currentUserId)
         {
             var records = uow.GetService<IAdoptionRepository>().Get().AsQueryable();
             var pet_service = uow.GetService<IPetRepository>();
             var user_service = uow.GetService<IUserRepository>();
 
-            var centerId = user_service.FindById(null, currentUserId.ToString()).CenterId;
+            var centerId = user_service.FindById(null, currentUserId).CenterId;
 
             if (model.Status != 0)
                 records = records.Where(a => a.AdoptionStatus.Equals(model.Status));
