@@ -6,6 +6,7 @@ using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -23,7 +24,8 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var result = _uow.GetService<AdoptionDomain>().SearchAdoption(model);
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _uow.GetService<AdoptionDomain>().SearchAdoption(model, currentUserId);
                 if (result != null)
                     return Success(result);
                 return Success("Do not have any adoptions !");
