@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Uow;
@@ -18,6 +19,7 @@ namespace PetRescue.WebApi.Controllers
         {
         }
 
+        [Authorize(Roles = "manager")]
         [HttpGet]
         [Route("api/search-adoption")]
         public IActionResult SearchAdoption([FromQuery] SearchModel model)
