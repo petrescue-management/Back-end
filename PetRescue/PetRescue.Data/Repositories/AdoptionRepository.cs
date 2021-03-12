@@ -11,11 +11,11 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IAdoptionRepository : IBaseRepository<Adoption, string>
     {
-        AdoptionModel GetAdoptionById(Guid id);
+        Adoption GetAdoptionById(Guid id);
 
-        AdoptionModel UpdateAdoptionStatus(UpdateStatusModel model);
+        Adoption UpdateAdoptionStatus(UpdateStatusModel model);
 
-        AdoptionModel CreateAdoption(AdoptionRegisterFormModel model);
+        Adoption CreateAdoption(AdoptionRegisterFormModel model);
     }
 
     public partial class AdoptionRepository : BaseRepository<Adoption, string>, IAdoptionRepository
@@ -25,16 +25,13 @@ namespace PetRescue.Data.Repositories
         }
 
         #region GET_BY_ID
-        public AdoptionModel GetAdoptionById(Guid id)
+        public Adoption GetAdoptionById(Guid id)
         {
             var result = Get()
                .Where(a => a.AdoptionRegisterId.Equals(id))
-               .Select(a => new AdoptionModel
+               .Select(a => new Adoption
                {
-                   AdoptionRegisterId = a.AdoptionRegisterId,
-                   OwnerId = a.AdoptionRegister.InsertedBy,
-                   OwnerName = a.AdoptionRegister.UserName,
-                   PetId = a.AdoptionRegister.PetId,
+                   AdoptionRegisterId = a.AdoptionRegisterId,             
                    AdoptionStatus = a.AdoptionStatus,
                    AdoptedAt = a.AdoptedAt,
                    ReturnedAt = a.ReturnedAt
@@ -86,15 +83,13 @@ namespace PetRescue.Data.Repositories
             
             return adoption;
         }
-        public AdoptionModel UpdateAdoptionStatus(UpdateStatusModel model)
+        public Adoption UpdateAdoptionStatus(UpdateStatusModel model)
         {
             Adoption adoption = PrepareUpdate(model);         
 
             Update(adoption);
 
-            var result = GetResult(adoption);
-
-            return result;
+            return adoption;
         }
 
         #endregion
@@ -107,7 +102,7 @@ namespace PetRescue.Data.Repositories
             {
                 AdoptionRegisterId = model.AdoptionRegisterId,
                 AdoptionStatus = 1,
-                InsertedBy = Guid.Parse(model.UpdatedBy.ToString()),
+                InsertedBy = (Guid)model.UpdatedBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
                 UpdatedAt = null
@@ -115,32 +110,16 @@ namespace PetRescue.Data.Repositories
             return adoption;
         }
 
-        public AdoptionModel CreateAdoption(AdoptionRegisterFormModel model)
+        public Adoption CreateAdoption(AdoptionRegisterFormModel model)
         {
             var adoption = PrepareCreate(model);
             Create(adoption);
 
-            var result = GetResult(adoption);
-            return result;
+            return adoption;
         }
         #endregion
 
-        #region GET RESULT
-        private AdoptionModel GetResult(Adoption adoption)
-        {
-            var result = new AdoptionModel
-            {
-                AdoptionRegisterId = adoption.AdoptionRegisterId,
-                OwnerId = adoption.AdoptionRegister.InsertedBy,
-                OwnerName = adoption.AdoptionRegister.UserName,
-                PetId = adoption.AdoptionRegister.PetId,
-                AdoptionStatus = adoption.AdoptionStatus,
-                AdoptedAt = adoption.AdoptedAt,
-                ReturnedAt = adoption.ReturnedAt
-            };
-            return result;
-        }
-        #endregion
+    
     }
 
 }

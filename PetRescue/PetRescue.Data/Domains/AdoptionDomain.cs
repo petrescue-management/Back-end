@@ -19,6 +19,8 @@ namespace PetRescue.Data.Domains
         public SearchReturnModel SearchAdoption(SearchModel model)
         {
             var records = uow.GetService<IAdoptionRepository>().Get().AsQueryable();
+            var pet_service = uow.GetService<IPetRepository>();
+            var user_service = uow.GetService<IUserRepository>();
 
             if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
                 records = records.Where(a => a.AdoptionRegister.UserName.Contains(model.Keyword));
@@ -34,15 +36,12 @@ namespace PetRescue.Data.Domains
                 .Select(a => new AdoptionModel
                 {
                     AdoptionRegisterId = a.AdoptionRegisterId,
-                    OwnerId = a.AdoptionRegister.InsertedBy,
-                    OwnerName = a.AdoptionRegister.UserName,
-                    PetId = a.AdoptionRegister.PetId,
+                    Owner = user_service.GetUserById(a.AdoptionRegister.InsertedBy),
+                    Pet = pet_service.GetPetById(a.AdoptionRegister.PetId),
                     AdoptionStatus = a.AdoptionStatus,
                     AdoptedAt = a.AdoptedAt,
                     ReturnedAt = a.ReturnedAt
                 }).ToList();
-
-            //call service.getPetById -> to find PetName By result.PetId
 
             return new SearchReturnModel
             {
@@ -56,7 +55,19 @@ namespace PetRescue.Data.Domains
         public AdoptionModel GetAdoptionById(Guid id)
         {
             var adoption = uow.GetService<IAdoptionRepository>().GetAdoptionById(id);
-            return adoption;
+            var form = uow.GetService<IAdoptionRegisterFormRepository>().GetAdoptionRegisterFormById(id);
+            var user_service = uow.GetService<IUserRepository>();
+            var pet_service = uow.GetService<IPetRepository>();
+            AdoptionModel result = new AdoptionModel
+            {
+                AdoptionRegisterId = id,
+                Owner = user_service.GetUserById(form.InsertedBy),
+                Pet = pet_service.GetPetById(form.PetId),
+                AdoptionStatus = adoption.AdoptionStatus,
+                AdoptedAt = adoption.AdoptedAt,
+                ReturnedAt = adoption.ReturnedAt
+            };
+            return result;
         }
         #endregion
 
@@ -64,7 +75,20 @@ namespace PetRescue.Data.Domains
         public AdoptionModel UpdateAdoptionStatus(UpdateStatusModel model)
         {
             var adoption = uow.GetService<IAdoptionRepository>().UpdateAdoptionStatus(model);
-            return adoption;
+            var form = uow.GetService<IAdoptionRegisterFormRepository>().GetAdoptionRegisterFormById(model.Id);
+            var user_service = uow.GetService<IUserRepository>();
+            var pet_service = uow.GetService<IPetRepository>();
+            AdoptionModel result = new AdoptionModel
+            {
+                AdoptionRegisterId = model.Id,
+                Owner = user_service.GetUserById(form.InsertedBy),
+                Pet = pet_service.GetPetById(form.PetId),
+                AdoptionStatus = adoption.AdoptionStatus,
+                AdoptedAt = adoption.AdoptedAt,
+                ReturnedAt = adoption.ReturnedAt
+            };
+
+            return result;
         }
         #endregion
     }

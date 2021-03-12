@@ -13,6 +13,9 @@ namespace PetRescue.Data.Repositories
         AdoptionRegisterForm GetAdoptionRegisterFormById(Guid id);
 
         AdoptionRegisterForm UpdateAdoptionRegisterFormStatus(UpdateStatusModel model);
+
+        AdoptionRegisterForm CreateAdoptionRegistertionForm(CreateAdoptionRegisterFormModel model);
+
     }
 
     public partial class AdoptionRegisterFormRepository : BaseRepository<AdoptionRegisterForm, string>, IAdoptionRegisterFormRepository
@@ -88,7 +91,50 @@ namespace PetRescue.Data.Repositories
             Update(form);
             return form;
         }
+
         #endregion
+
+        #region CREATE
+
+        private AdoptionRegisterForm PrepareCreate(CreateAdoptionRegisterFormModel model)
+        {
+
+            var form = new AdoptionRegisterForm
+            {
+                AdoptionRegisterId = model.AdoptionRegisterId,
+                PetId = model.PetId,
+                UserName = model.UserName,
+                Phone = model.Phone,
+                Email = model.Email,
+                Job = model.Job,
+                Address = model.Address,
+                HouseType = model.HouseType,
+                FrequencyAtHome = model.FrequencyAtHome,
+                HaveChildren = model.HaveChildren,
+                ChildAge = model.ChildAge,
+                BeViolentTendencies = model.BeViolentTendencies,
+                HaveAgreement = model.HaveAgreement,
+                HavePet = model.HavePet,
+                AdoptionRegisterStatus = model.AdoptionRegisterStatus,
+                InsertedBy = Guid.NewGuid(),
+                InsertedAt = DateTime.UtcNow,
+                UpdatedBy = null,
+                UpdateAt = null
+            };
+            return form;
+        }
+
+        public AdoptionRegisterForm CreateAdoptionRegistertionForm(CreateAdoptionRegisterFormModel model)
+        {
+            var form = PrepareCreate(model);
+
+        Create(form);
+
+        return form;
+    }
+        #endregion
+
+
 
     }
 }
