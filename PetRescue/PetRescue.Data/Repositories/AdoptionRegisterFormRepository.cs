@@ -101,7 +101,7 @@ namespace PetRescue.Data.Repositories
 
             var form = new AdoptionRegisterForm
             {
-                AdoptionRegisterId = model.AdoptionRegisterId,
+                AdoptionRegisterId = Guid.NewGuid(),
                 PetId = model.PetId,
                 UserName = model.UserName,
                 Phone = model.Phone,

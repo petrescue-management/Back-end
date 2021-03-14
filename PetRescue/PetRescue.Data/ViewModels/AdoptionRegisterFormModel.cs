@@ -30,7 +30,6 @@ namespace PetRescue.Data.ViewModels
 
     public class CreateAdoptionRegisterFormModel
     {
-        public Guid AdoptionRegisterId { get; set; }
         public Guid PetId { get; set; }
         public string UserName { get; set; }
         public string Phone { get; set; }
