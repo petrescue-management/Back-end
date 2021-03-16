@@ -22,13 +22,17 @@ namespace PetRescue.Data.ConstantHelper
     {
         public const string SYSTEMADMINAPP = "Petrescue.app.systemadmin";
         public const string MANAGERCENTERAPP = "Petrescue.app.managercenter";
+        public const string USER_APP = "Petrescue.app.user";
     }
     public class NotificationTitleHelper
     {
         public const string NEW_REGISTRATION_CENTER_FORM_TITLE = "You have a new center registration";
+        public const string NEW_REGISTRATON_ADOPTION_FORM_TITLE = "You have a new adoption registration";
     }
     public class NotificationBodyHelper
     {
         public const string NEW_REGISTRATION_CENTER_FORM_BODY = "New center registration form is created";
+        public const string NEW_REGISTRATION_ADOPTION_FORM_BODY = "New adoption registration form is created";
+
     }
 }
