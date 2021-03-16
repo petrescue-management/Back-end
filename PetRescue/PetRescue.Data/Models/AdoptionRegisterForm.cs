@@ -25,6 +25,7 @@ namespace PetRescue.Data.Models
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdateAt { get; set; }
 
+        public virtual Pet Pet { get; set; }
         public virtual Adoption Adoption { get; set; }
     }
 }

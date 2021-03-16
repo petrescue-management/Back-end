@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Uow;
@@ -6,6 +7,7 @@ using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -17,13 +19,15 @@ namespace PetRescue.WebApi.Controllers
         {
         }
 
+        [Authorize(Roles = "manager")]
         [HttpGet]
         [Route("api/search-adoption")]
         public IActionResult SearchAdoption([FromQuery] SearchModel model)
         {
             try
             {
-                var result = _uow.GetService<AdoptionDomain>().SearchAdoption(model);
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _uow.GetService<AdoptionDomain>().SearchAdoption(model, currentUserId);
                 if (result != null)
                     return Success(result);
                 return Success("Do not have any adoptions !");
@@ -50,12 +54,12 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpPut]
-        [Route("api/update-adoption")]
-        public IActionResult UpdateAdoption(UpdateStatusModel model)
+        [Route("api/update-adoption-status")]
+        public IActionResult UpdateAdoptionStatus(UpdateStatusModel model)
         {
             try
             {
-                var result = _uow.GetService<AdoptionDomain>().UpdateAdoption(model);
+                var result = _uow.GetService<AdoptionDomain>().UpdateAdoptionStatus(model);
                 _uow.saveChanges();
                 return Success(result);
             }

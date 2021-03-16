@@ -14,12 +14,12 @@ namespace PetRescue.Data.Repositories
 
         CenterModel GetCenterById(Guid id);
 
-        CenterModel DeleteCenter(Guid id);
+        CenterModel DeleteCenter(Guid id, Guid updateBy);
 
 
-        CenterModel UpdateCenter(UpdateCenterModel model);
+        CenterModel UpdateCenter(UpdateCenterModel model, Guid updateBy);
 
-        CenterModel CreateCenter(CreateCenterModel model);
+        CenterModel CreateCenter(CreateCenterModel model, Guid insertBy);
     }
 
     public partial class CenterRepository : BaseRepository<Center, string>, ICenterRepository
@@ -49,7 +49,7 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region DELETE
-        private Center PrepareDelete(Guid id)
+        private Center PrepareDelete(Guid id, Guid updateBy)
         {
             var center = Get()
                 .Where(c => c.CenterId.Equals(id))
@@ -62,18 +62,16 @@ namespace PetRescue.Data.Repositories
                     Phone = c.Phone,
                     InsertBy = c.InsertBy,
                     InsertAt = c.InsertAt,
-                    UpdateBy = c.UpdateBy,
+                    UpdateBy = updateBy,
                     UpdateAt = DateTime.Now
                 }).FirstOrDefault();
 
             return center;
         }
-        public CenterModel DeleteCenter(Guid id)
+        public CenterModel DeleteCenter(Guid id, Guid updateBy)
         {
-            var center = PrepareDelete(id);
+            var center = PrepareDelete(id, updateBy);
             Update(center);
-
-
             var result = GetResult(center);
             return result;
         }
@@ -81,7 +79,7 @@ namespace PetRescue.Data.Repositories
 
         #region UPDATE
 
-        private Center PrepareUpdate(UpdateCenterModel model)
+        private Center PrepareUpdate(UpdateCenterModel model, Guid updateBy)
         {
             var old_center = Get()
               .Where(c => c.CenterId.Equals(model.CenterId))
@@ -100,19 +98,18 @@ namespace PetRescue.Data.Repositories
                 Phone = model.Phone,
                 InsertBy = old_center.InsertBy,
                 InsertAt = old_center.InsertAt,
-                UpdateBy = null,
+                UpdateBy = updateBy,
                 UpdateAt = DateTime.Now
             };
 
             return update_center;
         }
 
-        public CenterModel UpdateCenter(UpdateCenterModel model)
+        public CenterModel UpdateCenter(UpdateCenterModel model, Guid updateBy)
         {
 
-            var center = PrepareUpdate(model);
+            var center = PrepareUpdate(model, updateBy);
             Update(center);
-
             var result = GetResult(center);
             return result;
         }
@@ -120,7 +117,7 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region CREATE
-        private Center PrepareCreate(CreateCenterModel model)
+        private Center PrepareCreate(CreateCenterModel model, Guid insertBy)
         {
             var center = new Center
             {
@@ -130,16 +127,16 @@ namespace PetRescue.Data.Repositories
                 CenterName = model.CenterName,
                 CenterStatus = CenterStatusConst.OPENNING,
                 InsertAt = DateTime.Now,
-                InsertBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
+                InsertBy = insertBy,
                 UpdateBy = null,
                 UpdateAt = null
             };
             return center;
         }
 
-        public CenterModel CreateCenter(CreateCenterModel model)
+        public CenterModel CreateCenter(CreateCenterModel model, Guid insertBy)
         {
-            var center = PrepareCreate(model);
+            var center = PrepareCreate(model, insertBy);
             Create(center);
 
             var result = GetResult(center);

@@ -61,42 +61,47 @@ namespace PetRescue.Data.Extensions
         private static object SelectedField(this IQueryable<Pet> query, string[] fields, int total)
         {
             var models = query.ToList();
-            var listResult = new List<Dictionary<string, string>>();
+            var listResult = new List<Dictionary<string, object>>();
             foreach (var model in models)
             {
-                var obj = new Dictionary<string, string>();
-                foreach(string field in fields)
+                var obj = new Dictionary<string, object>();
+                var petTypeObj = new Dictionary<string, string>();
+                petTypeObj["petTypeId"] = model.PetNavigation.PetBreed.PetType.PetTypeId.ToString();
+                petTypeObj["petTypeName"] = model.PetNavigation.PetBreed.PetType.PetTypeName;
+                foreach (string field in fields)
                 {
                     switch (field)
                     {
                         case PetFieldConst.INFO:
-                            obj["pet_id"] = model.PetId.ToString();
-                            obj["center_id"] = model.CenterId.ToString();
-                            obj["pet_status"] = model.PetStatus.ToString();
-                            obj["pet_name"] = model.PetNavigation.PetName;
-                            obj["pet_type_name"] = model.PetNavigation.PetBreed.PetType.PetTypeName;
+                            obj["petId"] = model.PetId.ToString();
+                            obj["centerId"] = model.CenterId.ToString();
+                            obj["petStatus"] = model.PetStatus;
+                            obj["petName"] = model.PetNavigation.PetName;
+                            obj["petType"] = petTypeObj;
+                            obj["imageUrl"] = model.PetNavigation.ImageUrl;
                             break;
                         case PetFieldConst.DETAIL:
-                            obj["pet_id"] = model.PetId.ToString();
-                            obj["center_id"] = model.CenterId.ToString();
-                            obj["pet_status"] = model.PetStatus.ToString();
-                            obj["pet_name"] = model.PetNavigation.PetName;
-                            obj["pet_type_name"] = model.PetNavigation.PetBreed.PetType.PetTypeName;
-                            obj["pet_gender"] = model.PetNavigation.PetGender.ToString();
-                            obj["pet_age"] = model.PetNavigation.PetAge.ToString();
-                            obj["weight"] = model.PetNavigation.Weight.ToString();
-                            obj["is_vaccinated"] = model.PetNavigation.IsVaccinated.ToString();
-                            obj["is_sterilized"] = model.PetNavigation.IsSterilized.ToString();
-                            obj["pet_breed_name"] = model.PetNavigation.PetBreed.PetBreedName;
-                            obj["pet_fur_color_name"] = model.PetNavigation.PetFurColor.PetFurColorName;
+                            obj["petId"] = model.PetId.ToString();
+                            obj["centerId"] = model.CenterId.ToString();
+                            obj["petStatus"] = model.PetStatus;
+                            obj["petName"] = model.PetNavigation.PetName;
+                            obj["petType"] = petTypeObj;
+                            obj["petGender"] = model.PetNavigation.PetGender;
+                            obj["petAge"] = model.PetNavigation.PetAge;
+                            obj["weight"] = model.PetNavigation.Weight;
+                            obj["isVaccinated"] = model.PetNavigation.IsVaccinated;
+                            obj["isSterilized"] = model.PetNavigation.IsSterilized;
+                            obj["petBreedName"] = model.PetNavigation.PetBreed.PetBreedName;
+                            obj["petFurColorName"] = model.PetNavigation.PetFurColor.PetFurColorName;
+                            obj["imageUrl"] = model.PetNavigation.ImageUrl;
                             break;
                     }
                     listResult.Add(obj);
                 }
             }
             var result = new Dictionary<string, object>();
+            result["totalPages"] = total;
             result["result"] = listResult;
-            result["total_page"] = total;
             return result;
         }
     }

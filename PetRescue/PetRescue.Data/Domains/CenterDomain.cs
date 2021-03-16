@@ -23,9 +23,13 @@ namespace PetRescue.Data.Domains
             if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
                 records = records.Where(c => c.CenterName.Contains(model.Keyword));
 
+
+            if (model.Status != 0)
+                records = records.Where(c => c.CenterStatus.Equals(model.Status));
+
             List<CenterModel> result = records
-                .Skip((model.PageIndex - 1) * 10)
-                .Take(10)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
                 .Select(c => new CenterModel
                 {
                     CenterId = c.CenterId,
@@ -53,23 +57,23 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region DELETE
-        public CenterModel DeleteCenter(Guid id)
+        public CenterModel DeleteCenter(Guid id, Guid updateBy)
         {
-            var center = uow.GetService<ICenterRepository>().DeleteCenter(id);
+            var center = uow.GetService<ICenterRepository>().DeleteCenter(id, updateBy);
             return center;
         }
         #endregion
 
         #region CREATE
-        public CenterModel CreateCenter(CreateCenterModel model)
+        public CenterModel CreateCenter(CreateCenterModel model, Guid insertBy)
         {
-            var center = uow.GetService<ICenterRepository>().CreateCenter(model);
+            var center = uow.GetService<ICenterRepository>().CreateCenter(model, insertBy);
             return center;
         }
         #endregion
 
         #region UPDATE
-        public string UpdateCenter(UpdateCenterModel model)
+        public string UpdateCenter(UpdateCenterModel model, Guid currentUserId)
         {
             //call CenterService
             var center_service = uow.GetService<ICenterRepository>();
@@ -94,7 +98,7 @@ namespace PetRescue.Data.Domains
             if (check_dup_address.Any())
                 return "This address is already registered !";
 
-            var center = center_service.UpdateCenter(model);
+            var center = center_service.UpdateCenter(model, currentUserId);
             return center.CenterId.ToString();
         }
         #endregion

@@ -10,15 +10,16 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IUserRepository : IBaseRepository<User, string>
     {
-        User CreateUser(string email);
-        User PrepareCreate(string email);
+        User CreateUser(UserCreateByAppModel model);
+        User PrepareCreate(UserCreateByAppModel model);
 
         User FindById(string email = null, string id = null);
 
         User Edit(User entity, Guid centerId);
 
         User CreateUserByModel(UserCreateModel model);
-
+        User UpdateUserModel(User entity, UserUpdateModel model);
+        UserModel GetUserById(Guid id);
     }
     public partial class UserRepository : BaseRepository<User, string>, IUserRepository
     {
@@ -26,9 +27,9 @@ namespace PetRescue.Data.Repositories
         {
         }
 
-        public User CreateUser(string email)
+        public User CreateUser(UserCreateByAppModel model)
         {
-            var user = PrepareCreate(email);
+            var user = PrepareCreate(model);
             Create(user);
             return user;
         }
@@ -46,13 +47,12 @@ namespace PetRescue.Data.Repositories
             return null;
         }
 
-        public User PrepareCreate(string email)
+        public User PrepareCreate(UserCreateByAppModel model)
         {
             User user = new User
             {
-                UserEmail = email,
+                UserEmail = model.Email,
                 IsBelongToCenter = false,
-
             };
             return user;  
         }
@@ -70,11 +70,33 @@ namespace PetRescue.Data.Repositories
             {
                 UserId = Guid.NewGuid(),
                 CenterId = model.CenterId,
-                IsBelongToCenter = model.isBelongToCenter,
+                IsBelongToCenter = model.IsBelongToCenter,
                 UserEmail = model.Email
             };
             Create(newUser);
             return newUser;
+        }
+        public User UpdateUserModel(User entity, UserUpdateModel model)
+        {
+            entity.CenterId = model.CenterId;
+            entity.IsBelongToCenter = model.IsBelongToCenter;
+            return entity;
+        }
+        public UserModel GetUserById(Guid id)
+        {
+            return Get().Where(u => u.UserId.Equals(id))
+                .Include(u => u.UserProfile)
+                .Select(u => new UserModel { 
+                UserId = u.UserId,
+                UserEmail = u.UserEmail,
+                FirstName = u.UserProfile.FirstName,
+                LastName = u.UserProfile.LastName,
+                Dob = u.UserProfile.Dob,
+                Gender = u.UserProfile.Gender,
+                Phone = u.UserProfile.Phone,
+                Address = u.UserProfile.Address,
+                ImageUrl = u.UserProfile.ImageUrl
+                }).FirstOrDefault();
         }
     }
 }

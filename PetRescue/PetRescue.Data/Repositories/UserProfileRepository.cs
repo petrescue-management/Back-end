@@ -40,6 +40,7 @@ namespace PetRescue.Data.Repositories
             entity.Dob = model.DoB;
             entity.Gender = model.Gender;
             entity.Phone = model.Phone;
+            entity.ImageUrl = model.ImgUrl;
             return entity;
         }
 
@@ -62,7 +63,8 @@ namespace PetRescue.Data.Repositories
                 Address = model.Address,
                 Dob = model.DoB,
                 Phone = model.Phone,
-                Gender = model.Gender
+                Gender = model.Gender,
+                ImageUrl = model.ImgUrl
             };
             return newUserProfile;
         }

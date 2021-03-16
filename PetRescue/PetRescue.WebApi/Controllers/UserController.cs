@@ -8,6 +8,7 @@ using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -38,16 +39,18 @@ namespace PetRescue.WebApi.Controllers
         }
         #endregion
         #region Post
-        [HttpPost("{email}")]
-        public IActionResult RegisterUser([FromQuery]String email)
+        [HttpPost]
+        [Route("/api/users/{email}")]
+        public IActionResult RegisterUser(UserCreateByAppModel model)
         {
             try
             {
+
                 var userDomain = _uow.GetService<UserDomain>();
-                string id = userDomain.RegisterUser(email).UserId.ToString();
+                string id = userDomain.RegisterUser(model).UserId.ToString();
                 _uow.saveChanges();
                 return Success(id);
-            }catch(Exception ex)
+            } catch (Exception ex)
             {
                 return Error(ex);
             }
@@ -60,38 +63,38 @@ namespace PetRescue.WebApi.Controllers
             {
                 var userDomain = _uow.GetService<UserDomain>();
                 UserProfile newUserProfile = userDomain.UpdateUserProfile(model);
-                if(newUserProfile != null)
+                if (newUserProfile != null)
                 {
                     _uow.saveChanges();
                     return Success(newUserProfile.UserId);
                 }
                 return Error("Can't update");
-            }catch(Exception e)
+            } catch (Exception e)
             {
                 return Error(e);
             }
         }
         //[Authorize(Roles = [RoleConstant.Manager, RoleConstant.Admin])]
-        [HttpPost("create-role-for-user")]
-        public IActionResult CreateRoleForUser(UserRoleUpdateModel model)
-        {
-            try
-            {
+        //[HttpPost("create-role-for-user")]
+        //public IActionResult CreateRoleForUser(UserRoleUpdateModel model)
+        //{
+        //    try
+        //    {
                 
-                var userDomain = _uow.GetService<UserDomain>();
-                var tempUser = userDomain.AddRoleToUser(model);
-                if(tempUser != null)
-                {
-                    _uow.saveChanges();
-                    return Success(tempUser.IsBelongToCenter);
-                }
-                return null;
-            }
-            catch (Exception e)
-            {
-                return Error(e);
-            }
-        }
+        //        var userDomain = _uow.GetService<UserDomain>();
+        //        var tempUser = userDomain.AddRoleToUser(model);
+        //        if(tempUser != null)
+        //        {
+        //            _uow.saveChanges();
+        //            return Success(tempUser.IsBelongToCenter);
+        //        }
+        //        return null;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return Error(e);
+        //    }
+        //}
         #endregion
 
     }

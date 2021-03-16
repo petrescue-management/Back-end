@@ -14,9 +14,9 @@ namespace PetRescue.Data.Repositories
 
         RescueReportModel GetRescueReportById(Guid id);
 
-        RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model);
+        RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model, Guid updateBy);
 
-        RescueReportModel CreateRescueReport(CreateRescueReportModel model);
+        RescueReportModel CreateRescueReport(CreateRescueReportModel model, Guid insertedBy);
     }
     public partial class RescueReportRepository : BaseRepository<RescueReport, string>, IRescueReportRepository
     {
@@ -25,7 +25,7 @@ namespace PetRescue.Data.Repositories
         }
 
         #region CREATE
-        private RescueReport PrepareCreate(CreateRescueReportModel model)
+        private RescueReport PrepareCreate(CreateRescueReportModel model, Guid insertedBy)
         {
 
             var report = new RescueReport
@@ -33,7 +33,7 @@ namespace PetRescue.Data.Repositories
                 RescueReportId = Guid.NewGuid(),
                 PetAttribute = model.PetAttribute,
                 ReportStatus = 1,
-                InsertedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
+                InsertedBy = insertedBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
                 UpdatedAt = null
@@ -43,9 +43,9 @@ namespace PetRescue.Data.Repositories
         }
 
 
-        public RescueReportModel CreateRescueReport(CreateRescueReportModel model)
+        public RescueReportModel CreateRescueReport(CreateRescueReportModel model, Guid insertedBy)
         {
-            var report = PrepareCreate(model);
+            var report = PrepareCreate(model, insertedBy);
 
             Create(report);
 
@@ -84,7 +84,7 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region UPDATE STATUS
-        private RescueReport PrepareUpdate(UpdateStatusModel model)
+        private RescueReport PrepareUpdate(UpdateStatusModel model, Guid updateBy)
         {
             var report = Get()
                     .Where(r => r.RescueReportId.Equals(model.Id))
@@ -95,15 +95,15 @@ namespace PetRescue.Data.Repositories
                         ReportStatus = model.Status,
                         InsertedBy = r.InsertedBy,
                         InsertedAt = r.InsertedAt,
-                        UpdatedBy = null,
+                        UpdatedBy = updateBy,
                         UpdatedAt = DateTime.UtcNow
                     }).FirstOrDefault();
 
             return report;
         }
-       public RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model)
+       public RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model, Guid updateBy)
        {
-            var report = PrepareUpdate(model);
+            var report = PrepareUpdate(model,updateBy);
 
             Update(report);
 

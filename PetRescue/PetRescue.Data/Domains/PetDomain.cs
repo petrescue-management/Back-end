@@ -64,7 +64,7 @@ namespace PetRescue.Data.Domains
             }
             return query.GetData(filter, page, limit, totalPage, fields);
         }
-        public Pet CreateNewPet(PetCreateModel model)
+        public Pet CreateNewPet(PetCreateModel model, Guid insertBy, Guid centerId)
         {
             var petRepo = uow.GetService<IPetRepository>();
             var context = uow.GetService<PetRescueContext>();
@@ -72,7 +72,7 @@ namespace PetRescue.Data.Domains
             {
                 try
                 {
-                    var newPet = petRepo.Create(model);
+                    var newPet = petRepo.Create(model, insertBy, centerId);
                     if (newPet != null)
                     {
                         //Create model for pet profile
@@ -87,7 +87,8 @@ namespace PetRescue.Data.Domains
                             PetFurColorId = model.PetFurColorId,
                             PetGender = model.PetGender,
                             PetName = model.PetName,
-                            Weight = model.Weight
+                            Weight = model.Weight,
+                            ImageUrl = model.ImageUrl
                         };
                         var petProfileRepo = uow.GetService<IPetProfileRepository>();
                         var newProfile = petProfileRepo.Create(newModel);
@@ -108,11 +109,11 @@ namespace PetRescue.Data.Domains
             return null;
             
         }
-        public Pet UpdatePet(PetDetailModel model)
+        public Pet UpdatePet(PetDetailModel model, Guid updateBy)
         {
             var petRepo = uow.GetService<IPetRepository>();
             var pet = petRepo.Get().FirstOrDefault(p => p.PetId == model.PetId);
-            pet = petRepo.Edit(pet, model);
+            pet = petRepo.Edit(pet, model, updateBy);
             return pet;
         }
         public Pet RemovePet()
@@ -158,6 +159,7 @@ namespace PetRescue.Data.Domains
             petType = petTypeRepo.Edit(petType, model);
             return petTypeRepo.Update(petType).Entity;
         }
+
 
     }
 }

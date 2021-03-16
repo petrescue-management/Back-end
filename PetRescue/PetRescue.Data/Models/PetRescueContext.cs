@@ -36,7 +36,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=petrescueserver.database.windows.net;Database=PetRescue;User Id=petrescue;Password=Admin123");
+                optionsBuilder.UseSqlServer("Server=petrescue.database.windows.net;Database=PetRescue;Trusted_Connection=False;Encrypt=True;User Id=petrescue;Password=Admin123");
             }
         }
 
@@ -146,6 +146,12 @@ namespace PetRescue.Data.Models
                     .IsRequired()
                     .HasColumnName("user_name")
                     .HasMaxLength(50);
+
+                entity.HasOne(d => d.Pet)
+                    .WithMany(p => p.AdoptionRegisterForm)
+                    .HasForeignKey(d => d.PetId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AdoptionRegisterForm_Pet");
             });
 
             modelBuilder.Entity<Center>(entity =>
@@ -435,6 +441,11 @@ namespace PetRescue.Data.Models
                     .HasColumnName("is_belong_to_center")
                     .HasDefaultValueSql("((1))");
 
+                entity.Property(e => e.Password)
+                    .HasColumnName("password")
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.UserEmail)
                     .IsRequired()
                     .HasColumnName("user_email")
@@ -465,6 +476,10 @@ namespace PetRescue.Data.Models
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Gender).HasColumnName("gender");
+
+                entity.Property(e => e.ImageUrl)
+                    .HasColumnName("image_url")
+                    .IsUnicode(false);
 
                 entity.Property(e => e.LastName)
                     .IsRequired()

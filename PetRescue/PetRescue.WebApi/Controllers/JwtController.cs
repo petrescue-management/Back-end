@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Uow;
+using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +18,43 @@ namespace PetRescue.WebApi.Controllers
         {
         }
         [HttpGet]
-        public  IActionResult GetToken([FromQuery]string token)
+        public  IActionResult GetToken([FromQuery]UserLoginModel model)
         {
             try
             {
                 var jwtDomain = _uow.GetService<JWTDomain>();
-                var returnToken = jwtDomain.DecodeJwt(token);
-                _uow.saveChanges();
-                return Success(returnToken);
+                if (ValidationExtensions.IsNotNullOrEmptyOrWhiteSpace(model.Jwt))
+                {
+                    var result = jwtDomain.DecodeJwt(model);
+                    if (ValidationExtensions.IsNotNull(result))
+                    {
+                        _uow.saveChanges();
+                        return Success(result.Jwt);
+                    }
+                }
+                return BadRequest();
             }catch(Exception e)
             {
-                return Error(e);
+                return Error(e.Message);
+            }
+        }
+        [HttpPost("login-by-sysadmin")]
+        public IActionResult LoginBySystemAdmin([FromBody] UserLoginBySysadminModel model)
+        {
+            try
+            {
+                var jwtDomain = _uow.GetService<JWTDomain>();
+                var result = jwtDomain.LoginBySysAdmin(model);
+                if(result != null)
+                {
+                    _uow.saveChanges();
+                    return Success(result);
+                }
+                return BadRequest("");
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
             }
         }
     }

@@ -35,6 +35,6 @@ namespace PetRescue.Data.ViewModels
         public string CenterName { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
-        public int CenterStatus { get; set; }
+        public byte CenterStatus { get; set; }
     }
 }
