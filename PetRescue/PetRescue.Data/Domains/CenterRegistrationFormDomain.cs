@@ -13,10 +13,8 @@ namespace PetRescue.Data.Domains
 {
     public class CenterRegistrationFormDomain : BaseDomain
     {
-        private readonly IHostingEnvironment env;
-        public CenterRegistrationFormDomain(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        public CenterRegistrationFormDomain(IUnitOfWork uow) : base(uow)
         {
-            env = environment;
         }
 
         #region SEARCH

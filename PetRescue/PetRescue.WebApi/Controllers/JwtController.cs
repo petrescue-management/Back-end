@@ -18,16 +18,19 @@ namespace PetRescue.WebApi.Controllers
         {
         }
         [HttpGet]
-        public  IActionResult GetToken([FromQuery]string token)
+        public  IActionResult GetToken([FromQuery]UserLoginModel model)
         {
             try
             {
                 var jwtDomain = _uow.GetService<JWTDomain>();
-                if (ValidationExtensions.IsNotNullOrEmptyOrWhiteSpace(token))
+                if (ValidationExtensions.IsNotNullOrEmptyOrWhiteSpace(model.Jwt))
                 {
-                    var returnToken = jwtDomain.DecodeJwt(token);
-                    _uow.saveChanges();
-                    return Success(returnToken);
+                    var result = jwtDomain.DecodeJwt(model);
+                    if (ValidationExtensions.IsNotNull(result))
+                    {
+                        _uow.saveChanges();
+                        return Success(result.Jwt);
+                    }
                 }
                 return BadRequest();
             }catch(Exception e)

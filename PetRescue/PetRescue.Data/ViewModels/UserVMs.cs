@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PetRescue.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -85,7 +86,7 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("deviceToken")]
         public string DeviceToken { get; set; }
         [JsonProperty("applicationName")]
-        public string applicationName { get; set; }
+        public string ApplicationName { get; set; }
     }
     public class UserUpdateModel
     {
@@ -108,5 +109,19 @@ namespace PetRescue.Data.ViewModels
         public string ImageUrl { get; set; }
 
     }
+    public class UserLoginModel 
+    {
+        [JsonProperty("jwt")]
+        public string Jwt { get; set; }
+        [JsonProperty("deviceToken")]
+        public string DeviceToken { get; set; }
+        [JsonProperty("applicationName")]
+        public string ApplicationName { get; set; }
+    }
+    public class JWTReturnModel
+    {
+        public object Jwt { get; set; }
+        public NotificationToken NotificationToken { get; set; }
 
+    }
 }
