@@ -16,13 +16,11 @@ namespace PetRescue.Data.Domains
         }
 
         #region SEARCH
-        public SearchReturnModel SearchAdoption(SearchModel model,string currentUserId)
+        public SearchReturnModel SearchAdoption(SearchModel model,string currentCenterId)
         {
             var records = uow.GetService<IAdoptionRepository>().Get().AsQueryable();
             var pet_service = uow.GetService<IPetRepository>();
             var user_service = uow.GetService<IUserRepository>();
-
-            var centerId = user_service.FindById(null, currentUserId).CenterId;
 
             if (model.Status != 0)
                 records = records.Where(a => a.AdoptionStatus.Equals(model.Status));
@@ -32,7 +30,7 @@ namespace PetRescue.Data.Domains
                 .Take(model.PageSize)
                 .Include(a => a.AdoptionRegister)
                 .ThenInclude(a => a.Pet)
-                .Where(a => a.AdoptionRegister.Pet.CenterId.Equals(centerId))
+                .Where(a => a.AdoptionRegister.Pet.CenterId.Equals(Guid.Parse(currentCenterId)))
                 .Select(a => new AdoptionModel
                 {
                     AdoptionRegisterId = a.AdoptionRegisterId,
