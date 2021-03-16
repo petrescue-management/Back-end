@@ -1,6 +1,4 @@
-﻿using FirebaseAdmin;
-using FirebaseAdmin.Messaging;
-using Google.Apis.Auth.OAuth2;
+﻿using FirebaseAdmin.Messaging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -72,31 +70,22 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                string path = _env.ContentRootPath + FCMConfig.FILE_NAME;
+                string path = _env.ContentRootPath;
                 string result = _uow.GetService<CenterRegistrationFormDomain>().CreateCenterRegistrationForm(model);
-
                 var userDomain = _uow.GetService<UserDomain>();
                 var listToken = userDomain.GetListDeviceTokenByRoleAndApplication(RoleConstant.Admin, ApplicationNameHelper.SYSTEMADMINAPP);
                 //send notification to sysadmin
                 if (listToken.Count > 0)
                 {
-                    FirebaseApp app = null;
-                    app = FirebaseApp.Create(new AppOptions()
-                    {
-                        Credential = GoogleCredential.FromFile(path)
-                    }, "PetRescue");
-                    
-                    app = FirebaseApp.GetInstance("PetRescue");
-                    var fcm = FirebaseAdmin.Messaging.FirebaseMessaging.GetMessaging(app);
-                    var regisregistration_ids = new List<string>();
+                    var firebaseExtensions = new FireBaseExtentions();
+                    var app = firebaseExtensions.GetFirebaseApp(path);
+                    var fcm = FirebaseMessaging.GetMessaging(app);
                     Message message = new Message()
                     {
-
                         Notification = new Notification
                         {
-                            Title = "You have a new Center Registration ",
-                            Body = "New center registration form is created",
-
+                            Title = NotificationTitleHelper.NEW_REGISTRATION_CENTER_FORM_TITLE,
+                            Body = NotificationBodyHelper.NEW_REGISTRATION_CENTER_FORM_BODY,
                         },
                     };
                     foreach (var token in listToken)
