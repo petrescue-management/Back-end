@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
@@ -132,7 +133,15 @@ namespace PetRescue.Data.Domains
             }
             return listNotificationToken;
         }
-       
+        
+        public NotificationToken GetManagerDeviceTokenByCenterId(Guid centerId)
+        {
+            var notificationTokenRepo = uow.GetService<INotificationTokenRepository>();
+            var userRoleRepo = uow.GetService<IUserRoleRepository>();
+            var currentUserRole = userRoleRepo.Get().FirstOrDefault(s => s.User.CenterId.Equals(centerId) && s.Role.RoleName == RoleConstant.Manager);
+            var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(currentUserRole.UserId) && s.ApplicationName.Equals(ApplicationNameHelper.MANAGERCENTERAPP));
+            return notificationToken;
+        }
         //public User AddRoleToUser(UserRoleUpdateModel model)
         //{
         //    var currentUser = GetUserById(model.UserId);

@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FirebaseAdmin.Messaging;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 using System;
@@ -14,8 +18,10 @@ namespace PetRescue.WebApi.Controllers
     [ApiController]
     public class AdoptionRegisterFormController : BaseController
     {
-        public AdoptionRegisterFormController(IUnitOfWork uow) : base(uow)
+        private readonly IHostingEnvironment _env;
+        public AdoptionRegisterFormController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
+            _env = environment;
         }
 
         [Authorize(Roles = "manager")]
@@ -71,11 +77,30 @@ namespace PetRescue.WebApi.Controllers
 
         [HttpPost]
         [Route("api/create-adoption-register-form")]
-        public IActionResult CreateUpdateAdoptionRegisterFormStatus(CreateAdoptionRegisterFormModel model)
+        public async Task<IActionResult> CreateUpdateAdoptionRegisterFormStatus(CreateAdoptionRegisterFormModel model)
         {
             try
             {
+                string path = _env.ContentRootPath;
                 var result = _uow.GetService<AdoptionRegisterFormDomain>().CreateAdoptionRegisterForm(model);
+                var firebaseExtensions = new FireBaseExtentions();
+                var petDomain = _uow.GetService<PetDomain>();
+                var currentPet = petDomain.GetPetById(model.PetId);
+                var userDomain = _uow.GetService<UserDomain>();
+                var notificationToken = userDomain.GetManagerDeviceTokenByCenterId(currentPet.CenterId);
+                var app = firebaseExtensions.GetFirebaseApp(path);
+                var fcm = FirebaseMessaging.GetMessaging(app);
+                Message message = new Message()
+                {
+                    Notification = new Notification
+                    {
+                        Title = NotificationTitleHelper.NEW_REGISTRATON_ADOPTION_FORM_TITLE,
+                        Body = NotificationBodyHelper.NEW_REGISTRATION_ADOPTION_FORM_BODY,
+                    },
+                };
+                message.Token = notificationToken.DeviceToken;
+                await fcm.SendAsync(message);
+                app.Delete();
                 _uow.saveChanges();
                 return Success(result);
             }

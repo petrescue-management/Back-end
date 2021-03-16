@@ -159,7 +159,11 @@ namespace PetRescue.Data.Domains
             petType = petTypeRepo.Edit(petType, model);
             return petTypeRepo.Update(petType).Entity;
         }
-
+        public Pet GetPetById(Guid petId) 
+        {
+            var petRepo = uow.GetService<IPetRepository>();
+            return petRepo.Get().FirstOrDefault(s => s.PetId.Equals(petId));
+        }
 
     }
 }
