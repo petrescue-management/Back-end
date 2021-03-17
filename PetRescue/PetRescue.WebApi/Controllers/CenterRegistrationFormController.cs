@@ -77,7 +77,7 @@ namespace PetRescue.WebApi.Controllers
                 string path = _env.ContentRootPath;
                 string result = _uow.GetService<CenterRegistrationFormDomain>().CreateCenterRegistrationForm(model);
                 var userDomain = _uow.GetService<UserDomain>();
-                var listToken = userDomain.GetListDeviceTokenByRoleAndApplication(RoleConstant.Admin, ApplicationNameHelper.SYSTEMADMINAPP);
+                var listToken = userDomain.GetListDeviceTokenByRoleAndApplication(RoleConstant.Admin, ApplicationNameHelper.SYSTEM_ADMIN_APP);
                 //send notification to sysadmin
                 if (listToken.Count > 0)
                 {

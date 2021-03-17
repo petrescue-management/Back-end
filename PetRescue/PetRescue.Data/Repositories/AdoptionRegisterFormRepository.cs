@@ -12,9 +12,9 @@ namespace PetRescue.Data.Repositories
     {
         AdoptionRegisterForm GetAdoptionRegisterFormById(Guid id);
 
-        AdoptionRegisterForm UpdateAdoptionRegisterFormStatus(UpdateStatusModel model);
+        AdoptionRegisterForm UpdateAdoptionRegisterFormStatus(UpdateStatusModel model, Guid updateBy);
 
-        AdoptionRegisterForm CreateAdoptionRegistertionForm(CreateAdoptionRegisterFormModel model);
+        AdoptionRegisterForm CreateAdoptionRegistertionForm(CreateAdoptionRegisterFormModel model, Guid insertBy);
 
     }
 
@@ -56,7 +56,7 @@ namespace PetRescue.Data.Repositories
 
 
         #region UPDATE STATUS
-        private AdoptionRegisterForm PrepareUpdate(UpdateStatusModel model)
+        private AdoptionRegisterForm PrepareUpdate(UpdateStatusModel model, Guid updateBy)
         {
             var form = Get()
                   .Where(f=> f.AdoptionRegisterId.Equals(model.Id))
@@ -79,15 +79,15 @@ namespace PetRescue.Data.Repositories
                       AdoptionRegisterStatus = model.Status,
                       InsertedBy = f.InsertedBy,
                       InsertedAt = f.InsertedAt,
-                      UpdatedBy = null,
+                      UpdatedBy = updateBy,
                       UpdateAt = DateTime.UtcNow
                   }).FirstOrDefault();
             return form;
         }
 
-        public AdoptionRegisterForm UpdateAdoptionRegisterFormStatus(UpdateStatusModel model)
+        public AdoptionRegisterForm UpdateAdoptionRegisterFormStatus(UpdateStatusModel model, Guid updateBy)
         {
-            var form = PrepareUpdate(model);
+            var form = PrepareUpdate(model, updateBy);
             Update(form);
             return form;
         }
@@ -96,7 +96,7 @@ namespace PetRescue.Data.Repositories
 
         #region CREATE
 
-        private AdoptionRegisterForm PrepareCreate(CreateAdoptionRegisterFormModel model)
+        private AdoptionRegisterForm PrepareCreate(CreateAdoptionRegisterFormModel model,Guid insertBy)
         {
 
             var form = new AdoptionRegisterForm
@@ -116,7 +116,7 @@ namespace PetRescue.Data.Repositories
                 HaveAgreement = model.HaveAgreement,
                 HavePet = model.HavePet,
                 AdoptionRegisterStatus = model.AdoptionRegisterStatus,
-                InsertedBy = Guid.NewGuid(),
+                InsertedBy = insertBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
                 UpdateAt = null
@@ -124,14 +124,14 @@ namespace PetRescue.Data.Repositories
             return form;
         }
 
-        public AdoptionRegisterForm CreateAdoptionRegistertionForm(CreateAdoptionRegisterFormModel model)
+        public AdoptionRegisterForm CreateAdoptionRegistertionForm(CreateAdoptionRegisterFormModel model,Guid insertBy)
         {
-            var form = PrepareCreate(model);
+            var form = PrepareCreate(model, insertBy);
 
-        Create(form);
+            Create(form);
 
-        return form;
-    }
+            return form;
+        }
         #endregion
 
 

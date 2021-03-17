@@ -101,11 +101,12 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public AdoptionRegisterFormModel UpdateAdoptionRegisterFormStatus(UpdateStatusModel model)
+        public AdoptionRegisterFormModel UpdateAdoptionRegisterFormStatus(UpdateStatusModel model, Guid updateBy)
         {
-            var form = uow.GetService<IAdoptionRegisterFormRepository>().UpdateAdoptionRegisterFormStatus(model);
+            var form = uow.GetService<IAdoptionRegisterFormRepository>().UpdateAdoptionRegisterFormStatus(model, updateBy);
             var pet_service = uow.GetService<IPetRepository>();
             var adoption_service = uow.GetService<IAdoptionRepository>();
+            var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegisterFormRepository>();
             var result = new AdoptionRegisterFormModel
             {
                 AdoptionRegisterId = form.AdoptionRegisterId,
@@ -128,19 +129,27 @@ namespace PetRescue.Data.Domains
                 UpdatedBy = form.UpdatedBy,
                 UpdateAt = form.UpdateAt
             };
-
+            var currentPet = pet_service.Get().FirstOrDefault(s => s.PetId.Equals(form.PetId));
             if (form.AdoptionRegisterStatus == AdoptionRegisterFormStatusConst.APPROVED)
             {
                 adoption_service.CreateAdoption(result);
+                currentPet.PetStatus = PetStatusConst.ADOPTED;
+                pet_service.Update(currentPet);
+                var listAdoptionForm = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(form.PetId) && s.AdoptionRegisterStatus == AdoptionRegisterFormStatusConst.PROCESSING);
+                foreach(var adoptionForm in listAdoptionForm)
+                {
+                    adoptionForm.AdoptionRegisterStatus = AdoptionRegisterFormStatusConst.REJECTED;
+                    adoptionRegisterFormRepo.Update(adoptionForm);
+                }
             }
-                return result;
+            return result;
         }
         #endregion
 
         #region CREATE
-        public AdoptionRegisterFormModel CreateAdoptionRegisterForm(CreateAdoptionRegisterFormModel model)
+        public AdoptionRegisterFormModel CreateAdoptionRegisterForm(CreateAdoptionRegisterFormModel model, Guid insertBy)
         {
-            var form = uow.GetService<IAdoptionRegisterFormRepository>().CreateAdoptionRegistertionForm(model);
+            var form = uow.GetService<IAdoptionRegisterFormRepository>().CreateAdoptionRegistertionForm(model, insertBy);
             var pet_service = uow.GetService<IPetRepository>();
             var result = new AdoptionRegisterFormModel
             {

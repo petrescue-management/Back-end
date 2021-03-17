@@ -11,6 +11,7 @@ using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -24,7 +25,7 @@ namespace PetRescue.WebApi.Controllers
             _env = environment;
         }
 
-        [Authorize(Roles = "manager")]
+        [Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/search-adoption-register-form")]
         public IActionResult SearchAdoptionRegisterForm([FromQuery] SearchModel model)
@@ -50,23 +51,6 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var result = _uow.GetService<AdoptionRegisterFormDomain>().GetAdoptionRegisterFormById(id);
-                    return Success(result);
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
-
-
-        [HttpPut]
-        [Route("api/update-adoption-register-form-status")]
-        public IActionResult UpdateAdoptionRegisterFormStatus(UpdateStatusModel model)
-        {
-            try
-            {
-                var result = _uow.GetService<AdoptionRegisterFormDomain>().UpdateAdoptionRegisterFormStatus(model);
-                _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)
@@ -75,6 +59,43 @@ namespace PetRescue.WebApi.Controllers
             }
         }
 
+        [Authorize(Roles = RoleConstant.Manager)]
+        [HttpPut]
+        [Route("api/update-adoption-register-form-status")]
+        public async Task<IActionResult> UpdateAdoptionRegisterFormStatusAsync(UpdateStatusModel model)
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _uow.GetService<AdoptionRegisterFormDomain>().UpdateAdoptionRegisterFormStatus(model,Guid.Parse(currentUserId));
+                var notificationTokenDomain = _uow.GetService<NotificationTokenDomain>();
+                string path = _env.ContentRootPath;
+                var firebaseExtensions = new FireBaseExtentions();
+                var notificationToken = notificationTokenDomain.FindByApplicationNameAndUserId(result.InsertedBy, ApplicationNameHelper.USER_APP);
+                var app = firebaseExtensions.GetFirebaseApp(path);
+                var fcm = FirebaseMessaging.GetMessaging(app);
+                if(result.AdoptionRegisterStatus == AdoptionRegisterFormStatusConst.APPROVED)
+                {
+                    Message message = new Message()
+                    {
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.APPROVE_ADOPTION_FORM_TITLE,
+                            Body = NotificationBodyHelper.APPROVE_ADOPTION_FORM_BODY,
+                        },
+                    };
+                    message.Token = notificationToken.DeviceToken;
+                    await fcm.SendAsync(message);
+                }
+                _uow.saveChanges();
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [Authorize]
         [HttpPost]
         [Route("api/create-adoption-register-form")]
         public async Task<IActionResult> CreateUpdateAdoptionRegisterFormStatus(CreateAdoptionRegisterFormModel model)
@@ -82,7 +103,8 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 string path = _env.ContentRootPath;
-                var result = _uow.GetService<AdoptionRegisterFormDomain>().CreateAdoptionRegisterForm(model);
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _uow.GetService<AdoptionRegisterFormDomain>().CreateAdoptionRegisterForm(model, Guid.Parse(currentUserId));
                 var firebaseExtensions = new FireBaseExtentions();
                 var petDomain = _uow.GetService<PetDomain>();
                 var currentPet = petDomain.GetPetById(model.PetId);

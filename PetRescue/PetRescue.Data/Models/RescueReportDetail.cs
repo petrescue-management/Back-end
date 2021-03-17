@@ -7,6 +7,8 @@ namespace PetRescue.Data.Models
     {
         public Guid RescueReportId { get; set; }
         public string ReportDescription { get; set; }
+        public double? Lat { get; set; }
+        public double? Lng { get; set; }
         public string ReportLocation { get; set; }
         public string ImgReportUrl { get; set; }
 
