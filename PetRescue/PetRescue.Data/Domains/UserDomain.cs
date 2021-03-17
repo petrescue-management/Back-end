@@ -139,7 +139,7 @@ namespace PetRescue.Data.Domains
             var notificationTokenRepo = uow.GetService<INotificationTokenRepository>();
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
             var currentUserRole = userRoleRepo.Get().FirstOrDefault(s => s.User.CenterId.Equals(centerId) && s.Role.RoleName == RoleConstant.Manager);
-            var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(currentUserRole.UserId) && s.ApplicationName.Equals(ApplicationNameHelper.MANAGERCENTERAPP));
+            var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(currentUserRole.UserId) && s.ApplicationName.Equals(ApplicationNameHelper.MANAGE_CENTER_APP));
             return notificationToken;
         }
         //public User AddRoleToUser(UserRoleUpdateModel model)

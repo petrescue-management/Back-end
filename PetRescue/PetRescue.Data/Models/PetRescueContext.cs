@@ -19,6 +19,7 @@ namespace PetRescue.Data.Models
         public virtual DbSet<AdoptionRegisterForm> AdoptionRegisterForm { get; set; }
         public virtual DbSet<Center> Center { get; set; }
         public virtual DbSet<CenterRegistrationForm> CenterRegistrationForm { get; set; }
+        public virtual DbSet<NotificationToken> NotificationToken { get; set; }
         public virtual DbSet<Pet> Pet { get; set; }
         public virtual DbSet<PetBreed> PetBreed { get; set; }
         public virtual DbSet<PetFurColor> PetFurColor { get; set; }
@@ -179,6 +180,10 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.InsertBy).HasColumnName("insert_by");
 
+                entity.Property(e => e.Lat).HasColumnName("lat");
+
+                entity.Property(e => e.Lng).HasColumnName("lng");
+
                 entity.Property(e => e.Phone)
                     .IsRequired()
                     .HasColumnName("phone")
@@ -220,6 +225,10 @@ namespace PetRescue.Data.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Lat).HasColumnName("lat");
+
+                entity.Property(e => e.Long).HasColumnName("long");
+
                 entity.Property(e => e.Phone)
                     .IsRequired()
                     .HasColumnName("phone")
@@ -231,6 +240,33 @@ namespace PetRescue.Data.Models
                     .HasColumnType("date");
 
                 entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            });
+
+            modelBuilder.Entity<NotificationToken>(entity =>
+            {
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.ApplicationName)
+                    .IsRequired()
+                    .HasColumnName("application_name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DeviceToken)
+                    .HasColumnName("device_token")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.IsActive).HasColumnName("is_active");
+
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.NotificationToken)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_NotificationToken_User");
             });
 
             modelBuilder.Entity<Pet>(entity =>
@@ -401,6 +437,10 @@ namespace PetRescue.Data.Models
                     .IsRequired()
                     .HasColumnName("img_report_url")
                     .HasMaxLength(50);
+
+                entity.Property(e => e.Lat).HasColumnName("lat");
+
+                entity.Property(e => e.Lng).HasColumnName("lng");
 
                 entity.Property(e => e.ReportDescription).HasColumnName("report_description");
 
