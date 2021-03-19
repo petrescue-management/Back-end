@@ -182,7 +182,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.Lat).HasColumnName("lat");
 
-                entity.Property(e => e.Lng).HasColumnName("lng");
+                entity.Property(e => e.Long).HasColumnName("lng");
 
                 entity.Property(e => e.Phone)
                     .IsRequired()

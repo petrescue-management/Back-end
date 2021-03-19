@@ -35,6 +35,8 @@ namespace PetRescue.Data.Domains
                     CenterName = f.CenterName,
                     Email = f.Email,
                     Phone = f.Phone,
+                    Lat = f.Lat,
+                    Long = f.Long,
                     CenterAddress = f.CenterAddress,
                     Description = f.Description,
                     CenterRegistrationStatus = f.CenterRegistrationStatus,

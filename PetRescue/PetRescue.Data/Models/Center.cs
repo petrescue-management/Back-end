@@ -13,7 +13,7 @@ namespace PetRescue.Data.Models
         public Guid CenterId { get; set; }
         public string CenterName { get; set; }
         public double? Lat { get; set; }
-        public double? Lng { get; set; }
+        public double? Long { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
         public int CenterStatus { get; set; }

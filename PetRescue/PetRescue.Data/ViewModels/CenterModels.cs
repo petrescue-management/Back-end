@@ -11,6 +11,8 @@ namespace PetRescue.Data.ViewModels
         public string CenterName { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
+        public double? Lat { get; set; }
+        public double? Long { get; set; }
         public int CenterStatus { get; set; }
         public DateTime InsertAt { get; set; }
         public DateTime? UpdateAt { get; set; }
@@ -23,7 +25,8 @@ namespace PetRescue.Data.ViewModels
         public string CenterName { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
-
+        public double? Lat { get; set; }
+        public double? Long { get; set; }
         public string Email { get; set; }
     }
 
