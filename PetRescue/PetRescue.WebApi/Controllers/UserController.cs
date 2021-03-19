@@ -71,30 +71,31 @@ namespace PetRescue.WebApi.Controllers
                 return Error("Can't update");
             } catch (Exception e)
             {
-                return Error(e);
+                return Error(e.Message);
             }
         }
-        //[Authorize(Roles = [RoleConstant.Manager, RoleConstant.Admin])]
-        //[HttpPost("create-role-for-user")]
-        //public IActionResult CreateRoleForUser(UserRoleUpdateModel model)
-        //{
-        //    try
-        //    {
-                
-        //        var userDomain = _uow.GetService<UserDomain>();
-        //        var tempUser = userDomain.AddRoleToUser(model);
-        //        if(tempUser != null)
-        //        {
-        //            _uow.saveChanges();
-        //            return Success(tempUser.IsBelongToCenter);
-        //        }
-        //        return null;
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return Error(e);
-        //    }
-        //}
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpPost("create-role-volunteer-for-user")]
+        public IActionResult CreateRoleForUser([FromQuery]string email)
+        {
+            try
+            {
+                var userDomain = _uow.GetService<UserDomain>();
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var user = userDomain.AddUserToCenter(new AddNewRoleModel 
+                {
+                    Email = email,
+                    CenterId = Guid.Parse(currentCenterId),
+                    RoleName = RoleConstant.VOLUNTEER
+                });
+                return Success(user);
+            }
+            catch (Exception e)
+            {
+                return Error(e.Message);
+            }
+        }
         #endregion
 
     }

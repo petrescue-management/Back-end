@@ -111,8 +111,8 @@ namespace PetRescue.Data.ViewModels
     }
     public class UserLoginModel 
     {
-        [JsonProperty("jwt")]
-        public string Jwt { get; set; }
+        [JsonProperty("token")]
+        public string Token { get; set; }
         [JsonProperty("deviceToken")]
         public string DeviceToken { get; set; }
         [JsonProperty("applicationName")]

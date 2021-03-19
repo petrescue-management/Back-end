@@ -99,7 +99,7 @@ namespace PetRescue.Data.Repositories
                 InsertBy = old_center.InsertBy,
                 InsertAt = old_center.InsertAt,
                 UpdateBy = updateBy,
-                UpdateAt = DateTime.Now
+                UpdateAt = DateTime.Now,
             };
 
             return update_center;

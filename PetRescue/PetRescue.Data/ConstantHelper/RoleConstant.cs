@@ -7,7 +7,8 @@ namespace PetRescue.Data.ConstantHelper
     public class RoleConstant
     {
         public const string USER = "user";
-        public const string Admin = "sysadmin";
-        public const string Manager = "manager";
+        public const string ADMIN = "sysadmin";
+        public const string MANAGER = "manager";
+        public const string VOLUNTEER = "volunteer";
     }
 }

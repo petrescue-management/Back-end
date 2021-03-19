@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
@@ -138,72 +139,32 @@ namespace PetRescue.Data.Domains
         {
             var notificationTokenRepo = uow.GetService<INotificationTokenRepository>();
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
-            var currentUserRole = userRoleRepo.Get().FirstOrDefault(s => s.User.CenterId.Equals(centerId) && s.Role.RoleName == RoleConstant.Manager);
+            var currentUserRole = userRoleRepo.Get().FirstOrDefault(s => s.User.CenterId.Equals(centerId) && s.Role.RoleName == RoleConstant.MANAGER);
             var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(currentUserRole.UserId) && s.ApplicationName.Equals(ApplicationNameHelper.MANAGE_CENTER_APP));
             return notificationToken;
         }
-        //public User AddRoleToUser(UserRoleUpdateModel model)
-        //{
-        //    var currentUser = GetUserById(model.UserId);
-        //    return null;
-        //    // get current user
-        //    //          if (currentUser == null) // current user not found
-        //    //{
-        //    //    return null;
-        //    //}//end of if
-        //    //if (currentUser.IsBelongToCenter.Value)
-        //    //{
-        //    //    var userRoleDomain = uow.GetService<UserRoleDomain>();
-        //    //    var userRole = userRoleDomain.IsExisted(model);
-        //    //    if (userRole == null)
-        //    //    {
-        //    //        var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
-        //    //        if (newUserRole != null)
-        //    //        {
-        //    //            return currentUser;
-        //    //        }
-        //    //        return null;
-        //    //    }
-        //    //    return null;
-        //    //}//end of if
-        //    //else
-        //    //{
-        //    //    var userRoleDomain = uow.GetService<UserRoleDomain>();
-        //    //    var userRole = userRoleDomain.IsExisted(model);
-        //    //    if (userRole == null)
-        //    //    {
-        //    //        var tempModel = new UserUpdateCenterModel
-        //    //        {
-        //    //            CenterId = model.CenterId,
-        //    //            UserId = model.UserId
-        //    //        };
-        //    //        var tempUser = UpdateCenter(tempModel, currentUser);
-        //    //        if (tempUser != null)
-        //    //        {
-        //    //            var newUserRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName);
-        //    //            if (newUserRole != null)
-        //    //            {
-        //    //                return tempUser;
-        //    //            }
-        //    //            return null;
-        //    //        }
-        //    //        return null;  
-        //    //    }
-        //    //    else
-        //    //    {
-        //    //        var tempModel = new UserUpdateCenterModel
-        //    //        {
-        //    //            CenterId = model.CenterId,
-        //    //            UserId = model.UserId
-        //    //        };
-        //    //        var tempUser = UpdateCenter(tempModel, currentUser);
-        //    //        if (tempUser != null)
-        //    //        {
-        //    //            return tempUser;
-        //    //        }
-        //    //        return null;
-        //    //    }
-        //    //}//end of else
-        //}
+        
+        public User AddUserToCenter(AddNewRoleModel model)
+        {
+            var userRepo = uow.GetService<IUserRepository>();
+            var userRoleDomain = uow.GetService<UserRoleDomain>();
+            var currentUser = userRepo.Get().FirstOrDefault(s=> s.UserEmail.Equals(model.Email));
+            if(currentUser != null)
+            {
+                if( (bool)!currentUser.IsBelongToCenter && currentUser.CenterId != null)
+                {
+                    userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.CenterId);
+                }
+                else
+                {
+                    if (currentUser.CenterId.Equals(model.CenterId))
+                    {
+
+                    }
+                }
+            }
+            return currentUser;
+        }
+       
     }
 }

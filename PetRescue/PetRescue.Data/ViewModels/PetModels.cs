@@ -129,5 +129,22 @@ namespace PetRescue.Data.ViewModels
         public string PetFurColorName { get; set; }
 
     }
+    public class PetAdoptionRegisterFormModel
+    {
+        [JsonProperty("petId")]
+        public Guid PetId { get; set; }
+        [JsonProperty("count")]
+        public int Count { get; set; }
+        [JsonProperty("petName")]
+        public string PetName { get; set; }
+        [JsonProperty("gender")]
+        public int Gender { get; set; }
+        [JsonProperty("age")]
+        public int Age { get; set; }
+        [JsonProperty("breedName")]
+        public string BreedName { get; set; }
+        [JsonProperty("imgUrl")]
+        public string ImageUrl { get; set; }
+    }
 }
 

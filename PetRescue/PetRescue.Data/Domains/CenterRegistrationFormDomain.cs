@@ -150,7 +150,7 @@ namespace PetRescue.Data.Domains
                                 var newUserRoleUpdateModel = new UserRoleUpdateModel
                                 {
                                     CenterId = newCenter.CenterId,
-                                    RoleName = RoleConstant.Manager,
+                                    RoleName = RoleConstant.MANAGER,
                                     UserId = newUser.UserId,
                                 };
                                 userDomain.AddRoleManagerToUser(newUserRoleUpdateModel, insertBy);
@@ -171,7 +171,7 @@ namespace PetRescue.Data.Domains
                                 var userRoleUpdateModel = new UserRoleUpdateModel
                                 {
                                     CenterId = newCenter.CenterId,
-                                    RoleName = RoleConstant.Manager,
+                                    RoleName = RoleConstant.MANAGER,
                                     UserId = currentUser.UserId,
                                 };
                                 userDomain.AddRoleManagerToUser(userRoleUpdateModel, insertBy);
