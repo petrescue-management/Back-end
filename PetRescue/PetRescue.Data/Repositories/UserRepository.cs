@@ -73,8 +73,7 @@ namespace PetRescue.Data.Repositories
                 IsBelongToCenter = model.IsBelongToCenter,
                 UserEmail = model.Email
             };
-            Create(newUser);
-            return newUser;
+            return Create(newUser).Entity;
         }
         public User UpdateUserModel(User entity, UserUpdateModel model)
         {

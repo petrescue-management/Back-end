@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
@@ -107,7 +108,7 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region PROCESS FORM
-        public CenterRegistrationFormModel ProcressCenterRegistrationForm(UpdateStatusModel model, Guid insertBy)
+        public int ProcressCenterRegistrationForm(UpdateStatusModel model, Guid insertBy)
         {
             var center_registration_form_service = uow.GetService<ICenterRegistrationFormRepository>();
             var center_service = uow.GetService<ICenterRepository>();
@@ -155,7 +156,6 @@ namespace PetRescue.Data.Domains
                                 };
                                 userDomain.AddRoleManagerToUser(newUserRoleUpdateModel, insertBy);
                                 transaction.Commit();
-                                return form;
                             }
                             else // found user
                             {
@@ -176,8 +176,11 @@ namespace PetRescue.Data.Domains
                                 };
                                 userDomain.AddRoleManagerToUser(userRoleUpdateModel, insertBy);
                                 transaction.Commit();
-                                return form;
-                            }                           
+                            }
+                            uow.saveChanges();
+                            MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(form.Email), MailConstant.APPROVE_REGISTRATION_FORM);
+                            MailExtensions.SendBySendGrid(mailArguments, null, null);
+                            return form.CenterRegistrationStatus;
                         }
                         catch (Exception e)
                         {
@@ -190,10 +193,12 @@ namespace PetRescue.Data.Domains
                 else if (model.Status == CenterRegistrationFormStatusConst.REJECTED)
                 {
                     form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
-                    return form;
+                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email), MailConstant.REJECT_REGISTRATION_FORM);
+                    MailExtensions.SendBySendGrid(mailArguments, null, null);
+                    return form.CenterRegistrationStatus;
                 }
             }
-            return null;
+            return -1;
         }
         #endregion
         public NotificationToken SendInformationCenter()

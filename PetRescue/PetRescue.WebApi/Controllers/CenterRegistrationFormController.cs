@@ -29,7 +29,6 @@ namespace PetRescue.WebApi.Controllers
         {
             _env = environment;
         }
-
         #region SEARCH
         [HttpGet]
         [Route("api/search-center-registration-form")]
@@ -75,29 +74,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 string path = _env.ContentRootPath;
                 string result = _uow.GetService<CenterRegistrationFormDomain>().CreateCenterRegistrationForm(model);
-                var userDomain = _uow.GetService<UserDomain>();
-                var listToken = userDomain.GetListDeviceTokenByRoleAndApplication(RoleConstant.ADMIN, ApplicationNameHelper.SYSTEM_ADMIN_APP);
-                //send notification to sysadmin
-                if (listToken.Count > 0)
-                {
-                    var firebaseExtensions = new FireBaseExtentions();
-                    var app = firebaseExtensions.GetFirebaseApp(path);
-                    var fcm = FirebaseMessaging.GetMessaging(app);
-                    Message message = new Message()
-                    {
-                        Notification = new Notification
-                        {
-                            Title = NotificationTitleHelper.NEW_REGISTRATION_CENTER_FORM_TITLE,
-                            Body = NotificationBodyHelper.NEW_REGISTRATION_CENTER_FORM_BODY,
-                        },
-                    };
-                    foreach (var token in listToken)
-                    {
-                        message.Token = token.DeviceToken;
-                        await fcm.SendAsync(message);
-                    }
-                    app.Delete();
-                }
+                await _uow.GetService<NotificationTokenDomain>().NotificationForAdminWhenHaveNewCenterRegisterForm(path);
                 if (result.Contains("is already"))
                     return BadRequest(result);
                 _uow.saveChanges();
@@ -119,32 +96,10 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var form = _uow.GetService<CenterRegistrationFormDomain>().ProcressCenterRegistrationForm(model, Guid.Parse(currentUserId));
-
-                if(form != null)
+                var result = _uow.GetService<CenterRegistrationFormDomain>().ProcressCenterRegistrationForm(model, Guid.Parse(currentUserId));
+                if(result != -1)
                 {
-                    if(form.CenterRegistrationStatus == CenterRegistrationFormStatusConst.APPROVED)
-                    {
-                        MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(form.Email), MailConstant.APPROVE_REGISTRATION_FORM);
-                        bool result =  MailExtensions.SendBySendGrid(mailArguments, null, null);
-                        if (result)
-                        {
-                            _uow.saveChanges();
-                            return Success(form.CenterRegistrationStatus);
-                        }
-                        return BadRequest();
-                    }
-                    else if(form.CenterRegistrationStatus == CenterRegistrationFormStatusConst.REJECTED)
-                    {
-                        MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email), MailConstant.REJECT_REGISTRATION_FORM);
-                        bool result = MailExtensions.SendBySendGrid(mailArguments, null, null);
-                        if (result)
-                        {
-                            _uow.saveChanges();
-                            return Success(form.CenterRegistrationStatus);
-                        }
-                        return BadRequest();
-                    }
+                    return Success(result);
                 }
                 return BadRequest();
                 
@@ -154,33 +109,5 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         #endregion
-        //[HttpGet]
-        //[Route("Test212")]
-        //public IActionResult Test()
-        //{
-        //    try
-        //    {
-        //        MailMessage message = new MailMessage();
-        //        message.IsBodyHtml = true;
-        //        message.Subject = "Subject";
-        //        message.To.Add("pjnochjo3095@gmail.com");
-        //        message.Body = MailConstant.ApproveRegistrationCenter("petrescue2021@gmail.com");
-        //        message.From = new MailAddress("petrescue2021@gmail.com", "Rescue Them");
-        //        SmtpClient client = new SmtpClient("smtp.sendgrid.net");
-        //        client.UseDefaultCredentials = false;
-        //        client.Credentials = new NetworkCredential("apikey", "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");
-        //        client.DeliveryMethod = SmtpDeliveryMethod.Network;
-        //        client.Port = 587; // I have tried with 25 and 2525
-        //        client.Timeout = 99999;
-        //        client.EnableSsl = false;
-        //        client.Send(message);
-        //        return Success("Ok");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Error(ex.Message);
-        //    }
-            
-        //}
     }
 }

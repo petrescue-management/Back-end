@@ -20,7 +20,7 @@ namespace PetRescue.WebApi.Controllers
         public UserController(IUnitOfWork uow) : base(uow)
         {
         }
-        #region get
+        #region GET
         [Authorize]
         [HttpGet]
         public IActionResult GetUserDetail()
@@ -28,8 +28,8 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var token = Request.Headers["Authorization"];
-                var userDomain = _uow.GetService<UserDomain>();
-                var result = userDomain.GetUserDetail(token.ToString().Split(" ")[1]);
+                var _domain = _uow.GetService<UserDomain>();
+                var result = _domain.GetUserDetail(token.ToString().Split(" ")[1]);
                 return Success(result);
             }
             catch (Exception e)
@@ -38,37 +38,20 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         #endregion
-        #region Post
-        [HttpPost]
-        [Route("/api/users/{email}")]
-        public IActionResult RegisterUser(UserCreateByAppModel model)
-        {
-            try
-            {
-
-                var userDomain = _uow.GetService<UserDomain>();
-                string id = userDomain.RegisterUser(model).UserId.ToString();
-                _uow.saveChanges();
-                return Success(id);
-            } catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
+        #region POST
         [Authorize]
-        [HttpPost("update-profile")]
+        [HttpPost("api/update-profile/")]
         public IActionResult UpdateProfileForUser([FromBody] UserProfileUpdateModel model)
         {
             try
             {
-                var userDomain = _uow.GetService<UserDomain>();
-                UserProfile newUserProfile = userDomain.UpdateUserProfile(model);
+                var _domain = _uow.GetService<UserDomain>();
+                var newUserProfile = _domain.UpdateUserProfile(model);
                 if (newUserProfile != null)
                 {
-                    _uow.saveChanges();
                     return Success(newUserProfile.UserId);
                 }
-                return Error("Can't update");
+                return BadRequest();
             } catch (Exception e)
             {
                 return Error(e.Message);
@@ -80,16 +63,16 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var userDomain = _uow.GetService<UserDomain>();
-                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var user = userDomain.AddUserToCenter(new AddNewRoleModel 
+                var _domain = _uow.GetService<UserDomain>();
+                var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var user = _domain.AddUserToCenter(new AddNewRoleModel 
                 {
                     Email = email,
-                    CenterId = Guid.Parse(currentCenterId),
+                    CenterId = Guid.Parse(_currentCenterId),
                     RoleName = RoleConstant.VOLUNTEER
                 });
-                return Success(user);
+                return Success(_currentCenterId);
             }
             catch (Exception e)
             {

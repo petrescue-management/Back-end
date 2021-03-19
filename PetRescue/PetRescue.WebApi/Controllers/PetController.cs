@@ -25,7 +25,6 @@ namespace PetRescue.WebApi.Controllers
         {
         }
         #region GET
-        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-pet-breeds-by-type-id/{id}")]
         public IActionResult GetPetBreedsByTypeId(Guid id)
@@ -42,7 +41,6 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-pet_breed-by-id/{id}")]
         public IActionResult GetPetBreedById(Guid id)
@@ -57,7 +55,6 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-all-pet-fur_colors")]
         public IActionResult GetAllPetFurColors()
@@ -74,7 +71,6 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-pet-fur_color-by-id/{id}")]
         public IActionResult GetPetFurColorById(Guid id)
@@ -89,7 +85,6 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-all-pet-types")]
         public IActionResult GetAllPetTypes()
@@ -106,7 +101,6 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-pet-type-by-id/{id}")]
         public IActionResult GetPetTypeById(Guid id)
@@ -153,8 +147,8 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var petDomain = _uow.GetService<PetDomain>();
-                var result = petDomain.GetListPetsToBeRegisteredForAdoption(Guid.Parse(currentCenterId));
+                var _domain = _uow.GetService<PetDomain>();
+                var result = _domain.GetListPetsToBeRegisteredForAdoption(Guid.Parse(currentCenterId));
                 if(result != null)
                 {
                     return Success(result);
@@ -168,13 +162,13 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
-        [Route("api/get-list-adoption-register-form-by-petid")]
+        [Route("api/get-list-adoption-register-form-by-petid/{id}")]
         public IActionResult GetListPetToBeRegisteredForAdoption([FromQuery]Guid petId)
         {
             try
             {
-                var petDomain = _uow.GetService<PetDomain>();
-                var result = petDomain.GetListAdoptionRegisterFormByPetId(petId);
+                var _domain = _uow.GetService<PetDomain>();
+                var result = _domain.GetListAdoptionRegisterFormByPetId(petId);
                 if (result != null)
                 {
                     return Success(result);
@@ -188,22 +182,20 @@ namespace PetRescue.WebApi.Controllers
         }
         #endregion
         #region POST
-        //[Authorize(Roles = RoleConstant.Manager)]
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPost]
         [Route("api/create-new-pet")]
         public IActionResult CreatePet([FromBody] PetCreateModel model)
         {
             try
             {
-                
                 var currentUserId  = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var petDomain = _uow.GetService<PetDomain>();
-                var newPet = petDomain.CreateNewPet(model,Guid.Parse(currentUserId), Guid.Parse(currentCenterId));
+                var _domain = _uow.GetService<PetDomain>();
+                var newPet = _domain.CreateNewPet(model,Guid.Parse(currentUserId), Guid.Parse(currentCenterId));
                 if(newPet != null)
                 {
-                    _uow.saveChanges();
-                    return Success(newPet.PetStatus);
+                    return Success(newPet);
                 }
                 return BadRequest();
             }catch(Exception e)
@@ -211,19 +203,18 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
-        //[Authorize(Roles = RoleConstant.Admin)]
+        [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpPost]
         [Route("api/create-new-pet-breed")]
         public IActionResult CreateBreed([FromBody]PetBreedCreateModel model) 
         {
             try
             {
-                var petDomain = _uow.GetService<PetDomain>();
-                var newPetBreed = petDomain.CreatePetBreed(model);
+                var _domain = _uow.GetService<PetDomain>();
+                var newPetBreed = _domain.CreatePetBreed(model);
                 if (newPetBreed != null)
                 {
-                    _uow.saveChanges();
-                    return Success(newPetBreed.PetBreedName);
+                    return Success(newPetBreed);
                 }
                 return BadRequest();
             }
@@ -239,12 +230,11 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var petDomain = _uow.GetService<PetDomain>();
-                var newPetType = petDomain.CreatePetType(model);
+                var _domain = _uow.GetService<PetDomain>();
+                var newPetType = _domain.CreatePetType(model);
                 if (newPetType != null)
                 {
-                    _uow.saveChanges();
-                    return Success(newPetType.PetTypeName);
+                    return Success(newPetType);
                 }
                 return BadRequest();
             }
@@ -260,12 +250,11 @@ namespace PetRescue.WebApi.Controllers
         {
             try 
             {
-                var petDomain = _uow.GetService<PetDomain>();
-                var newPetFurColor = petDomain.CreatePetFurColor(model);
+                var _domain = _uow.GetService<PetDomain>();
+                var newPetFurColor = _domain.CreatePetFurColor(model);
                 if(newPetFurColor != null)
                 {
-                    _uow.saveChanges();
-                    return Success(newPetFurColor.PetFurColorName);
+                    return Success(newPetFurColor);
                 }
                 return BadRequest();
             }catch(Exception e)
@@ -277,17 +266,16 @@ namespace PetRescue.WebApi.Controllers
         #region PUT
         //[Authorize(Roles = RoleConstant.Admin)]
         [HttpPut]
-        [Route("api/update-fur-color")]
+        [Route("api/update-fur-color/{id}")]
         public IActionResult UpdateFurColor([FromBody] PetFurColorUpdateModel model)
         {
             try
             {
-                var petDomain = _uow.GetService<PetDomain>();
-                var petFurColor = petDomain.UpdatePetFurColor(model);
+                var _domain = _uow.GetService<PetDomain>();
+                var petFurColor = _domain.UpdatePetFurColor(model);
                 if (petFurColor != null)
                 {
-                    _uow.saveChanges();
-                    return Success(petFurColor.PetFurColorName);
+                    return Success(petFurColor);
                 }
                 return BadRequest();
             }
@@ -298,17 +286,16 @@ namespace PetRescue.WebApi.Controllers
         }
         //[Authorize(Roles = RoleConstant.Admin)]
         [HttpPut]
-        [Route("api/update-breed")]
+        [Route("api/update-breed/{id}")]
         public IActionResult UpdateBreed([FromBody] PetBreedUpdateModel model)
         {
             try
             {
-                var petDomain = _uow.GetService<PetDomain>();
-                var petBreed = petDomain.UpdatePetBreed(model);
+                var _domain = _uow.GetService<PetDomain>();
+                var petBreed = _domain.UpdatePetBreed(model);
                 if (petBreed != null)
                 {
-                    _uow.saveChanges();
-                    return Success(petBreed.PetBreedName);
+                    return Success(petBreed);
                 }
                 return BadRequest();
             }
@@ -319,17 +306,16 @@ namespace PetRescue.WebApi.Controllers
         }
         //[Authorize(Roles =RoleConstant.Admin)]
         [HttpPut]
-        [Route("api/update-type")]
+        [Route("api/update-type/{id}")]
         public IActionResult UpdateType([FromBody] PetTypeUpdateModel model)
         {
             try
             {
-                var petDomain = _uow.GetService<PetDomain>();
-                var petType = petDomain.UpdatePetType(model);
+                var _domain = _uow.GetService<PetDomain>();
+                var petType = _domain.UpdatePetType(model);
                 if (petType != null)
                 {
-                    _uow.saveChanges();
-                    return Success(petType.PetTypeName);
+                    return Success(petType);
                 }
                 return BadRequest();
             }
@@ -338,9 +324,9 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
-        //[Authorize(Roles =RoleConstant.Manager)]
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
-        [Route("api/update-pet")]
+        [Route("api/update-pet/{id}")]
         public IActionResult UpdatePet([FromBody] PetDetailModel model)
         {
             try
@@ -350,8 +336,7 @@ namespace PetRescue.WebApi.Controllers
                 var newPet = petDomain.UpdatePet(model, Guid.Parse(currentUserId));
                 if (newPet != null)
                 {
-                    _uow.saveChanges();
-                    return Success(newPet.PetId);
+                    return Success(newPet);
                 }
                 return BadRequest();
             }
