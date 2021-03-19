@@ -42,8 +42,8 @@ namespace PetRescue.Data.DI
                 .AddScoped<PetDomain>()
                 .AddScoped<IAdoptionRepository, AdoptionRepository>()
                 .AddScoped<AdoptionDomain>()
-                 .AddScoped<IAdoptionRegisterFormRepository, AdoptionRegisterFormRepository>()
-                .AddScoped<AdoptionRegisterFormDomain>()
+                 .AddScoped<IAdoptionRegistrationFormRepository, AdoptionRegistrationFormRepository>()
+                .AddScoped<AdoptionRegistrationFormDomain>()
                 .AddScoped<INotificationTokenRepository, NotificationTokenRepository>()
                 .AddScoped<NotificationTokenDomain>();
                 ;

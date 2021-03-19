@@ -63,7 +63,6 @@ namespace PetRescue.WebApi.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = _uow.GetService<RescueReportDomain>().UpdateRescueReportStatus(model, Guid.Parse(currentUserId));
-                _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)
@@ -82,7 +81,6 @@ namespace PetRescue.WebApi.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = _uow.GetService<RescueReportDomain>().CreateRescueReport(model, Guid.Parse(currentUserId));
-                _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)

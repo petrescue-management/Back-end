@@ -57,6 +57,7 @@ namespace PetRescue.Data.Domains
         public RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model, Guid updateBy)
         {
             var report = uow.GetService<IRescueReportRepository>().UpdateRescueReportStatus(model, updateBy);
+            uow.saveChanges();
             return report;
         }
         #endregion
@@ -66,6 +67,7 @@ namespace PetRescue.Data.Domains
         {
             var report = uow.GetService<IRescueReportRepository>().CreateRescueReport(model, insertedBy);
             uow.GetService<IRescueReportDetailRepository>().CreateRescueReportDetail(report);
+            uow.saveChanges();
             return report;           
         }
         #endregion

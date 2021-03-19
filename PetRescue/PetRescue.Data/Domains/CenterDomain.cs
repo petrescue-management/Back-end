@@ -36,7 +36,7 @@ namespace PetRescue.Data.Domains
                     CenterName = c.CenterName,
                     Address = c.Address,
                     Lat = c.Lat,
-                    Long = c.Long,
+                    Long = c.Lng,
                     CenterStatus = c.CenterStatus,
                     Phone = c.Phone,
                     InsertAt = c.InsertAt,
@@ -62,6 +62,7 @@ namespace PetRescue.Data.Domains
         public CenterModel DeleteCenter(Guid id, Guid updateBy)
         {
             var center = uow.GetService<ICenterRepository>().DeleteCenter(id, updateBy);
+            uow.saveChanges();
             return center;
         }
         #endregion
@@ -101,6 +102,7 @@ namespace PetRescue.Data.Domains
                 return "This address is already registered !";
 
             var center = center_service.UpdateCenter(model, currentUserId);
+            uow.saveChanges();
             return center.CenterId.ToString();
         }
         #endregion

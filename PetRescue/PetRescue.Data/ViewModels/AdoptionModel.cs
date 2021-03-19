@@ -7,7 +7,7 @@ namespace PetRescue.Data.ViewModels
 {
     public class AdoptionModel
     {
-        public Guid AdoptionRegisterId { get; set; }
+        public Guid AdoptionRegistrationId { get; set; }
         public UserModel Owner { get; set; }
         public PetModel Pet { get; set; }
         public int AdoptionStatus { get; set; }

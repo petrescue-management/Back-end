@@ -16,7 +16,7 @@ namespace PetRescue.Data.Models
         }
 
         public virtual DbSet<Adoption> Adoption { get; set; }
-        public virtual DbSet<AdoptionRegisterForm> AdoptionRegisterForm { get; set; }
+        public virtual DbSet<AdoptionRegistrationForm> AdoptionRegistrationForm { get; set; }
         public virtual DbSet<Center> Center { get; set; }
         public virtual DbSet<CenterRegistrationForm> CenterRegistrationForm { get; set; }
         public virtual DbSet<NotificationToken> NotificationToken { get; set; }
@@ -37,7 +37,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=petrescue.database.windows.net;Database=PetRescue;Trusted_Connection=False;Encrypt=True;User Id=petrescue;Password=Admin123");
+                optionsBuilder.UseSqlServer("Server=DESKTOP-SEQC2RA\\\\\\\\PIIMTRAN,1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
             }
         }
 
@@ -47,11 +47,11 @@ namespace PetRescue.Data.Models
 
             modelBuilder.Entity<Adoption>(entity =>
             {
-                entity.HasKey(e => e.AdoptionRegisterId)
+                entity.HasKey(e => e.AdoptionRegistrationId)
                     .HasName("PK_Adotion");
 
-                entity.Property(e => e.AdoptionRegisterId)
-                    .HasColumnName("adoption_register_id")
+                entity.Property(e => e.AdoptionRegistrationId)
+                    .HasColumnName("adoption_registration_id")
                     .HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.AdoptedAt)
@@ -77,26 +77,27 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
-                entity.HasOne(d => d.AdoptionRegister)
+                entity.HasOne(d => d.AdoptionRegistration)
                     .WithOne(p => p.Adoption)
-                    .HasForeignKey<Adoption>(d => d.AdoptionRegisterId)
+                    .HasForeignKey<Adoption>(d => d.AdoptionRegistrationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Adotion_AdoptionRegisterForm");
             });
 
-            modelBuilder.Entity<AdoptionRegisterForm>(entity =>
+            modelBuilder.Entity<AdoptionRegistrationForm>(entity =>
             {
-                entity.HasKey(e => e.AdoptionRegisterId);
+                entity.HasKey(e => e.AdoptionRegistrationId)
+                    .HasName("PK_AdoptionRegisterForm");
 
-                entity.Property(e => e.AdoptionRegisterId)
-                    .HasColumnName("adoption_register_id")
+                entity.Property(e => e.AdoptionRegistrationId)
+                    .HasColumnName("adoption_registration_id")
                     .HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.Address)
                     .IsRequired()
                     .HasColumnName("address");
 
-                entity.Property(e => e.AdoptionRegisterStatus).HasColumnName("adoption_register_status");
+                entity.Property(e => e.AdoptionRegistrationStatus).HasColumnName("adoption_registration_status");
 
                 entity.Property(e => e.BeViolentTendencies).HasColumnName("be_violent_tendencies");
 
@@ -149,7 +150,7 @@ namespace PetRescue.Data.Models
                     .HasMaxLength(50);
 
                 entity.HasOne(d => d.Pet)
-                    .WithMany(p => p.AdoptionRegisterForm)
+                    .WithMany(p => p.AdoptionRegistrationForm)
                     .HasForeignKey(d => d.PetId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AdoptionRegisterForm_Pet");
@@ -182,7 +183,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.Lat).HasColumnName("lat");
 
-                entity.Property(e => e.Long).HasColumnName("lng");
+                entity.Property(e => e.Lng).HasColumnName("lng");
 
                 entity.Property(e => e.Phone)
                     .IsRequired()

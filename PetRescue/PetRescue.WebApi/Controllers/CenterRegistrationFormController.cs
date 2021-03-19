@@ -77,7 +77,6 @@ namespace PetRescue.WebApi.Controllers
                 await _uow.GetService<NotificationTokenDomain>().NotificationForAdminWhenHaveNewCenterRegisterForm(path);
                 if (result.Contains("is already"))
                     return BadRequest(result);
-                _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)

@@ -10,29 +10,29 @@ using System.Text;
 
 namespace PetRescue.Data.Domains
 {
-    public class AdoptionRegisterFormDomain : BaseDomain
+    public class AdoptionRegistrationFormDomain : BaseDomain
     {
-        public AdoptionRegisterFormDomain(IUnitOfWork uow) : base(uow)
+        public AdoptionRegistrationFormDomain(IUnitOfWork uow) : base(uow)
         {
         }
 
         #region SEARCH
-        public SearchReturnModel SearchAdoptionRegisterForm(SearchModel model, string currentCenterId)
+        public SearchReturnModel SearchAdoptionRegistrationForm(SearchModel model, string currentCenterId)
         {
-            var records = uow.GetService<IAdoptionRegisterFormRepository>().Get().AsQueryable();
+            var records = uow.GetService<IAdoptionRegistrationFormRepository>().Get().AsQueryable();
 
             var pet_service = uow.GetService<IPetRepository>();
             if (model.Status != 0)
-                records = records.Where(f => f.AdoptionRegisterStatus.Equals(model.Status));
+                records = records.Where(f => f.AdoptionRegistrationStatus.Equals(model.Status));
 
-            List<AdoptionRegisterFormModel> result = new List<AdoptionRegisterFormModel>();
+            List<AdoptionRegistrationFormModel> result = new List<AdoptionRegistrationFormModel>();
             foreach (var record in records.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize)
                   .Where(f => f.Pet.CenterId.Equals(Guid.Parse(currentCenterId))))
             {
                 
-                result.Add(new AdoptionRegisterFormModel
+                result.Add(new AdoptionRegistrationFormModel
                 {
-                    AdoptionRegisterId = record.AdoptionRegisterId,
+                    AdoptionRegistrationId = record.AdoptionRegistrationId,
                     Pet = pet_service.GetPetById(record.PetId),
                     UserName = record.UserName,
                     Phone = record.Phone,
@@ -46,7 +46,7 @@ namespace PetRescue.Data.Domains
                     BeViolentTendencies = record.BeViolentTendencies,
                     HaveAgreement = record.HaveAgreement,
                     HavePet = record.HavePet,
-                    AdoptionRegisterStatus = record.AdoptionRegisterStatus,
+                    AdoptionRegistrationStatus = record.AdoptionRegistrationStatus,
                     InsertedBy = record.InsertedBy,
                     InsertedAt = record.InsertedAt,
                     UpdatedBy = record.UpdatedBy,
@@ -70,13 +70,13 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region GET BY ID
-        public AdoptionRegisterFormModel GetAdoptionRegisterFormById(Guid id)
+        public AdoptionRegistrationFormModel GetAdoptionRegistrationFormById(Guid id)
         {
-            var form = uow.GetService<IAdoptionRegisterFormRepository>().GetAdoptionRegisterFormById(id);
+            var form = uow.GetService<IAdoptionRegistrationFormRepository>().GetAdoptionRegistrationFormById(id);
             var pet_service = uow.GetService<IPetRepository>();
-            var result = new AdoptionRegisterFormModel
+            var result = new AdoptionRegistrationFormModel
             {
-                AdoptionRegisterId = form.AdoptionRegisterId,
+                AdoptionRegistrationId = form.AdoptionRegistrationId,
                 Pet = pet_service.GetPetById(form.PetId),
                 UserName = form.UserName,
                 Phone = form.Phone,
@@ -90,7 +90,7 @@ namespace PetRescue.Data.Domains
                 BeViolentTendencies = form.BeViolentTendencies,
                 HaveAgreement = form.HaveAgreement,
                 HavePet = form.HavePet,
-                AdoptionRegisterStatus = form.AdoptionRegisterStatus,
+                AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
                 InsertedBy = form.InsertedBy,
                 InsertedAt = form.InsertedAt,
                 UpdatedBy = form.UpdatedBy,
@@ -101,15 +101,15 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public AdoptionRegisterFormModel UpdateAdoptionRegisterFormStatus(UpdateStatusModel model, Guid updateBy)
+        public AdoptionRegistrationFormModel UpdateAdoptionRegistrationFormStatus(UpdateStatusModel model, Guid updateBy)
         {
-            var form = uow.GetService<IAdoptionRegisterFormRepository>().UpdateAdoptionRegisterFormStatus(model, updateBy);
+            var form = uow.GetService<IAdoptionRegistrationFormRepository>().UpdateAdoptionRegistrationFormStatus(model, updateBy);
             var pet_service = uow.GetService<IPetRepository>();
             var adoption_service = uow.GetService<IAdoptionRepository>();
-            var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegisterFormRepository>();
-            var result = new AdoptionRegisterFormModel
+            var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
+            var result = new AdoptionRegistrationFormModel
             {
-                AdoptionRegisterId = form.AdoptionRegisterId,
+                AdoptionRegistrationId = form.AdoptionRegistrationId,
                 Pet = pet_service.GetPetById(form.PetId),
                 UserName = form.UserName,
                 Phone = form.Phone,
@@ -123,37 +123,38 @@ namespace PetRescue.Data.Domains
                 BeViolentTendencies = form.BeViolentTendencies,
                 HaveAgreement = form.HaveAgreement,
                 HavePet = form.HavePet,
-                AdoptionRegisterStatus = form.AdoptionRegisterStatus,
+                AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
                 InsertedBy = form.InsertedBy,
                 InsertedAt = form.InsertedAt,
                 UpdatedBy = form.UpdatedBy,
                 UpdateAt = form.UpdateAt
             };
             var currentPet = pet_service.Get().FirstOrDefault(s => s.PetId.Equals(form.PetId));
-            if (form.AdoptionRegisterStatus == AdoptionRegisterFormStatusConst.APPROVED)
+            if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED)
             {
                 adoption_service.CreateAdoption(result);
                 currentPet.PetStatus = PetStatusConst.ADOPTED;
                 pet_service.Update(currentPet);
-                var listAdoptionForm = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(form.PetId) && s.AdoptionRegisterStatus == AdoptionRegisterFormStatusConst.PROCESSING);
+                var listAdoptionForm = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(form.PetId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
                 foreach(var adoptionForm in listAdoptionForm)
                 {
-                    adoptionForm.AdoptionRegisterStatus = AdoptionRegisterFormStatusConst.REJECTED;
+                    adoptionForm.AdoptionRegistrationStatus = AdoptionRegistrationFormStatusConst.REJECTED;
                     adoptionRegisterFormRepo.Update(adoptionForm);
                 }
             }
+            uow.saveChanges();
             return result;
         }
         #endregion
 
         #region CREATE
-        public AdoptionRegisterFormModel CreateAdoptionRegisterForm(CreateAdoptionRegisterFormModel model, Guid insertBy)
+        public AdoptionRegistrationFormModel CreateAdoptionRegistrationForm(CreateAdoptionRegistrationFormModel model, Guid insertBy)
         {
-            var form = uow.GetService<IAdoptionRegisterFormRepository>().CreateAdoptionRegistertionForm(model, insertBy);
+            var form = uow.GetService<IAdoptionRegistrationFormRepository>().CreateAdoptionRegistrationForm(model, insertBy);
             var pet_service = uow.GetService<IPetRepository>();
-            var result = new AdoptionRegisterFormModel
+            var result = new AdoptionRegistrationFormModel
             {
-                AdoptionRegisterId = form.AdoptionRegisterId,
+                AdoptionRegistrationId = form.AdoptionRegistrationId,
                 Pet = pet_service.GetPetById(form.PetId),
                 UserName = form.UserName,
                 Phone = form.Phone,
@@ -167,12 +168,13 @@ namespace PetRescue.Data.Domains
                 BeViolentTendencies = form.BeViolentTendencies,
                 HaveAgreement = form.HaveAgreement,
                 HavePet = form.HavePet,
-                AdoptionRegisterStatus = form.AdoptionRegisterStatus,
+                AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
                 InsertedBy = form.InsertedBy,
                 InsertedAt = form.InsertedAt,
                 UpdatedBy = form.UpdatedBy,
                 UpdateAt = form.UpdateAt
             };
+            uow.saveChanges();
             return result;
         }
             #endregion

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
@@ -19,7 +20,7 @@ namespace PetRescue.WebApi.Controllers
         {
         }
 
-        [Authorize(Roles = "manager")]
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
         [Route("api/search-adoption")]
         public IActionResult SearchAdoption([FromQuery] SearchModel model)
@@ -60,7 +61,6 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var result = _uow.GetService<AdoptionDomain>().UpdateAdoptionStatus(model);
-                _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)

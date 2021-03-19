@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PetRescue.Data.ConstantHelper
 {
-    public class AdoptionRegisterFormStatusConst
+    public class AdoptionRegistrationFormStatusConst
     {
         public const int PROCESSING = 1;
         public const int APPROVED = 2;

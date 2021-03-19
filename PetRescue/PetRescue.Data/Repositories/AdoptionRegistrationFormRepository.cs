@@ -8,29 +8,29 @@ using System.Text;
 
 namespace PetRescue.Data.Repositories
 {
-    public partial interface IAdoptionRegisterFormRepository : IBaseRepository<AdoptionRegisterForm, string>
+    public partial interface IAdoptionRegistrationFormRepository : IBaseRepository<AdoptionRegistrationForm, string>
     {
-        AdoptionRegisterForm GetAdoptionRegisterFormById(Guid id);
+        AdoptionRegistrationForm GetAdoptionRegistrationFormById(Guid id);
 
-        AdoptionRegisterForm UpdateAdoptionRegisterFormStatus(UpdateStatusModel model, Guid updateBy);
+        AdoptionRegistrationForm UpdateAdoptionRegistrationFormStatus(UpdateStatusModel model, Guid updateBy);
 
-        AdoptionRegisterForm CreateAdoptionRegistertionForm(CreateAdoptionRegisterFormModel model, Guid insertBy);
+        AdoptionRegistrationForm CreateAdoptionRegistrationForm(CreateAdoptionRegistrationFormModel model, Guid insertBy);
 
     }
 
-    public partial class AdoptionRegisterFormRepository : BaseRepository<AdoptionRegisterForm, string>, IAdoptionRegisterFormRepository
+    public partial class AdoptionRegistrationFormRepository : BaseRepository<AdoptionRegistrationForm, string>, IAdoptionRegistrationFormRepository
     {
-        public AdoptionRegisterFormRepository(DbContext context) : base(context)
+        public AdoptionRegistrationFormRepository(DbContext context) : base(context)
         {
         }
 
         #region GET BY ID
-        public AdoptionRegisterForm GetAdoptionRegisterFormById(Guid id)
+        public AdoptionRegistrationForm GetAdoptionRegistrationFormById(Guid id)
         {
-            var form = Get().Where(f => f.AdoptionRegisterId.Equals(id))
-                .Select(f => new AdoptionRegisterForm
+            var form = Get().Where(f => f.AdoptionRegistrationId.Equals(id))
+                .Select(f => new AdoptionRegistrationForm
                 {
-                    AdoptionRegisterId = f.AdoptionRegisterId,
+                    AdoptionRegistrationId = f.AdoptionRegistrationId,
                     PetId = f.PetId,
                     UserName = f.UserName,
                     Phone = f.Phone,
@@ -44,7 +44,7 @@ namespace PetRescue.Data.Repositories
                     BeViolentTendencies = f.BeViolentTendencies,
                     HaveAgreement = f.HaveAgreement,
                     HavePet = f.HavePet,
-                    AdoptionRegisterStatus = f.AdoptionRegisterStatus,
+                    AdoptionRegistrationStatus = f.AdoptionRegistrationStatus,
                     InsertedBy = f.InsertedBy,
                     InsertedAt = f.InsertedAt,
                     UpdatedBy = f.UpdatedBy,
@@ -56,13 +56,13 @@ namespace PetRescue.Data.Repositories
 
 
         #region UPDATE STATUS
-        private AdoptionRegisterForm PrepareUpdate(UpdateStatusModel model, Guid updateBy)
+        private AdoptionRegistrationForm PrepareUpdate(UpdateStatusModel model, Guid updateBy)
         {
             var form = Get()
-                  .Where(f=> f.AdoptionRegisterId.Equals(model.Id))
-                  .Select(f => new AdoptionRegisterForm
+                  .Where(f=> f.AdoptionRegistrationId.Equals(model.Id))
+                  .Select(f => new AdoptionRegistrationForm
                   {
-                      AdoptionRegisterId = f.AdoptionRegisterId,
+                      AdoptionRegistrationId = f.AdoptionRegistrationId,
                       PetId = f.PetId,
                       UserName = f.UserName,
                       Phone = f.Phone,
@@ -76,7 +76,7 @@ namespace PetRescue.Data.Repositories
                       BeViolentTendencies = f.BeViolentTendencies,
                       HaveAgreement = f.HaveAgreement,
                       HavePet = f.HavePet,
-                      AdoptionRegisterStatus = model.Status,
+                      AdoptionRegistrationStatus = model.Status,
                       InsertedBy = f.InsertedBy,
                       InsertedAt = f.InsertedAt,
                       UpdatedBy = updateBy,
@@ -85,7 +85,7 @@ namespace PetRescue.Data.Repositories
             return form;
         }
 
-        public AdoptionRegisterForm UpdateAdoptionRegisterFormStatus(UpdateStatusModel model, Guid updateBy)
+        public AdoptionRegistrationForm UpdateAdoptionRegistrationFormStatus(UpdateStatusModel model, Guid updateBy)
         {
             var form = PrepareUpdate(model, updateBy);
             Update(form);
@@ -96,12 +96,12 @@ namespace PetRescue.Data.Repositories
 
         #region CREATE
 
-        private AdoptionRegisterForm PrepareCreate(CreateAdoptionRegisterFormModel model,Guid insertBy)
+        private AdoptionRegistrationForm PrepareCreate(CreateAdoptionRegistrationFormModel model,Guid insertBy)
         {
 
-            var form = new AdoptionRegisterForm
+            var form = new AdoptionRegistrationForm
             {
-                AdoptionRegisterId = Guid.NewGuid(),
+                AdoptionRegistrationId = Guid.NewGuid(),
                 PetId = model.PetId,
                 UserName = model.UserName,
                 Phone = model.Phone,
@@ -115,7 +115,7 @@ namespace PetRescue.Data.Repositories
                 BeViolentTendencies = model.BeViolentTendencies,
                 HaveAgreement = model.HaveAgreement,
                 HavePet = model.HavePet,
-                AdoptionRegisterStatus = model.AdoptionRegisterStatus,
+                AdoptionRegistrationStatus = model.AdoptionRegistrationStatus,
                 InsertedBy = insertBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
@@ -124,7 +124,7 @@ namespace PetRescue.Data.Repositories
             return form;
         }
 
-        public AdoptionRegisterForm CreateAdoptionRegistertionForm(CreateAdoptionRegisterFormModel model,Guid insertBy)
+        public AdoptionRegistrationForm CreateAdoptionRegistrationForm(CreateAdoptionRegistrationFormModel model,Guid insertBy)
         {
             var form = PrepareCreate(model, insertBy);
 

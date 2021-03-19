@@ -37,7 +37,7 @@ namespace PetRescue.Data.Domains
                     Email = f.Email,
                     Phone = f.Phone,
                     Lat = f.Lat,
-                    Long = f.Long,
+                    Long = f.Lng,
                     CenterAddress = f.CenterAddress,
                     Description = f.Description,
                     CenterRegistrationStatus = f.CenterRegistrationStatus,
@@ -105,6 +105,7 @@ namespace PetRescue.Data.Domains
                 return "This address is already registered !";
 
             var form = uow.GetService<ICenterRegistrationFormRepository>().CreateCenterRegistrationForm(model);
+            uow.saveChanges();
             return form.CenterRegistrationId.ToString();
         }
         #endregion
@@ -195,6 +196,7 @@ namespace PetRescue.Data.Domains
                 else if (model.Status == CenterRegistrationFormStatusConst.REJECTED)
                 {
                     form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
+                    uow.saveChanges();
                     MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email), MailConstant.REJECT_REGISTRATION_FORM);
                     MailExtensions.SendBySendGrid(mailArguments, null, null);
                     return form.CenterRegistrationStatus;

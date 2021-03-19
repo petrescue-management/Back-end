@@ -16,26 +16,26 @@ using System.Threading.Tasks;
 namespace PetRescue.WebApi.Controllers
 {
     [ApiController]
-    public class AdoptionRegisterFormController : BaseController
+    public class AdoptionRegistrationFormController : BaseController
     {
         private readonly IHostingEnvironment _env;
-        public AdoptionRegisterFormController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        public AdoptionRegistrationFormController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
             _env = environment;
         }
 
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
-        [Route("api/search-adoption-register-form")]
-        public IActionResult SearchAdoptionRegisterForm([FromQuery] SearchModel model)
+        [Route("api/search-adoption-registration-form")]
+        public IActionResult SearchAdoptionRegistrationForm([FromQuery] SearchModel model)
         {
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var result = _uow.GetService<AdoptionRegisterFormDomain>().SearchAdoptionRegisterForm(model, currentCenterId);
+                var result = _uow.GetService<AdoptionRegistrationFormDomain>().SearchAdoptionRegistrationForm(model, currentCenterId);
                 if (result != null)
                     return Success(result);
-                return Success("Do not have any adoption register forms !");
+                return Success("Do not have any adoption registration forms !");
             }
             catch (Exception ex)
             {
@@ -44,12 +44,12 @@ namespace PetRescue.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/get-adoption-register-form-by-id/{id}")]
-        public IActionResult GetAdoptionRegisterFormById(Guid id)
+        [Route("api/get-adoption-registration-form-by-id/{id}")]
+        public IActionResult GetAdoptionRegistrationFormById(Guid id)
         {
             try
             {
-                var result = _uow.GetService<AdoptionRegisterFormDomain>().GetAdoptionRegisterFormById(id);
+                var result = _uow.GetService<AdoptionRegistrationFormDomain>().GetAdoptionRegistrationFormById(id);
                 return Success(result);
             }
             catch (Exception ex)
@@ -60,16 +60,15 @@ namespace PetRescue.WebApi.Controllers
 
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
-        [Route("api/update-adoption-register-form-status")]
-        public async Task<IActionResult> UpdateAdoptionRegisterFormStatusAsync(UpdateStatusModel model)
+        [Route("api/update-adoption-registration-form-status")]
+        public async Task<IActionResult> UpdateAdoptionRegistrationFormStatusAsync(UpdateStatusModel model)
         {
             try
             {
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _uow.GetService<AdoptionRegisterFormDomain>().UpdateAdoptionRegisterFormStatus(model,Guid.Parse(currentUserId));
-                await _uow.GetService<NotificationTokenDomain>().NotificationForUserWhenAdoptionFormToBeChangeStatus(path, result.InsertedBy, result.AdoptionRegisterStatus);
-                _uow.saveChanges();
+                var result = _uow.GetService<AdoptionRegistrationFormDomain>().UpdateAdoptionRegistrationFormStatus(model,Guid.Parse(currentUserId));
+                await _uow.GetService<NotificationTokenDomain>().NotificationForUserWhenAdoptionFormToBeChangeStatus(path, result.InsertedBy, result.AdoptionRegistrationStatus);
                 return Success(result);
             }
             catch (Exception ex)
@@ -79,16 +78,15 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize]
         [HttpPost]
-        [Route("api/create-adoption-register-form")]
-        public async Task<IActionResult> CreateUpdateAdoptionRegisterFormStatus(CreateAdoptionRegisterFormModel model)
+        [Route("api/create-adoption-registration-form")]
+        public async Task<IActionResult> CreateUpdateAdoptionRegisterFormStatus(CreateAdoptionRegistrationFormModel model)
         {
             try
             {
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _uow.GetService<AdoptionRegisterFormDomain>().CreateAdoptionRegisterForm(model, Guid.Parse(currentUserId));
+                var result = _uow.GetService<AdoptionRegistrationFormDomain>().CreateAdoptionRegistrationForm(model, Guid.Parse(currentUserId));
                 await _uow.GetService<NotificationTokenDomain>().NotificationForManagerWhenHaveNewAdoptionRegisterForm(path, result.Pet.CenterId);
-                _uow.saveChanges();
                 return Success(result);
             }
             catch (Exception ex)

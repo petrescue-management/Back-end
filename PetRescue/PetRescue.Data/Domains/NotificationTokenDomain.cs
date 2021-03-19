@@ -118,7 +118,7 @@ namespace PetRescue.Data.Domains
                 var notificationToken = notificationTokenDomain.FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, insertBy);
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
-                if (status == AdoptionRegisterFormStatusConst.APPROVED)
+                if (status == AdoptionRegistrationFormStatusConst.APPROVED)
                 {
                     Message message = new Message()
                     {

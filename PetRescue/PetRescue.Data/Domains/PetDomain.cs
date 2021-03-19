@@ -248,12 +248,12 @@ namespace PetRescue.Data.Domains
         public List<PetAdoptionRegisterFormModel> GetListPetsToBeRegisteredForAdoption(Guid centerId)
         {
             var petRepo = uow.GetService<IPetRepository>();
-            var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegisterFormRepository>();
+            var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
             var pets = petRepo.Get().Where(s => s.CenterId.Equals(centerId));
             var result = new List<PetAdoptionRegisterFormModel>();
             foreach(var pet in pets)
             {
-                var count = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(pet.PetId) && s.AdoptionRegisterStatus == AdoptionRegisterFormStatusConst.PROCESSING).Count();
+                var count = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(pet.PetId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
                 if(count > 0)
                 {
                     result.Add(new PetAdoptionRegisterFormModel
@@ -273,8 +273,8 @@ namespace PetRescue.Data.Domains
         public ListRegisterAdoptionOfPetViewModel GetListAdoptionRegisterFormByPetId(Guid petId)
         {
             var petRepo = uow.GetService<IPetRepository>();
-            var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegisterFormRepository>();
-            var forms = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(petId) && s.AdoptionRegisterStatus == AdoptionRegisterFormStatusConst.PROCESSING);
+            var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
+            var forms = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(petId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
             var currentPet = petRepo.Get().FirstOrDefault(s => s.PetId.Equals(petId));
             var result = new ListRegisterAdoptionOfPetViewModel {
                 Pet = new PetModel
@@ -295,15 +295,15 @@ namespace PetRescue.Data.Domains
                     PetStatus = currentPet.PetStatus,
                     Weight = currentPet.PetNavigation.Weight
                 },
-                AdoptionRegisterforms = new List<AdoptionRegisterFormViewModel>()
+                AdoptionRegisterforms = new List<AdoptionRegistrationFormViewModel>()
             };
             foreach(var form in forms)
             {
-                result.AdoptionRegisterforms.Add(new AdoptionRegisterFormViewModel
+                result.AdoptionRegisterforms.Add(new AdoptionRegistrationFormViewModel
                 {
                     Address = form.Address,
-                    AdoptionRegisterId = form.AdoptionRegisterId,
-                    AdoptionRegisterStatus = form.AdoptionRegisterStatus,
+                    AdoptionRegistrationId = form.AdoptionRegistrationId,
+                    AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
                     BeViolentTendencies = form.BeViolentTendencies,
                     ChildAge = form.ChildAge,
                     Email = form.Email,

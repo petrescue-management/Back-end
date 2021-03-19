@@ -4,9 +4,9 @@ using System.Text;
 
 namespace PetRescue.Data.ViewModels
 {
-    public class AdoptionRegisterFormModel
+    public class AdoptionRegistrationFormModel
     {
-        public Guid AdoptionRegisterId { get; set; }
+        public Guid AdoptionRegistrationId { get; set; }
         public PetModel Pet { get; set; }
         public string UserName { get; set; }
         public string Phone { get; set; }
@@ -20,7 +20,7 @@ namespace PetRescue.Data.ViewModels
         public bool BeViolentTendencies { get; set; }
         public bool HaveAgreement { get; set; }
         public int HavePet { get; set; }
-        public int AdoptionRegisterStatus { get; set; }
+        public int AdoptionRegistrationStatus { get; set; }
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
@@ -28,7 +28,7 @@ namespace PetRescue.Data.ViewModels
 
     }
 
-    public class CreateAdoptionRegisterFormModel
+    public class CreateAdoptionRegistrationFormModel
     {
         public Guid PetId { get; set; }
         public string UserName { get; set; }
@@ -43,12 +43,12 @@ namespace PetRescue.Data.ViewModels
         public bool BeViolentTendencies { get; set; }
         public bool HaveAgreement { get; set; }
         public int HavePet { get; set; }
-        public int AdoptionRegisterStatus { get; set; }
+        public int AdoptionRegistrationStatus { get; set; }
 
     }
-    public class AdoptionRegisterFormViewModel
+    public class AdoptionRegistrationFormViewModel
     {
-        public Guid AdoptionRegisterId { get; set; }
+        public Guid AdoptionRegistrationId { get; set; }
         public string UserName { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
@@ -61,7 +61,7 @@ namespace PetRescue.Data.ViewModels
         public bool BeViolentTendencies { get; set; }
         public bool HaveAgreement { get; set; }
         public int HavePet { get; set; }
-        public int AdoptionRegisterStatus { get; set; }
+        public int AdoptionRegistrationStatus { get; set; }
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
@@ -70,6 +70,6 @@ namespace PetRescue.Data.ViewModels
     public class ListRegisterAdoptionOfPetViewModel
     {
         public PetModel Pet { get; set; }
-        public List<AdoptionRegisterFormViewModel> AdoptionRegisterforms { get; set; }
+        public List<AdoptionRegistrationFormViewModel> AdoptionRegisterforms { get; set; }
     }
 }

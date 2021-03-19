@@ -15,7 +15,7 @@ namespace PetRescue.Data.Repositories
 
         Adoption UpdateAdoptionStatus(UpdateStatusModel model);
 
-        Adoption CreateAdoption(AdoptionRegisterFormModel model);
+        Adoption CreateAdoption(AdoptionRegistrationFormModel model);
     }
 
     public partial class AdoptionRepository : BaseRepository<Adoption, string>, IAdoptionRepository
@@ -28,10 +28,10 @@ namespace PetRescue.Data.Repositories
         public Adoption GetAdoptionById(Guid id)
         {
             var result = Get()
-               .Where(a => a.AdoptionRegisterId.Equals(id))
+               .Where(a => a.AdoptionRegistrationId.Equals(id))
                .Select(a => new Adoption
                {
-                   AdoptionRegisterId = a.AdoptionRegisterId,             
+                   AdoptionRegistrationId = a.AdoptionRegistrationId,             
                    AdoptionStatus = a.AdoptionStatus,
                    AdoptedAt = a.AdoptedAt,
                    ReturnedAt = a.ReturnedAt
@@ -49,14 +49,14 @@ namespace PetRescue.Data.Repositories
             if (model.Status == AdoptionStatusConst.ADOPTED)
             {
                 adoption = Get()
-               .Where(a => a.AdoptionRegisterId.Equals(model.Id))
+               .Where(a => a.AdoptionRegistrationId.Equals(model.Id))
                .Select(a => new Adoption
                {
-                   AdoptionRegisterId = a.AdoptionRegisterId,
+                   AdoptionRegistrationId = a.AdoptionRegistrationId,
                    AdoptionStatus = model.Status,
                    AdoptedAt = DateTime.UtcNow,
                    ReturnedAt = null,
-                   AdoptionRegister = a.AdoptionRegister,
+                   AdoptionRegistration = a.AdoptionRegistration,
                    InsertedBy = a.InsertedBy,
                    InsertedAt = a.InsertedAt,
                    UpdatedBy = null,
@@ -66,14 +66,14 @@ namespace PetRescue.Data.Repositories
             else
             {
                 adoption = Get()
-               .Where(a => a.AdoptionRegisterId.Equals(model.Id))
+               .Where(a => a.AdoptionRegistrationId.Equals(model.Id))
                .Select(a => new Adoption
                {
-                   AdoptionRegisterId = a.AdoptionRegisterId,
+                   AdoptionRegistrationId = a.AdoptionRegistrationId,
                    AdoptionStatus = model.Status,
                    AdoptedAt = a.AdoptedAt,
                    ReturnedAt = DateTime.UtcNow,
-                   AdoptionRegister = a.AdoptionRegister,
+                   AdoptionRegistration = a.AdoptionRegistration,
                    InsertedBy = a.InsertedBy,
                    InsertedAt = a.InsertedAt,
                    UpdatedBy = null,
@@ -95,12 +95,12 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region CREATE
-        private Adoption PrepareCreate(AdoptionRegisterFormModel model)
+        private Adoption PrepareCreate(AdoptionRegistrationFormModel model)
         {
 
             var adoption = new Adoption
             {
-                AdoptionRegisterId = model.AdoptionRegisterId,
+                AdoptionRegistrationId = model.AdoptionRegistrationId,
                 AdoptionStatus = 1,
                 InsertedBy = (Guid)model.UpdatedBy,
                 InsertedAt = DateTime.UtcNow,
@@ -110,7 +110,7 @@ namespace PetRescue.Data.Repositories
             return adoption;
         }
 
-        public Adoption CreateAdoption(AdoptionRegisterFormModel model)
+        public Adoption CreateAdoption(AdoptionRegistrationFormModel model)
         {
             var adoption = PrepareCreate(model);
             Create(adoption);
