@@ -22,13 +22,12 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var jwtDomain = _uow.GetService<JWTDomain>();
+                var _domain = _uow.GetService<JWTDomain>();
                 if (ValidationExtensions.IsNotNullOrEmptyOrWhiteSpace(model.Token))
                 {
-                    var result = jwtDomain.DecodeJwt(model);
-                    if (ValidationExtensions.IsNotNull(result))
+                    var result = _domain.DecodeJwt(model);
+                    if (result != null)
                     {
-                        _uow.saveChanges();
                         return Success(result.Jwt);
                     }
                 }
@@ -47,7 +46,6 @@ namespace PetRescue.WebApi.Controllers
                 var result = jwtDomain.LoginBySysAdmin(model);
                 if(result != null)
                 {
-                    _uow.saveChanges();
                     return Success(result);
                 }
                 return BadRequest("");

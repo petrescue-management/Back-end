@@ -59,7 +59,7 @@ namespace PetRescue.Data.Repositories
             entity.PetNavigation.IsVaccinated = model.IsVaccinated;
             entity.UpdatedBy = updateBy;
             entity.UpdatedAt = DateTime.UtcNow;
-            return entity;
+            return Update(entity).Entity;
         }
 
         public Pet PrepareCreate(PetCreateModel model,Guid insertBy, Guid centerId)

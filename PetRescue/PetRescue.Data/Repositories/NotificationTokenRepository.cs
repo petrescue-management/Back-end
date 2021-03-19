@@ -25,8 +25,7 @@ namespace PetRescue.Data.Repositories
         public NotificationToken Create(NotificationTokenCreateModel model)
         {
             var newNotificationToken = PrepareCreate(model);
-            Create(newNotificationToken);
-            return newNotificationToken;
+            return Create(newNotificationToken).Entity;
         }
 
         public NotificationToken Delete(NotificationToken entity)

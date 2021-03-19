@@ -1,5 +1,4 @@
-﻿using FirebaseAdmin.Messaging;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -66,27 +65,10 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+                string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = _uow.GetService<AdoptionRegisterFormDomain>().UpdateAdoptionRegisterFormStatus(model,Guid.Parse(currentUserId));
-                var notificationTokenDomain = _uow.GetService<NotificationTokenDomain>();
-                string path = _env.ContentRootPath;
-                var firebaseExtensions = new FireBaseExtentions();
-                var notificationToken = notificationTokenDomain.FindByApplicationNameAndUserId(result.InsertedBy, ApplicationNameHelper.USER_APP);
-                var app = firebaseExtensions.GetFirebaseApp(path);
-                var fcm = FirebaseMessaging.GetMessaging(app);
-                if(result.AdoptionRegisterStatus == AdoptionRegisterFormStatusConst.APPROVED)
-                {
-                    Message message = new Message()
-                    {
-                        Notification = new Notification
-                        {
-                            Title = NotificationTitleHelper.APPROVE_ADOPTION_FORM_TITLE,
-                            Body = NotificationBodyHelper.APPROVE_ADOPTION_FORM_BODY,
-                        },
-                    };
-                    message.Token = notificationToken.DeviceToken;
-                    await fcm.SendAsync(message);
-                }
+                await _uow.GetService<NotificationTokenDomain>().NotificationForUserWhenAdoptionFormToBeChangeStatus(path, result.InsertedBy, result.AdoptionRegisterStatus);
                 _uow.saveChanges();
                 return Success(result);
             }
@@ -105,24 +87,7 @@ namespace PetRescue.WebApi.Controllers
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = _uow.GetService<AdoptionRegisterFormDomain>().CreateAdoptionRegisterForm(model, Guid.Parse(currentUserId));
-                var firebaseExtensions = new FireBaseExtentions();
-                var petDomain = _uow.GetService<PetDomain>();
-                var currentPet = petDomain.GetPetById(model.PetId);
-                var userDomain = _uow.GetService<UserDomain>();
-                var notificationToken = userDomain.GetManagerDeviceTokenByCenterId(currentPet.CenterId);
-                var app = firebaseExtensions.GetFirebaseApp(path);
-                var fcm = FirebaseMessaging.GetMessaging(app);
-                Message message = new Message()
-                {
-                    Notification = new Notification
-                    {
-                        Title = NotificationTitleHelper.NEW_REGISTRATON_ADOPTION_FORM_TITLE,
-                        Body = NotificationBodyHelper.NEW_REGISTRATION_ADOPTION_FORM_BODY,
-                    },
-                };
-                message.Token = notificationToken.DeviceToken;
-                await fcm.SendAsync(message);
-                app.Delete();
+                await _uow.GetService<NotificationTokenDomain>().NotificationForManagerWhenHaveNewAdoptionRegisterForm(path, result.Pet.CenterId);
                 _uow.saveChanges();
                 return Success(result);
             }

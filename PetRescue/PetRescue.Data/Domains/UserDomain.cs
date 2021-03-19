@@ -20,12 +20,6 @@ namespace PetRescue.Data.Domains
         public UserDomain(IUnitOfWork uow) : base(uow)
         {
         }
-        public User RegisterUser(UserCreateByAppModel model)
-        {
-            var userRepo = uow.GetService<IUserRepository>();
-            var newUser = userRepo.CreateUser(model);
-            return newUser;
-        }
         public object GetUserDetail(string token)
         {
             var userRepo = uow.GetService<IUserRepository>();
@@ -74,37 +68,25 @@ namespace PetRescue.Data.Domains
             }
             
         }
-        public UserProfile UpdateUserProfile(UserProfileUpdateModel model)
+        public UserProfileViewModel UpdateUserProfile(UserProfileUpdateModel model)
         {
             var profileRepo = uow.GetService<IUserProfileRepository>();
 
             var userProfile = profileRepo.FindById(model.UserId);
-            if(userProfile == null)
+            var result = userProfile != null ? profileRepo.Create(model) 
+                : profileRepo.Edit(userProfile, model);
+            uow.saveChanges();
+            return new UserProfileViewModel 
             {
-                var result = profileRepo.Create(model);
-                return result;
-            }
-            else
-            {
-                var result = profileRepo.Edit(userProfile, model);
-                return result;
-            }
-        }
-        public User GetUserById(Guid userId)
-        {
-            var userRepo = uow.GetService<IUserRepository>();
-            return userRepo.FindById(null,userId.ToString());
-        }
-
-        public User UpdateCenter(UserUpdateCenterModel model, User currentUser)
-        {
-            var userRepo = uow.GetService<IUserRepository>();
-            if(currentUser != null)
-            {
-                var newuser = userRepo.Edit(currentUser,model.CenterId);
-                return userRepo.Update(newuser).Entity;
-            }
-            return null;
+                Address = result.Address,
+                DoB = result.Dob,
+                FirstName = result.FirstName,
+                Gender= result.Gender,
+                ImgUrl= result.ImageUrl,
+                LastName = result.LastName,
+                Phone = result.Phone,
+                UserId = result.UserId
+            };
         }
         public string AddRoleManagerToUser(UserRoleUpdateModel model, Guid insertBy)
         {
@@ -134,7 +116,6 @@ namespace PetRescue.Data.Domains
             }
             return listNotificationToken;
         }
-        
         public NotificationToken GetManagerDeviceTokenByCenterId(Guid centerId)
         {
             var notificationTokenRepo = uow.GetService<INotificationTokenRepository>();
@@ -143,7 +124,6 @@ namespace PetRescue.Data.Domains
             var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(currentUserRole.UserId) && s.ApplicationName.Equals(ApplicationNameHelper.MANAGE_CENTER_APP));
             return notificationToken;
         }
-        
         public User AddUserToCenter(AddNewRoleModel model)
         {
             var userRepo = uow.GetService<IUserRepository>();

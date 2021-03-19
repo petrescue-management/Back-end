@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PetRescue.Data.Uow
 {
@@ -30,6 +31,10 @@ namespace PetRescue.Data.Uow
         public int saveChanges()
         {
             return this.context.SaveChanges();
+        }
+        public Task<int> saveChangesAsync()
+        {
+            return this.context.SaveChangesAsync();
         }
     }
 }

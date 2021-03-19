@@ -146,5 +146,21 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("imgUrl")]
         public string ImageUrl { get; set; }
     }
+    public class PetTypeViewModel
+    {
+        public Guid PetTypeId { get; set; }
+        public string PetTypeName { get; set; }
+    }
+    public class PetBreedViewModel
+    {
+        public Guid PetBreedId { get;set;}
+        public string PetBreedName { get; set; }
+
+    }
+    public class PetFurColorViewModel
+    {
+        public Guid PetFurColorId { get; set; }
+        public string PetFurColorName { get; set; }
+    }
 }
 

@@ -23,13 +23,22 @@ namespace PetRescue.Data.Repositories
         public PetProfile Create(PetDetailModel model)
         {
             var newPetProfile = PrepareCreate(model);
-            Create(newPetProfile);
-            return newPetProfile;
+            return Create(newPetProfile).Entity;
         }
 
         public PetProfile Edit(PetDetailModel model, PetProfile entity)
         {
-            throw new NotImplementedException();
+            entity.PetAge = model.PetAge;
+            entity.PetBreedId = model.PetBreedId;
+            entity.PetName = model.PetName;
+            entity.PetGender = model.PetGender;
+            entity.PetFurColorId = model.PetFurColorId;
+            entity.Weight = model.Weight;
+            entity.ImageUrl = model.ImageUrl;
+            entity.IsSterilized = model.IsSterilized;
+            entity.IsVaccinated = model.IsVaccinated;
+            entity.Description = model.Description;
+            return Update(entity).Entity;
         }
 
         public PetProfile PrepareCreate(PetDetailModel model)

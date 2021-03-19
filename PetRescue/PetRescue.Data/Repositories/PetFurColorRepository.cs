@@ -30,14 +30,13 @@ namespace PetRescue.Data.Repositories
         public PetFurColor Create(PetFurColorCreateModel model)
         {
             var newPetFurColor = PrepareCreate(model);
-            Create(newPetFurColor);
-            return newPetFurColor;
+            return Create(newPetFurColor).Entity;
         }
 
         public PetFurColor Edit(PetFurColorUpdateModel model, PetFurColor entity)
         {
             entity.PetFurColorName = model.PetFurColorName;
-            return  entity;
+            return  Update(entity).Entity;
         }
 
         public List<PetFurColorModel> GetAllPetFurColors()

@@ -50,12 +50,10 @@ namespace PetRescue.Data.Domains
             User user = UserIsExisted(email);
             if (user != null)
             {
-                
-                var notificationToken = notificationTokenDomain.FindByApplicationNameAndUserId(user.UserId, model.ApplicationName);
+                var notificationToken = notificationTokenDomain.FindByApplicationNameAndUserId(model.ApplicationName, user.UserId);
                 var tokenDescriptor = GeneratedTokenDecriptor(user, currentClaims);
                 var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
                 //if notification Token is existed,  will update deviceToken
-                
                 if (notificationToken != null) 
                 {
                     temp = notificationTokenDomain.UpdateNotificationToken(new NotificationTokenUpdateModel
@@ -63,7 +61,6 @@ namespace PetRescue.Data.Domains
                         Id = notificationToken.Id,
                         DeviceToken = model.DeviceToken
                     });
-                    
                 }
                 // else create new notificationToken.
                 else
@@ -75,6 +72,7 @@ namespace PetRescue.Data.Domains
                         UserId = user.UserId
                     });
                 }
+                uow.saveChanges();
                 returnResult.Jwt = handler.WriteToken(newToken);
                 returnResult.NotificationToken = temp;
                 return returnResult;
@@ -112,6 +110,7 @@ namespace PetRescue.Data.Domains
                     });
                     var tokenDescriptor = GeneratedTokenDecriptor(user, currentClaims);
                     var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
+                    uow.saveChanges();
                     returnResult.Jwt = handler.WriteToken(newToken);
                     returnResult.NotificationToken = temp;
                     return returnResult;
@@ -184,7 +183,7 @@ namespace PetRescue.Data.Domains
             {
                 if (currentUser.Password.Equals(hashedPassword))
                 {
-                    var currentNotificationToken = notificationTokenDomain.FindByApplicationNameAndUserId(currentUser.UserId, model.ApplicationName);
+                    var currentNotificationToken = notificationTokenDomain.FindByApplicationNameAndUserId(model.ApplicationName, currentUser.UserId);
                     if (currentNotificationToken == null) {
                         notificationTokenDomain.CreateNotificationToken(new NotificationTokenCreateModel
                         {
@@ -211,6 +210,7 @@ namespace PetRescue.Data.Domains
                     currentClaims.Add(new Claim(ClaimTypes.Email, currentUser.UserEmail));
                     var tokenDescriptor = jwtDomain.GeneratedTokenDecriptor(currentUser, currentClaims);
                     var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
+                    uow.saveChanges();
                     return handler.WriteToken(newToken);
                 }
                 return null;
