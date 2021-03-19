@@ -1,6 +1,5 @@
 ﻿using FirebaseAdmin.Messaging;
 ﻿using FirebaseAdmin;
-using FirebaseAdmin.Messaging;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
@@ -77,7 +76,7 @@ namespace PetRescue.WebApi.Controllers
                 string path = _env.ContentRootPath;
                 string result = _uow.GetService<CenterRegistrationFormDomain>().CreateCenterRegistrationForm(model);
                 var userDomain = _uow.GetService<UserDomain>();
-                var listToken = userDomain.GetListDeviceTokenByRoleAndApplication(RoleConstant.Admin, ApplicationNameHelper.SYSTEM_ADMIN_APP);
+                var listToken = userDomain.GetListDeviceTokenByRoleAndApplication(RoleConstant.ADMIN, ApplicationNameHelper.SYSTEM_ADMIN_APP);
                 //send notification to sysadmin
                 if (listToken.Count > 0)
                 {

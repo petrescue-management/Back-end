@@ -16,6 +16,7 @@ namespace PetRescue.Data.ViewModels
         public int CenterStatus { get; set; }
         public DateTime InsertAt { get; set; }
         public DateTime? UpdateAt { get; set; }
+
     }
 
 
@@ -39,5 +40,7 @@ namespace PetRescue.Data.ViewModels
         public string Address { get; set; }
         public string Phone { get; set; }
         public byte CenterStatus { get; set; }
+        public double Lat { get; set; }
+        public double Lng { get; set; }
     }
 }

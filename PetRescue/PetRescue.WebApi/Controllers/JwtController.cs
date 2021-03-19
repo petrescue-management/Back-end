@@ -23,7 +23,7 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var jwtDomain = _uow.GetService<JWTDomain>();
-                if (ValidationExtensions.IsNotNullOrEmptyOrWhiteSpace(model.Jwt))
+                if (ValidationExtensions.IsNotNullOrEmptyOrWhiteSpace(model.Token))
                 {
                     var result = jwtDomain.DecodeJwt(model);
                     if (ValidationExtensions.IsNotNull(result))

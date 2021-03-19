@@ -14,6 +14,16 @@ namespace PetRescue.Data.ViewModels
         public string RoleName { get; set; }
         [JsonProperty("centerId")]
         public Guid CenterId { get; set; }
-        
+    }
+    public class AddNewRoleModel
+    {
+        [JsonProperty("email")]
+        public string Email { get; set; }
+        [JsonProperty("centerId")]
+        public Guid CenterId { get; set; }
+        [JsonProperty("roleName")]
+        public string RoleName { get; set; }
+        [JsonProperty("insertBy")]
+        public Guid InsertBy { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace PetRescue.Data.Domains
             var temp = new NotificationToken();
             var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             var handler = new JwtSecurityTokenHandler();
-            var result = handler.ReadJwtToken(model.Jwt) as JwtSecurityToken;
+            var result = handler.ReadJwtToken(model.Token) as JwtSecurityToken;
             var currentClaims = result.Claims.ToList();
             string email = currentClaims.FirstOrDefault(c => c.Type == "email").Value;
             string urlImg = currentClaims.FirstOrDefault(c => c.Type == "picture").Value;

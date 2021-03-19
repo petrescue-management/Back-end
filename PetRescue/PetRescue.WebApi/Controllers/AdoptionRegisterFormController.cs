@@ -25,7 +25,7 @@ namespace PetRescue.WebApi.Controllers
             _env = environment;
         }
 
-        [Authorize(Roles = RoleConstant.Manager)]
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
         [Route("api/search-adoption-register-form")]
         public IActionResult SearchAdoptionRegisterForm([FromQuery] SearchModel model)
@@ -59,7 +59,7 @@ namespace PetRescue.WebApi.Controllers
             }
         }
 
-        [Authorize(Roles = RoleConstant.Manager)]
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
         [Route("api/update-adoption-register-form-status")]
         public async Task<IActionResult> UpdateAdoptionRegisterFormStatusAsync(UpdateStatusModel model)

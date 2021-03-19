@@ -25,7 +25,7 @@ namespace PetRescue.WebApi.Controllers
         {
         }
         #region GET
-        //[Authorize(Roles ="manager")]
+        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-pet-breeds-by-type-id/{id}")]
         public IActionResult GetPetBreedsByTypeId(Guid id)
@@ -42,7 +42,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-        //[Authorize(Roles ="manager")]
+        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-pet_breed-by-id/{id}")]
         public IActionResult GetPetBreedById(Guid id)
@@ -57,7 +57,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-        //[Authorize(Roles ="manager")]
+        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-all-pet-fur_colors")]
         public IActionResult GetAllPetFurColors()
@@ -74,7 +74,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-        //[Authorize(Roles ="manager")]
+        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-pet-fur_color-by-id/{id}")]
         public IActionResult GetPetFurColorById(Guid id)
@@ -89,7 +89,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-        //[Authorize(Roles ="manager")]
+        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-all-pet-types")]
         public IActionResult GetAllPetTypes()
@@ -106,7 +106,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-        //[Authorize(Roles ="manager")]
+        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpGet]
         [Route("api/get-pet-type-by-id/{id}")]
         public IActionResult GetPetTypeById(Guid id)
@@ -145,9 +145,50 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpGet]
+        [Route("api/get-list-pet-to-be-registered-for-adoption")]
+        public IActionResult GetListPetToBeRegisteredForAdoption()
+        {
+            try
+            {
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var petDomain = _uow.GetService<PetDomain>();
+                var result = petDomain.GetListPetsToBeRegisteredForAdoption(Guid.Parse(currentCenterId));
+                if(result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }   
+        }
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpGet]
+        [Route("api/get-list-adoption-register-form-by-petid")]
+        public IActionResult GetListPetToBeRegisteredForAdoption([FromQuery]Guid petId)
+        {
+            try
+            {
+                var petDomain = _uow.GetService<PetDomain>();
+                var result = petDomain.GetListAdoptionRegisterFormByPetId(petId);
+                if (result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
         #endregion
         #region POST
-        //[Authorize(Roles =("manager"))]
+        //[Authorize(Roles = RoleConstant.Manager)]
         [HttpPost]
         [Route("api/create-new-pet")]
         public IActionResult CreatePet([FromBody] PetCreateModel model)
@@ -170,7 +211,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
-        //[Authorize(Roles =("sysadmin"))]
+        //[Authorize(Roles = RoleConstant.Admin)]
         [HttpPost]
         [Route("api/create-new-pet-breed")]
         public IActionResult CreateBreed([FromBody]PetBreedCreateModel model) 
@@ -191,7 +232,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
-        //[Authorize(Roles =("sysadmin"))]
+        [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpPost]
         [Route("api/create-new-pet-type")]
         public IActionResult CreateType([FromBody] PetTypeCreateModel model)
@@ -212,7 +253,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
-        //[Authorize(Roles =("sysadmin"))]
+        //[Authorize(Roles = RoleConstant.Admin)]
         [HttpPost]
         [Route("api/create-new-pet-fur-color")]
         public IActionResult CreateFurColor([FromBody] PetFurColorCreateModel model)
@@ -234,7 +275,7 @@ namespace PetRescue.WebApi.Controllers
         }
         #endregion
         #region PUT
-        //[Authorize(Roles =("sysadmin"))]
+        //[Authorize(Roles = RoleConstant.Admin)]
         [HttpPut]
         [Route("api/update-fur-color")]
         public IActionResult UpdateFurColor([FromBody] PetFurColorUpdateModel model)
@@ -255,7 +296,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
-        //[Authorize(Roles =("sysadmin"))]
+        //[Authorize(Roles = RoleConstant.Admin)]
         [HttpPut]
         [Route("api/update-breed")]
         public IActionResult UpdateBreed([FromBody] PetBreedUpdateModel model)
@@ -276,7 +317,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
-        //[Authorize(Roles =("sysadmin"))]
+        //[Authorize(Roles =RoleConstant.Admin)]
         [HttpPut]
         [Route("api/update-type")]
         public IActionResult UpdateType([FromBody] PetTypeUpdateModel model)
@@ -297,7 +338,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
-        //[Authorize(Roles =("manager"))]
+        //[Authorize(Roles =RoleConstant.Manager)]
         [HttpPut]
         [Route("api/update-pet")]
         public IActionResult UpdatePet([FromBody] PetDetailModel model)

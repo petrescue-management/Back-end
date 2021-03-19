@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
@@ -164,6 +165,81 @@ namespace PetRescue.Data.Domains
             var petRepo = uow.GetService<IPetRepository>();
             return petRepo.Get().FirstOrDefault(s => s.PetId.Equals(petId));
         }
-
+        public List<PetAdoptionRegisterFormModel> GetListPetsToBeRegisteredForAdoption(Guid centerId)
+        {
+            var petRepo = uow.GetService<IPetRepository>();
+            var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegisterFormRepository>();
+            var pets = petRepo.Get().Where(s => s.CenterId.Equals(centerId));
+            var result = new List<PetAdoptionRegisterFormModel>();
+            foreach(var pet in pets)
+            {
+                var count = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(pet.PetId) && s.AdoptionRegisterStatus == AdoptionRegisterFormStatusConst.PROCESSING).Count();
+                if(count > 0)
+                {
+                    result.Add(new PetAdoptionRegisterFormModel
+                    {
+                        Count = count,
+                        PetId = pet.PetId,
+                        PetName = pet.PetNavigation.PetName,
+                        Age = (int)pet.PetNavigation.PetAge,
+                        BreedName = pet.PetNavigation.PetBreed.PetBreedName,
+                        Gender = pet.PetNavigation.PetGender,
+                        ImageUrl = pet.PetNavigation.ImageUrl
+                    }) ;
+                }
+            }
+            return result;
+        }
+        public List<AdoptionRegisterFormModel> GetListAdoptionRegisterFormByPetId(Guid petId)
+        {
+            var petRepo = uow.GetService<IPetRepository>();
+            var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegisterFormRepository>();
+            var forms = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(petId) && s.AdoptionRegisterStatus == AdoptionRegisterFormStatusConst.PROCESSING);
+            var currentPet = petRepo.Get().FirstOrDefault(s => s.PetId.Equals(petId));
+            var result = new List<AdoptionRegisterFormModel>();
+            foreach(var form in forms)
+            {
+                result.Add(new AdoptionRegisterFormModel
+                {
+                    Address = form.Address,
+                    AdoptionRegisterId = form.AdoptionRegisterId,
+                    AdoptionRegisterStatus = form.AdoptionRegisterStatus,
+                    BeViolentTendencies = form.BeViolentTendencies,
+                    ChildAge = form.ChildAge,
+                    Email = form.Email,
+                    FrequencyAtHome = form.FrequencyAtHome,
+                    HaveAgreement = form.HaveAgreement,
+                    HaveChildren = form.HaveChildren,
+                    HavePet = form.HavePet,
+                    HouseType = form.HouseType,
+                    InsertedAt = form.InsertedAt,
+                    InsertedBy = form.InsertedBy,
+                    Job = form.Job,
+                    UpdateAt = form.UpdateAt,
+                    UpdatedBy = form.UpdatedBy,
+                    UserName = form.UserName,
+                    Phone = form.Phone,
+                    Pet = new PetModel
+                    {
+                        CenterId = currentPet.CenterId,
+                        PetName = currentPet.PetNavigation.PetName,
+                        PetId = currentPet.PetId,
+                        Description = currentPet.PetNavigation.Description,
+                        ImgUrl = currentPet.PetNavigation.ImageUrl,
+                        IsSterilized = currentPet.PetNavigation.IsSterilized,
+                        IsVaccinated = currentPet.PetNavigation.IsVaccinated,
+                        PetAge = currentPet.PetNavigation.PetAge,
+                        PetBreedId = currentPet.PetNavigation.PetBreedId,
+                        PetBreedName = currentPet.PetNavigation.PetBreed.PetBreedName,
+                        PetFurColorId = currentPet.PetNavigation.PetFurColorId,
+                        PetFurColorName = currentPet.PetNavigation.PetFurColor.PetFurColorName,
+                        PetGender = currentPet.PetNavigation.PetGender,
+                        PetStatus = currentPet.PetStatus,
+                        Weight = currentPet.PetNavigation.Weight
+                    }
+                });
+            }
+            return result;
+        }
     }
 }
