@@ -169,7 +169,6 @@ namespace PetRescue.Data.Domains
                                     CenterId = newCenter.CenterId
                                 };
                                 currentUser = userRepo.UpdateUserModel(currentUser, userUpdateModel);
-                                userRepo.Update(currentUser);
                                 //Create new Role for currentUser
                                 var userRoleUpdateModel = new UserRoleUpdateModel
                                 {

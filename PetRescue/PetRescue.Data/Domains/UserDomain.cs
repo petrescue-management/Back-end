@@ -1,6 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using PetRescue.Data.ConstantHelper;
-using PetRescue.Data.Extensions;
+﻿using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
@@ -9,9 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace PetRescue.Data.Domains
 {
@@ -73,7 +68,7 @@ namespace PetRescue.Data.Domains
             var profileRepo = uow.GetService<IUserProfileRepository>();
 
             var userProfile = profileRepo.FindById(model.UserId);
-            var result = userProfile != null ? profileRepo.Create(model) 
+            var result = userProfile == null ? profileRepo.Create(model) 
                 : profileRepo.Edit(userProfile, model);
             uow.saveChanges();
             return new UserProfileViewModel 
@@ -124,27 +119,163 @@ namespace PetRescue.Data.Domains
             var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(currentUserRole.UserId) && s.ApplicationName.Equals(ApplicationNameHelper.MANAGE_CENTER_APP));
             return notificationToken;
         }
-        public User AddUserToCenter(AddNewRoleModel model)
+        public string AddUserToCenter(AddNewRoleModel model)
         {
             var userRepo = uow.GetService<IUserRepository>();
             var userRoleDomain = uow.GetService<UserRoleDomain>();
             var currentUser = userRepo.Get().FirstOrDefault(s=> s.UserEmail.Equals(model.Email));
+            var result = "";
             if(currentUser != null)
             {
-                if( (bool)!currentUser.IsBelongToCenter && currentUser.CenterId != null)
+                //find role of User
+                var userRole = userRoleDomain.CheckRoleOfUser(new UserRoleUpdateModel
                 {
-                    userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.CenterId);
+                    RoleName = model.RoleName,
+                    UserId = currentUser.UserId
+                });
+                // if user isn't exist
+                if (userRole == null)
+                {
+                    //if another role is existed
+                    if (currentUser.CenterId.Equals(model.CenterId) && (bool)currentUser.IsBelongToCenter)
+                    {
+                        userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
+                    }
+                    // if another role isn't existed
+                    else
+                    {
+                        userRepo.UpdateUserModel(currentUser, new UserUpdateModel
+                        {
+                            CenterId = model.CenterId,
+                            IsBelongToCenter = true
+                        });
+                        userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
+                    }
                 }
                 else
                 {
-                    if (currentUser.CenterId.Equals(model.CenterId))
+                    if ((bool) !currentUser.IsBelongToCenter)
                     {
-
+                        if (!userRole.IsActive)
+                        {
+                            userRoleDomain.Edit(userRole, new UserRoleUpdateEntityModel
+                            {
+                                IsActive = true,
+                                UpdateBy = model.InsertBy
+                            });
+                            userRepo.UpdateUserModel(currentUser, new UserUpdateModel
+                            {
+                                CenterId = model.CenterId,
+                                IsBelongToCenter = true
+                            });
+                        }
+                        else
+                        {
+                            result = "Role is existed";
+                        }
+                    }
+                    else
+                    {
+                        result = "This email is belong another center";
                     }
                 }
             }
-            return currentUser;
+            else
+            {
+                result = "not found";
+            }
+            uow.saveChanges();
+            return result;
         }
+        private string[] GetRoleOfUser(Guid userId)
+        {
+            var userRepo = uow.GetService<IUserRepository>();
+            var user = userRepo.Get().FirstOrDefault(s=>s.UserId.Equals(userId));
+            if (user != null)
+            {
+                return user.UserRole.Where(s => s.IsActive).Select(r => r.Role.RoleName).ToArray();
+            }
+            return null;
+        }
+        public string RemoveVolunteerOfCenter(RemoveVolunteerRoleModel model)
+        {
+            var userRoleDomain = uow.GetService<UserRoleDomain>();
+            var userRepo = uow.GetService<IUserRepository>();
+            var context = uow.GetService<PetRescueContext>();
+            var userRole = userRoleDomain.CheckRoleOfUser(new UserRoleUpdateModel
+            {
+                RoleName = RoleConstant.VOLUNTEER,
+                UserId = model.UserId
+            });
+            var result = "Not Found";
+            if (userRole != null)
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try 
+                    {
+                        var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(model.UserId));
+                        userRoleDomain.Edit(userRole, new UserRoleUpdateEntityModel
+                        {
+                            IsActive = false,
+                            UpdateBy = model.InsertBy
+                        });
+                        uow.saveChanges();
+                        
+                        if (GetRoleOfUser(model.UserId).Length == 0)
+                        {
+                            userRepo.UpdateUserModel(currentUser, new UserUpdateModel
+                            {
+                                CenterId = model.CenterId,
+                                IsBelongToCenter = false
+                            });
+                        }
+                        transaction.Commit();
+                        result = "";
+                    }
+                    catch 
+                    {
+                        transaction.Rollback();
+                        result = "Error";
+                    }
+                } 
+            }
+            uow.saveChanges();
+            return result;
+        }
+        public List<UserProfileViewModel> GetListProfileOfVolunter(Guid centerId) 
+        {
+            var userRepository = uow.GetService<IUserRepository>();
+            var userRoleRepository = uow.GetService<IUserRoleRepository>();
+            var listUser =userRepository.Get().Where(s => s.CenterId.Equals(centerId));
+            var result = new List<UserProfileViewModel>();
+            foreach(var user in listUser)
+            {
+                var model = new UserRoleUpdateModel
+                {
+                    UserId = user.UserId,
+                    CenterId = (Guid)user.CenterId,
+                    RoleName = RoleConstant.VOLUNTEER
+                };
+                if(userRoleRepository.FindUserRoleByUserRoleUpdateModel(model) != null)
+                {
+                    result.Add(new UserProfileViewModel 
+                    {
+                        Address = user.UserProfile.Address,
+                        DoB = user.UserProfile.Dob,
+                        FirstName = user.UserProfile.FirstName,
+                        Gender = user.UserProfile.Gender,
+                        ImgUrl = user.UserProfile.ImageUrl,
+                        LastName = user.UserProfile.LastName,
+                        Phone = user.UserProfile.Phone,
+                        UserId = user.UserId
+                    });
+                }
+            }
+            return result.Count > 0 ? result : null;
+        }
+
+        
        
     }
 }

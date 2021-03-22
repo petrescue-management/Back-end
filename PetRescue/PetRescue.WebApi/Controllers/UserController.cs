@@ -37,6 +37,27 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e);
             }
         }
+        [Authorize(Roles =RoleConstant.MANAGER)]
+        [HttpGet("api/get-list-volunteer-profile-of-center")]
+        public IActionResult GetListVolunteerProfileOfCenter()
+        {
+            try
+            {
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var _domain = _uow.GetService<UserDomain>();
+                var result = _domain.GetListProfileOfVolunter(Guid.Parse(currentCenterId));
+                if (result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+            
+        }
         #endregion
         #region POST
         [Authorize]
@@ -66,13 +87,19 @@ namespace PetRescue.WebApi.Controllers
                 var _domain = _uow.GetService<UserDomain>();
                 var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var user = _domain.AddUserToCenter(new AddNewRoleModel 
+                var result = _domain.AddUserToCenter(new AddNewRoleModel 
                 {
                     Email = email,
                     CenterId = Guid.Parse(_currentCenterId),
-                    RoleName = RoleConstant.VOLUNTEER
+                    RoleName = RoleConstant.VOLUNTEER,
+                    InsertBy = Guid.Parse(_currentUserId)
                 });
-                return Success(_currentCenterId);
+                if (result.Equals(""))
+                {
+                    return Success("");
+                }
+                return BadRequest(result);
+                
             }
             catch (Exception e)
             {
@@ -80,7 +107,34 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         #endregion
-
+        #region DELETE
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpDelete("remove-role-volunteer-for-user")]
+        public IActionResult RemoveRoleForUser ([FromQuery]Guid userId)
+        {
+            try
+            {
+                var _domain = _uow.GetService<UserDomain>();
+                var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _domain.RemoveVolunteerOfCenter(new RemoveVolunteerRoleModel
+                {
+                    CenterId = Guid.Parse(_currentCenterId),
+                    InsertBy = Guid.Parse(_currentUserId),
+                    UserId = userId
+                });
+                if (result.Equals(""))
+                {
+                    return Success("");
+                }
+                return BadRequest(result);
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        #endregion
     }
 
 }

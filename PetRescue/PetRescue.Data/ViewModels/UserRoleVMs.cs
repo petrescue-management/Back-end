@@ -26,4 +26,18 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("insertBy")]
         public Guid InsertBy { get; set; }
     }
+    public class RemoveVolunteerRoleModel
+    {
+        [JsonProperty("userId")]
+        public Guid UserId { get; set; }
+        [JsonProperty("centerId")]
+        public Guid CenterId { get; set; }
+        [JsonProperty("insertBy")]
+        public Guid InsertBy { get; set; }
+    }
+    public class UserRoleUpdateEntityModel
+    {
+        public Guid UpdateBy { get; set; }
+        public bool IsActive { get; set; }
+    }
 }

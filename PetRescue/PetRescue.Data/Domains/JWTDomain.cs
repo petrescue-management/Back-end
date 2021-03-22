@@ -72,6 +72,21 @@ namespace PetRescue.Data.Domains
                         UserId = user.UserId
                     });
                 }
+                var userProfileRepo = uow.GetService<IUserProfileRepository>();
+                if(userProfileRepo.Get().FirstOrDefault(s=> s.UserId.Equals(user.UserId)) == null){
+                    var newUpdateProfileModel = new UserProfileUpdateModel
+                    {
+                        FirstName = firstName,
+                        LastName = lastName,
+                        UserId = user.UserId,
+                        Address = "",
+                        DoB = DateTime.UtcNow,
+                        Gender = 3,
+                        Phone = "",
+                        ImgUrl = urlImg
+                    };
+                    userProfileRepo.Create(newUpdateProfileModel);
+                }
                 uow.saveChanges();
                 returnResult.Jwt = handler.WriteToken(newToken);
                 returnResult.NotificationToken = temp;
@@ -96,7 +111,7 @@ namespace PetRescue.Data.Domains
                         UserId = user.UserId,
                         Address= "",
                         DoB = DateTime.UtcNow,
-                        Gender = 0,
+                        Gender = 3,
                         Phone = "",
                         ImgUrl = urlImg
                     };
@@ -127,10 +142,10 @@ namespace PetRescue.Data.Domains
         private string[] GetRoleUser(string email)
         {
             var userRepo = uow.GetService<IUserRepository>();
-            var roles = userRepo.FindById(email);
-            if(roles != null)
+            var user = userRepo.FindById(email);
+            if(user != null)
             {
-                return roles.UserRole.Select(r => r.Role.RoleName).ToArray();
+                return user.UserRole.Where(s=>s.IsActive).Select(r => r.Role.RoleName).ToArray();
             }
             return null;
         }

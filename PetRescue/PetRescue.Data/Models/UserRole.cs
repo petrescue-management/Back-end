@@ -11,6 +11,7 @@ namespace PetRescue.Data.Models
         public DateTime? InsertedAt { get; set; }
         public Guid? UpdateBy { get; set; }
         public DateTime? UpdateAt { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual Role Role { get; set; }
         public virtual User User { get; set; }
