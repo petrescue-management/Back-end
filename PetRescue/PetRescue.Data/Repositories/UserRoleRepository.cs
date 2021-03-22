@@ -17,7 +17,7 @@ namespace PetRescue.Data.Repositories
 
         UserRole FindUserRoleByUserRoleUpdateModel(UserRoleUpdateModel model);
 
-        UserRole Edit(UserRole userRole);
+        UserRole Edit(UserRole entity, UserRoleUpdateEntityModel model);
     }
     public partial class UserRoleRepository : BaseRepository<UserRole,string>, IUserRoleRepository
     {
@@ -31,12 +31,12 @@ namespace PetRescue.Data.Repositories
             return userRole;
         }
 
-        public UserRole Edit(UserRole userRole)
+        public UserRole Edit(UserRole entity,  UserRoleUpdateEntityModel model)
         {
-            //userRole.UpdateAt = DateTime.Now;
-            //userRole.UpdateBy = userRole.UpdateBy;
-            //userRole.IsActived = userRole.IsActived == true ? false : true;
-            return userRole;
+            entity.IsActive = model.IsActive;
+            entity.UpdateAt = DateTime.UtcNow;
+            entity.UpdateBy = model.UpdateBy;
+            return Update(entity).Entity;
         }
 
         public UserRole FindUserRoleByUserRoleUpdateModel(UserRoleUpdateModel model)
@@ -51,18 +51,18 @@ namespace PetRescue.Data.Repositories
 
         public UserRole PrepareCreateRole(Guid userId, Guid roleId, Guid insertBy)
         {
-            
-                UserRole userRole = new UserRole
-                {
-                    UserId = userId,
-                    RoleId = roleId,
-                    InsertedBy = insertBy,
-                    InsertedAt = DateTime.Now,
-                    UpdateAt = null,
-                    UpdateBy = null
-                };
-                return userRole;
-            
+
+            UserRole userRole = new UserRole
+            {
+                UserId = userId,
+                RoleId = roleId,
+                InsertedBy = insertBy,
+                InsertedAt = DateTime.Now,
+                UpdateAt = null,
+                UpdateBy = null,
+                IsActive = true
+            };
+            return userRole; 
         }
        
     }

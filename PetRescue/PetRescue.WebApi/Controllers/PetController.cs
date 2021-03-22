@@ -26,7 +26,7 @@ namespace PetRescue.WebApi.Controllers
         }
         #region GET
         [HttpGet]
-        [Route("api/get-pet-breeds-by-type-id/{id}")]
+        [Route("api/get-pet-breeds-by-type-id/")]
         public IActionResult GetPetBreedsByTypeId(Guid id)
         {
             try
@@ -42,7 +42,7 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [HttpGet]
-        [Route("api/get-pet_breed-by-id/{id}")]
+        [Route("api/get-pet_breed-by-id/")]
         public IActionResult GetPetBreedById(Guid id)
         {
             try
@@ -72,7 +72,7 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [HttpGet]
-        [Route("api/get-pet-fur_color-by-id/{id}")]
+        [Route("api/get-pet-fur_color-by-id/")]
         public IActionResult GetPetFurColorById(Guid id)
         {
             try
@@ -102,7 +102,7 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [HttpGet]
-        [Route("api/get-pet-type-by-id/{id}")]
+        [Route("api/get-pet-type-by-id/")]
         public IActionResult GetPetTypeById(Guid id)
         {
             try
@@ -162,7 +162,7 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
-        [Route("api/get-list-adoption-register-form-by-petid/{id}")]
+        [Route("api/get-list-adoption-register-form-by-petid/")]
         public IActionResult GetListPetToBeRegisteredForAdoption([FromQuery]Guid petId)
         {
             try
@@ -266,7 +266,7 @@ namespace PetRescue.WebApi.Controllers
         #region PUT
         //[Authorize(Roles = RoleConstant.Admin)]
         [HttpPut]
-        [Route("api/update-fur-color/{id}")]
+        [Route("api/update-fur-color/")]
         public IActionResult UpdateFurColor([FromBody] PetFurColorUpdateModel model)
         {
             try
@@ -306,7 +306,7 @@ namespace PetRescue.WebApi.Controllers
         }
         //[Authorize(Roles =RoleConstant.Admin)]
         [HttpPut]
-        [Route("api/update-type/{id}")]
+        [Route("api/update-type/")]
         public IActionResult UpdateType([FromBody] PetTypeUpdateModel model)
         {
             try
@@ -326,7 +326,7 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
-        [Route("api/update-pet/{id}")]
+        [Route("api/update-pet/")]
         public IActionResult UpdatePet([FromBody] PetDetailModel model)
         {
             try

@@ -61,7 +61,7 @@ namespace PetRescue.Data.Repositories
         {
             entity.CenterId = centerId;
             entity.IsBelongToCenter = true;
-            return entity;
+            return Update(entity).Entity;
         }
 
         public User CreateUserByModel(UserCreateModel model)
@@ -79,7 +79,7 @@ namespace PetRescue.Data.Repositories
         {
             entity.CenterId = model.CenterId;
             entity.IsBelongToCenter = model.IsBelongToCenter;
-            return entity;
+            return Update(entity).Entity;
         }
         public UserModel GetUserById(Guid id)
         {

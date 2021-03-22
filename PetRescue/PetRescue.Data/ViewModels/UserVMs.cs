@@ -131,4 +131,6 @@ namespace PetRescue.Data.ViewModels
         public NotificationToken NotificationToken { get; set; }
 
     }
+
+   
 }

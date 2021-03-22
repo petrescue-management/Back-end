@@ -23,27 +23,22 @@ namespace PetRescue.Data.Domains
                 return userRoleRepo.CreateRoleForUser(userId, role.RoleId, insertBy);
             return null;
         }
-        public UserRole EnableRole(UserRoleUpdateModel model)
-        {
-            var userRoleRepo = uow.GetService<IUserRoleRepository>();
-            var userRole = userRoleRepo.FindUserRoleByUserRoleUpdateModel(model);
-            if(userRole != null)
-            {
-                var newUserRole = userRoleRepo.Edit(userRole);
-                return userRoleRepo.Update(newUserRole).Entity;
-            }
-            return null;
-        }
-        public UserRole IsExisted(UserRoleUpdateModel model)
+        public UserRole CheckRoleOfUser(UserRoleUpdateModel model) 
         {
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
             var roleRepo = uow.GetService<IRoleRepository>();
             var role = roleRepo.FindRoleByName(model.RoleName);
-            if (role != null)
+            if(role != null)
             {
-                return userRoleRepo.FindUserRoleByUserRoleUpdateModel(model);
+                return userRoleRepo.Get().FirstOrDefault(s => s.RoleId.Equals(role.RoleId) && s.UserId.Equals(model.UserId));
             }
             return null;
+
+        }
+        public UserRole Edit(UserRole entity,UserRoleUpdateEntityModel model)
+        {
+            var userRoleRepo = uow.GetService<IUserRoleRepository>();
+            return userRoleRepo.Edit(entity, model);
         }
  
     }
