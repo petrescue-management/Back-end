@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Extensions;
 using PetRescue.Data.Uow;
@@ -14,8 +15,10 @@ namespace PetRescue.WebApi.Controllers
     [Route("/jwt")]
     public class JwtController : BaseController
     {
-        public JwtController(IUnitOfWork uow) : base(uow)
+        private readonly IHostingEnvironment _env;
+        public JwtController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
+            _env = environment;
         }
         [HttpGet]
         public  IActionResult GetToken([FromQuery]UserLoginModel model)
@@ -51,6 +54,23 @@ namespace PetRescue.WebApi.Controllers
                 return BadRequest("");
             }
             catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [HttpPost("login-by-volunteer")]
+        public IActionResult LoginByVolunteer([FromBody] UserLoginModel model)
+        {
+            try
+            {
+                string path = _env.ContentRootPath;
+                var result = _uow.GetService<JWTDomain>().LoginByVolunteer(model, path);
+                if(result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest(result);
+            }catch(Exception ex)
             {
                 return Error(ex.Message);
             }

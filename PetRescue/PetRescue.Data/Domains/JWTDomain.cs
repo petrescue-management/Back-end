@@ -1,4 +1,5 @@
 ﻿
+using FirebaseAdmin.Messaging;
 using Microsoft.IdentityModel.Tokens;
 using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Extensions;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PetRescue.Data.Domains
 {
@@ -191,7 +193,6 @@ namespace PetRescue.Data.Domains
         {
             string hashedPassword = GenarateHash(model.Password);
             var userRepo = uow.GetService<IUserRepository>();
-            var jwtDomain = uow.GetService<JWTDomain>();
             var currentUser = userRepo.FindById(model.Email);
             var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             if (currentUser != null)
@@ -223,7 +224,7 @@ namespace PetRescue.Data.Domains
                     var result = new JwtSecurityToken();
                     var currentClaims = result.Claims.ToList();
                     currentClaims.Add(new Claim(ClaimTypes.Email, currentUser.UserEmail));
-                    var tokenDescriptor = jwtDomain.GeneratedTokenDecriptor(currentUser, currentClaims);
+                    var tokenDescriptor = GeneratedTokenDecriptor(currentUser, currentClaims);
                     var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
                     uow.saveChanges();
                     return handler.WriteToken(newToken);
@@ -232,6 +233,90 @@ namespace PetRescue.Data.Domains
             }
             return null;
         }
-
+        public async Task<string> LoginByVolunteer(UserLoginModel model, string path)
+        {
+            //Get FirebaseToken and get claims
+            var handler = new JwtSecurityTokenHandler();
+            var result = handler.ReadJwtToken(model.Token) as JwtSecurityToken;
+            var currentClaims = result.Claims.ToList();
+            var userDomain = uow.GetService<UserDomain>();
+            //Start :Get Information from claims
+            string email = currentClaims.FirstOrDefault(c => c.Type == "email").Value;
+            var user = UserIsExisted(email);
+            // check this user
+            if(user != null)
+            {
+                string[] roles = userDomain.GetRoleOfUser(user.UserId);
+                bool check = false;
+                for (int index = 0; index < roles.Length; index++)
+                {
+                    if (roles[index].Equals(RoleConstant.VOLUNTEER))
+                    {
+                        check = true;
+                    }
+                }
+                if (check)
+                {
+                    string urlImg = currentClaims.FirstOrDefault(c => c.Type == "picture").Value;
+                    string fullName = currentClaims.FirstOrDefault(c => c.Type == "name").Value;
+                    string[] listStr = fullName.Split(" ");
+                    string lastName = "";
+                    string firstName = "";
+                    var returnResult = new JWTReturnModel();
+                    for (int index = 0; index < listStr.Length; index++)
+                    {
+                        if (index == 0)
+                        {
+                            lastName += listStr[0];
+                        }
+                        else
+                        {
+                            firstName += " " + listStr[index];
+                        }
+                    }
+                    //End :Get Information from FirebaseToken
+                    var temp = new NotificationToken();
+                    var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
+                    var tokenDescriptor = GeneratedTokenDecriptor(user, currentClaims);
+                    var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
+                    var firebaseExtensions = new FireBaseExtentions();
+                    var app = firebaseExtensions.GetFirebaseApp(path);
+                    var fcm = FirebaseMessaging.GetMessaging(app);
+                    var notificationToken = notificationTokenDomain.FindByApplicationNameAndUserId(model.ApplicationName, user.UserId);
+                    var listToken = new List<string>();
+                    //if notification Token is existed,  will update deviceToken
+                    if (notificationToken != null)
+                    {
+                        listToken.Add(notificationToken.DeviceToken);
+                        await fcm.UnsubscribeFromTopicAsync(listToken, user.CenterId.ToString());
+                        temp = notificationTokenDomain.UpdateNotificationToken(new NotificationTokenUpdateModel
+                        {
+                            Id = notificationToken.Id,
+                            DeviceToken = model.DeviceToken
+                        });
+                        listToken.Clear();
+                        listToken.Add(temp.DeviceToken);
+                        await fcm.SubscribeToTopicAsync(listToken, user.CenterId.ToString());
+                    }
+                    // else create new notificationToken.
+                    else
+                    {
+                        temp = notificationTokenDomain.CreateNotificationToken(new NotificationTokenCreateModel
+                        {
+                            ApplicationName = model.ApplicationName,
+                            DeviceToken = model.DeviceToken,
+                            UserId = user.UserId
+                        });
+                        listToken.Clear();
+                        listToken.Add(temp.DeviceToken);
+                        await fcm.SubscribeToTopicAsync(listToken, user.CenterId.ToString());
+                    }
+                    app.Delete();
+                    uow.saveChanges();
+                    return handler.WriteToken(newToken);
+                }
+            }
+            return null;
+        }
     }
 }

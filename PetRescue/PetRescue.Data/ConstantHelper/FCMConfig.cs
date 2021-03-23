@@ -23,6 +23,7 @@ namespace PetRescue.Data.ConstantHelper
         public const string SYSTEM_ADMIN_APP = "Petrescue.app.systemadmin";
         public const string MANAGE_CENTER_APP = "Petrescue.app.managercenter";
         public const string USER_APP = "Petrescue.app.user";
+        public const string VOLUNTEER_APP = "Petrescue.app.volunteer";
     }
     public class NotificationTitleHelper
     {

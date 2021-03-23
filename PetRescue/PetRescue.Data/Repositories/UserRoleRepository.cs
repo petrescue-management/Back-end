@@ -43,7 +43,7 @@ namespace PetRescue.Data.Repositories
         {
             if(model.CenterId != null && model.RoleName != null && model.UserId != null)
             {
-                return Get().FirstOrDefault(u => u.Role.RoleName == model.RoleName && u.UserId == model.UserId && u.User.CenterId == model.CenterId);
+                return Get().FirstOrDefault(u => u.Role.RoleName == model.RoleName && u.UserId == model.UserId && u.User.CenterId == model.CenterId && u.IsActive);
             }
             return null;
             

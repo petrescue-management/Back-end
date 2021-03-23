@@ -65,10 +65,11 @@ namespace PetRescue.Data.Domains
             }
             return query.GetData(filter, page, limit, totalPage, fields);
         }
-        public PetModel CreateNewPet(PetCreateModel model, Guid insertBy, Guid centerId)
+        public int CreateNewPet(PetCreateModel model, Guid insertBy, Guid centerId)
         {
             var petRepo = uow.GetService<IPetRepository>();
             var context = uow.GetService<PetRescueContext>();
+            var result = -1;
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
@@ -97,148 +98,112 @@ namespace PetRescue.Data.Domains
                         {
                             uow.saveChanges();
                             transaction.Commit();
-                            return new PetModel {
-                                CenterId = newPet.CenterId,
-                                Description = newPet.PetNavigation.Description,
-                                ImgUrl = newPet.PetNavigation.ImageUrl,
-                                IsSterilized = newPet.PetNavigation.IsSterilized,
-                                IsVaccinated = newPet.PetNavigation.IsVaccinated,
-                                PetAge = newPet.PetNavigation.PetAge,
-                                PetBreedId = newPet.PetNavigation.PetBreedId,
-                                PetBreedName = newPet.PetNavigation.PetBreed.PetBreedName,
-                                PetFurColorId = newPet.PetNavigation.PetFurColorId,
-                                PetFurColorName = newPet.PetNavigation.PetFurColor.PetFurColorName,
-                                PetGender = newPet.PetNavigation.PetGender,
-                                PetId = newPet.PetId,
-                                PetName = newPet.PetNavigation.PetName,
-                                PetStatus = newPet.PetStatus,
-                                Weight = newPet.PetNavigation.Weight
-                            };
+                            result = newPet.PetStatus;
                         }
                     }
                 }catch(Exception e)
                 {
                     transaction.Rollback();
                     throw (e);
-                }
-                
+                }   
             }
-            return null;
+            return result;
             
         }
-        public PetModel UpdatePet(PetDetailModel model, Guid updateBy)
+        public int UpdatePet(PetDetailModel model, Guid updateBy)
         {
             var petRepo = uow.GetService<IPetRepository>();
             var pet = petRepo.Get().FirstOrDefault(p => p.PetId == model.PetId);
+            var result = -1;
             if(pet != null)
             {
                 pet = petRepo.Edit(pet, model, updateBy);
                 uow.saveChanges();
-                return new PetModel 
-                {
-                    CenterId = pet.CenterId,
-                    Description = pet.PetNavigation.Description,
-                    ImgUrl = pet.PetNavigation.ImageUrl,
-                    IsSterilized = pet.PetNavigation.IsSterilized,
-                    IsVaccinated = pet.PetNavigation.IsVaccinated,
-                    PetAge = pet.PetNavigation.PetAge,
-                    PetBreedId = pet.PetNavigation.PetBreedId,
-                    PetBreedName = pet.PetNavigation.PetBreed.PetBreedName,
-                    PetFurColorId = pet.PetNavigation.PetFurColorId,
-                    PetFurColorName = pet.PetNavigation.PetFurColor.PetFurColorName,
-                    PetGender = pet.PetNavigation.PetGender,
-                    PetId = pet.PetId,
-                    PetName = pet.PetNavigation.PetName,
-                    PetStatus = pet.PetStatus,
-                    Weight = pet.PetNavigation.Weight
-                };
+                result = pet.PetStatus;
             }
-            return null;
+            return result;
             
         }
         public Pet RemovePet()
         {
             return null;
         }
-        public PetFurColorViewModel CreatePetFurColor(PetFurColorCreateModel model)
+        public int CreatePetFurColor(PetFurColorCreateModel model)
         {
+            var result = -1;
             var petFurColorRepo = uow.GetService<IPetFurColorRepository>();
             var newPetFurColor = petFurColorRepo.Create(model);
-            uow.saveChanges();
-            return new PetFurColorViewModel 
+            if(newPetFurColor != null)
             {
-                PetFurColorId = newPetFurColor.PetFurColorId,
-                PetFurColorName = newPetFurColor.PetFurColorName
-            };
+                uow.saveChanges();
+                result = 1;
+            }
+            return result;
         }
-        public PetFurColorViewModel UpdatePetFurColor(PetFurColorUpdateModel model)
+        public int UpdatePetFurColor(PetFurColorUpdateModel model)
         {
             var petFurColorRepo = uow.GetService<IPetFurColorRepository>();
             var petFurColor = petFurColorRepo.Get().FirstOrDefault(p => p.PetFurColorId == model.PetFurColorId);
+            var result = -1;
             if(petFurColor != null)
             {
                 petFurColor = petFurColorRepo.Edit(model, petFurColor);
                 uow.saveChanges();
-                return new PetFurColorViewModel
-                {
-                    PetFurColorId = petFurColor.PetFurColorId,
-                    PetFurColorName = petFurColor.PetFurColorName,
-                };
+                result = 1;
             }
-            return null;
+            return result;
         }
-        public PetBreedViewModel CreatePetBreed(PetBreedCreateModel model)
+        public int CreatePetBreed(PetBreedCreateModel model)
         {
             var petBreedRepo = uow.GetService<IPetBreedRepository>();
             var newPetBreed = petBreedRepo.Create(model);
-            uow.saveChanges();
-            return new PetBreedViewModel 
+            var result = -1;
+            if(newPetBreed != null)
             {
-                PetBreedId = newPetBreed.PetBreedId,
-                PetBreedName = newPetBreed.PetBreedName
-            };
+                uow.saveChanges();
+                result = 1;
+            }
+            return result;
+            
+            
         }
-        public PetBreedViewModel UpdatePetBreed(PetBreedUpdateModel model)
+        public int UpdatePetBreed(PetBreedUpdateModel model)
         {
+            var result = -1;
             var petBreedRepo = uow.GetService<IPetBreedRepository>();
             var petBreed = petBreedRepo.Get().FirstOrDefault(p => p.PetBreedId == model.PetBreedId);
             if(petBreed != null)
             {
                 petBreed = petBreedRepo.Edit(model, petBreed);
                 uow.saveChanges();
-                return new PetBreedViewModel
-                {
-                    PetBreedId = petBreed.PetBreedId,
-                    PetBreedName = petBreed.PetBreedName
-                };
+                result = 1;
             }
-            return null;
+            return result;
         }
-        public PetTypeViewModel CreatePetType(PetTypeCreateModel model)
+        public int CreatePetType(PetTypeCreateModel model)
         {
             var petTypeRepo = uow.GetService<IPetTypeRepository>();
             var newPetType = petTypeRepo.Create(model);
-            uow.saveChanges();
-            return new PetTypeViewModel {
-                PetTypeId = newPetType.PetTypeId,
-                PetTypeName = newPetType.PetTypeName
-            };
+            var result = -1;
+            if(newPetType != null)
+            {
+                result = 1;
+                uow.saveChanges();
+            }
+            return result;
         }
-        public PetTypeViewModel UpdatePetType(PetTypeUpdateModel model)
+        public int UpdatePetType(PetTypeUpdateModel model)
         {
             var petTypeRepo = uow.GetService<IPetTypeRepository>();
             var petType = petTypeRepo.Get().FirstOrDefault(p => p.PetTypeId == model.PetTypeId);
+            var result = -1;
             if(petType != null)
             {
                 petType = petTypeRepo.Edit(petType, model);
                 uow.saveChanges();
-                return new PetTypeViewModel
-                {
-                    PetTypeId = petType.PetTypeId,
-                    PetTypeName = petType.PetTypeName
-                };
+                result = 1;
             }
-            return null;
+            return result;
         }
         public Pet GetPetById(Guid petId) 
         {
@@ -319,6 +284,34 @@ namespace PetRescue.Data.Domains
                     UpdatedBy = form.UpdatedBy,
                     UserName = form.UserName,
                     Phone = form.Phone,
+                });
+            }
+            return result;
+        }
+        public List<PetModel> GetPetByTypeName(string petTypeName)
+        {
+            var petRepo = uow.GetService<IPetRepository>();
+            var result = new List<PetModel>();
+            var listPet = petRepo.Get().Where(s => s.PetNavigation.PetBreed.PetType.PetTypeName.Equals(petTypeName) && s.PetStatus == PetStatusConst.FINDINGADOPTER).ToList();
+            foreach(var pet in listPet)
+            {
+                result.Add(new PetModel
+                {
+                    CenterId = pet.CenterId,
+                    Description = pet.PetNavigation.Description,
+                    ImgUrl = pet.PetNavigation.ImageUrl,
+                    IsSterilized = pet.PetNavigation.IsSterilized,
+                    IsVaccinated = pet.PetNavigation.IsVaccinated,
+                    PetAge = pet.PetNavigation.PetAge,
+                    PetBreedId = pet.PetNavigation.PetBreedId,
+                    PetBreedName = pet.PetNavigation.PetBreed.PetBreedName,
+                    PetFurColorId = pet.PetNavigation.PetFurColorId,
+                    PetFurColorName = pet.PetNavigation.PetFurColor.PetFurColorName,
+                    PetGender = pet.PetNavigation.PetGender,
+                    PetId = pet.PetId,
+                    PetName = pet.PetNavigation.PetName,
+                    PetStatus = pet.PetStatus,
+                    Weight = pet.PetNavigation.Weight
                 });
             }
             return result;

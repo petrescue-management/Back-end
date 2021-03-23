@@ -38,7 +38,7 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [Authorize(Roles =RoleConstant.MANAGER)]
-        [HttpGet("api/get-list-volunteer-profile-of-center")]
+        [HttpGet("get-list-volunteer-profile-of-center")]
         public IActionResult GetListVolunteerProfileOfCenter()
         {
             try
@@ -58,10 +58,29 @@ namespace PetRescue.WebApi.Controllers
             }
             
         }
+        [HttpGet("get-profile-by-userid")]
+        public IActionResult GetProfileByUserId (Guid userId)
+        {
+            try
+            {
+                var _domain = _uow.GetService<UserDomain>();
+                var result = _domain.GetProfileByUserId(userId);
+                if (result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+            
+        }
         #endregion
         #region POST
         [Authorize]
-        [HttpPost("api/update-profile/")]
+        [HttpPost("update-profile")]
         public IActionResult UpdateProfileForUser([FromBody] UserProfileUpdateModel model)
         {
             try

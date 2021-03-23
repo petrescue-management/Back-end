@@ -17,12 +17,12 @@ namespace PetRescue.Data.Extensions
         }
         public  FirebaseApp GetFirebaseApp (string path)
         {
-            path = path + FCMConfig.FILE_NAME;
-            FirebaseApp app = FirebaseApp.Create(new AppOptions()
+            var realPath = path + FCMConfig.FILE_NAME;
+            FirebaseApp.Create(new AppOptions()
             {
-                Credential = GoogleCredential.FromFile(path)
+                Credential = GoogleCredential.FromFile(realPath)
             }, FCMConfig.FIREBASE_INSTANCE);
-            app = FirebaseApp.GetInstance(FCMConfig.FIREBASE_INSTANCE);
+            var app = FirebaseApp.GetInstance(FCMConfig.FIREBASE_INSTANCE);
             return app;
         }
     }

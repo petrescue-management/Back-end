@@ -187,7 +187,7 @@ namespace PetRescue.Data.Domains
             uow.saveChanges();
             return result;
         }
-        private string[] GetRoleOfUser(Guid userId)
+        public string[] GetRoleOfUser(Guid userId)
         {
             var userRepo = uow.GetService<IUserRepository>();
             var user = userRepo.Get().FirstOrDefault(s=>s.UserId.Equals(userId));
@@ -261,6 +261,7 @@ namespace PetRescue.Data.Domains
                 {
                     result.Add(new UserProfileViewModel 
                     {
+                        email = user.UserEmail,
                         Address = user.UserProfile.Address,
                         DoB = user.UserProfile.Dob,
                         FirstName = user.UserProfile.FirstName,
@@ -275,7 +276,29 @@ namespace PetRescue.Data.Domains
             return result.Count > 0 ? result : null;
         }
 
-        
-       
+        public UserProfileViewModel GetProfileByUserId(Guid userId)
+        {
+            var userRepo = uow.GetService<IUserRepository>();
+            var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(userId));
+            if(user != null)
+            {
+                return new UserProfileViewModel
+                {
+                    email = user.UserEmail,
+                    Address = user.UserProfile.Address,
+                    DoB = user.UserProfile.Dob,
+                    FirstName = user.UserProfile.FirstName,
+                    Gender = user.UserProfile.Gender,
+                    ImgUrl = user.UserProfile.ImageUrl,
+                    LastName = user.UserProfile.LastName,
+                    Phone = user.UserProfile.Phone,
+                    UserId = user.UserId
+                };
+            }
+            return null;
+        }
+
+
+
     }
 }

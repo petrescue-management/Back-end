@@ -180,6 +180,21 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
+        [HttpGet]
+        [Route("api/get-pet-by-typename")]
+        public IActionResult GetPetByTypeName ([FromQuery]string petTypeName)
+        {
+            try
+            {
+                var _domain = _uow.GetService<PetDomain>();
+                var result = _domain.GetPetByTypeName(petTypeName);
+                return Success(result);
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
         #endregion
         #region POST
         [Authorize(Roles = RoleConstant.MANAGER)]
@@ -193,11 +208,11 @@ namespace PetRescue.WebApi.Controllers
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _domain = _uow.GetService<PetDomain>();
                 var newPet = _domain.CreateNewPet(model,Guid.Parse(currentUserId), Guid.Parse(currentCenterId));
-                if(newPet != null)
+                if(newPet != -1)
                 {
                     return Success(newPet);
                 }
-                return BadRequest();
+                return BadRequest(newPet);
             }catch(Exception e)
             {
                 return Error(e.Message);
@@ -212,7 +227,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 var _domain = _uow.GetService<PetDomain>();
                 var newPetBreed = _domain.CreatePetBreed(model);
-                if (newPetBreed != null)
+                if (newPetBreed != -1)
                 {
                     return Success(newPetBreed);
                 }
@@ -232,7 +247,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 var _domain = _uow.GetService<PetDomain>();
                 var newPetType = _domain.CreatePetType(model);
-                if (newPetType != null)
+                if (newPetType != -1)
                 {
                     return Success(newPetType);
                 }
@@ -252,7 +267,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 var _domain = _uow.GetService<PetDomain>();
                 var newPetFurColor = _domain.CreatePetFurColor(model);
-                if(newPetFurColor != null)
+                if(newPetFurColor != -1)
                 {
                     return Success(newPetFurColor);
                 }
@@ -273,7 +288,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 var _domain = _uow.GetService<PetDomain>();
                 var petFurColor = _domain.UpdatePetFurColor(model);
-                if (petFurColor != null)
+                if (petFurColor != -1)
                 {
                     return Success(petFurColor);
                 }
@@ -293,7 +308,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 var _domain = _uow.GetService<PetDomain>();
                 var petBreed = _domain.UpdatePetBreed(model);
-                if (petBreed != null)
+                if (petBreed != -1)
                 {
                     return Success(petBreed);
                 }
@@ -313,7 +328,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 var _domain = _uow.GetService<PetDomain>();
                 var petType = _domain.UpdatePetType(model);
-                if (petType != null)
+                if (petType != -1)
                 {
                     return Success(petType);
                 }
