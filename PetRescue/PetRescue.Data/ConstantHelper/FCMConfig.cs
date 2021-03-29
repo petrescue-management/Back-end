@@ -30,11 +30,18 @@ namespace PetRescue.Data.ConstantHelper
         public const string NEW_REGISTRATION_CENTER_FORM_TITLE = "You have a new center registration";
         public const string NEW_REGISTRATON_ADOPTION_FORM_TITLE = "You have a new adoption registration";
         public const string APPROVE_ADOPTION_FORM_TITLE = "You have new adoption pet";
+        public const string NEW_RESCUE_FORM_TITLE = "You have a new Rescue Form";
     }
     public class NotificationBodyHelper
     {
         public const string NEW_REGISTRATION_CENTER_FORM_BODY = "New center registration form is created";
         public const string NEW_REGISTRATION_ADOPTION_FORM_BODY = "New adoption registration form is created";
         public const string APPROVE_ADOPTION_FORM_BODY = "you have adoption new pet";
+        public const string NEW_RESCUE_FORM_BODY = "You have a new Rescue Form";
+    }
+    public class NotificationManagerType
+    {
+        public const int NEW_ADOPTION_REGISTRATION_FORM_BE_CREATED = 2;
+        public const int NEW_RESCUE_FORM_BE_CREATED = 1;
     }
 }

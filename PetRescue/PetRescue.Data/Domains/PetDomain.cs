@@ -288,31 +288,43 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public List<PetModel> GetPetByTypeName(string petTypeName)
+        public object GetPetByTypeName()
         {
             var petRepo = uow.GetService<IPetRepository>();
-            var result = new List<PetModel>();
-            var listPet = petRepo.Get().Where(s => s.PetNavigation.PetBreed.PetType.PetTypeName.Equals(petTypeName) && s.PetStatus == PetStatusConst.FINDINGADOPTER).ToList();
-            foreach(var pet in listPet)
+            var petTypeRepo = uow.GetService<IPetTypeRepository>();
+            var listPetType = petTypeRepo.Get();
+            var result = new List<PetMobileViewModel>();
+            foreach (var petType in listPetType) 
             {
-                result.Add(new PetModel
+                var temp = new List<PetModel>();
+                var listPet = petRepo.Get().Where(s => s.PetNavigation.PetBreed.PetType.PetTypeName.Equals(petType.PetTypeName) && s.PetStatus == PetStatusConst.FINDINGADOPTER).ToList();
+                foreach (var pet in listPet)
                 {
-                    CenterId = pet.CenterId,
-                    Description = pet.PetNavigation.Description,
-                    ImgUrl = pet.PetNavigation.ImageUrl,
-                    IsSterilized = pet.PetNavigation.IsSterilized,
-                    IsVaccinated = pet.PetNavigation.IsVaccinated,
-                    PetAge = pet.PetNavigation.PetAge,
-                    PetBreedId = pet.PetNavigation.PetBreedId,
-                    PetBreedName = pet.PetNavigation.PetBreed.PetBreedName,
-                    PetFurColorId = pet.PetNavigation.PetFurColorId,
-                    PetFurColorName = pet.PetNavigation.PetFurColor.PetFurColorName,
-                    PetGender = pet.PetNavigation.PetGender,
-                    PetId = pet.PetId,
-                    PetName = pet.PetNavigation.PetName,
-                    PetStatus = pet.PetStatus,
-                    Weight = pet.PetNavigation.Weight
-                });
+                    temp.Add(new PetModel
+                    {
+                        CenterId = pet.CenterId,
+                        Description = pet.PetNavigation.Description,
+                        ImgUrl = pet.PetNavigation.ImageUrl,
+                        IsSterilized = pet.PetNavigation.IsSterilized,
+                        IsVaccinated = pet.PetNavigation.IsVaccinated,
+                        PetAge = pet.PetNavigation.PetAge,
+                        PetBreedId = pet.PetNavigation.PetBreedId,
+                        PetBreedName = pet.PetNavigation.PetBreed.PetBreedName,
+                        PetFurColorId = pet.PetNavigation.PetFurColorId,
+                        PetFurColorName = pet.PetNavigation.PetFurColor.PetFurColorName,
+                        PetGender = pet.PetNavigation.PetGender,
+                        PetId = pet.PetId,
+                        PetName = pet.PetNavigation.PetName,
+                        PetStatus = pet.PetStatus,
+                        Weight = pet.PetNavigation.Weight
+                    });
+                }
+                var petMobileViewModel = new PetMobileViewModel
+                {
+                    ListPet = temp,
+                    TypeName = petType.PetTypeName
+                };
+                result.Add(petMobileViewModel);
             }
             return result;
         }

@@ -16,6 +16,8 @@ namespace PetRescue.Data.ViewModels
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public double Lng { get; set; }
+        public double Lat { get; set; }
 
     }
 
@@ -27,6 +29,7 @@ namespace PetRescue.Data.ViewModels
         public string ReportDescription { get; set; }
         public string ReportLocation { get; set; }
         public string ImgReportUrl { get; set; }
+
     }
 
     public class CreateRescueReportModel
@@ -36,6 +39,8 @@ namespace PetRescue.Data.ViewModels
         public string ReportDescription { get; set; }
         public string ReportLocation { get; set; }
         public string ImgReportUrl { get; set; }
+        public double Lng { get; set; }
+        public double Lat { get; set; }
     }
     
 

@@ -182,12 +182,12 @@ namespace PetRescue.WebApi.Controllers
         }
         [HttpGet]
         [Route("api/get-pet-by-typename")]
-        public IActionResult GetPetByTypeName ([FromQuery]string petTypeName)
+        public IActionResult GetPetByTypeName ()
         {
             try
             {
                 var _domain = _uow.GetService<PetDomain>();
-                var result = _domain.GetPetByTypeName(petTypeName);
+                var result = _domain.GetPetByTypeName();
                 return Success(result);
             }
             catch(Exception ex)
@@ -349,7 +349,7 @@ namespace PetRescue.WebApi.Controllers
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var petDomain = _uow.GetService<PetDomain>();
                 var newPet = petDomain.UpdatePet(model, Guid.Parse(currentUserId));
-                if (newPet != null)
+                if (newPet != -1)
                 {
                     return Success(newPet);
                 }

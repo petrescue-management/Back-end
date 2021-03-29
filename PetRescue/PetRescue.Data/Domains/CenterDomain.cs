@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.Models;
+﻿using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
@@ -106,5 +107,31 @@ namespace PetRescue.Data.Domains
             return center.CenterId.ToString();
         }
         #endregion
+        public List<CenterLocationModel> GetListCenterLocation()
+        {
+            var centerRepo = uow.GetService<ICenterRepository>();
+            var userRoleRepo = uow.GetService<IUserRoleRepository>();
+            var userRoles = userRoleRepo.Get().Where(s => (bool)s.User.IsBelongToCenter && s.IsActive && s.Role.RoleName.Equals(RoleConstant.VOLUNTEER)).ToList();
+            var setCenterId = new HashSet<Guid>();
+            foreach (var userRole in userRoles)
+            {
+                setCenterId.Add((Guid)userRole.User.CenterId);
+            }
+            var result = new List<CenterLocationModel>();
+            if (setCenterId.Count != 0)
+            {
+                foreach (var centerId in setCenterId.ToList())
+                {
+                    var temp = centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId));
+                    result.Add(new CenterLocationModel
+                    {
+                        CenterId = temp.CenterId.ToString(),
+                        Lat = (double)temp.Lat,
+                        Lng = (double)temp.Lng
+                    });
+                }
+            }
+            return result;
+        }
     }
 }

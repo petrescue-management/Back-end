@@ -287,16 +287,23 @@ namespace PetRescue.Data.Domains
                     //if notification Token is existed,  will update deviceToken
                     if (notificationToken != null)
                     {
-                        listToken.Add(notificationToken.DeviceToken);
-                        await fcm.UnsubscribeFromTopicAsync(listToken, user.CenterId.ToString());
-                        temp = notificationTokenDomain.UpdateNotificationToken(new NotificationTokenUpdateModel
+                        try
                         {
-                            Id = notificationToken.Id,
-                            DeviceToken = model.DeviceToken
-                        });
-                        listToken.Clear();
-                        listToken.Add(temp.DeviceToken);
-                        await fcm.SubscribeToTopicAsync(listToken, user.CenterId.ToString());
+                            listToken.Add(notificationToken.DeviceToken);
+                            await fcm.UnsubscribeFromTopicAsync(listToken, user.CenterId.ToString());
+                            temp = notificationTokenDomain.UpdateNotificationToken(new NotificationTokenUpdateModel
+                            {
+                                Id = notificationToken.Id,
+                                DeviceToken = model.DeviceToken
+                            });
+                            listToken.Clear();
+                            listToken.Add(temp.DeviceToken);
+                            await fcm.SubscribeToTopicAsync(listToken, user.CenterId.ToString());
+                        }catch(Exception ex)
+                        {
+                            throw (ex);
+                        }
+                        
                     }
                     // else create new notificationToken.
                     else
@@ -307,7 +314,6 @@ namespace PetRescue.Data.Domains
                             DeviceToken = model.DeviceToken,
                             UserId = user.UserId
                         });
-                        listToken.Clear();
                         listToken.Add(temp.DeviceToken);
                         await fcm.SubscribeToTopicAsync(listToken, user.CenterId.ToString());
                     }

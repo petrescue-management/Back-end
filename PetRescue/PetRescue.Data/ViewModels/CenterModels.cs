@@ -27,7 +27,7 @@ namespace PetRescue.Data.ViewModels
         public string Address { get; set; }
         public string Phone { get; set; }
         public double? Lat { get; set; }
-        public double? Long { get; set; }
+        public double? Lng { get; set; }
         public string Email { get; set; }
     }
 
@@ -40,6 +40,13 @@ namespace PetRescue.Data.ViewModels
         public string Address { get; set; }
         public string Phone { get; set; }
         public byte CenterStatus { get; set; }
+        public double Lat { get; set; }
+        public double Lng { get; set; }
+    }
+
+    public class CenterLocationModel
+    {
+        public string CenterId { get; set; }
         public double Lat { get; set; }
         public double Lng { get; set; }
     }

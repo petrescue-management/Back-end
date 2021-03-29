@@ -82,7 +82,7 @@ namespace PetRescue.Data.Domains
             
             
         }
-        public async Task<bool> NotificationForManagerWhenHaveNewAdoptionRegisterForm(string path, Guid centerId)
+        public async Task<bool> NotificationForManagerWhenHaveNewAdoptionRegisterForm(string path, Guid centerId,Guid AdoptionRegistrationId)
         {
             try
             {
@@ -97,6 +97,11 @@ namespace PetRescue.Data.Domains
                     {
                         Title = NotificationTitleHelper.NEW_REGISTRATON_ADOPTION_FORM_TITLE,
                         Body = NotificationBodyHelper.NEW_REGISTRATION_ADOPTION_FORM_BODY,
+                    },
+                    Data = new Dictionary<string, string>()
+                    {
+                        { "AdoptionRegistrationId", AdoptionRegistrationId.ToString() },
+                        { "Type", NotificationManagerType.NEW_ADOPTION_REGISTRATION_FORM_BE_CREATED.ToString() },
                     },
                 };
                 message.Token = notificationToken.DeviceToken;
@@ -141,6 +146,35 @@ namespace PetRescue.Data.Domains
             }
 
 
+        }
+        public async Task<bool> NotificationForListVolunteerOfCenter(string path, List<string> topics)
+        {
+            try
+            {
+                var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
+                var firebaseExtensions = new FireBaseExtentions();
+                var app = firebaseExtensions.GetFirebaseApp(path);
+                var fcm = FirebaseMessaging.GetMessaging(app);
+                Message message = new Message()
+                {
+                    Notification = new Notification
+                    {
+                        Title = NotificationTitleHelper.NEW_RESCUE_FORM_TITLE,
+                        Body = NotificationBodyHelper.NEW_RESCUE_FORM_BODY,
+                    },
+                };
+                foreach (var topic in topics)
+                {
+                    message.Topic = topic;
+                    await fcm.SendAsync(message);
+                }
+                app.Delete();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

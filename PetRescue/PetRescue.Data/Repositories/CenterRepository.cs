@@ -131,7 +131,7 @@ namespace PetRescue.Data.Repositories
                 CenterName = model.CenterName,
                 CenterStatus = CenterStatusConst.OPENNING,
                 Lat = model.Lat,
-                Lng = model.Long,
+                Lng = model.Lng,
                 InsertAt = DateTime.Now,
                 InsertBy = insertBy,
                 UpdateBy = null,

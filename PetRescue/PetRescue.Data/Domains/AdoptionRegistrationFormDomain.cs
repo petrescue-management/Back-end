@@ -178,5 +178,38 @@ namespace PetRescue.Data.Domains
             return result;
         }
             #endregion
+        public List<AdoptionRegistrationFormModel> GetListAdoptionByUserId(Guid userId)
+        {
+            var adoptionFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
+            var petRepo = uow.GetService<IPetRepository>();
+            var result = new List<AdoptionRegistrationFormModel>();
+            var listAdoptionForm = adoptionFormRepo.Get().Where(s => s.InsertedBy.Equals(userId)).ToList();
+            foreach(var adoptionForm in listAdoptionForm)
+            {
+                result.Add(new AdoptionRegistrationFormModel
+                {
+                    AdoptionRegistrationId = adoptionForm.AdoptionRegistrationId,
+                    Pet = petRepo.GetPetById(adoptionForm.PetId),
+                    UserName = adoptionForm.UserName,
+                    Phone = adoptionForm.Phone,
+                    Email = adoptionForm.Email,
+                    Job = adoptionForm.Job,
+                    Address = adoptionForm.Address,
+                    HouseType = adoptionForm.HouseType,
+                    FrequencyAtHome = adoptionForm.FrequencyAtHome,
+                    HaveChildren = adoptionForm.HaveChildren,
+                    ChildAge = adoptionForm.ChildAge,
+                    BeViolentTendencies = adoptionForm.BeViolentTendencies,
+                    HaveAgreement = adoptionForm.HaveAgreement,
+                    HavePet = adoptionForm.HavePet,
+                    AdoptionRegistrationStatus = adoptionForm.AdoptionRegistrationStatus,
+                    InsertedBy = adoptionForm.InsertedBy,
+                    InsertedAt = adoptionForm.InsertedAt,
+                    UpdatedBy = adoptionForm.UpdatedBy,
+                    UpdateAt = adoptionForm.UpdateAt
+                });
+            }
+            return result;
         }
-    }
+        }
+}

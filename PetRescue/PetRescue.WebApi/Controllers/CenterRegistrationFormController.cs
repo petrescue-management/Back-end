@@ -87,7 +87,7 @@ namespace PetRescue.WebApi.Controllers
         #endregion
 
         #region PROCESS FORM
-        [Authorize(Roles ="sysadmin")]
+        [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpPost]
         [Route("api/procress-center-registration-form")]
         public IActionResult ProcressCenterRegistrationForm(UpdateStatusModel model)
@@ -96,12 +96,11 @@ namespace PetRescue.WebApi.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = _uow.GetService<CenterRegistrationFormDomain>().ProcressCenterRegistrationForm(model, Guid.Parse(currentUserId));
-                if(result != -1)
+                if (!result.Equals("") && !result.Contains("This"))
                 {
                     return Success(result);
                 }
-                return BadRequest();
-                
+                return BadRequest(result);
             }catch(Exception e)
             {
                 return Error(e.Message);

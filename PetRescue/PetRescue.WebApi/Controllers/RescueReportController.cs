@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Uow;
@@ -14,8 +15,10 @@ namespace PetRescue.WebApi.Controllers
     [ApiController]
     public class RescueReportController : BaseController
     {
-        public RescueReportController(IUnitOfWork uow) : base(uow)
+        private readonly IHostingEnvironment _env;
+        public RescueReportController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
+            _env = environment;
         }
 
         #region SEARCH
@@ -75,12 +78,13 @@ namespace PetRescue.WebApi.Controllers
         #region CREATE
         [HttpPost]
         [Route("api/create-rescue-report")]
-        public IActionResult CreateRescueReport(CreateRescueReportModel model)
+        public async Task<IActionResult> CreateRescueReportAsync(CreateRescueReportModel model)
         {
             try
             {
+                string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _uow.GetService<RescueReportDomain>().CreateRescueReport(model, Guid.Parse(currentUserId));
+                var result =  await _uow.GetService<RescueReportDomain>().CreateRescueReportAsync(model, Guid.Parse(currentUserId), path);
                 return Success(result);
             }
             catch (Exception ex)

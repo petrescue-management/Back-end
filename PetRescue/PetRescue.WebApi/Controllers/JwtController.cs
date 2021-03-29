@@ -59,12 +59,12 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [HttpPost("login-by-volunteer")]
-        public IActionResult LoginByVolunteer([FromBody] UserLoginModel model)
+        public async Task<IActionResult> LoginByVolunteer([FromBody] UserLoginModel model)
         {
             try
             {
                 string path = _env.ContentRootPath;
-                var result = _uow.GetService<JWTDomain>().LoginByVolunteer(model, path);
+                var result = await _uow.GetService<JWTDomain>().LoginByVolunteer(model,path);
                 if(result != null)
                 {
                     return Success(result);

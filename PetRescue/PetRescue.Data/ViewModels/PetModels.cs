@@ -72,7 +72,6 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("imageUrl")]
         public string ImageUrl { get; set; }
     }
-
     public class PetDetailModel
     {
         [JsonProperty("petId")]
@@ -146,21 +145,10 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("imgUrl")]
         public string ImageUrl { get; set; }
     }
-    public class PetTypeViewModel
+    public class PetMobileViewModel
     {
-        public Guid PetTypeId { get; set; }
-        public string PetTypeName { get; set; }
-    }
-    public class PetBreedViewModel
-    {
-        public Guid PetBreedId { get;set;}
-        public string PetBreedName { get; set; }
-
-    }
-    public class PetFurColorViewModel
-    {
-        public Guid PetFurColorId { get; set; }
-        public string PetFurColorName { get; set; }
+        public string TypeName { get; set; }
+        public List<PetModel> ListPet { get; set; }
     }
 }
 

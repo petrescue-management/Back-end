@@ -1,4 +1,5 @@
 ﻿using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
@@ -7,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PetRescue.Data.Domains
 {
@@ -63,13 +66,66 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region CREATE
-        public RescueReportModel CreateRescueReport(CreateRescueReportModel model, Guid insertedBy)
+        public async Task<List<string>> CreateRescueReportAsync(CreateRescueReportModel model, Guid insertedBy,string path)
         {
             var report = uow.GetService<IRescueReportRepository>().CreateRescueReport(model, insertedBy);
             uow.GetService<IRescueReportDetailRepository>().CreateRescueReportDetail(report);
+            var centerDomain = uow.GetService<CenterDomain>();
+            var listCenters = centerDomain.GetListCenterLocation();
+            var googleMapExtension = new GoogleMapExtensions();
+
+            //var orgirin = model.Lat + ", " + model.Lng;
+            //var result = googleMapExtension.FindListShortestCenter(orgirin, listCenters);
+            //var listTopic = new List<string>();
+            //if(result.Count !=0)
+            //{
+            //    if(result.Count >= 2)
+            //    {
+            //        listTopic.Add(result[0].CenterId);
+            //        listTopic.Add(result[1].CenterId);
+            //    }
+            //    else
+            //    {
+            //        listTopic.Add(result[0].CenterId);
+            //    }
+            //}                    
+            //await uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listTopic);
+
             uow.saveChanges();
-            return report;           
+            //return report.PetAttribute;
+            var rescueRepo = uow.GetService<IRescueReportRepository>();
+            var list = new List<string>();
+            int result = -1;
+            var check = false;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+            Thread newThread = new Thread(
+                delegate (object rescueId)
+                {
+                    Thread newThread2 = new Thread(delegate() {
+                        while (true)
+                        {
+                            result = GetRescueReportById(Guid.Parse(rescueId.ToString())).ReportStatus;
+                            list.Add(result.ToString());
+                            if(result != 1)
+                            {
+                                check = true;
+                                break;
+                            }
+                            Thread.Sleep(TimeSpan.FromSeconds(5));
+                        }
+                    });
+                    newThread2.Start();
+                    
+                }
+            );
+            newThread.Start(report.RescueReportId);
+            for(int i = 0; i< 120; i++)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(5));
+                if (check) break;
+            }
+            return list;
         }
+
         #endregion
     }
 }

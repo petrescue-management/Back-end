@@ -115,7 +115,7 @@ namespace PetRescue.Data.Domains
         {
             var notificationTokenRepo = uow.GetService<INotificationTokenRepository>();
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
-            var currentUserRole = userRoleRepo.Get().FirstOrDefault(s => s.User.CenterId.Equals(centerId) && s.Role.RoleName == RoleConstant.MANAGER);
+            var currentUserRole = userRoleRepo.Get().FirstOrDefault(s => s.User.CenterId.Equals(centerId) && s.Role.RoleName.Equals(RoleConstant.MANAGER));
             var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(currentUserRole.UserId) && s.ApplicationName.Equals(ApplicationNameHelper.MANAGE_CENTER_APP));
             return notificationToken;
         }
@@ -176,7 +176,18 @@ namespace PetRescue.Data.Domains
                     }
                     else
                     {
-                        result = "This email is belong another center";
+                        if (currentUser.CenterId.Equals(model.CenterId))
+                        {
+                            userRoleDomain.Edit(userRole, new UserRoleUpdateEntityModel
+                            {
+                                IsActive = true,
+                                UpdateBy = model.InsertBy
+                            });
+                        }
+                        else
+                        {
+                            result = "This user is belong another center";
+                        }
                     }
                 }
             }
@@ -297,8 +308,5 @@ namespace PetRescue.Data.Domains
             }
             return null;
         }
-
-
-
     }
 }

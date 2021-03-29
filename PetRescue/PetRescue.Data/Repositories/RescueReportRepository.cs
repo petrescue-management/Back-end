@@ -36,8 +36,7 @@ namespace PetRescue.Data.Repositories
                 InsertedBy = insertedBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
-                UpdatedAt = null
-                
+                UpdatedAt = null,
             };
             return report;
         }
@@ -56,9 +55,10 @@ namespace PetRescue.Data.Repositories
                 ReportStatus = report.ReportStatus,
                 ReportLocation = model.ReportLocation,
                 ReportDescription = model.ReportDescription,
-                ImgReportUrl = model.ImgReportUrl
+                ImgReportUrl = model.ImgReportUrl,
+                Lat = model.Lat,
+                Lng = model.Lng
             };
-
             return result;
 
         }

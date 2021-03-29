@@ -27,7 +27,9 @@ namespace PetRescue.Data.Repositories
                 RescueReportId = model.RescueReportId,
                 ReportLocation = model.ReportLocation,
                 ReportDescription = model.ReportDescription,
-                ImgReportUrl = model.ImgReportUrl
+                ImgReportUrl = model.ImgReportUrl,
+                Lat = model.Lat,
+                Lng = model.Lng
             };
             return report;
         }
@@ -43,7 +45,9 @@ namespace PetRescue.Data.Repositories
                 RescueReportId = report.RescueReportId,
                 ReportLocation = report.ReportLocation,
                 ReportDescription = report.ReportDescription,
-                ImgReportUrl = report.ImgReportUrl
+                ImgReportUrl = report.ImgReportUrl,
+                Lat = model.Lat,
+                Lng = model.Lng
             };
             return result;
         }

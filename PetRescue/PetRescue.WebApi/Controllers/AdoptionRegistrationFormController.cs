@@ -86,12 +86,33 @@ namespace PetRescue.WebApi.Controllers
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = _uow.GetService<AdoptionRegistrationFormDomain>().CreateAdoptionRegistrationForm(model, Guid.Parse(currentUserId));
-                await _uow.GetService<NotificationTokenDomain>().NotificationForManagerWhenHaveNewAdoptionRegisterForm(path, result.Pet.CenterId);
+                await _uow.GetService<NotificationTokenDomain>().NotificationForManagerWhenHaveNewAdoptionRegisterForm(path, result.Pet.CenterId, result.AdoptionRegistrationId);
                 return Success(result);
             }
             catch (Exception ex)
             {
                 return Error(ex);
+            }
+        }
+        [Authorize]
+        [HttpGet]
+        [Route("api/get-list-adoption-form-by-userID")]
+        public IActionResult GetListAdoptionFormByUserId()
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var _domain = _uow.GetService<AdoptionRegistrationFormDomain>();
+                var result = _domain.GetListAdoptionByUserId(Guid.Parse(currentUserId));
+                if(result.Count > 0)
+                {
+                    return Success(result);
+                }
+                return BadRequest(result);
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message);
             }
         }
     }

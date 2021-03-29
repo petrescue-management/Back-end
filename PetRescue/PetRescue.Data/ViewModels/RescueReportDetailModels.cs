@@ -12,6 +12,7 @@ namespace PetRescue.Data.ViewModels
         public string ReportDescription { get; set; }
         public string ReportLocation { get; set; }
         public string ImgReportUrl { get; set; }
-
+        public double Lat { get; set; }
+        public double Lng { get; set; }
     }
 }
