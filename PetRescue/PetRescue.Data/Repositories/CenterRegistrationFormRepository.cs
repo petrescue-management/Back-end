@@ -62,9 +62,9 @@ namespace PetRescue.Data.Repositories
                 Description = model.Description,
                 CenterRegistrationStatus = 1,
                 UpdatedBy = null,
-                UpdatedAt = null
+                UpdatedAt = null,
+                ImageUrl = model.ImageUrl
             };
-
             return form;
         }
 
@@ -72,9 +72,7 @@ namespace PetRescue.Data.Repositories
         {
             var form = PrepareCreate(model);
             Create(form);
-
             var result = GetResult(form);
-
             return result;
         }
         #endregion
@@ -96,7 +94,8 @@ namespace PetRescue.Data.Repositories
                       Description = r.Description,
                       CenterRegistrationStatus = model.Status,
                       UpdatedBy = updateBy,
-                      UpdatedAt = null
+                      UpdatedAt = null,
+                      ImageUrl = r.ImageUrl
                   }).FirstOrDefault();
             return form;
         }
@@ -124,7 +123,8 @@ namespace PetRescue.Data.Repositories
                 CenterAddress = form.CenterAddress,
                 Description = form.Description,
                 CenterRegistrationStatus = form.CenterRegistrationStatus,
-                UpdatedAt = form.UpdatedAt
+                UpdatedAt = form.UpdatedAt,
+                ImageUrl = form.ImageUrl   
             };
             return result;
         }

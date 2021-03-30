@@ -193,7 +193,39 @@ namespace PetRescue.Data.Domains
             }
             else
             {
-                result = "not found";
+                var context = uow.GetService<PetRescueContext>();
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var newCreateUserModel = new UserCreateModel
+                        {
+                            Email = model.Email,
+                            CenterId = model.CenterId,
+                            IsBelongToCenter = UserConst.BELONG,
+                        };
+                        var newUser = userRepo.CreateUserByModel(newCreateUserModel);
+                        userRoleDomain.RegistationRole(newUser.UserId, model.RoleName, model.InsertBy);
+                        var newUserProfileModel = new UserProfileUpdateModel
+                        {
+                            Address = model.Address,
+                            DoB = model.DoB,
+                            FirstName = model.FirstName,
+                            Gender = model.Gender,
+                            LastName = model.LastName,
+                            Phone = model.Phone,
+                            UserId = newUser.UserId,
+                        };
+                        UpdateUserProfile(newUserProfileModel);
+                        transaction.Commit();
+                        result = newUser.UserId.ToString();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        return result="Cannot create";
+                    }
+                }
             }
             uow.saveChanges();
             return result;
@@ -286,7 +318,6 @@ namespace PetRescue.Data.Domains
             }
             return result.Count > 0 ? result : null;
         }
-
         public UserProfileViewModel GetProfileByUserId(Guid userId)
         {
             var userRepo = uow.GetService<IUserRepository>();

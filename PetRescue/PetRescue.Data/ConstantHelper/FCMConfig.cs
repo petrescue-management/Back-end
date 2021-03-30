@@ -44,4 +44,8 @@ namespace PetRescue.Data.ConstantHelper
         public const int NEW_ADOPTION_REGISTRATION_FORM_BE_CREATED = 2;
         public const int NEW_RESCUE_FORM_BE_CREATED = 1;
     }
+    public class NotificationUserType
+    {
+        public const int CHANGE_STATUS_ADOPTION_REGISTRATION_FORM = 1;
+    }
 }

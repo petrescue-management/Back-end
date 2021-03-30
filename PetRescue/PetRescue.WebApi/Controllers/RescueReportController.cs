@@ -65,7 +65,8 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _uow.GetService<RescueReportDomain>().UpdateRescueReportStatus(model, Guid.Parse(currentUserId));
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var result = _uow.GetService<RescueReportDomain>().UpdateRescueReportStatus(model, Guid.Parse(currentUserId), Guid.Parse(currentCenterId));
                 return Success(result);
             }
             catch (Exception ex)

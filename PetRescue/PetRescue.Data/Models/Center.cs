@@ -16,6 +16,7 @@ namespace PetRescue.Data.Models
         public double? Lng { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
+        public string ImageUrl { get; set; }
         public int CenterStatus { get; set; }
         public Guid InsertBy { get; set; }
         public DateTime InsertAt { get; set; }

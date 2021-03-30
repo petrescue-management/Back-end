@@ -174,6 +174,10 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.CenterStatus).HasColumnName("center_status");
 
+                entity.Property(e => e.ImageUrl)
+                    .HasColumnName("image_url")
+                    .IsUnicode(false);
+
                 entity.Property(e => e.InsertAt)
                     .HasColumnName("insert_at")
                     .HasColumnType("date")
@@ -224,6 +228,10 @@ namespace PetRescue.Data.Models
                     .IsRequired()
                     .HasColumnName("email")
                     .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ImageUrl)
+                    .HasColumnName("image_url")
                     .IsUnicode(false);
 
                 entity.Property(e => e.Lat).HasColumnName("lat");
@@ -348,9 +356,7 @@ namespace PetRescue.Data.Models
                     .HasColumnName("pet_id")
                     .ValueGeneratedNever();
 
-                entity.Property(e => e.Description)
-                    .HasColumnName("description")
-                    .IsUnicode(false);
+                entity.Property(e => e.Description).HasColumnName("description");
 
                 entity.Property(e => e.ImageUrl)
                     .HasColumnName("image_url")
@@ -371,8 +377,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.PetName)
                     .IsRequired()
                     .HasColumnName("pet_name")
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Weight).HasColumnName("weight");
 
@@ -408,6 +413,8 @@ namespace PetRescue.Data.Models
                     .HasColumnName("rescue_report_id")
                     .HasDefaultValueSql("(newid())");
 
+                entity.Property(e => e.CenterId).HasColumnName("center_id");
+
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
                     .HasColumnType("date")
@@ -416,6 +423,12 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
 
                 entity.Property(e => e.PetAttribute).HasColumnName("pet_attribute");
+
+                entity.Property(e => e.Phone)
+                    .IsRequired()
+                    .HasColumnName("phone")
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ReportStatus).HasColumnName("report_status");
 

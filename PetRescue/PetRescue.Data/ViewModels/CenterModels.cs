@@ -16,7 +16,7 @@ namespace PetRescue.Data.ViewModels
         public int CenterStatus { get; set; }
         public DateTime InsertAt { get; set; }
         public DateTime? UpdateAt { get; set; }
-
+        public string ImageUrl { get; set; }
     }
 
 
@@ -29,6 +29,7 @@ namespace PetRescue.Data.ViewModels
         public double? Lat { get; set; }
         public double? Lng { get; set; }
         public string Email { get; set; }
+        public string ImageUrl { get; set; }
     }
 
 
@@ -49,5 +50,12 @@ namespace PetRescue.Data.ViewModels
         public string CenterId { get; set; }
         public double Lat { get; set; }
         public double Lng { get; set; }
+    }
+
+    public class CenterStatistic
+    {
+        public int RescueCase { get; set; }
+        public int PetAdoption { get; set; }
+        public int PetFindTheOwner { get; set; }
     }
 }

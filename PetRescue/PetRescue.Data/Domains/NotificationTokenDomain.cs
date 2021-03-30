@@ -114,7 +114,7 @@ namespace PetRescue.Data.Domains
             }
             
         }
-        public async Task<bool> NotificationForUserWhenAdoptionFormToBeChangeStatus(string path, Guid insertBy, int status)
+        public async Task<bool> NotificationForUserWhenAdoptionFormToBeChangeStatus(string path, Guid insertBy, Guid adoptionRegistrationId)
         {
             try
             {
@@ -123,22 +123,23 @@ namespace PetRescue.Data.Domains
                 var notificationToken = notificationTokenDomain.FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, insertBy);
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
-                if (status == AdoptionRegistrationFormStatusConst.APPROVED)
+                Message message = new Message()
                 {
-                    Message message = new Message()
-                    {
                         Notification = new Notification
                         {
                             Title = NotificationTitleHelper.APPROVE_ADOPTION_FORM_TITLE,
                             Body = NotificationBodyHelper.APPROVE_ADOPTION_FORM_BODY,
                         },
-                    };
-                    message.Token = notificationToken.DeviceToken;
-                    await fcm.SendAsync(message);
-                    app.Delete();
-                    return true;
-                }
-                return false;
+                        Data = new Dictionary<string, string>()
+                        {
+                            {"notificationId", adoptionRegistrationId.ToString() },
+                            { "type", NotificationUserType.CHANGE_STATUS_ADOPTION_REGISTRATION_FORM.ToString()},
+                        },
+                };
+                message.Token = notificationToken.DeviceToken;
+                await fcm.SendAsync(message);
+                app.Delete();
+                return true;
             }
             catch
             {

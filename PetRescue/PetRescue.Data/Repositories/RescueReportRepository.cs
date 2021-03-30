@@ -14,7 +14,7 @@ namespace PetRescue.Data.Repositories
 
         RescueReportModel GetRescueReportById(Guid id);
 
-        RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model, Guid updateBy);
+        RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model, Guid updateBy, Guid centerId);
 
         RescueReportModel CreateRescueReport(CreateRescueReportModel model, Guid insertedBy);
     }
@@ -33,6 +33,7 @@ namespace PetRescue.Data.Repositories
                 RescueReportId = Guid.NewGuid(),
                 PetAttribute = model.PetAttribute,
                 ReportStatus = 1,
+                Phone = model.Phone,
                 InsertedBy = insertedBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
@@ -57,7 +58,8 @@ namespace PetRescue.Data.Repositories
                 ReportDescription = model.ReportDescription,
                 ImgReportUrl = model.ImgReportUrl,
                 Lat = model.Lat,
-                Lng = model.Lng
+                Lng = model.Lng,
+                
             };
             return result;
 
@@ -84,7 +86,7 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region UPDATE STATUS
-        private RescueReport PrepareUpdate(UpdateStatusModel model, Guid updateBy)
+        private RescueReport PrepareUpdate(UpdateStatusModel model, Guid updateBy, Guid centerId)
         {
             var report = Get()
                     .Where(r => r.RescueReportId.Equals(model.Id))
@@ -96,14 +98,16 @@ namespace PetRescue.Data.Repositories
                         InsertedBy = r.InsertedBy,
                         InsertedAt = r.InsertedAt,
                         UpdatedBy = updateBy,
-                        UpdatedAt = DateTime.UtcNow
+                        UpdatedAt = DateTime.UtcNow,
+                        CenterId = centerId,
+                        Phone = r.Phone
                     }).FirstOrDefault();
 
             return report;
         }
-       public RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model, Guid updateBy)
+       public RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model, Guid updateBy, Guid centerId)
        {
-            var report = PrepareUpdate(model,updateBy);
+            var report = PrepareUpdate(model,updateBy, centerId);
 
             Update(report);
 
@@ -117,9 +121,12 @@ namespace PetRescue.Data.Repositories
                         ReportStatus = r.ReportStatus,
                         ReportLocation = r.RescueReportDetail.ReportLocation,
                         ReportDescription = r.RescueReportDetail.ReportDescription,
-                        ImgReportUrl = r.RescueReportDetail.ImgReportUrl
+                        ImgReportUrl = r.RescueReportDetail.ImgReportUrl,
+                        UpdatedAt = r.UpdatedAt,
+                        UpdatedBy = r.UpdatedBy,
+                        InsertedAt = r.InsertedAt,
                     }).FirstOrDefault();
-
+            
             return result;
        }
         #endregion

@@ -57,55 +57,49 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model, Guid updateBy)
+        public RescueReportModel UpdateRescueReportStatus(UpdateStatusModel model, Guid updateBy, Guid centerId)
         {
-            var report = uow.GetService<IRescueReportRepository>().UpdateRescueReportStatus(model, updateBy);
+            var report = uow.GetService<IRescueReportRepository>().UpdateRescueReportStatus(model, updateBy, centerId);
             uow.saveChanges();
             return report;
         }
         #endregion
 
         #region CREATE
-        public async Task<List<string>> CreateRescueReportAsync(CreateRescueReportModel model, Guid insertedBy,string path)
+        public async Task<int> CreateRescueReportAsync(CreateRescueReportModel model, Guid insertedBy,string path)
         {
             var report = uow.GetService<IRescueReportRepository>().CreateRescueReport(model, insertedBy);
             uow.GetService<IRescueReportDetailRepository>().CreateRescueReportDetail(report);
             var centerDomain = uow.GetService<CenterDomain>();
             var listCenters = centerDomain.GetListCenterLocation();
             var googleMapExtension = new GoogleMapExtensions();
-
-            //var orgirin = model.Lat + ", " + model.Lng;
-            //var result = googleMapExtension.FindListShortestCenter(orgirin, listCenters);
-            //var listTopic = new List<string>();
-            //if(result.Count !=0)
-            //{
-            //    if(result.Count >= 2)
-            //    {
-            //        listTopic.Add(result[0].CenterId);
-            //        listTopic.Add(result[1].CenterId);
-            //    }
-            //    else
-            //    {
-            //        listTopic.Add(result[0].CenterId);
-            //    }
-            //}                    
-            //await uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listTopic);
-
-            uow.saveChanges();
-            //return report.PetAttribute;
-            var rescueRepo = uow.GetService<IRescueReportRepository>();
-            var list = new List<string>();
-            int result = -1;
-            var check = false;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-            Thread newThread = new Thread(
-                delegate (object rescueId)
+            var orgirin = model.Lat + ", " + model.Lng;
+            var result = googleMapExtension.FindListShortestCenter(orgirin, listCenters);
+            var listTopic = new List<string>();
+            if (result.Count != 0)
+            {
+                if (result.Count >= 2)
                 {
-                    Thread newThread2 = new Thread(delegate() {
+                    listTopic.Add(result[0].CenterId);
+                    listTopic.Add(result[1].CenterId);
+                }
+                else
+                {
+                    listTopic.Add(result[0].CenterId);
+                }
+            }
+            await uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listTopic);
+            uow.saveChanges();
+            var rescueRepo = uow.GetService<IRescueReportRepository>();
+            int temp = -1;
+            var check = false;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+            Thread threadCheckRescueStatus = new Thread(delegate (object rescueId)
+                {
+                    Thread checkStatus = new Thread(delegate() {
                         while (true)
                         {
-                            result = GetRescueReportById(Guid.Parse(rescueId.ToString())).ReportStatus;
-                            list.Add(result.ToString());
-                            if(result != 1)
+                            temp = GetRescueReportById(Guid.Parse(rescueId.ToString())).ReportStatus;
+                            if(temp != 1)
                             {
                                 check = true;
                                 break;
@@ -113,17 +107,59 @@ namespace PetRescue.Data.Domains
                             Thread.Sleep(TimeSpan.FromSeconds(5));
                         }
                     });
-                    newThread2.Start();
-                    
+                    checkStatus.Start();   
+                });
+            Thread threadCheckRescueStatusAfterNotiTwoCenter = new Thread(
+                delegate (object rescueId)
+                {
+                    Thread checkStatus = new Thread(delegate () {
+                        while (true)
+                        {
+                            temp = GetRescueReportById(Guid.Parse(rescueId.ToString())).ReportStatus;
+                            if (temp != 1)
+                            {
+                                check = true;
+                                break;
+                            }
+                            Thread.Sleep(TimeSpan.FromSeconds(5));
+                        }
+                    });
+                    checkStatus.Start();
                 }
             );
-            newThread.Start(report.RescueReportId);
-            for(int i = 0; i< 120; i++)
+            threadCheckRescueStatus.Start(report.RescueReportId);
+            for(int i = 0; i< 5; i++)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(5));
-                if (check) break;
+                if (check) 
+                {
+                    return temp;
+                }
             }
-            return list;
+            listTopic.Clear();
+            if (result.Count > 2)
+            {
+                for (int index = 2; index < result.Count; index++)
+                {
+                    listTopic.Add(result[index].CenterId);
+                }
+                await uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listTopic);
+                threadCheckRescueStatusAfterNotiTwoCenter.Start(report.RescueReportId);
+                for (int i = 0; i < 5; i++)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
+                    if (check)
+                    {
+                        return temp;
+                    }
+                }
+                return temp;
+            }
+            else
+            {
+                return temp;
+            }
+
         }
 
         #endregion

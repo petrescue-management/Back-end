@@ -41,7 +41,8 @@ namespace PetRescue.Data.Domains
                     CenterStatus = c.CenterStatus,
                     Phone = c.Phone,
                     InsertAt = c.InsertAt,
-                    UpdateAt = c.UpdateAt
+                    UpdateAt = c.UpdateAt,
+                    
                 }).ToList();
             return new SearchReturnModel
             {
@@ -105,6 +106,18 @@ namespace PetRescue.Data.Domains
             var center = center_service.UpdateCenter(model, currentUserId);
             uow.saveChanges();
             return center.CenterId.ToString();
+        }
+
+        public CenterStatistic GetStatisticAboutCenter(Guid centerId)
+        {
+            var centerRepo = uow.GetService<ICenterRepository>();
+            var rescueRepo = uow.GetService<IRescueReportRepository>();
+            var petRepo = uow.GetService<IPetRepository>();
+            var result = new CenterStatistic();
+            result.RescueCase = rescueRepo.Get().Where(s => s.CenterId.Equals(centerId)).Count();
+            result.PetFindTheOwner = petRepo.Get().Where(s => s.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
+            result.PetAdoption = petRepo.Get().Where(s => s.PetStatus == PetStatusConst.ADOPTED).Count();
+            return result;
         }
         #endregion
         public List<CenterLocationModel> GetListCenterLocation()

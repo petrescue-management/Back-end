@@ -14,6 +14,7 @@ namespace PetRescue.Data.Models
         public string Phone { get; set; }
         public string Description { get; set; }
         public int CenterRegistrationStatus { get; set; }
+        public string ImageUrl { get; set; }
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

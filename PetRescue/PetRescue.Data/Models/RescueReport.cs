@@ -8,6 +8,8 @@ namespace PetRescue.Data.Models
         public Guid RescueReportId { get; set; }
         public int PetAttribute { get; set; }
         public int ReportStatus { get; set; }
+        public string Phone { get; set; }
+        public Guid? CenterId { get; set; }
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }

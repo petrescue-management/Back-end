@@ -141,7 +141,8 @@ namespace PetRescue.Data.Domains
                                 CenterName = form.CenterName,
                                 Phone = form.Phone,
                                 Lng = form.Lng,
-                                Lat = form.Lat
+                                Lat = form.Lat,
+                                ImageUrl = form.ImageUrl
                             }, insertBy);
                             if (currentUser == null) //not found user
                             {

@@ -43,7 +43,8 @@ namespace PetRescue.Data.Repositories
                     CenterStatus = c.CenterStatus,
                     Phone = c.Phone,
                     InsertAt = c.InsertAt,
-                    UpdateAt = c.UpdateAt
+                    UpdateAt = c.UpdateAt,
+                    ImageUrl = c.ImageUrl
                 }).FirstOrDefault();
 
             return result;
@@ -67,7 +68,8 @@ namespace PetRescue.Data.Repositories
                     InsertBy = c.InsertBy,
                     InsertAt = c.InsertAt,
                     UpdateBy = updateBy,
-                    UpdateAt = DateTime.Now
+                    UpdateAt = DateTime.Now,
+                    ImageUrl = c.ImageUrl
                 }).FirstOrDefault();
 
             return center;
@@ -104,6 +106,7 @@ namespace PetRescue.Data.Repositories
                 InsertAt = old_center.InsertAt,
                 UpdateBy = updateBy,
                 UpdateAt = DateTime.Now,
+                ImageUrl = old_center.ImageUrl
             };
 
             return update_center;
@@ -135,7 +138,8 @@ namespace PetRescue.Data.Repositories
                 InsertAt = DateTime.Now,
                 InsertBy = insertBy,
                 UpdateBy = null,
-                UpdateAt = null
+                UpdateAt = null,
+                ImageUrl = model.ImageUrl
             };
             return center;
         }

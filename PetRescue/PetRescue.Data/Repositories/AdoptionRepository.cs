@@ -105,7 +105,8 @@ namespace PetRescue.Data.Repositories
                 InsertedBy = (Guid)model.UpdatedBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
-                UpdatedAt = null
+                UpdatedAt = null,
+                AdoptedAt = DateTime.UtcNow
             };
             return adoption;
         }

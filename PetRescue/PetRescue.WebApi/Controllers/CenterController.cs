@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Models;
 using PetRescue.Data.Uow;
@@ -93,5 +94,21 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         #endregion
+        //[Authorize(Roles =RoleConstant.ADMIN)]
+        [HttpGet]
+        [Route("api/get-statistic-about-center")]
+        public IActionResult GetStatisticAboutCenter([FromQuery]Guid centerId)
+        {
+            try 
+            {
+                var _domain = _uow.GetService<CenterDomain>();
+                var result = _domain.GetStatisticAboutCenter(centerId);
+                return Success(result);
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
     }
 }
