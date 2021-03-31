@@ -33,10 +33,7 @@ namespace PetRescue.Data.Repositories
             entity.PetName = model.PetName;
             entity.PetGender = model.PetGender;
             entity.PetFurColorId = model.PetFurColorId;
-            entity.Weight = model.Weight;
             entity.ImageUrl = model.ImageUrl;
-            entity.IsSterilized = model.IsSterilized;
-            entity.IsVaccinated = model.IsVaccinated;
             entity.Description = model.Description;
             return Update(entity).Entity;
         }
@@ -49,12 +46,9 @@ namespace PetRescue.Data.Repositories
                 Description = model.Description,
                 PetAge = model.PetAge,
                 PetBreedId = model.PetBreedId,
-                IsSterilized = model.IsSterilized,
-                IsVaccinated = model.IsVaccinated,
                 PetFurColorId = model.PetFurColorId,
                 PetGender = model.PetGender,
                 PetName = model.PetName,
-                Weight = model.Weight,
                 ImageUrl = model.ImageUrl
             };
             return newPetProfile;

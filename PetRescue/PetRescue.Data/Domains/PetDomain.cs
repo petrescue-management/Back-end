@@ -82,14 +82,11 @@ namespace PetRescue.Data.Domains
                         {
                             PetId = newPet.PetId,
                             Description = model.Description,
-                            IsSterilized = model.IsSterilized,
-                            IsVaccinated = model.IsVaccinated,
                             PetAge = model.PetAge,
                             PetBreedId = model.PetBreedId,
                             PetFurColorId = model.PetFurColorId,
                             PetGender = model.PetGender,
                             PetName = model.PetName,
-                            Weight = model.Weight,
                             ImageUrl = model.ImageUrl
                         };
                         var petProfileRepo = uow.GetService<IPetProfileRepository>();
@@ -248,8 +245,6 @@ namespace PetRescue.Data.Domains
                     CenterId = currentPet.CenterId,
                     Description = currentPet.PetNavigation.Description,
                     ImgUrl = currentPet.PetNavigation.ImageUrl,
-                    IsSterilized = currentPet.PetNavigation.IsSterilized,
-                    IsVaccinated = currentPet.PetNavigation.IsVaccinated,
                     PetAge = currentPet.PetNavigation.PetAge,
                     PetBreedId = currentPet.PetNavigation.PetBreedId,
                     PetBreedName = currentPet.PetNavigation.PetBreed.PetBreedName,
@@ -259,7 +254,6 @@ namespace PetRescue.Data.Domains
                     PetId = currentPet.PetId,
                     PetName = currentPet.PetNavigation.PetName,
                     PetStatus = currentPet.PetStatus,
-                    Weight = currentPet.PetNavigation.Weight
                 },
                 AdoptionRegisterforms = new List<AdoptionRegistrationFormViewModel>()
             };
@@ -306,8 +300,6 @@ namespace PetRescue.Data.Domains
                         CenterId = pet.CenterId,
                         Description = pet.PetNavigation.Description,
                         ImgUrl = pet.PetNavigation.ImageUrl,
-                        IsSterilized = pet.PetNavigation.IsSterilized,
-                        IsVaccinated = pet.PetNavigation.IsVaccinated,
                         PetAge = pet.PetNavigation.PetAge,
                         PetBreedId = pet.PetNavigation.PetBreedId,
                         PetBreedName = pet.PetNavigation.PetBreed.PetBreedName,
@@ -317,7 +309,6 @@ namespace PetRescue.Data.Domains
                         PetId = pet.PetId,
                         PetName = pet.PetNavigation.PetName,
                         PetStatus = pet.PetStatus,
-                        Weight = pet.PetNavigation.Weight
                     });
                 }
                 var petMobileViewModel = new PetMobileViewModel

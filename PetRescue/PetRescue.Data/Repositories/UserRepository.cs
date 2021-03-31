@@ -93,7 +93,6 @@ namespace PetRescue.Data.Repositories
                 Dob = u.UserProfile.Dob,
                 Gender = u.UserProfile.Gender,
                 Phone = u.UserProfile.Phone,
-                Address = u.UserProfile.Address,
                 ImageUrl = u.UserProfile.ImageUrl
                 }).FirstOrDefault();
         }

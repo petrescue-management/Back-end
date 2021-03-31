@@ -112,16 +112,15 @@ namespace PetRescue.WebApi.Controllers
                     CenterId = Guid.Parse(_currentCenterId),
                     RoleName = RoleConstant.VOLUNTEER,
                     InsertBy = Guid.Parse(_currentUserId),
-                    Address = model.Address,
                     DoB = model.DoB,
                     FirstName = model.FirstName,
                     Gender = model.Gender,
                     LastName = model.LastName,
                     Phone = model.Phone,
                 });
-                if (result.Equals(""))
+                if (!result.Equals(""))
                 {
-                    return Success("");
+                    return Success(result);
                 }
                 return BadRequest(result);
                 

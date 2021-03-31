@@ -53,10 +53,6 @@ namespace PetRescue.Data.Repositories
                 entity.PetNavigation.PetGender = model.PetGender;
             if (ValidationExtensions.IsNotNullOrEmpty(model.PetName))
                 entity.PetNavigation.PetName = model.PetName;
-            if (ValidationExtensions.IsNotNull(model.Weight))
-                entity.PetNavigation.Weight = model.Weight;
-            entity.PetNavigation.IsSterilized = model.IsSterilized;
-            entity.PetNavigation.IsVaccinated = model.IsVaccinated;
             entity.UpdatedBy = updateBy;
             entity.UpdatedAt = DateTime.UtcNow;
             return Update(entity).Entity;
@@ -97,9 +93,6 @@ namespace PetRescue.Data.Repositories
                    PetGender = p.PetNavigation.PetGender,
                    PetName = p.PetNavigation.PetName,
                    PetStatus = p.PetStatus,
-                   Weight = p.PetNavigation.Weight,
-                   IsSterilized = p.PetNavigation.IsSterilized,
-                   IsVaccinated = p.PetNavigation.IsVaccinated,
                    ImgUrl = p.PetNavigation.ImageUrl
                }).FirstOrDefault();
             return result;

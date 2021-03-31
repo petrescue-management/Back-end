@@ -40,7 +40,6 @@ namespace PetRescue.Data.Domains
                     Id = user.UserId.ToString(),
                     Roles = user.UserRole.Select(r => r.Role.RoleName).ToArray(),
                     CenterId = user.CenterId,
-                    Address = userProfile.Address,
                     Phone = userProfile.Phone,
                     DoB  = userProfile.Dob,
                     FirstName = userProfile.FirstName,
@@ -73,7 +72,6 @@ namespace PetRescue.Data.Domains
             uow.saveChanges();
             return new UserProfileViewModel 
             {
-                Address = result.Address,
                 DoB = result.Dob,
                 FirstName = result.FirstName,
                 Gender= result.Gender,
@@ -208,7 +206,6 @@ namespace PetRescue.Data.Domains
                         userRoleDomain.RegistationRole(newUser.UserId, model.RoleName, model.InsertBy);
                         var newUserProfileModel = new UserProfileUpdateModel
                         {
-                            Address = model.Address,
                             DoB = model.DoB,
                             FirstName = model.FirstName,
                             Gender = model.Gender,
@@ -305,7 +302,6 @@ namespace PetRescue.Data.Domains
                     result.Add(new UserProfileViewModel 
                     {
                         email = user.UserEmail,
-                        Address = user.UserProfile.Address,
                         DoB = user.UserProfile.Dob,
                         FirstName = user.UserProfile.FirstName,
                         Gender = user.UserProfile.Gender,
@@ -327,7 +323,6 @@ namespace PetRescue.Data.Domains
                 return new UserProfileViewModel
                 {
                     email = user.UserEmail,
-                    Address = user.UserProfile.Address,
                     DoB = user.UserProfile.Dob,
                     FirstName = user.UserProfile.FirstName,
                     Gender = user.UserProfile.Gender,

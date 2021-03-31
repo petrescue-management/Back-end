@@ -35,7 +35,6 @@ namespace PetRescue.Data.Repositories
         {
             entity.LastName = model.LastName;
             entity.FirstName = model.FirstName;
-            entity.Address = model.Address;
             entity.Dob = model.DoB;
             entity.Gender = model.Gender;
             entity.Phone = model.Phone;
@@ -57,7 +56,6 @@ namespace PetRescue.Data.Repositories
                 UserId = model.UserId,
                 LastName = model.LastName,
                 FirstName = model.FirstName,
-                Address = model.Address,
                 Dob = model.DoB,
                 Phone = model.Phone,
                 Gender = 3,

@@ -8,6 +8,7 @@ using PetRescue.Data.Uow;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using test2;
 
 namespace PetRescue.Data.DI
 {
@@ -45,8 +46,9 @@ namespace PetRescue.Data.DI
                  .AddScoped<IAdoptionRegistrationFormRepository, AdoptionRegistrationFormRepository>()
                 .AddScoped<AdoptionRegistrationFormDomain>()
                 .AddScoped<INotificationTokenRepository, NotificationTokenRepository>()
-                .AddScoped<NotificationTokenDomain>();
-                ;
+                .AddScoped<NotificationTokenDomain>()
+            .AddScoped<IMyScopedService, MyScopedService>();
+            ;
         }
        
     }

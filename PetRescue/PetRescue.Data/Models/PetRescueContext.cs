@@ -19,18 +19,22 @@ namespace PetRescue.Data.Models
         public virtual DbSet<AdoptionRegistrationForm> AdoptionRegistrationForm { get; set; }
         public virtual DbSet<Center> Center { get; set; }
         public virtual DbSet<CenterRegistrationForm> CenterRegistrationForm { get; set; }
+        public virtual DbSet<FinderForm> FinderForm { get; set; }
+        public virtual DbSet<FinderFormDetail> FinderFormDetail { get; set; }
         public virtual DbSet<NotificationToken> NotificationToken { get; set; }
         public virtual DbSet<Pet> Pet { get; set; }
         public virtual DbSet<PetBreed> PetBreed { get; set; }
+        public virtual DbSet<PetDocument> PetDocument { get; set; }
         public virtual DbSet<PetFurColor> PetFurColor { get; set; }
         public virtual DbSet<PetProfile> PetProfile { get; set; }
+        public virtual DbSet<PetTracking> PetTracking { get; set; }
         public virtual DbSet<PetType> PetType { get; set; }
-        public virtual DbSet<RescueReport> RescueReport { get; set; }
-        public virtual DbSet<RescueReportDetail> RescueReportDetail { get; set; }
+        public virtual DbSet<PickerForm> PickerForm { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<UserProfile> UserProfile { get; set; }
         public virtual DbSet<UserRole> UserRole { get; set; }
+        public virtual DbSet<VolunteerRegistrationForm> VolunteerRegistrationForm { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -251,6 +255,73 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
             });
 
+            modelBuilder.Entity<FinderForm>(entity =>
+            {
+                entity.HasKey(e => e.RescueReportId)
+                    .HasName("PK_RescueReport");
+
+                entity.Property(e => e.RescueReportId)
+                    .HasColumnName("rescue_report_id")
+                    .HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.CenterId).HasColumnName("center_id");
+
+                entity.Property(e => e.InsertedAt)
+                    .HasColumnName("inserted_at")
+                    .HasColumnType("date")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
+
+                entity.Property(e => e.PetAttribute).HasColumnName("pet_attribute");
+
+                entity.Property(e => e.Phone)
+                    .IsRequired()
+                    .HasColumnName("phone")
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ReportStatus).HasColumnName("report_status");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            });
+
+            modelBuilder.Entity<FinderFormDetail>(entity =>
+            {
+                entity.HasKey(e => e.RescueReportId)
+                    .HasName("PK_RescueReportDetail");
+
+                entity.Property(e => e.RescueReportId)
+                    .HasColumnName("rescue_report_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.ImgReportUrl)
+                    .IsRequired()
+                    .HasColumnName("img_report_url")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Lat).HasColumnName("lat");
+
+                entity.Property(e => e.Lng).HasColumnName("lng");
+
+                entity.Property(e => e.ReportDescription).HasColumnName("report_description");
+
+                entity.Property(e => e.ReportLocation)
+                    .IsRequired()
+                    .HasColumnName("report_location")
+                    .HasMaxLength(80);
+
+                entity.HasOne(d => d.RescueReport)
+                    .WithOne(p => p.FinderFormDetail)
+                    .HasForeignKey<FinderFormDetail>(d => d.RescueReportId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RescueReportDetail_RescueReport");
+            });
+
             modelBuilder.Entity<NotificationToken>(entity =>
             {
                 entity.Property(e => e.Id)
@@ -335,6 +406,37 @@ namespace PetRescue.Data.Models
                     .HasConstraintName("FK_PetBreed_PetType");
             });
 
+            modelBuilder.Entity<PetDocument>(entity =>
+            {
+                entity.HasIndex(e => e.PetId)
+                    .HasName("IX_PetDocument")
+                    .IsUnique();
+
+                entity.Property(e => e.PetDocumentId)
+                    .HasColumnName("pet_document_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.FinderDescription).HasColumnName("finder_description");
+
+                entity.Property(e => e.FinderId).HasColumnName("finder_id");
+
+                entity.Property(e => e.FinderPetStatus).HasColumnName("finder_pet_status");
+
+                entity.Property(e => e.PetId).HasColumnName("pet_id");
+
+                entity.Property(e => e.PickerDescription)
+                    .HasColumnName("picker_description")
+                    .HasMaxLength(150);
+
+                entity.Property(e => e.PickerId).HasColumnName("picker_id");
+
+                entity.HasOne(d => d.Pet)
+                    .WithOne(p => p.PetDocument)
+                    .HasForeignKey<PetDocument>(d => d.PetId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PetDocument_Pet");
+            });
+
             modelBuilder.Entity<PetFurColor>(entity =>
             {
                 entity.Property(e => e.PetFurColorId)
@@ -362,10 +464,6 @@ namespace PetRescue.Data.Models
                     .HasColumnName("image_url")
                     .IsUnicode(false);
 
-                entity.Property(e => e.IsSterilized).HasColumnName("is_sterilized");
-
-                entity.Property(e => e.IsVaccinated).HasColumnName("is_vaccinated");
-
                 entity.Property(e => e.PetAge).HasColumnName("pet_age");
 
                 entity.Property(e => e.PetBreedId).HasColumnName("pet_breed_id");
@@ -379,8 +477,6 @@ namespace PetRescue.Data.Models
                     .HasColumnName("pet_name")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Weight).HasColumnName("weight");
-
                 entity.HasOne(d => d.PetBreed)
                     .WithMany(p => p.PetProfile)
                     .HasForeignKey(d => d.PetBreedId)
@@ -392,6 +488,39 @@ namespace PetRescue.Data.Models
                     .HasForeignKey(d => d.PetFurColorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PetProfile_PetFurColor1");
+            });
+
+            modelBuilder.Entity<PetTracking>(entity =>
+            {
+                entity.Property(e => e.PetTrackingId)
+                    .HasColumnName("pet_tracking_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Description).HasColumnName("description");
+
+                entity.Property(e => e.DocumentRecordId).HasColumnName("document_record_id");
+
+                entity.Property(e => e.ImageUrl)
+                    .HasColumnName("image_url")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.InsertAt)
+                    .HasColumnName("insert_at")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.InsertBy).HasColumnName("insert_by");
+
+                entity.Property(e => e.IsSterilized).HasColumnName("is_sterilized");
+
+                entity.Property(e => e.IsVaccinated).HasColumnName("is_vaccinated");
+
+                entity.Property(e => e.Weight).HasColumnName("weight");
+
+                entity.HasOne(d => d.DocumentRecord)
+                    .WithMany(p => p.PetTracking)
+                    .HasForeignKey(d => d.DocumentRecordId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Record_DocumentRecord");
             });
 
             modelBuilder.Entity<PetType>(entity =>
@@ -407,39 +536,7 @@ namespace PetRescue.Data.Models
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<RescueReport>(entity =>
-            {
-                entity.Property(e => e.RescueReportId)
-                    .HasColumnName("rescue_report_id")
-                    .HasDefaultValueSql("(newid())");
-
-                entity.Property(e => e.CenterId).HasColumnName("center_id");
-
-                entity.Property(e => e.InsertedAt)
-                    .HasColumnName("inserted_at")
-                    .HasColumnType("date")
-                    .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
-
-                entity.Property(e => e.PetAttribute).HasColumnName("pet_attribute");
-
-                entity.Property(e => e.Phone)
-                    .IsRequired()
-                    .HasColumnName("phone")
-                    .HasMaxLength(15)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReportStatus).HasColumnName("report_status");
-
-                entity.Property(e => e.UpdatedAt)
-                    .HasColumnName("updated_at")
-                    .HasColumnType("date");
-
-                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
-            });
-
-            modelBuilder.Entity<RescueReportDetail>(entity =>
+            modelBuilder.Entity<PickerForm>(entity =>
             {
                 entity.HasKey(e => e.RescueReportId);
 
@@ -447,27 +544,26 @@ namespace PetRescue.Data.Models
                     .HasColumnName("rescue_report_id")
                     .ValueGeneratedNever();
 
-                entity.Property(e => e.ImgReportUrl)
+                entity.Property(e => e.InserAt)
+                    .HasColumnName("inser_at")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.InsertBy).HasColumnName("insert_by");
+
+                entity.Property(e => e.PickerDescription)
                     .IsRequired()
-                    .HasColumnName("img_report_url")
-                    .HasMaxLength(50);
+                    .HasColumnName("picker_description");
 
-                entity.Property(e => e.Lat).HasColumnName("lat");
-
-                entity.Property(e => e.Lng).HasColumnName("lng");
-
-                entity.Property(e => e.ReportDescription).HasColumnName("report_description");
-
-                entity.Property(e => e.ReportLocation)
+                entity.Property(e => e.PickerImageUrl)
                     .IsRequired()
-                    .HasColumnName("report_location")
-                    .HasMaxLength(80);
+                    .HasColumnName("picker_image_url")
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.RescueReport)
-                    .WithOne(p => p.RescueReportDetail)
-                    .HasForeignKey<RescueReportDetail>(d => d.RescueReportId)
+                    .WithOne(p => p.PickerForm)
+                    .HasForeignKey<PickerForm>(d => d.RescueReportId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_RescueReportDetail_RescueReport");
+                    .HasConstraintName("FK_PickerForm_FinderForm");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -514,11 +610,6 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.UserId)
                     .HasColumnName("user_id")
                     .ValueGeneratedNever();
-
-                entity.Property(e => e.Address)
-                    .IsRequired()
-                    .HasColumnName("address")
-                    .HasMaxLength(80);
 
                 entity.Property(e => e.Dob)
                     .HasColumnName("dob")
@@ -586,6 +677,43 @@ namespace PetRescue.Data.Models
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserRole_User");
+            });
+
+            modelBuilder.Entity<VolunteerRegistrationForm>(entity =>
+            {
+                entity.Property(e => e.VolunteerRegistrationFormId)
+                    .HasColumnName("volunteer_registration_form_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.CenterId).HasColumnName("center_id");
+
+                entity.Property(e => e.Dob)
+                    .HasColumnName("dob")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasColumnName("email")
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FirstName)
+                    .IsRequired()
+                    .HasColumnName("first_name")
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.Gender).HasColumnName("gender");
+
+                entity.Property(e => e.LastName)
+                    .IsRequired()
+                    .HasColumnName("last_name")
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.Phone)
+                    .IsRequired()
+                    .HasColumnName("phone")
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
             });
         }
     }

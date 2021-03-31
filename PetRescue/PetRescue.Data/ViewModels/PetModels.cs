@@ -11,14 +11,12 @@ namespace PetRescue.Data.ViewModels
         public string PetName { get; set; }
         public int PetGender { get; set; }
         public int? PetAge { get; set; }
-        public double Weight { get; set; }
         public string Description { get; set; }
         public Guid PetBreedId { get; set; }
         public string PetBreedName { get; set; }
         public Guid PetFurColorId { get; set; }
         public string PetFurColorName { get; set; }
-        public bool IsVaccinated { get; set; }
-        public bool IsSterilized { get; set; }
+
         public int PetStatus { get; set; }
         public Guid CenterId { get; set; }
         public string ImgUrl { get; set; }
@@ -37,10 +35,6 @@ namespace PetRescue.Data.ViewModels
         public string PetBreedName { get; set; }
         [JsonProperty("petFurColorName")]
         public string PetFurColorName { get; set; }
-        //[JsonProperty("is-vaccinated")]
-        //public bool IsVaccinated { get; set; }
-        //[JsonProperty("is-sterilized")]
-        //public bool IsSterilized { get; set; }
     }
     public class PetFieldConst
     {
@@ -57,18 +51,12 @@ namespace PetRescue.Data.ViewModels
         public byte PetGender { get; set; }
         [JsonProperty("petAge")]
         public byte? PetAge { get; set; }
-        [JsonProperty("weight")]
-        public double Weight { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
         [JsonProperty("petBreedId")]
         public Guid PetBreedId { get; set; }
         [JsonProperty("petFurColorId")]
         public Guid PetFurColorId { get; set; }
-        [JsonProperty("isVaccinated")]
-        public bool IsVaccinated { get; set; }
-        [JsonProperty("isSterilized")]
-        public bool IsSterilized { get; set; }
         [JsonProperty("imageUrl")]
         public string ImageUrl { get; set; }
     }
@@ -82,18 +70,12 @@ namespace PetRescue.Data.ViewModels
         public byte PetGender { get; set; }
         [JsonProperty("petAge")]
         public byte? PetAge { get; set; }
-        [JsonProperty("weight")]
-        public double Weight { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
         [JsonProperty("petBreedId")]
         public Guid PetBreedId { get; set; }
         [JsonProperty("petFurColorId")]
         public Guid PetFurColorId { get; set; }
-        [JsonProperty("isVaccinated")]
-        public bool IsVaccinated { get; set; }
-        [JsonProperty("isSterilized")]
-        public bool IsSterilized { get; set; }
         [JsonProperty("imageUrl")]
         public string ImageUrl { get; set; }
     }

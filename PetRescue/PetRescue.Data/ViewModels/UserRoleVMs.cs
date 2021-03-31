@@ -28,7 +28,6 @@ namespace PetRescue.Data.ViewModels
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public DateTime DoB { get; set; }
-        public string Address { get; set; }
         public byte Gender { get; set; }
         public string Phone { get; set; }
     }

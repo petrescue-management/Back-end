@@ -88,9 +88,6 @@ namespace PetRescue.Data.Extensions
                             obj["petType"] = petTypeObj;
                             obj["petGender"] = model.PetNavigation.PetGender;
                             obj["petAge"] = model.PetNavigation.PetAge;
-                            obj["weight"] = model.PetNavigation.Weight;
-                            obj["isVaccinated"] = model.PetNavigation.IsVaccinated;
-                            obj["isSterilized"] = model.PetNavigation.IsSterilized;
                             obj["petBreedName"] = model.PetNavigation.PetBreed.PetBreedName;
                             obj["petFurColorName"] = model.PetNavigation.PetFurColor.PetFurColorName;
                             obj["imageUrl"] = model.PetNavigation.ImageUrl;
