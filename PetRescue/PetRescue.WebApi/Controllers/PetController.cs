@@ -142,13 +142,13 @@ namespace PetRescue.WebApi.Controllers
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
         [Route("api/get-list-pet-to-be-registered-for-adoption")]
-        public IActionResult GetListPetToBeRegisteredForAdoption()
+        public IActionResult GetListPetToBeRegisteredForAdoption([FromQuery] PetFilter filter)
         {
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _domain = _uow.GetService<PetDomain>();
-                var result = _domain.GetListPetsToBeRegisteredForAdoption(Guid.Parse(currentCenterId));
+                var result = _domain.GetListPetsToBeRegisteredForAdoption(Guid.Parse(currentCenterId), filter);
                 if(result != null)
                 {
                     return Success(result);

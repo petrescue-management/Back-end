@@ -104,5 +104,11 @@ namespace PetRescue.Data.Extensions
             result["result"] = listResult;
             return result;
         }
+
+        public static IQueryable<Pet> GetAdoptionRegistrationByPet(this IQueryable<Pet> query, PetFilter filter)
+        {
+            query = query.Filter(filter);
+            return query;
+        }
     }
 }

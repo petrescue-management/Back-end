@@ -210,11 +210,12 @@ namespace PetRescue.Data.Domains
             var petRepo = uow.GetService<IPetRepository>();
             return petRepo.Get().FirstOrDefault(s => s.PetId.Equals(petId));
         }
-        public List<PetAdoptionRegisterFormModel> GetListPetsToBeRegisteredForAdoption(Guid centerId)
+        public List<PetAdoptionRegisterFormModel> GetListPetsToBeRegisteredForAdoption(Guid centerId, PetFilter filter)
         {
             var petRepo = uow.GetService<IPetRepository>();
             var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
             var pets = petRepo.Get().Where(s => s.CenterId.Equals(centerId));
+            pets = PetExtensions.GetAdoptionRegistrationByPet(pets, filter);
             var result = new List<PetAdoptionRegisterFormModel>();
             foreach(var pet in pets)
             {
