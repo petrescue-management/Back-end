@@ -1,4 +1,4 @@
-﻿using PetRescue.Data.Models;
+﻿/*using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace PetRescue.Data.Extensions
         {
             query = query.Filter(filter);
             query = query.Pagination(page, limit);
-            var result = query.SelectedField(fields,total);
+            var result = query.SelectedField(fields, total);
             return result;
         }
         private static IQueryable<Pet> Filter(this IQueryable<Pet> query, PetFilter filter)
@@ -33,10 +33,12 @@ namespace PetRescue.Data.Extensions
             if (filter.PetBreedName != null)
             {
                 query = query.Where(s => s.PetNavigation.PetBreed.PetBreedName.Equals(filter.PetBreedName));
-            }if(filter.PetFurColorName != null)
+            }
+            if (filter.PetFurColorName != null)
             {
                 query = query.Where(s => s.PetNavigation.PetFurColor.PetFurColorName.Equals(filter.PetFurColorName));
-            }if(filter.PetTypeName != null)
+            }
+            if (filter.PetTypeName != null)
             {
                 query = query.Where(s => s.PetNavigation.PetBreed.PetType.PetTypeName.Equals(filter.PetTypeName));
             }
@@ -109,3 +111,4 @@ namespace PetRescue.Data.Extensions
         }
     }
 }
+*/

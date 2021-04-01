@@ -9,7 +9,7 @@ namespace PetRescue.Data.ViewModels
     {
         public Guid AdoptionRegistrationId { get; set; }
         public UserModel Owner { get; set; }
-        public PetModel Pet { get; set; }
+        public PetProfileModel PetProfile { get; set; }
         public int AdoptionStatus { get; set; }
         public DateTime? AdoptedAt { get; set; }
         public DateTime? ReturnedAt { get; set; }

@@ -6,7 +6,7 @@ namespace PetRescue.Data.Models
     public partial class AdoptionRegistrationForm
     {
         public Guid AdoptionRegistrationId { get; set; }
-        public Guid PetId { get; set; }
+        public Guid PetDocumentId { get; set; }
         public string UserName { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
@@ -23,9 +23,9 @@ namespace PetRescue.Data.Models
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
-        public virtual Pet Pet { get; set; }
+        public virtual PetProfile PetDocument { get; set; }
         public virtual Adoption Adoption { get; set; }
     }
 }

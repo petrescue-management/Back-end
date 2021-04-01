@@ -14,12 +14,12 @@ namespace PetRescue.Data.Repositories
 
         CenterModel GetCenterById(Guid id);
 
-        CenterModel DeleteCenter(Guid id, Guid updateBy);
+        CenterModel DeleteCenter(Guid id, Guid updatedBy);
 
 
-        CenterModel UpdateCenter(UpdateCenterModel model, Guid updateBy);
+        CenterModel UpdateCenter(UpdateCenterModel model, Guid updatedBy);
 
-        CenterModel CreateCenter(CreateCenterModel model, Guid insertBy);
+        CenterModel CreateCenter(CreateCenterModel model, Guid insertedBy);
     }
 
     public partial class CenterRepository : BaseRepository<Center, string>, ICenterRepository
@@ -42,8 +42,8 @@ namespace PetRescue.Data.Repositories
                     Long = c.Lng,
                     CenterStatus = c.CenterStatus,
                     Phone = c.Phone,
-                    InsertAt = c.InsertAt,
-                    UpdateAt = c.UpdateAt,
+                    InsertedAt = c.InsertedAt,
+                    UpdatedAt = c.UpdatedAt,
                     ImageUrl = c.ImageUrl
                 }).FirstOrDefault();
 
@@ -52,7 +52,7 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region DELETE
-        private Center PrepareDelete(Guid id, Guid updateBy)
+        private Center PrepareDelete(Guid id, Guid updatedBy)
         {
             var center = Get()
                 .Where(c => c.CenterId.Equals(id))
@@ -65,10 +65,10 @@ namespace PetRescue.Data.Repositories
                     Lat = c.Lat,
                     Lng = c.Lng,
                     Phone = c.Phone,
-                    InsertBy = c.InsertBy,
-                    InsertAt = c.InsertAt,
-                    UpdateBy = updateBy,
-                    UpdateAt = DateTime.Now,
+                    InsertedBy = c.InsertedBy,
+                    InsertedAt = c.InsertedAt,
+                    UpdatedBy = updatedBy,
+                    UpdatedAt = DateTime.Now,
                     ImageUrl = c.ImageUrl
                 }).FirstOrDefault();
 
@@ -91,8 +91,8 @@ namespace PetRescue.Data.Repositories
               .Where(c => c.CenterId.Equals(model.CenterId))
                .Select(c => new Center
                {
-                   InsertBy = c.InsertBy,
-                   InsertAt = c.InsertAt
+                   InsertedBy = c.InsertedBy,
+                   InsertedAt = c.InsertedAt
                }).FirstOrDefault();
 
             var update_center = new Center
@@ -102,10 +102,10 @@ namespace PetRescue.Data.Repositories
                 Address = model.Address,
                 CenterStatus = model.CenterStatus,
                 Phone = model.Phone,
-                InsertBy = old_center.InsertBy,
-                InsertAt = old_center.InsertAt,
-                UpdateBy = updateBy,
-                UpdateAt = DateTime.Now,
+                InsertedBy = old_center.InsertedBy,
+                InsertedAt = old_center.InsertedAt,
+                UpdatedBy = updateBy,
+                UpdatedAt = DateTime.Now,
                 ImageUrl = old_center.ImageUrl
             };
 
@@ -124,7 +124,7 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region CREATE
-        private Center PrepareCreate(CreateCenterModel model, Guid insertBy)
+        private Center PrepareCreate(CreateCenterModel model, Guid insertedBy)
         {
             var center = new Center
             {
@@ -135,10 +135,10 @@ namespace PetRescue.Data.Repositories
                 CenterStatus = CenterStatusConst.OPENNING,
                 Lat = model.Lat,
                 Lng = model.Lng,
-                InsertAt = DateTime.Now,
-                InsertBy = insertBy,
-                UpdateBy = null,
-                UpdateAt = null,
+                InsertedAt = DateTime.Now,
+                InsertedBy = insertedBy,
+                UpdatedBy = null,
+                UpdatedAt = null,
                 ImageUrl = model.ImageUrl
             };
             return center;
@@ -167,8 +167,8 @@ namespace PetRescue.Data.Repositories
                 Long = center.Lng,
                 CenterStatus = center.CenterStatus,
                 Phone = center.Phone,
-                InsertAt = center.InsertAt,
-                UpdateAt = center.UpdateAt
+                InsertedAt = center.InsertedAt,
+                UpdatedAt = center.UpdatedAt
             };
             return result;
         }

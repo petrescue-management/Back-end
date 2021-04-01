@@ -32,21 +32,18 @@ namespace PetRescue.Data.DI
                 .AddScoped<UserRoleDomain>()
                 .AddScoped<IRoleRepository, RoleRepository>()
                 .AddScoped<IUserProfileRepository, UserProfileRepository>()
-                .AddScoped<IRescueReportRepository, RescueReportRepository>()
-                .AddScoped<IRescueReportDetailRepository, RescueReportDetailRepository>()
-                .AddScoped<RescueReportDomain>()
                 .AddScoped<IPetBreedRepository, PetBreedRepository>()
                 .AddScoped<IPetFurColorRepository, PetFurColorRepository>()
                 .AddScoped<IPetTypeRepository, PetTypeRepository>()
                 .AddScoped<IPetProfileRepository, PetProfileRepository>()
-                .AddScoped<IPetRepository, PetRepository>()
-                .AddScoped<PetDomain>()
                 .AddScoped<IAdoptionRepository, AdoptionRepository>()
                 .AddScoped<AdoptionDomain>()
                  .AddScoped<IAdoptionRegistrationFormRepository, AdoptionRegistrationFormRepository>()
                 .AddScoped<AdoptionRegistrationFormDomain>()
                 .AddScoped<INotificationTokenRepository, NotificationTokenRepository>()
                 .AddScoped<NotificationTokenDomain>()
+                .AddScoped<IFinderFormRepository, FinderFormRepository>()
+                .AddScoped<IPickerFormRepository, PickerFormRepository>()
             .AddScoped<IMyScopedService, MyScopedService>();
             ;
         }

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace PetRescue.Data.Models
+namespace PetRescue.Data.ViewModels
 {
-    public partial class FinderForm
+    public class FinderFormModel
     {
         public Guid FinderFormId { get; set; }
         public string FinderDescription { get; set; }
@@ -17,7 +18,16 @@ namespace PetRescue.Data.Models
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
+    }
 
-        public virtual PetDocument PetDocument { get; set; }
+    public class CreateFinderFormModel
+    {
+        public string FinderDescription { get; set; }
+        public double Lat { get; set; }
+        public double Lng { get; set; }
+        public string FinderFormImgUrl { get; set; }
+        public int PetAttribute { get; set; }
+        public int FinderFormStatus { get; set; }
+        public string Phone { get; set; }
     }
 }

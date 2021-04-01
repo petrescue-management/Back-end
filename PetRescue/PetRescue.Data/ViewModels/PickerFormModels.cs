@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace PetRescue.Data.Models
+namespace PetRescue.Data.ViewModels
 {
-    public partial class PickerForm
+    public class PickerFormModel
     {
         public Guid PickerFormId { get; set; }
         public string PickerDescription { get; set; }
         public string PickerImageUrl { get; set; }
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
+    }
 
-        public virtual PetDocument PetDocument { get; set; }
+    public class CreatePickerFormModel
+    {
+        public string PickerDescription { get; set; }
+        public string PickerImageUrl { get; set; }
     }
 }

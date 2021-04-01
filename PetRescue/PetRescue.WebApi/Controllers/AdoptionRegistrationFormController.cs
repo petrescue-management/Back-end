@@ -86,7 +86,7 @@ namespace PetRescue.WebApi.Controllers
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = _uow.GetService<AdoptionRegistrationFormDomain>().CreateAdoptionRegistrationForm(model, Guid.Parse(currentUserId));
-                await _uow.GetService<NotificationTokenDomain>().NotificationForManagerWhenHaveNewAdoptionRegisterForm(path, result.Pet.CenterId, result.AdoptionRegistrationId);
+                await _uow.GetService<NotificationTokenDomain>().NotificationForManagerWhenHaveNewAdoptionRegisterForm(path, result.PetProfile.CenterId, result.AdoptionRegistrationId);
                 return Success(result);
             }
             catch (Exception ex)
