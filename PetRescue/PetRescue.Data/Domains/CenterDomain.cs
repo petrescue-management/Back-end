@@ -146,5 +146,24 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
+
+        public List<CenterViewModel> GetListCenter()
+        {
+            var centerRepo = uow.GetService<ICenterRepository>();
+            var result = new List<CenterViewModel>();
+            var centers = centerRepo.Get().Where(s=>s.CenterStatus == CenterStatusConst.OPENNING).ToList();
+            foreach(var center in centers)
+            {
+                result.Add(new CenterViewModel 
+                {
+                    Address = center.Address,
+                    CenterId = center.CenterId,
+                    CenterName = center.CenterName,
+                    CenterStatus = center.CenterStatus,
+                    ImageUrl = center.ImageUrl
+                });
+            }
+            return result;
+        }
     }
 }

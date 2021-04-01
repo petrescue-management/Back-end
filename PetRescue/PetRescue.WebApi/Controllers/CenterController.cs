@@ -110,5 +110,20 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
+        [HttpGet]
+        [Route("api/get-list-all-center")]
+        public IActionResult GetListAllCenter()
+        {
+            try
+            {
+                var _domain = _uow.GetService<CenterDomain>();
+                var result = _domain.GetListCenter();
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
     }
 }

@@ -58,4 +58,13 @@ namespace PetRescue.Data.ViewModels
         public int PetAdoption { get; set; }
         public int PetFindTheOwner { get; set; }
     }
+
+    public class CenterViewModel
+    {
+        public Guid CenterId { get; set; }
+        public string CenterName { get; set; }
+        public string Address { get; set; }
+        public string ImageUrl { get; set; }
+        public int CenterStatus { get; set; }
+    }
 }
