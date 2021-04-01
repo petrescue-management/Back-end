@@ -16,35 +16,38 @@ namespace PetRescue.Data.Domains
         public VolunteerRegistrationFormDomain(IUnitOfWork uow) : base(uow)
         {
         }
-        public VolunteerRegistrationFormViewModel Create(VolunteerRegistrationFormCreateModel model)
+        public string Create(VolunteerRegistrationFormCreateModel model)
         {
             var volunteerRegistrationFormRepo = uow.GetService<IVolunteerRegistrationFormRepository>();
-            var result = volunteerRegistrationFormRepo.Create(model);
-            uow.saveChanges();
-            if(result != null)
+            var userRepo = uow.GetService<IUserRepository>();
+            var currentUser = userRepo.Get().FirstOrDefault(s => s.UserEmail.Equals(model.Email));
+            var result = "";
+            if(currentUser == null)
             {
-                return new VolunteerRegistrationFormViewModel
-                {
-                    CenterId = result.CenterId,
-                    Dob = result.Dob,
-                    Email = result.Email,
-                    FirstName = result.FirstName,
-                    Gender = result.Gender,
-                    LastName = result.LastName,
-                    Phone = result.Phone,
-                    Status = VolunteerRegistrationFormConst.PROCESSING
-                };
+                volunteerRegistrationFormRepo.Create(model);
+                uow.saveChanges();
+                result = "Success";
             }
-            return null;
+            else
+            {
+                if ((bool)!currentUser.IsBelongToCenter)
+                {
+                    volunteerRegistrationFormRepo.Create(model);
+                    uow.saveChanges();
+                    result = "Success";
+                }
+                result = "This email is belong anoter center";
+            }
+            return result;
         }
         public string Edit(VolunteerRegistrationFormUpdateModel model, Guid insertBy)
         {
             var volunteerRegistrationFormRepo = uow.GetService<IVolunteerRegistrationFormRepository>();
             var userDomain = uow.GetService<UserDomain>();
             var form = volunteerRegistrationFormRepo.Get().FirstOrDefault(s => s.VolunteerRegistrationFormId.Equals(model.VolunteerRegistrationFormId));
-            var formData = volunteerRegistrationFormRepo.Edit(form,model);
+            var formData = volunteerRegistrationFormRepo.Edit(form, model);
             var result = "";
-            if(model.Status == VolunteerRegistrationFormConst.APPROVE)
+            if (model.Status == VolunteerRegistrationFormConst.APPROVE)
             {
                 var newModel = new AddNewRoleModel
                 {
@@ -59,15 +62,19 @@ namespace PetRescue.Data.Domains
                     RoleName = RoleConstant.VOLUNTEER,
                 };
                 result = userDomain.AddUserToCenter(newModel);
-                var listForm = volunteerRegistrationFormRepo.Get().Where(s => s.Email.Equals(form.Email) && s.Status == VolunteerRegistrationFormConst.PROCESSING).ToList();
-                foreach(var item in listForm)
+                if (!result.Contains("This"))
                 {
-                    item.Status = VolunteerRegistrationFormConst.REJECT;
-                    volunteerRegistrationFormRepo.Update(item);
+                    var listForm = volunteerRegistrationFormRepo.Get().Where(s => s.Email.Equals(form.Email) && s.Status == VolunteerRegistrationFormConst.PROCESSING).ToList();
+                    foreach (var item in listForm)
+                    {
+                        item.Status = VolunteerRegistrationFormConst.REJECT;
+                        volunteerRegistrationFormRepo.Update(item);
+                    }
+                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(form.Email), MailConstant.APPROVE_REGISTRATION_FORM);
+                    MailExtensions.SendBySendGrid(mailArguments, null, null);
+                    uow.saveChanges();
                 }
-                uow.saveChanges();
-                MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(form.Email), MailConstant.APPROVE_REGISTRATION_FORM);
-                MailExtensions.SendBySendGrid(mailArguments, null, null);
+                return result;
             }
             else
             {

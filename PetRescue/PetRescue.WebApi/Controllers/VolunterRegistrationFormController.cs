@@ -43,11 +43,11 @@ namespace PetRescue.Data.ViewModels
 
                 var _domain = _uow.GetService<VolunteerRegistrationFormDomain>();
                 var result = _domain.Create(model);
-                if(result != null)
+                if(!result.Contains("This"))
                 {
                     return Success(result);
                 }
-                return BadRequest();
+                return BadRequest(result);
             }
             catch (Exception ex) 
             {

@@ -18,7 +18,6 @@ namespace PetRescue.Data.Domains
         public PetProfileDomain(IUnitOfWork uow) : base(uow)
         {
         }
-
         public List<PetBreedModel> GetPetBreedsByTypeId(Guid id)
         {
             var breeds = uow.GetService<IPetBreedRepository>().GetPetBreedsByTypeId(id);
@@ -68,10 +67,10 @@ namespace PetRescue.Data.Domains
             if (model.PetGender != 0)
                 records = records.Where(p => p.PetGender.Equals(model.PetGender));
 
-            if(model.PetAge != 0)
+            if (model.PetAge != 0)
                 records = records.Where(p => p.PetAge.Equals(model.PetAge));
 
-            if(!model.PetBreedId.Equals(Guid.Empty))
+            if (!model.PetBreedId.Equals(Guid.Empty))
                 records = records.Where(p => p.PetBreedId.Equals(model.PetBreedId));
 
             if (!model.PetFurColorId.Equals(Guid.Empty))
@@ -104,10 +103,10 @@ namespace PetRescue.Data.Domains
                 Result = result
             };
         }
-            #endregion
+        #endregion
 
         #region CREATE PET PROFILE
-            public PetProfileModel CreatePetProfile(CreatePetProfileModel model, Guid insertBy, Guid centerId)
+        public PetProfileModel CreatePetProfile(CreatePetProfileModel model, Guid insertBy, Guid centerId)
         {
             var petProfile = uow.GetService<IPetProfileRepository>().CreatePetProfile(model, insertBy, centerId);
             uow.saveChanges();
@@ -118,7 +117,7 @@ namespace PetRescue.Data.Domains
 
         #region UPDATE PET PROFILE
         public PetProfileModel UpdatePetProfile(UpdatePetProfileModel model, Guid updatedBy)
-        { 
+        {
             var petProfile = uow.GetService<IPetProfileRepository>().UpdatePetProfile(model, updatedBy);
             uow.saveChanges();
             return petProfile;
@@ -211,7 +210,7 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-     public List<PetAdoptionRegisterFormModel> GetListPetsToBeRegisteredForAdoption(Guid centerId, PetProfileFilter filter)
+        public List<PetAdoptionRegisterFormModel> GetListPetsToBeRegisteredForAdoption(Guid centerId, PetProfileFilter filter)
         {
             var petProfileRepo = uow.GetService<IPetProfileRepository>();
             var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
@@ -288,7 +287,17 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-
+        public object GetPet(PetProfileFilter filter, string[] fields, int page, int limit)
+        {
+            var petProfileRepo = uow.GetService<IPetProfileRepository>();
+            var query = petProfileRepo.Get();
+            int totalPage = 0;
+            if (limit > -1)
+            {
+                totalPage = query.Count() / limit;
+            }
+            return query.GetData(filter, page, limit, totalPage, fields);
+        }
         #region GET PET BY TYPE NAME
         public List<GetPetByTypeNameModel> GetPetByTypeName()
         {
@@ -339,5 +348,110 @@ namespace PetRescue.Data.Domains
             return result;
         }
         #endregion
+        public PetDocumentViewModel GetDocumentPetById(Guid petDocumentId)
+        {
+            var petDocumentRepo = uow.GetService<IPetDocumentRepository>();
+            var petProfileRepo = uow.GetService<IPetProfileRepository>();
+            var pickerFormRepo = uow.GetService<IPickerFormRepository>();
+            var finderFormRepo = uow.GetService<IFinderFormRepository>();
+            var userRepo = uow.GetService<IUserRepository>();
+            var result = new PetDocumentViewModel();
+            var petDocument = petDocumentRepo.Get().FirstOrDefault(s => s.PetDocumentId.Equals(petDocumentId));
+            if (petDocument != null)
+            {
+                var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petDocument.PickerForm.InsertedBy));
+                var fullName = currentUser.UserProfile.FirstName + " " + currentUser.UserProfile.LastName;
+                var pickerForm = new PickerFormViewModel
+                {
+                    PickerDate = petDocument.PickerForm.InsertedAt,
+                    PickerDescription = petDocument.PetDocumentDescription,
+                    PickerImageUrl = petDocument.PickerForm.PickerImageUrl,
+                    PickerName = fullName,
+                };
+                currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petDocument.FinderForm.InsertedBy));
+                fullName = currentUser.UserProfile.FirstName + " " + currentUser.UserProfile.LastName;
+                var finderForm = new FinderFormViewModel
+                {
+                    FinderDate = petDocument.FinderForm.InsertedAt,
+                    FinderDescription = petDocument.FinderForm.FinderDescription,
+                    FinderImageUrl = petDocument.FinderForm.FinderFormImgUrl,
+                    FinderName = fullName
+                };
+                var tracks = petDocument.PetDocumentNavigation.PetTracking.ToList();
+                var list = new List<PetTrackingViewModel>();
+                foreach (var track in tracks)
+                {
+                    list.Add(new PetTrackingViewModel
+                    {
+                        Description = track.Description,
+                        ImageUrl = track.PetTrackingImgUrl,
+                        InsertAt = track.InsertedAt,
+                        isSterilized = (bool)track.IsSterilized,
+                        isVaccinated = (bool)track.IsVaccinated,
+                    });
+                }
+                result.FinderForm = finderForm;
+                result.PetAttribute = petDocument.PetAttribute;
+                result.PickerForm = pickerForm;
+                result.PetDocumentDescription = petDocument.PetDocumentDescription;
+                result.PetProfile = new PetProfileModel
+                {
+                    CenterId = petDocument.PetDocumentNavigation.CenterId,
+                    InsertedAt = petDocument.PetDocumentNavigation.InsertedAt,
+                    InsertedBy = petDocument.PetDocumentNavigation.InsertedBy,
+                    PetAge = petDocument.PetDocumentNavigation.PetAge,
+                    PetBreedId = petDocument.PetDocumentNavigation.PetBreedId,
+                    PetBreedName = petDocument.PetDocumentNavigation.PetBreed.PetBreedName,
+                    PetDocumentId = petDocument.PetDocumentId,
+                    PetFurColorId = petDocument.PetDocumentNavigation.PetFurColorId,
+                    PetFurColorName = petDocument.PetDocumentNavigation.PetFurColor.PetFurColorName,
+                    PetGender = petDocument.PetDocumentNavigation.PetGender,
+                    PetImgUrl = petDocument.PetDocumentNavigation.PetImgUrl,
+                    PetName = petDocument.PetDocumentNavigation.PetName,
+                    PetProfileDescription = petDocument.PetDocumentNavigation.PetProfileDescription,
+                    PetStatus = petDocument.PetDocumentNavigation.PetStatus
+                };
+                result.ListTracking = list;
+            }
+            else
+            {
+                var petProfile = petProfileRepo.Get().FirstOrDefault(s => s.PetDocumentId.Equals(petDocumentId));
+                var list = new List<PetTrackingViewModel>();
+                if (petProfile != null)
+                {
+                    var tracks = petProfile.PetTracking.ToList();
+                    foreach (var track in tracks)
+                    {
+                        list.Add(new PetTrackingViewModel
+                        {
+                            Description = track.Description,
+                            ImageUrl = track.PetTrackingImgUrl,
+                            InsertAt = track.InsertedAt,
+                            isSterilized = (bool)track.IsSterilized,
+                            isVaccinated = (bool)track.IsVaccinated,
+                        });
+                    }
+                    result.ListTracking = list;
+                    result.PetProfile = new PetProfileModel
+                    {
+                        CenterId = petProfile.CenterId,
+                        InsertedAt = petProfile.InsertedAt,
+                        InsertedBy = petProfile.InsertedBy,
+                        PetAge = petProfile.PetAge,
+                        PetBreedId = petProfile.PetBreedId,
+                        PetBreedName = petProfile.PetBreed.PetBreedName,
+                        PetDocumentId = petProfile.PetDocumentId,
+                        PetFurColorId = petProfile.PetFurColorId,
+                        PetFurColorName = petProfile.PetFurColor.PetFurColorName,
+                        PetGender = petProfile.PetGender,
+                        PetImgUrl = petProfile.PetImgUrl,
+                        PetName = petProfile.PetName,
+                        PetProfileDescription = petProfile.PetProfileDescription,
+                        PetStatus = petProfile.PetStatus
+                    };
+                }
+            }
+            return result;
+        }
     }
 }

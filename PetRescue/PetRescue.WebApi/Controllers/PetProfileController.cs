@@ -189,6 +189,38 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
+        [HttpGet]
+        [Route("api/get-pet")]
+        public IActionResult GetPet([FromQuery] PetProfileFilter filter, [FromQuery] string[] fields, [FromQuery] int page = 0, [FromQuery] int limit = -1)
+        {
+            try
+            {
+                var _domain = _uow.GetService<PetProfileDomain>();
+                if(fields.Length == 0)
+                {
+                    fields = new string[] { PetFieldConst.INFO };
+                }
+                var result = _domain.GetPet(filter, fields, page, limit);
+                return Success(result);
+            }catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [HttpGet]
+        [Route("api/get-document-pet")]
+        public IActionResult GetDocumentPetBy([FromQuery]Guid petDocumentId)
+        {
+            try
+            {
+                var _domain = _uow.GetService<PetProfileDomain>();
+                var result = _domain.GetDocumentPetById(petDocumentId);
+                return Success(result);
+            }catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
         #endregion
         #region POST
         [Authorize(Roles = RoleConstant.MANAGER)]

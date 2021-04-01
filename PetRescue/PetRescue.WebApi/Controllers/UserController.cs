@@ -87,9 +87,9 @@ namespace PetRescue.WebApi.Controllers
             {
                 var _domain = _uow.GetService<UserDomain>();
                 var newUserProfile = _domain.UpdateUserProfile(model);
-                if (newUserProfile != null)
+                if (newUserProfile == 1)
                 {
-                    return Success(newUserProfile.UserId);
+                    return Success(newUserProfile);
                 }
                 return BadRequest();
             } catch (Exception e)
