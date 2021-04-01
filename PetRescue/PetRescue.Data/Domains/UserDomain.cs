@@ -138,6 +138,7 @@ namespace PetRescue.Data.Domains
                     if (currentUser.CenterId.Equals(model.CenterId) && (bool)currentUser.IsBelongToCenter)
                     {
                         userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
+                        return currentUser.UserId.ToString();
                     }
                     // if another role isn't existed
                     else
@@ -148,6 +149,7 @@ namespace PetRescue.Data.Domains
                             IsBelongToCenter = true
                         });
                         userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
+                        return currentUser.UserId.ToString();
                     }
                 }
                 else
@@ -166,10 +168,11 @@ namespace PetRescue.Data.Domains
                                 CenterId = model.CenterId,
                                 IsBelongToCenter = true
                             });
+                            result = currentUser.UserId.ToString();
                         }
                         else
                         {
-                            result = "Role is existed";
+                            result = "This Role is existed";
                         }
                     }
                     else
@@ -181,6 +184,7 @@ namespace PetRescue.Data.Domains
                                 IsActive = true,
                                 UpdateBy = model.InsertBy
                             });
+                            result = currentUser.UserId.ToString();
                         }
                         else
                         {
@@ -220,7 +224,7 @@ namespace PetRescue.Data.Domains
                     catch
                     {
                         transaction.Rollback();
-                        return result="Cannot create";
+                        return result="This cannot create";
                     }
                 }
             }
