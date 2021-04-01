@@ -17,5 +17,9 @@ namespace PetRescue.Data.ViewModels
         public string PickerDescription { get; set; }
         [JsonProperty("pickerImageUrl")]
         public string PickerImageUrl { get; set; }
+        [JsonProperty("pickerName")]
+        public string PickerName { get; set; }
+        [JsonProperty("pickerDate")]
+        public DateTime PickerDate { get; set; }
     }
 }

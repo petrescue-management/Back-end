@@ -38,7 +38,7 @@ namespace PetRescue.Data.DI
                 .AddScoped<IPetProfileRepository, PetProfileRepository>()
                 .AddScoped<IAdoptionRepository, AdoptionRepository>()
                 .AddScoped<AdoptionDomain>()
-                 .AddScoped<IAdoptionRegistrationFormRepository, AdoptionRegistrationFormRepository>()
+                .AddScoped<IAdoptionRegistrationFormRepository, AdoptionRegistrationFormRepository>()
                 .AddScoped<AdoptionRegistrationFormDomain>()
                 .AddScoped<INotificationTokenRepository, NotificationTokenRepository>()
                 .AddScoped<NotificationTokenDomain>()
@@ -48,7 +48,9 @@ namespace PetRescue.Data.DI
                        .AddScoped<PickerFormDomain>()
                 .AddScoped<IVolunteerRegistrationFormRepository, VolunteerRegistrationFormRepository>()
                 .AddScoped<VolunteerRegistrationFormDomain>()
-            .AddScoped<IMyScopedService, MyScopedService>();
+                .AddScoped<PetProfileDomain>()
+                .AddScoped<IPetDocumentRepository,PetDocumentRepository>()
+                .AddScoped<IMyScopedService, MyScopedService>();
             ;
         }
        
