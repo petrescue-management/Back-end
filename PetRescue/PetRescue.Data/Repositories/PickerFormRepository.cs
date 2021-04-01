@@ -9,6 +9,7 @@ using System.Text;
 
 namespace PetRescue.Data.Repositories
 {
+
     public partial interface IPickerFormRepository : IBaseRepository<PickerForm, string>
     {
 
@@ -23,7 +24,6 @@ namespace PetRescue.Data.Repositories
         public PickerFormRepository(DbContext context) : base(context)
         {
         }
-
         #region CREATE
         private PickerForm PrepareCreate(CreatePickerFormModel model, Guid insertedBy)
         {
@@ -111,7 +111,6 @@ namespace PetRescue.Data.Repositories
             
             return result;
        }
-        #endregion
-
+       #endregion
     }
 }

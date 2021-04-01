@@ -1,3 +1,4 @@
+
 ﻿using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
@@ -18,7 +19,6 @@ namespace PetRescue.Data.Domains
         public PickerFormDomain(IUnitOfWork uow) : base(uow)
         {
         }
-
         #region SEARCH
         public SearchReturnModel SearchPickerForm(SearchModel model)
         {

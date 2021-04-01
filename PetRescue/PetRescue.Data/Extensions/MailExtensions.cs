@@ -99,7 +99,7 @@ namespace PetRescue.Data.Extensions
                 message.Subject = mailArgs.Subject;
                 message.To.Add(mailArgs.MailTo);
                 message.Body = mailArgs.Message;
-                message.From = new MailAddress(mailArgs.MailFrom, "Rescue Them");
+                message.From = new MailAddress(mailArgs.MailFrom, "Rescue Me");
                 if (ValidationExtensions.IsNotNullOrEmpty(headers))
                 {
                     foreach (var header in headers)
