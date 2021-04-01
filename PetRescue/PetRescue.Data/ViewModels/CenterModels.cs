@@ -14,8 +14,8 @@ namespace PetRescue.Data.ViewModels
         public double? Lat { get; set; }
         public double? Long { get; set; }
         public int CenterStatus { get; set; }
-        public DateTime InsertAt { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public DateTime InsertedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public string ImageUrl { get; set; }
     }
 

@@ -13,25 +13,25 @@ using System.Threading.Tasks;
 namespace PetRescue.WebApi.Controllers
 {
     [ApiController]
-    public class RescueReportController : BaseController
+    public class FinderFormController : BaseController
     {
         private readonly IHostingEnvironment _env;
-        public RescueReportController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        public FinderFormController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
             _env = environment;
         }
 
         #region SEARCH
         [HttpGet]
-        [Route("api/search-rescue-report")]
-        public IActionResult SearchRescueReport([FromQuery] SearchModel model)
+        [Route("api/search-finder-form")]
+        public IActionResult SearchFinderForm([FromQuery] SearchModel model)
         {
             try
             {
-                var result = _uow.GetService<RescueReportDomain>().SearchRescueReport(model);
+                var result = _uow.GetService<FinderFormDomain>().SearchFinderForm(model);
                 if (result != null)
                     return Success(result);
-                return Success("Not have any rescue report !");
+                return Success("Not have any finder form !");
             }
             catch (Exception ex)
             {
@@ -42,12 +42,12 @@ namespace PetRescue.WebApi.Controllers
 
         #region GET BY ID
         [HttpGet]
-        [Route("api/get-rescue-report-by-id/{id}")]
-        public IActionResult GetRescueReportById(Guid id)
+        [Route("api/get-finder-form-by-id/{id}")]
+        public IActionResult GetFinderFormById(Guid id)
         {
             try
             {
-                var result = _uow.GetService<RescueReportDomain>().GetRescueReportById(id);
+                var result = _uow.GetService<FinderFormDomain>().GetFinderFormById(id);
                 return Success(result);
             }
             catch (Exception ex)
@@ -59,14 +59,13 @@ namespace PetRescue.WebApi.Controllers
 
         #region UPDATE STATUS
         [HttpPut]
-        [Route("api/update-rescue-report-status")]
-        public IActionResult UpdateRescueReportStatus(UpdateStatusModel model)
+        [Route("api/update-finder-form-status")]
+        public IActionResult UpdateFinderFormStatus(UpdateStatusModel model)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var result = _uow.GetService<RescueReportDomain>().UpdateRescueReportStatus(model, Guid.Parse(currentUserId), Guid.Parse(currentCenterId));
+                var result = _uow.GetService<FinderFormDomain>().UpdateFinderFormStatus(model, Guid.Parse(currentUserId));
                 return Success(result);
             }
             catch (Exception ex)
@@ -78,14 +77,13 @@ namespace PetRescue.WebApi.Controllers
 
         #region CREATE
         [HttpPost]
-        [Route("api/create-rescue-report")]
-        public async Task<IActionResult> CreateRescueReportAsync(CreateRescueReportModel model)
+        [Route("api/create-finder-form")]
+        public IActionResult CreateFinderForm(CreateFinderFormModel model)
         {
             try
             {
-                string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result =  await _uow.GetService<RescueReportDomain>().CreateRescueReportAsync(model, Guid.Parse(currentUserId), path);
+                var result =  _uow.GetService<FinderFormDomain>().CreateFinderForm(model, Guid.Parse(currentUserId));
                 return Success(result);
             }
             catch (Exception ex)

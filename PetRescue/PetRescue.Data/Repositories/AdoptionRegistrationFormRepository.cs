@@ -31,7 +31,7 @@ namespace PetRescue.Data.Repositories
                 .Select(f => new AdoptionRegistrationForm
                 {
                     AdoptionRegistrationId = f.AdoptionRegistrationId,
-                    PetId = f.PetId,
+                    PetDocumentId = f.PetDocumentId,
                     UserName = f.UserName,
                     Phone = f.Phone,
                     Email = f.Email,
@@ -48,7 +48,7 @@ namespace PetRescue.Data.Repositories
                     InsertedBy = f.InsertedBy,
                     InsertedAt = f.InsertedAt,
                     UpdatedBy = f.UpdatedBy,
-                    UpdateAt = f.UpdateAt
+                    UpdatedAt = f.UpdatedAt
                 }).FirstOrDefault();
             return form;   
         }
@@ -63,7 +63,7 @@ namespace PetRescue.Data.Repositories
                   .Select(f => new AdoptionRegistrationForm
                   {
                       AdoptionRegistrationId = f.AdoptionRegistrationId,
-                      PetId = f.PetId,
+                      PetDocumentId = f.PetDocumentId,
                       UserName = f.UserName,
                       Phone = f.Phone,
                       Email = f.Email,
@@ -80,7 +80,7 @@ namespace PetRescue.Data.Repositories
                       InsertedBy = f.InsertedBy,
                       InsertedAt = f.InsertedAt,
                       UpdatedBy = updateBy,
-                      UpdateAt = DateTime.UtcNow
+                      UpdatedAt = DateTime.UtcNow
                   }).FirstOrDefault();
             return form;
         }
@@ -102,7 +102,7 @@ namespace PetRescue.Data.Repositories
             var form = new AdoptionRegistrationForm
             {
                 AdoptionRegistrationId = Guid.NewGuid(),
-                PetId = model.PetId,
+                PetDocumentId = model.PetDocumentId,
                 UserName = model.UserName,
                 Phone = model.Phone,
                 Email = model.Email,
@@ -119,7 +119,7 @@ namespace PetRescue.Data.Repositories
                 InsertedBy = insertBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
-                UpdateAt = null
+                UpdatedAt = null
             };
             return form;
         }

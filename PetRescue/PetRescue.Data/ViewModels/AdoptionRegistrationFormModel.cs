@@ -7,7 +7,7 @@ namespace PetRescue.Data.ViewModels
     public class AdoptionRegistrationFormModel
     {
         public Guid AdoptionRegistrationId { get; set; }
-        public PetModel Pet { get; set; }
+        public PetProfileModel PetProfile { get; set; }
         public string UserName { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
@@ -24,13 +24,13 @@ namespace PetRescue.Data.ViewModels
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
     }
 
     public class CreateAdoptionRegistrationFormModel
     {
-        public Guid PetId { get; set; }
+        public Guid PetDocumentId { get; set; }
         public string UserName { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
@@ -65,7 +65,7 @@ namespace PetRescue.Data.ViewModels
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
     public class ListRegisterAdoptionOfPetViewModel
     {

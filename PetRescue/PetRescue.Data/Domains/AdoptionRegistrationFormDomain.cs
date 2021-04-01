@@ -21,19 +21,19 @@ namespace PetRescue.Data.Domains
         {
             var records = uow.GetService<IAdoptionRegistrationFormRepository>().Get().AsQueryable();
 
-            var pet_service = uow.GetService<IPetRepository>();
+            var petProfileService = uow.GetService<IPetProfileRepository>();
             if (model.Status != 0)
                 records = records.Where(f => f.AdoptionRegistrationStatus.Equals(model.Status));
 
             List<AdoptionRegistrationFormModel> result = new List<AdoptionRegistrationFormModel>();
             foreach (var record in records.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize)
-                  .Where(f => f.Pet.CenterId.Equals(Guid.Parse(currentCenterId))))
+                  .Where(f => f.PetDocument.CenterId.Equals(Guid.Parse(currentCenterId))))
             {
                 
                 result.Add(new AdoptionRegistrationFormModel
                 {
                     AdoptionRegistrationId = record.AdoptionRegistrationId,
-                    Pet = pet_service.GetPetById(record.PetId),
+                    PetProfile = petProfileService.GetPetProfileById(record.PetDocumentId),
                     UserName = record.UserName,
                     Phone = record.Phone,
                     Email = record.Email,
@@ -50,14 +50,14 @@ namespace PetRescue.Data.Domains
                     InsertedBy = record.InsertedBy,
                     InsertedAt = record.InsertedAt,
                     UpdatedBy = record.UpdatedBy,
-                    UpdateAt = record.UpdateAt
+                    UpdatedAt = record.UpdatedAt
                 });
             }
 
             if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
                 foreach (var adoption in result)
                 {
-                    if (!adoption.Pet.PetName.Contains(model.Keyword))
+                    if (!adoption.PetProfile.PetName.Contains(model.Keyword))
                         result.Remove(adoption);
                 }
 
@@ -73,11 +73,11 @@ namespace PetRescue.Data.Domains
         public AdoptionRegistrationFormModel GetAdoptionRegistrationFormById(Guid id)
         {
             var form = uow.GetService<IAdoptionRegistrationFormRepository>().GetAdoptionRegistrationFormById(id);
-            var pet_service = uow.GetService<IPetRepository>();
+            var petProfileService = uow.GetService<IPetProfileRepository>();
             var result = new AdoptionRegistrationFormModel
             {
                 AdoptionRegistrationId = form.AdoptionRegistrationId,
-                Pet = pet_service.GetPetById(form.PetId),
+                PetProfile = petProfileService.GetPetProfileById(form.PetDocumentId),
                 UserName = form.UserName,
                 Phone = form.Phone,
                 Email = form.Email,
@@ -94,7 +94,7 @@ namespace PetRescue.Data.Domains
                 InsertedBy = form.InsertedBy,
                 InsertedAt = form.InsertedAt,
                 UpdatedBy = form.UpdatedBy,
-                UpdateAt = form.UpdateAt
+                UpdatedAt = form.UpdatedAt
             };
             return result;
         }
@@ -104,13 +104,13 @@ namespace PetRescue.Data.Domains
         public AdoptionRegistrationFormModel UpdateAdoptionRegistrationFormStatus(UpdateStatusModel model, Guid updateBy)
         {
             var form = uow.GetService<IAdoptionRegistrationFormRepository>().UpdateAdoptionRegistrationFormStatus(model, updateBy);
-            var pet_service = uow.GetService<IPetRepository>();
-            var adoption_service = uow.GetService<IAdoptionRepository>();
-            var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
+            var petProfileService = uow.GetService<IPetProfileRepository>();
+            var adoptionService = uow.GetService<IAdoptionRepository>();
+            var adoptionRegistrationFormService = uow.GetService<IAdoptionRegistrationFormRepository>();
             var result = new AdoptionRegistrationFormModel
             {
                 AdoptionRegistrationId = form.AdoptionRegistrationId,
-                Pet = pet_service.GetPetById(form.PetId),
+                PetProfile = petProfileService.GetPetProfileById(form.PetDocumentId),
                 UserName = form.UserName,
                 Phone = form.Phone,
                 Email = form.Email,
@@ -127,19 +127,19 @@ namespace PetRescue.Data.Domains
                 InsertedBy = form.InsertedBy,
                 InsertedAt = form.InsertedAt,
                 UpdatedBy = form.UpdatedBy,
-                UpdateAt = form.UpdateAt
+                UpdatedAt = form.UpdatedAt
             };
-            var currentPet = pet_service.Get().FirstOrDefault(s => s.PetId.Equals(form.PetId));
+            var currentPet = petProfileService.Get().FirstOrDefault(s => s.PetDocumentId.Equals(form.PetDocumentId));
             if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED)
             {
-                adoption_service.CreateAdoption(result);
+                adoptionService.CreateAdoption(result);
                 currentPet.PetStatus = PetStatusConst.ADOPTED;
-                pet_service.Update(currentPet);
-                var listAdoptionForm = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(form.PetId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+                petProfileService.Update(currentPet);
+                var listAdoptionForm = adoptionRegistrationFormService.Get().Where(s => s.PetDocumentId.Equals(form.PetDocumentId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
                 foreach(var adoptionForm in listAdoptionForm)
                 {
                     adoptionForm.AdoptionRegistrationStatus = AdoptionRegistrationFormStatusConst.REJECTED;
-                    adoptionRegisterFormRepo.Update(adoptionForm);
+                    adoptionRegistrationFormService.Update(adoptionForm);
                 }
             }
             uow.saveChanges();
@@ -151,11 +151,11 @@ namespace PetRescue.Data.Domains
         public AdoptionRegistrationFormModel CreateAdoptionRegistrationForm(CreateAdoptionRegistrationFormModel model, Guid insertBy)
         {
             var form = uow.GetService<IAdoptionRegistrationFormRepository>().CreateAdoptionRegistrationForm(model, insertBy);
-            var pet_service = uow.GetService<IPetRepository>();
+            var petProfileService = uow.GetService<IPetProfileRepository>();
             var result = new AdoptionRegistrationFormModel
             {
                 AdoptionRegistrationId = form.AdoptionRegistrationId,
-                Pet = pet_service.GetPetById(form.PetId),
+                PetProfile = petProfileService.GetPetProfileById(form.PetDocumentId),
                 UserName = form.UserName,
                 Phone = form.Phone,
                 Email = form.Email,
@@ -172,7 +172,7 @@ namespace PetRescue.Data.Domains
                 InsertedBy = form.InsertedBy,
                 InsertedAt = form.InsertedAt,
                 UpdatedBy = form.UpdatedBy,
-                UpdateAt = form.UpdateAt
+                UpdatedAt = form.UpdatedAt
             };
             uow.saveChanges();
             return result;
@@ -181,7 +181,7 @@ namespace PetRescue.Data.Domains
         public List<AdoptionRegistrationFormModel> GetListAdoptionByUserId(Guid userId)
         {
             var adoptionFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
-            var petRepo = uow.GetService<IPetRepository>();
+            var petRepo = uow.GetService<IPetProfileRepository>();
             var result = new List<AdoptionRegistrationFormModel>();
             var listAdoptionForm = adoptionFormRepo.Get().Where(s => s.InsertedBy.Equals(userId)).ToList();
             foreach(var adoptionForm in listAdoptionForm)
@@ -189,7 +189,7 @@ namespace PetRescue.Data.Domains
                 result.Add(new AdoptionRegistrationFormModel
                 {
                     AdoptionRegistrationId = adoptionForm.AdoptionRegistrationId,
-                    Pet = petRepo.GetPetById(adoptionForm.PetId),
+                    PetProfile = petRepo.GetPetProfileById(adoptionForm.PetDocumentId),
                     UserName = adoptionForm.UserName,
                     Phone = adoptionForm.Phone,
                     Email = adoptionForm.Email,
@@ -206,7 +206,7 @@ namespace PetRescue.Data.Domains
                     InsertedBy = adoptionForm.InsertedBy,
                     InsertedAt = adoptionForm.InsertedAt,
                     UpdatedBy = adoptionForm.UpdatedBy,
-                    UpdateAt = adoptionForm.UpdateAt
+                    UpdatedAt = adoptionForm.UpdatedAt
                 });
             }
             return result;

@@ -40,8 +40,8 @@ namespace PetRescue.Data.Domains
                     Long = c.Lng,
                     CenterStatus = c.CenterStatus,
                     Phone = c.Phone,
-                    InsertAt = c.InsertAt,
-                    UpdateAt = c.UpdateAt,
+                    InsertedAt = c.InsertedAt,
+                    UpdatedAt = c.UpdatedAt,
                     
                 }).ToList();
             return new SearchReturnModel
@@ -111,12 +111,12 @@ namespace PetRescue.Data.Domains
         public CenterStatistic GetStatisticAboutCenter(Guid centerId)
         {
             var centerRepo = uow.GetService<ICenterRepository>();
-            var rescueRepo = uow.GetService<IRescueReportRepository>();
-            var petRepo = uow.GetService<IPetRepository>();
+            var finderFormService = uow.GetService<IFinderFormRepository>();
+            var petProfileService = uow.GetService<IPetProfileRepository>();
             var result = new CenterStatistic();
-            result.RescueCase = rescueRepo.Get().Where(s => s.CenterId.Equals(centerId)).Count();
-            result.PetFindTheOwner = petRepo.Get().Where(s => s.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
-            result.PetAdoption = petRepo.Get().Where(s => s.PetStatus == PetStatusConst.ADOPTED).Count();
+            result.RescueCase = finderFormService.Get().Where(s => s.PetDocument.PetDocumentNavigation.CenterId.Equals(centerId)).Count();
+            result.PetFindTheOwner = petProfileService.Get().Where(s => s.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
+            result.PetAdoption = petProfileService.Get().Where(s => s.PetStatus == PetStatusConst.ADOPTED).Count();
             return result;
         }
         #endregion
