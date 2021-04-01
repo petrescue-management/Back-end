@@ -82,8 +82,11 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+                string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result =  _uow.GetService<FinderFormDomain>().CreateFinderForm(model, Guid.Parse(currentUserId));
+                var result =  _uow.GetService<FinderFormDomain>().CreateFinderForm(model, Guid.Parse(currentUserId), path);
+
+                
                 return Success(result);
             }
             catch (Exception ex)

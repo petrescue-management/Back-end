@@ -1,4 +1,6 @@
-﻿using PetRescue.Data.ConstantHelper;
+﻿using Microsoft.VisualBasic;
+using Newtonsoft.Json;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
@@ -6,11 +8,8 @@ using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace PetRescue.Data.Domains
 {
     public class FinderFormDomain : BaseDomain
@@ -72,13 +71,75 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region CREATE
-        public FinderFormModel CreateFinderForm(CreateFinderFormModel model, Guid insertedBy)
+        public FinderFormModel CreateFinderForm(CreateFinderFormModel model, Guid insertedBy, string path)
         {
-            var finderForm = uow.GetService<IFinderFormRepository>().CreateFinderForm(model, insertedBy);
+            DateTime currentTime = DateTime.UtcNow;
+
+            var finderFormService = uow.GetService<IFinderFormRepository>();
+
+            var finderForm = finderFormService.CreateFinderForm(model, insertedBy);
             uow.saveChanges();
+
+            //tạo object lưu xuống json
+            var objectJson = new NotificationToVolunteers { 
+            FinderFormId = finderForm.FinderFormId,
+            CurrentTime = currentTime,
+            InsertedBy = insertedBy,
+            path = path
+            };
+
+            string json = JsonConvert.SerializeObject(objectJson);
+
+            string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
+
+            System.IO.File.WriteAllText(FILEPATH, json);
+
+
+            var centerService = uow.GetService<CenterDomain>();
+            var centers = centerService.GetListCenterLocation();
+            var googleMapExtension = new GoogleMapExtensions();
+            var location = model.Lat + ", " + model.Lng;
+            var records = googleMapExtension.FindListShortestCenter(location, centers);
+            var listCenterId = new List<string>();
+
+            if (records.Count != 0)
+            {
+                if (records.Count >= 2)
+                {
+                    listCenterId.Add(records[0].CenterId);
+                    listCenterId.Add(records[1].CenterId);
+                }
+                else
+                {
+                    listCenterId.Add(records[0].CenterId);
+                }
+            }
+
+            uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listCenterId);
+            uow.saveChanges();
+
+            if (DateTime.UtcNow >= currentTime.AddMinutes(2))
+            {
+                if(finderFormService.GetFinderFormById(finderForm.FinderFormId).FinderFormStatus == 1)
+                {
+
+                }
+            }
+
+
             return finderForm;
         }
 
+        public void ReNotification(Guid finderFormId, Guid insertedBy, string path)
+        {
+            if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
+            {
+                var centerService = uow.GetService<CenterDomain>();
+                var records = centerService.GetListCenter().Select(c => c.CenterId.ToString()).ToList();
+                uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, records);
+                uow.saveChanges();
+            }
+        }
         #endregion
     }
 }
