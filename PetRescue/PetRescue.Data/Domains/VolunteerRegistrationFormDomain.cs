@@ -32,6 +32,7 @@ namespace PetRescue.Data.Domains
                     Gender = result.Gender,
                     LastName = result.LastName,
                     Phone = result.Phone,
+                    Status = VolunteerRegistrationFormConst.PROCESSING
                 };
             }
             return null;
@@ -58,10 +59,10 @@ namespace PetRescue.Data.Domains
                     RoleName = RoleConstant.VOLUNTEER,
                 };
                 result = userDomain.AddUserToCenter(newModel);
-                var listForm = volunteerRegistrationFormRepo.Get().Where(s => s.Email.Equals(form.Email)).ToList();
+                var listForm = volunteerRegistrationFormRepo.Get().Where(s => s.Email.Equals(form.Email) && s.Status == VolunteerRegistrationFormConst.PROCESSING).ToList();
                 foreach(var item in listForm)
                 {
-                    //item.Status = VolunteerRegistrationFormConst.REJECT;
+                    item.Status = VolunteerRegistrationFormConst.REJECT;
                     volunteerRegistrationFormRepo.Update(item);
                 }
                 uow.saveChanges();
@@ -80,7 +81,7 @@ namespace PetRescue.Data.Domains
         public VolunteerViewModel GetListVolunteerRegistrationForm(Guid centerId)
         {
             var volunteerRegistrationFormRepo = uow.GetService<IVolunteerRegistrationFormRepository>();
-            var listForm = volunteerRegistrationFormRepo.Get().Where(s => s.CenterId.Equals(centerId)).ToList();
+            var listForm = volunteerRegistrationFormRepo.Get().Where(s => s.CenterId.Equals(centerId) && s.Status == VolunteerRegistrationFormConst.PROCESSING).ToList();
             var result = new VolunteerViewModel();
             result.Count = listForm.Count();
             foreach(var form in listForm)
@@ -94,7 +95,7 @@ namespace PetRescue.Data.Domains
                     Gender = form.Gender,
                     LastName = form.LastName,
                     Phone = form.Phone,
-                    //Status = form.Status
+                    Status = form.Status
                 });
             }
             return result;

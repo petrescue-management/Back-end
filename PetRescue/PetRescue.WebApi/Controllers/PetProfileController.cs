@@ -133,10 +133,10 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
- /*       [Authorize(Roles = RoleConstant.MANAGER)]
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
         [Route("api/get-list-pet-to-be-registered-for-adoption")]
-        public IActionResult GetListPetToBeRegisteredForAdoption([FromQuery] PetFilter filter)
+        public IActionResult GetListPetToBeRegisteredForAdoption([FromQuery] PetProfileFilter filter)
         {
             try
             {
@@ -154,8 +154,8 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-        [Authorize(Roles = RoleConstant.MANAGER)]*/
- /*       [HttpGet]
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpGet]
         [Route("api/get-list-adoption-register-form-by-petid/")]
         public IActionResult GetListPetToBeRegisteredForAdoption([FromQuery] Guid petId)
         {
@@ -173,7 +173,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 return Error(ex.Message);
             }
-        }*/
+        }
         [HttpGet]
         [Route("api/get-pet-by-typename")]
         public IActionResult GetPetByTypeName()

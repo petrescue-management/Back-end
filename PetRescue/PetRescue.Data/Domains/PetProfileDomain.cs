@@ -55,18 +55,6 @@ namespace PetRescue.Data.Domains
             return type;
         }
 
-        /*        public object GetPet(PetFilter filter, string[] fields, int page, int limit)
-                {
-                    var petRepo = uow.GetService<IPetRepository>();
-                    var query = petRepo.Get();
-                    int totalPage = 0;
-                    if (limit > -1)
-                    {
-                        totalPage = query.Count() / limit;
-                   }
-                    return query.GetData(filter, page, limit, totalPage, fields);
-                }*/
-
         #region SEARCH PET PROFILE
         public SearchReturnModel SearchPetProfile(SearchPetProfileModel model, Guid centerId)
         {
@@ -223,53 +211,53 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-/*        public List<PetAdoptionRegisterFormModel> GetListPetsToBeRegisteredForAdoption(Guid centerId, PetFilter filter)
+     public List<PetAdoptionRegisterFormModel> GetListPetsToBeRegisteredForAdoption(Guid centerId, PetProfileFilter filter)
         {
-            var petRepo = uow.GetService<IPetProfileRepository>();
+            var petProfileRepo = uow.GetService<IPetProfileRepository>();
             var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
-            var pets = petRepo.Get().Where(s => s.CenterId.Equals(centerId));
-            pets = PetExtensions.GetAdoptionRegistrationByPet(pets, filter);
+            var petProfiles = petProfileRepo.Get().Where(s => s.CenterId.Equals(centerId));
+            petProfiles = PetProfileExtensions.GetAdoptionRegistrationByPet(petProfiles, filter);
             var result = new List<PetAdoptionRegisterFormModel>();
-            foreach (var pet in pets)
+            foreach (var petProfile in petProfiles)
             {
-                var count = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(pet.PetId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
+                var count = adoptionRegisterFormRepo.Get().Where(s => s.PetDocumentId.Equals(petProfile.PetDocumentId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
                 if (count > 0)
                 {
                     result.Add(new PetAdoptionRegisterFormModel
                     {
                         Count = count,
-                        PetId = pet.PetId,
-                        PetName = pet.PetNavigation.PetName,
-                        Age = (int)pet.PetNavigation.PetAge,
-                        BreedName = pet.PetNavigation.PetBreed.PetBreedName,
-                        Gender = pet.PetNavigation.PetGender,
-                        ImageUrl = pet.PetNavigation.ImageUrl
+                        PetId = petProfile.PetDocumentId,
+                        PetName = petProfile.PetName,
+                        Age = (int)petProfile.PetAge,
+                        BreedName = petProfile.PetBreed.PetBreedName,
+                        Gender = petProfile.PetGender,
+                        ImageUrl = petProfile.PetImgUrl
                     });
                 }
             }
             return result;
         }
-        public ListRegisterAdoptionOfPetViewModel GetListAdoptionRegisterFormByPetId(Guid petId)
+        public ListRegisterAdoptionOfPetViewModel GetListAdoptionRegisterFormByPetId(Guid petDocumentId)
         {
-            var petRepo = uow.GetService<IPetRepository>();
+            var petProfileRepo = uow.GetService<IPetProfileRepository>();
             var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
-            var forms = adoptionRegisterFormRepo.Get().Where(s => s.PetId.Equals(petId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
-            var currentPet = petRepo.Get().FirstOrDefault(s => s.PetId.Equals(petId));
+            var forms = adoptionRegisterFormRepo.Get().Where(s => s.PetDocumentId.Equals(petDocumentId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+            var currentPet = petProfileRepo.Get().FirstOrDefault(s => s.PetDocumentId.Equals(petDocumentId));
             var result = new ListRegisterAdoptionOfPetViewModel
             {
                 Pet = new PetModel
                 {
                     CenterId = currentPet.CenterId,
-                    Description = currentPet.PetNavigation.Description,
-                    ImgUrl = currentPet.PetNavigation.ImageUrl,
-                    PetAge = currentPet.PetNavigation.PetAge,
-                    PetBreedId = currentPet.PetNavigation.PetBreedId,
-                    PetBreedName = currentPet.PetNavigation.PetBreed.PetBreedName,
-                    PetFurColorId = currentPet.PetNavigation.PetFurColorId,
-                    PetFurColorName = currentPet.PetNavigation.PetFurColor.PetFurColorName,
-                    PetGender = currentPet.PetNavigation.PetGender,
-                    PetId = currentPet.PetId,
-                    PetName = currentPet.PetNavigation.PetName,
+                    Description = currentPet.PetProfileDescription,
+                    ImgUrl = currentPet.PetImgUrl,
+                    PetAge = currentPet.PetAge,
+                    PetBreedId = currentPet.PetBreedId,
+                    PetBreedName = currentPet.PetBreed.PetBreedName,
+                    PetFurColorId = currentPet.PetFurColorId,
+                    PetFurColorName = currentPet.PetFurColor.PetFurColorName,
+                    PetGender = currentPet.PetGender,
+                    PetId = currentPet.PetDocumentId,
+                    PetName = currentPet.PetName,
                     PetStatus = currentPet.PetStatus,
                 },
                 AdoptionRegisterforms = new List<AdoptionRegistrationFormViewModel>()
@@ -292,14 +280,14 @@ namespace PetRescue.Data.Domains
                     InsertedAt = form.InsertedAt,
                     InsertedBy = form.InsertedBy,
                     Job = form.Job,
-                    UpdateAt = form.UpdateAt,
+                    UpdatedAt = form.UpdatedAt,
                     UpdatedBy = form.UpdatedBy,
                     UserName = form.UserName,
                     Phone = form.Phone,
                 });
             }
             return result;
-        }*/
+        }
 
         #region GET PET BY TYPE NAME
         public List<GetPetByTypeNameModel> GetPetByTypeName()

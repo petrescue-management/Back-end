@@ -97,39 +97,39 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
-        [Authorize(Roles = RoleConstant.MANAGER)]
-        [HttpPost("create-role-volunteer-for-user")]
-        public IActionResult CreateRoleForUser([FromQuery]CreateVolunteerModel model)
-        {
-            try
-            {
-                var _domain = _uow.GetService<UserDomain>();
-                var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _domain.AddUserToCenter(new AddNewRoleModel 
-                {
-                    Email = model.Email,
-                    CenterId = Guid.Parse(_currentCenterId),
-                    RoleName = RoleConstant.VOLUNTEER,
-                    InsertBy = Guid.Parse(_currentUserId),
-                    DoB = model.DoB,
-                    FirstName = model.FirstName,
-                    Gender = model.Gender,
-                    LastName = model.LastName,
-                    Phone = model.Phone,
-                });
-                if (!result.Equals(""))
-                {
-                    return Success(result);
-                }
-                return BadRequest(result);
+        //[Authorize(Roles = RoleConstant.MANAGER)]
+        //[HttpPost("create-role-volunteer-for-user")]
+        //public IActionResult CreateRoleForUser([FromQuery]CreateVolunteerModel model)
+        //{
+        //    try
+        //    {
+        //        var _domain = _uow.GetService<UserDomain>();
+        //        var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+        //        var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+        //        var result = _domain.AddUserToCenter(new AddNewRoleModel 
+        //        {
+        //            Email = model.Email,
+        //            CenterId = Guid.Parse(_currentCenterId),
+        //            RoleName = RoleConstant.VOLUNTEER,
+        //            InsertBy = Guid.Parse(_currentUserId),
+        //            DoB = model.DoB,
+        //            FirstName = model.FirstName,
+        //            Gender = model.Gender,
+        //            LastName = model.LastName,
+        //            Phone = model.Phone,
+        //        });
+        //        if (!result.Equals(""))
+        //        {
+        //            return Success(result);
+        //        }
+        //        return BadRequest(result);
                 
-            }
-            catch (Exception e)
-            {
-                return Error(e.Message);
-            }
-        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return Error(e.Message);
+        //    }
+        //}
         #endregion
         #region DELETE
         [Authorize(Roles = RoleConstant.MANAGER)]

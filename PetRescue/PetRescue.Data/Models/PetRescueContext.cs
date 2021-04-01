@@ -39,7 +39,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=.\\SQLExpress, 1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
+                optionsBuilder.UseSqlServer("Server=petrescue.database.windows.net;Database=PetRescue;Trusted_Connection=False;Encrypt=True;User Id=petrescue;Password=Admin123");
             }
         }
 
@@ -672,6 +672,8 @@ namespace PetRescue.Data.Models
                     .HasColumnName("phone")
                     .HasMaxLength(15)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Status).HasColumnName("status");
             });
         }
     }

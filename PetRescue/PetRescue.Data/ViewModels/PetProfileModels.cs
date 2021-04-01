@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -68,5 +69,20 @@ namespace PetRescue.Data.ViewModels
 
 
         }
+    }
+    public class PetProfileFilter
+    {
+        [JsonProperty("petDocumentId")]
+        public Guid PetDocumentId { get; set; }
+        [JsonProperty("centerId")]
+        public Guid CenterId { get; set; }
+        [JsonProperty("petStatus")]
+        public int PetStatus { get; set; }
+        [JsonProperty("petTypeName")]
+        public string PetTypeName { get; set; }
+        [JsonProperty("petBreedName")]
+        public string PetBreedName { get; set; }
+        [JsonProperty("petFurColorName")]
+        public string PetFurColorName { get; set; }
     }
 }
