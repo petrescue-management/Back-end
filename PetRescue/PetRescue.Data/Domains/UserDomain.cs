@@ -62,7 +62,7 @@ namespace PetRescue.Data.Domains
             }
             
         }
-        public UserProfileViewModel UpdateUserProfile(UserProfileUpdateModel model)
+        public int UpdateUserProfile(UserProfileUpdateModel model)
         {
             var profileRepo = uow.GetService<IUserProfileRepository>();
 
@@ -70,16 +70,14 @@ namespace PetRescue.Data.Domains
             var result = userProfile == null ? profileRepo.Create(model) 
                 : profileRepo.Edit(userProfile, model);
             uow.saveChanges();
-            return new UserProfileViewModel 
+            if(result != null)
             {
-                DoB = result.Dob,
-                FirstName = result.FirstName,
-                Gender= result.Gender,
-                ImgUrl= result.ImageUrl,
-                LastName = result.LastName,
-                Phone = result.Phone,
-                UserId = result.UserId
-            };
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
         }
         public string AddRoleManagerToUser(UserRoleUpdateModel model, Guid insertBy)
         {
@@ -228,7 +226,6 @@ namespace PetRescue.Data.Domains
                     }
                 }
             }
-            uow.saveChanges();
             return result;
         }
         public string[] GetRoleOfUser(Guid userId)
