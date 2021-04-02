@@ -69,25 +69,32 @@ namespace PetRescue.Data.ConstantHelper
 
         public static string ApproveRegistrationVolunteer(string mailto, CenterViewModel model)
         {
-            return "Thư thông báo từ hệ thống cứu hộ chó mèo &emsp; <br/>      &emsp; <br/> &emsp; <br/>      &emsp; <br/>    &emsp; <br/>    &emsp; <br/>      "
-                + ORG_NAME +
-            "&emsp; <br/> Hi, "
-            + mailto +
-            "&emsp; <br/> Chúng tôi đến từ hệ thông cứu hộ chó mèo "
-            + ORG_NAME +
-            "&emsp; <br/> Chúc mừng bạn, bạn đã trở thành một tình nguyện viên của trung tâm "
-            + model.CenterName +
-            "&emsp; <br/> Bạn sẽ phải cần đăng nhập tại ứng dụng "
-            + APP_VOLUNTEER_NAME +
-            "&emsp; <br/> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi &emsp; <br/> Thân ái&emsp; <br/> Mọi thông tin chi tiết xin liên hệ:&emsp; <br/>"
-            + model.CenterName +
-            ", SDT: "
-            + model.Phone +
-            " , địa chỉ : "
-            + model.Address +
-            "&emsp; <br/> Góp ý cho hệ thống qua mail: "
-            + MAIL +
-            ";";
+            return "<!DOCTYPE html><html><head><title></title></head>" +
+                "<body data-new-gr-c-s-loaded='14.1002.0' spellcheck='false'><p style = 'text-align: left;'><strong><span style ='font-size: 22px;'> " +
+                ORG_NAME +
+                " </span></strong></p><p> Hi, " +
+                mailto +
+                " </p><p> Chúng tôi đến từ hệ thống cứu hộ chó mèo<strong> " +
+                ORG_NAME +
+                "</strong></p><p> Chúc mừng bạn, bạn đã trở thành một tình nguyện viên của trung tâm " +
+                model.CenterName +
+                "</p><p> Bạn sẽ phải cần đăng nhập tại ứng dụng<span style= 'color: rgb(44, 130, 201);'> " +
+                APP_VOLUNTEER_NAME +
+                "</span></p><p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi </p>" +
+                "<p> Thân ái </p>" +
+                "<p> --------------------------------------------------</p>" +
+                "<p style  = 'line-height: 1;'><span style = 'font-size: 14px;'>" +
+                " Mọi thông tin chi tiết xin liên hệ :</span></p>" +
+                "<p style = 'line-height: 0.5;' ><span style = 'font-size: 14px;'> " +
+                model.CenterName +
+                "</span></p><p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> SDT: " +
+                model.Phone +
+                " </span></p><p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> Địa chỉ: " +
+                model.Address +
+                "</span></p><p> --------------------------------------------------</p><p>" +
+                "<sub> Góp ý cho hệ thống qua email: " +
+                MAIL +
+                " </sub></p></body></html>";
         }
         public static string RejectRegistrationVolunteer(string mailTo,ReturnVolunteerError error, CenterViewModel model)
         {

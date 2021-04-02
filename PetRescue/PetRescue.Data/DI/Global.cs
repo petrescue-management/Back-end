@@ -49,6 +49,8 @@ namespace PetRescue.Data.DI
                 .AddScoped<IVolunteerRegistrationFormRepository, VolunteerRegistrationFormRepository>()
                 .AddScoped<VolunteerRegistrationFormDomain>()
                 .AddScoped<PetProfileDomain>()
+                .AddScoped<IPetTrackingRepository,PetTrackingRepository>()
+                .AddScoped<PetTrackingDomain>()
                 .AddScoped<IPetDocumentRepository,PetDocumentRepository>()
                 .AddScoped<IMyScopedService, MyScopedService>();
             ;

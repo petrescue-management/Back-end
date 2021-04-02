@@ -66,6 +66,7 @@ namespace PetRescue.Data.ViewModels
         public string ImageUrl { get; set; }
         public int CenterStatus { get; set; }
         public string Phone { get; set; }
+        public string Email { get; set; }
     }
     public class UpdateCenterStatus
     {
