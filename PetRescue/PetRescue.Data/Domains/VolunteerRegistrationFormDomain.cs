@@ -21,6 +21,7 @@ namespace PetRescue.Data.Domains
             var volunteerRegistrationFormRepo = uow.GetService<IVolunteerRegistrationFormRepository>();
             var userRepo = uow.GetService<IUserRepository>();
             var currentUser = userRepo.Get().FirstOrDefault(s => s.UserEmail.Equals(model.Email));
+            var userRoleDomain = uow.GetService<UserRoleDomain>();
             var result = "";
             if(currentUser == null)
             {
@@ -32,11 +33,21 @@ namespace PetRescue.Data.Domains
             {
                 if ((bool)!currentUser.IsBelongToCenter)
                 {
-                    volunteerRegistrationFormRepo.Create(model);
-                    uow.saveChanges();
-                    result = "Success";
+                    if (!userRoleDomain.IsAdmin(model.Email))
+                    {
+                        volunteerRegistrationFormRepo.Create(model);
+                        uow.saveChanges();
+                        result = "Success";
+                    }
+                    else
+                    {
+                        result = "This email is invalid";
+                    }
                 }
-                result = "This email is belong anoter center";
+                else
+                {
+                    result = "This email is belong anoter center";
+                }
             }
             return result;
         }
@@ -80,7 +91,7 @@ namespace PetRescue.Data.Domains
                     };
                     MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationVolunteer(form.Email,centerModel), MailConstant.APPROVE_REGISTRATION_VOLUNTEER);
                     MailExtensions.SendBySendGrid(mailArguments, null, null);
-                    uow.saveChanges();
+                    //uow.saveChanges();
                 }
                 return result;
             }
@@ -101,7 +112,7 @@ namespace PetRescue.Data.Domains
                 if (model.AnotherReason != null)
                     reason += model.AnotherReason + "<br/>";
                 result = "reject";
-                uow.saveChanges();
+                //uow.saveChanges();
                 MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email), MailConstant.REJECT_REGISTRATION_FORM);
                 MailExtensions.SendBySendGrid(mailArguments, null, null);
             }

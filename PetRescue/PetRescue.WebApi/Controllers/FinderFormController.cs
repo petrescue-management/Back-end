@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
@@ -85,8 +87,6 @@ namespace PetRescue.WebApi.Controllers
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result =  _uow.GetService<FinderFormDomain>().CreateFinderForm(model, Guid.Parse(currentUserId), path);
-
-                
                 return Success(result);
             }
             catch (Exception ex)
@@ -95,5 +95,22 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         #endregion
+
+        [Authorize(Roles = RoleConstant.VOLUNTEER)]
+        [HttpGet]
+        [Route("api/get-list-finder-form")]
+        public IActionResult GetListFinderForm()
+        {
+            try
+            {
+                var _domain = _uow.GetService<FinderFormDomain>();
+                var result = _domain.GetAllListFinderForm();
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
     }
 }

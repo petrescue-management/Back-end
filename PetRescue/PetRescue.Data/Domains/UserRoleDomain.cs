@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.Models;
+﻿using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
@@ -39,6 +40,18 @@ namespace PetRescue.Data.Domains
         {
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
             return userRoleRepo.Edit(entity, model);
+        }
+        public bool IsAdmin (string email)
+        {
+            var userRoleRepo = uow.GetService<IUserRoleRepository>();
+            var check = false;
+            var currentUser = userRoleRepo.Get().FirstOrDefault(s => s.User.UserEmail.Equals(email) && s.Role.RoleName.Equals(RoleConstant.ADMIN));
+            if(currentUser != null)
+            {
+                return true;
+            }
+            return false;
+
         }
  
     }

@@ -136,7 +136,7 @@ namespace PetRescue.Data.Domains
                     if (currentUser.CenterId.Equals(model.CenterId) && (bool)currentUser.IsBelongToCenter)
                     {
                         userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
-                        return currentUser.UserId.ToString();
+                        result = currentUser.UserId.ToString();
                     }
                     // if another role isn't existed
                     else
@@ -147,7 +147,7 @@ namespace PetRescue.Data.Domains
                             IsBelongToCenter = true
                         });
                         userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
-                        return currentUser.UserId.ToString();
+                        result =  currentUser.UserId.ToString();
                     }
                 }
                 else
@@ -222,7 +222,7 @@ namespace PetRescue.Data.Domains
                     catch
                     {
                         transaction.Rollback();
-                        return result="This cannot create";
+                        result="This cannot create";
                     }
                 }
             }
@@ -262,7 +262,6 @@ namespace PetRescue.Data.Domains
                             UpdateBy = model.InsertBy
                         });
                         uow.saveChanges();
-                        
                         if (GetRoleOfUser(model.UserId).Length == 0)
                         {
                             userRepo.UpdateUserModel(currentUser, new UserUpdateModel

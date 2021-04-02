@@ -662,6 +662,10 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.Gender).HasColumnName("gender");
 
+                entity.Property(e => e.InsertAt)
+                    .HasColumnName("insert_at")
+                    .HasColumnType("date");
+
                 entity.Property(e => e.LastName)
                     .IsRequired()
                     .HasColumnName("last_name")

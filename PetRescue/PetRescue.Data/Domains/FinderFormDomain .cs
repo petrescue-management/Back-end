@@ -89,12 +89,8 @@ namespace PetRescue.Data.Domains
             };
 
             string json = JsonConvert.SerializeObject(objectJson);
-
             string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
-
             System.IO.File.WriteAllText(FILEPATH, json);
-
-
             var centerService = uow.GetService<CenterDomain>();
             var centers = centerService.GetListCenterLocation();
             var googleMapExtension = new GoogleMapExtensions();
@@ -138,5 +134,31 @@ namespace PetRescue.Data.Domains
             }
         }
         #endregion
+
+        public List<FinderFormDetailModel> GetAllListFinderForm()
+        {
+            var userRepo = uow.GetService<IUserRepository>();
+            var finderFormRepo = uow.GetService<IFinderFormRepository>();
+            var result = new List<FinderFormDetailModel>();
+            var finderForms = finderFormRepo.Get().Where(s => s.FinderFormStatus == FinderFormStatus.PROCESSING);
+            foreach(var finderForm in finderForms)
+            {
+                var finderUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
+                result.Add(new FinderFormDetailModel
+                {
+                    FinderDate = finderForm.InsertedAt,
+                    FinderDescription = finderForm.FinderDescription,
+                    FinderFormId =finderForm.FinderFormId,
+                    FinderFormStatus = finderForm.FinderFormStatus,
+                    FinderImageUrl = finderForm.FinderFormImgUrl,
+                    FinderName = finderUser.UserProfile.FirstName + " " + finderUser.UserProfile.LastName,
+                    Lat = finderForm.Lat,
+                    Lng = finderForm.Lng,
+                    PetAttribute = finderForm.PetAttribute,
+                    phone = finderForm.Phone,
+                });
+            }
+            return result;
+        }
     }
 }
