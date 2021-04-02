@@ -5,6 +5,11 @@ namespace PetRescue.Data.Models
 {
     public partial class PetDocument
     {
+        public PetDocument()
+        {
+            PetProfile = new HashSet<PetProfile>();
+        }
+
         public Guid PetDocumentId { get; set; }
         public Guid FinderFormId { get; set; }
         public Guid PickerFormId { get; set; }
@@ -13,6 +18,6 @@ namespace PetRescue.Data.Models
 
         public virtual FinderForm FinderForm { get; set; }
         public virtual PickerForm PickerForm { get; set; }
-        public virtual PetProfile PetProfile { get; set; }
+        public virtual ICollection<PetProfile> PetProfile { get; set; }
     }
 }

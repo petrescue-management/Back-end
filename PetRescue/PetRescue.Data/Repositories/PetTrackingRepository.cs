@@ -31,7 +31,7 @@ namespace PetRescue.Data.Repositories
                 InsertedBy = insertBy,
                 IsSterilized = model.isSterilized,
                 IsVaccinated = model.isVaccinated,
-                PetDocumentId = model.PetDocumentId,
+                PetProfileId = model.PetDocumentId,
                 PetTrackingImgUrl = model.ImageUrl,
                 Weight = (int)model.Weight,
                 PetTrackingId = Guid.NewGuid()

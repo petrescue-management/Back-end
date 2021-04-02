@@ -29,13 +29,13 @@ namespace PetRescue.Data.Domains
                 .Skip((model.PageIndex - 1) * model.PageSize)
                 .Take(model.PageSize)
                 .Include(a => a.AdoptionRegistration)
-                .ThenInclude(a => a.PetDocument)
-                .Where(a => a.AdoptionRegistration.PetDocument.CenterId.Equals(Guid.Parse(currentCenterId)))
+                .ThenInclude(a => a.PetProfile)
+                .Where(a => a.AdoptionRegistration.PetProfile.CenterId.Equals(Guid.Parse(currentCenterId)))
                 .Select(a => new AdoptionModel
                 {
                     AdoptionRegistrationId = a.AdoptionRegistrationId,
                     Owner = userService.GetUserById(a.AdoptionRegistration.InsertedBy),
-                    PetProfile = petProfileService.GetPetProfileById(a.AdoptionRegistration.PetDocumentId),
+                    PetProfile = petProfileService.GetPetProfileById(a.AdoptionRegistration.PetProfileId),
                     AdoptionStatus = a.AdoptionStatus,
                     AdoptedAt = a.AdoptedAt,
                     ReturnedAt = a.ReturnedAt
@@ -67,7 +67,7 @@ namespace PetRescue.Data.Domains
             {
                 AdoptionRegistrationId = id,
                 Owner = userService.GetUserById(form.InsertedBy),
-                PetProfile = petProfileService.GetPetProfileById(form.PetDocumentId),
+                PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
                 AdoptionStatus = adoption.AdoptionStatus,
                 AdoptedAt = adoption.AdoptedAt,
                 ReturnedAt = adoption.ReturnedAt
@@ -88,7 +88,7 @@ namespace PetRescue.Data.Domains
             {
                 AdoptionRegistrationId = model.Id,
                 Owner = userService.GetUserById(form.InsertedBy),
-                PetProfile = petProfileService.GetPetProfileById(form.PetDocumentId),
+                PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
                 AdoptionStatus = adoption.AdoptionStatus,
                 AdoptedAt = adoption.AdoptedAt,
                 ReturnedAt = adoption.ReturnedAt

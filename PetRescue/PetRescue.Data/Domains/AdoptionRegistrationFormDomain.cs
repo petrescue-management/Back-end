@@ -27,13 +27,13 @@ namespace PetRescue.Data.Domains
 
             List<AdoptionRegistrationFormModel> result = new List<AdoptionRegistrationFormModel>();
             foreach (var record in records.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize)
-                  .Where(f => f.PetDocument.CenterId.Equals(Guid.Parse(currentCenterId))))
+                  .Where(f => f.PetProfile.CenterId.Equals(Guid.Parse(currentCenterId))))
             {
                 
                 result.Add(new AdoptionRegistrationFormModel
                 {
                     AdoptionRegistrationId = record.AdoptionRegistrationId,
-                    PetProfile = petProfileService.GetPetProfileById(record.PetDocumentId),
+                    PetProfile = petProfileService.GetPetProfileById(record.PetProfileId),
                     UserName = record.UserName,
                     Phone = record.Phone,
                     Email = record.Email,
@@ -77,7 +77,7 @@ namespace PetRescue.Data.Domains
             var result = new AdoptionRegistrationFormModel
             {
                 AdoptionRegistrationId = form.AdoptionRegistrationId,
-                PetProfile = petProfileService.GetPetProfileById(form.PetDocumentId),
+                PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
                 UserName = form.UserName,
                 Phone = form.Phone,
                 Email = form.Email,
@@ -110,7 +110,7 @@ namespace PetRescue.Data.Domains
             var result = new AdoptionRegistrationFormModel
             {
                 AdoptionRegistrationId = form.AdoptionRegistrationId,
-                PetProfile = petProfileService.GetPetProfileById(form.PetDocumentId),
+                PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
                 UserName = form.UserName,
                 Phone = form.Phone,
                 Email = form.Email,
@@ -129,13 +129,13 @@ namespace PetRescue.Data.Domains
                 UpdatedBy = form.UpdatedBy,
                 UpdatedAt = form.UpdatedAt
             };
-            var currentPet = petProfileService.Get().FirstOrDefault(s => s.PetDocumentId.Equals(form.PetDocumentId));
+            var currentPet = petProfileService.Get().FirstOrDefault(s => s.PetDocumentId.Equals(form.PetProfileId));
             if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED)
             {
                 adoptionService.CreateAdoption(result);
                 currentPet.PetStatus = PetStatusConst.ADOPTED;
                 petProfileService.Update(currentPet);
-                var listAdoptionForm = adoptionRegistrationFormService.Get().Where(s => s.PetDocumentId.Equals(form.PetDocumentId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+                var listAdoptionForm = adoptionRegistrationFormService.Get().Where(s => s.PetProfileId.Equals(form.PetProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
                 foreach(var adoptionForm in listAdoptionForm)
                 {
                     adoptionForm.AdoptionRegistrationStatus = AdoptionRegistrationFormStatusConst.REJECTED;
@@ -155,7 +155,7 @@ namespace PetRescue.Data.Domains
             var result = new AdoptionRegistrationFormModel
             {
                 AdoptionRegistrationId = form.AdoptionRegistrationId,
-                PetProfile = petProfileService.GetPetProfileById(form.PetDocumentId),
+                PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
                 UserName = form.UserName,
                 Phone = form.Phone,
                 Email = form.Email,
@@ -189,7 +189,7 @@ namespace PetRescue.Data.Domains
                 result.Add(new AdoptionRegistrationFormModel
                 {
                     AdoptionRegistrationId = adoptionForm.AdoptionRegistrationId,
-                    PetProfile = petRepo.GetPetProfileById(adoptionForm.PetDocumentId),
+                    PetProfile = petRepo.GetPetProfileById(adoptionForm.PetProfileId),
                     UserName = adoptionForm.UserName,
                     Phone = adoptionForm.Phone,
                     Email = adoptionForm.Email,

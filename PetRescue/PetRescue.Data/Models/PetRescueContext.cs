@@ -39,7 +39,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=petrescue.database.windows.net;Database=PetRescue;Trusted_Connection=False;Encrypt=True;User Id=petrescue;Password=Admin123");
+                optionsBuilder.UseSqlServer("Server=.\\SQLExpress, 1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
             }
         }
 
@@ -132,7 +132,7 @@ namespace PetRescue.Data.Models
                     .HasColumnName("job")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.PetDocumentId).HasColumnName("pet_document_id");
+                entity.Property(e => e.PetProfileId).HasColumnName("pet_profile_id");
 
                 entity.Property(e => e.Phone)
                     .IsRequired()
@@ -151,9 +151,9 @@ namespace PetRescue.Data.Models
                     .HasColumnName("user_name")
                     .HasMaxLength(50);
 
-                entity.HasOne(d => d.PetDocument)
+                entity.HasOne(d => d.PetProfile)
                     .WithMany(p => p.AdoptionRegistrationForm)
-                    .HasForeignKey(d => d.PetDocumentId)
+                    .HasForeignKey(d => d.PetProfileId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AdoptionRegistrationForm_PetProfile");
             });
@@ -393,11 +393,9 @@ namespace PetRescue.Data.Models
 
             modelBuilder.Entity<PetProfile>(entity =>
             {
-                entity.HasKey(e => e.PetDocumentId);
-
-                entity.Property(e => e.PetDocumentId)
-                    .HasColumnName("pet_document_id")
-                    .HasDefaultValueSql("(newid())");
+                entity.Property(e => e.PetProfileId)
+                    .HasColumnName("pet_profile_id")
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.CenterId).HasColumnName("center_id");
 
@@ -411,6 +409,10 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.PetAge).HasColumnName("pet_age");
 
                 entity.Property(e => e.PetBreedId).HasColumnName("pet_breed_id");
+
+                entity.Property(e => e.PetDocumentId)
+                    .HasColumnName("pet_document_id")
+                    .HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.PetFurColorId).HasColumnName("pet_fur_color_id");
 
@@ -449,8 +451,8 @@ namespace PetRescue.Data.Models
                     .HasConstraintName("FK_PetProfile_PetBreed1");
 
                 entity.HasOne(d => d.PetDocument)
-                    .WithOne(p => p.PetProfile)
-                    .HasForeignKey<PetProfile>(d => d.PetDocumentId)
+                    .WithMany(p => p.PetProfile)
+                    .HasForeignKey(d => d.PetDocumentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PetProfile_PetDocument");
 
@@ -481,7 +483,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.IsVaccinated).HasColumnName("is_vaccinated");
 
-                entity.Property(e => e.PetDocumentId).HasColumnName("pet_document_id");
+                entity.Property(e => e.PetProfileId).HasColumnName("pet_profile_id");
 
                 entity.Property(e => e.PetTrackingImgUrl)
                     .HasColumnName("pet_tracking_img_url")
@@ -489,9 +491,9 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.Weight).HasColumnName("weight");
 
-                entity.HasOne(d => d.PetDocument)
+                entity.HasOne(d => d.PetProfile)
                     .WithMany(p => p.PetTracking)
-                    .HasForeignKey(d => d.PetDocumentId)
+                    .HasForeignKey(d => d.PetProfileId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PetTracking_PetProfile");
             });
@@ -516,7 +518,8 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
-                    .HasColumnType("date");
+                    .HasColumnType("date")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
 

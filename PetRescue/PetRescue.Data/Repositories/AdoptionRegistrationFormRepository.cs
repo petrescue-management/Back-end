@@ -31,7 +31,7 @@ namespace PetRescue.Data.Repositories
                 .Select(f => new AdoptionRegistrationForm
                 {
                     AdoptionRegistrationId = f.AdoptionRegistrationId,
-                    PetDocumentId = f.PetDocumentId,
+                    PetProfileId = f.PetProfileId,
                     UserName = f.UserName,
                     Phone = f.Phone,
                     Email = f.Email,
@@ -63,7 +63,7 @@ namespace PetRescue.Data.Repositories
                   .Select(f => new AdoptionRegistrationForm
                   {
                       AdoptionRegistrationId = f.AdoptionRegistrationId,
-                      PetDocumentId = f.PetDocumentId,
+                      PetProfileId = f.PetProfileId,
                       UserName = f.UserName,
                       Phone = f.Phone,
                       Email = f.Email,
@@ -102,7 +102,7 @@ namespace PetRescue.Data.Repositories
             var form = new AdoptionRegistrationForm
             {
                 AdoptionRegistrationId = Guid.NewGuid(),
-                PetDocumentId = model.PetDocumentId,
+                PetProfileId = model.PetDocumentId,
                 UserName = model.UserName,
                 Phone = model.Phone,
                 Email = model.Email,

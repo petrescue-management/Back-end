@@ -219,7 +219,7 @@ namespace PetRescue.Data.Domains
             var result = new List<PetAdoptionRegisterFormModel>();
             foreach (var petProfile in petProfiles)
             {
-                var count = adoptionRegisterFormRepo.Get().Where(s => s.PetDocumentId.Equals(petProfile.PetDocumentId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
+                var count = adoptionRegisterFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetDocumentId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
                 if (count > 0)
                 {
                     result.Add(new PetAdoptionRegisterFormModel
@@ -240,7 +240,7 @@ namespace PetRescue.Data.Domains
         {
             var petProfileRepo = uow.GetService<IPetProfileRepository>();
             var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
-            var forms = adoptionRegisterFormRepo.Get().Where(s => s.PetDocumentId.Equals(petDocumentId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+            var forms = adoptionRegisterFormRepo.Get().Where(s => s.PetProfileId.Equals(petDocumentId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
             var currentPet = petProfileRepo.Get().FirstOrDefault(s => s.PetDocumentId.Equals(petDocumentId));
             var result = new ListRegisterAdoptionOfPetViewModel
             {

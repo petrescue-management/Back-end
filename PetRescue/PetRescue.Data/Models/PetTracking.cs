@@ -6,7 +6,7 @@ namespace PetRescue.Data.Models
     public partial class PetTracking
     {
         public Guid PetTrackingId { get; set; }
-        public Guid PetDocumentId { get; set; }
+        public Guid PetProfileId { get; set; }
         public string Description { get; set; }
         public int Weight { get; set; }
         public bool? IsVaccinated { get; set; }
@@ -15,6 +15,6 @@ namespace PetRescue.Data.Models
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
 
-        public virtual PetProfile PetDocument { get; set; }
+        public virtual PetProfile PetProfile { get; set; }
     }
 }
