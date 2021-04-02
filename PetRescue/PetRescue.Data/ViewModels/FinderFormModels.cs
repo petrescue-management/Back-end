@@ -27,7 +27,6 @@ namespace PetRescue.Data.ViewModels
         public double Lng { get; set; }
         public string FinderFormImgUrl { get; set; }
         public int PetAttribute { get; set; }
-        public int FinderFormStatus { get; set; }
         public string Phone { get; set; }
     }
 }

@@ -126,8 +126,7 @@ namespace PetRescue.Data.Domains
                     LastName = form.LastName,
                     Phone = form.Phone,
                     Status = form.Status,
-                    FormId = form.VolunteerRegistrationFormId,
-                    InsertAt = form.InsertAt
+                    FormId = form.VolunteerRegistrationFormId
                 });
             }
             return result;
