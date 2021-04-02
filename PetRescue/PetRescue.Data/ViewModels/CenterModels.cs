@@ -51,7 +51,6 @@ namespace PetRescue.Data.ViewModels
         public double Lat { get; set; }
         public double Lng { get; set; }
     }
-
     public class CenterStatistic
     {
         public int RescueCase { get; set; }
@@ -66,5 +65,10 @@ namespace PetRescue.Data.ViewModels
         public string Address { get; set; }
         public string ImageUrl { get; set; }
         public int CenterStatus { get; set; }
+        public string Phone { get; set; }
+    }
+    public class UpdateCenterStatus
+    {
+        public int Status { get; set; }
     }
 }

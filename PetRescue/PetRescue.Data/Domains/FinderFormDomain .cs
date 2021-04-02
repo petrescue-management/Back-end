@@ -114,19 +114,16 @@ namespace PetRescue.Data.Domains
                     listCenterId.Add(records[0].CenterId);
                 }
             }
-
             uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listCenterId);
             uow.saveChanges();
 
             if (DateTime.UtcNow >= currentTime.AddMinutes(2))
             {
-                if(finderFormService.GetFinderFormById(finderForm.FinderFormId).FinderFormStatus == 1)
+                if (finderFormService.GetFinderFormById(finderForm.FinderFormId).FinderFormStatus == 1)
                 {
 
                 }
             }
-
-
             return finderForm;
         }
 
