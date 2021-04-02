@@ -97,15 +97,15 @@ namespace PetRescue.WebApi.Controllers
         //[Authorize(Roles =RoleConstant.ADMIN)]
         [HttpGet]
         [Route("api/get-statistic-about-center")]
-        public IActionResult GetStatisticAboutCenter([FromQuery]Guid centerId)
+        public IActionResult GetStatisticAboutCenter([FromQuery] Guid centerId)
         {
-            try 
+            try
             {
                 var _domain = _uow.GetService<CenterDomain>();
                 var result = _domain.GetStatisticAboutCenter(centerId);
                 return Success(result);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Error(ex.Message);
             }
@@ -121,6 +121,27 @@ namespace PetRescue.WebApi.Controllers
                 return Success(result);
             }
             catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpPut]
+        [Route("api/change-status-of-center")]
+        public IActionResult ChangeStatusOfCenter([FromBody]UpdateCenterStatus model)
+        {
+            try
+            {
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var _domain = _uow.GetService<CenterDomain>();
+                var result = _domain.ChangeStateOfCenter(model, Guid.Parse(currentCenterId));
+                if(result == 1)
+                {
+                    return Success(result);
+                }
+                return BadRequest(result);
+            }
+            catch(Exception ex)
             {
                 return Error(ex.Message);
             }

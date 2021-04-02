@@ -165,5 +165,18 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
+
+        public int ChangeStateOfCenter(UpdateCenterStatus model, Guid centerId)
+        {
+            var centerRepo = uow.GetService<ICenterRepository>();
+            var center = centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId));
+            center.CenterStatus = model.Status;
+            var result = centerRepo.Update(center).Entity;
+            if(result != null)
+            {
+                return 1;
+            }
+            return 0;
+        }
     }
 }

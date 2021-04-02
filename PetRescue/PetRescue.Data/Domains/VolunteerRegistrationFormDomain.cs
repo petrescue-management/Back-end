@@ -44,6 +44,7 @@ namespace PetRescue.Data.Domains
         {
             var volunteerRegistrationFormRepo = uow.GetService<IVolunteerRegistrationFormRepository>();
             var userDomain = uow.GetService<UserDomain>();
+            var centerRepo = uow.GetService<ICenterRepository>();
             var form = volunteerRegistrationFormRepo.Get().FirstOrDefault(s => s.VolunteerRegistrationFormId.Equals(model.VolunteerRegistrationFormId));
             var formData = volunteerRegistrationFormRepo.Edit(form, model);
             var result = "";
@@ -70,7 +71,14 @@ namespace PetRescue.Data.Domains
                         item.Status = VolunteerRegistrationFormConst.REJECT;
                         volunteerRegistrationFormRepo.Update(item);
                     }
-                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(form.Email), MailConstant.APPROVE_REGISTRATION_FORM);
+                    var center = centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(form.CenterId));
+                    var centerModel = new CenterViewModel
+                    {
+                        Address = center.Address,
+                        CenterName = center.CenterName,
+                        Phone = center.Phone,
+                    };
+                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationVolunteer(form.Email,centerModel), MailConstant.APPROVE_REGISTRATION_VOLUNTEER);
                     MailExtensions.SendBySendGrid(mailArguments, null, null);
                     uow.saveChanges();
                 }
@@ -78,6 +86,20 @@ namespace PetRescue.Data.Domains
             }
             else
             {
+                var center = centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(form.CenterId));
+                var centerModel = new CenterViewModel
+                {
+                    Address = center.Address,
+                    CenterName = center.CenterName,
+                    Phone = center.Phone,
+                };
+                var reason = "";
+                if (model.IsEmail)
+                    reason += ErrorConst.ErrorEmail;
+                if (model.IsPhone)
+                    reason += ErrorConst.ErrorPhone;
+                if (model.AnotherReason != null)
+                    reason += model.AnotherReason + "<br/>";
                 result = "reject";
                 uow.saveChanges();
                 MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email), MailConstant.REJECT_REGISTRATION_FORM);
@@ -91,6 +113,7 @@ namespace PetRescue.Data.Domains
             var listForm = volunteerRegistrationFormRepo.Get().Where(s => s.CenterId.Equals(centerId) && s.Status == VolunteerRegistrationFormConst.PROCESSING).ToList();
             var result = new VolunteerViewModel();
             result.Count = listForm.Count();
+            result.List = new List<VolunteerRegistrationFormViewModel>();
             foreach(var form in listForm)
             {
                 result.List.Add(new VolunteerRegistrationFormViewModel
@@ -102,7 +125,9 @@ namespace PetRescue.Data.Domains
                     Gender = form.Gender,
                     LastName = form.LastName,
                     Phone = form.Phone,
-                    Status = form.Status
+                    Status = form.Status,
+                    FormId = form.VolunteerRegistrationFormId,
+                    InsertAt = form.InsertAt
                 });
             }
             return result;

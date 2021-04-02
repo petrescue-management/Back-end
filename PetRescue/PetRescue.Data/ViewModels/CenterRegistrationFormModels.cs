@@ -32,4 +32,14 @@ namespace PetRescue.Data.ViewModels
         public string Description { get; set; }
         public string ImageUrl { get; set; } 
     }
+    public class CenterRegistrationFormUpdateModel
+    {
+        public Guid CenterRegistrationFormId { get; set; }
+        public int Status { get; set; }
+        public bool IsEmail { get; set; }
+        public bool IsPhone { get; set; }
+        public bool IsAddress { get; set; }
+        public bool IsName { get; set; }
+        public string AnotherReason { get; set; }
+    }
 }

@@ -18,6 +18,10 @@ namespace PetRescue.Data.ViewModels
     {
         public Guid VolunteerRegistrationFormId { get; set; }
         public int Status { get; set; }
+        public bool IsEmail { get; set; }
+        public bool IsPhone { get; set; }
+        public bool IsName { get; set; }
+        public string AnotherReason { get; set; }
     }
     public class VolunteerViewModel
     {
@@ -34,5 +38,7 @@ namespace PetRescue.Data.ViewModels
         public string Email { get; set; }
         public Guid CenterId { get; set; }
         public int Status { get; set; }
+        public Guid FormId { get; set; }
+        public DateTime InsertAt { get; set; }
     }
 }
