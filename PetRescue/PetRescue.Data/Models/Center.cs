@@ -16,13 +16,13 @@ namespace PetRescue.Data.Models
         public double? Lng { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
-        public string ImageUrl { get; set; }
+        public string CenterImgUrl { get; set; }
         public int CenterStatus { get; set; }
-        public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
+        public virtual CenterRegistrationForm CenterNavigation { get; set; }
         public virtual ICollection<PetProfile> PetProfile { get; set; }
     }
 }

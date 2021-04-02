@@ -74,7 +74,7 @@ namespace PetRescue.Data.ConstantHelper
                 ORG_NAME +
                 " </span></strong></p><p> Hi, " +
                 mailto +
-                " </p><p> Chúng tôi đến từ hệ thống cứu hộ chó mèo<strong> " +
+                " </p><p> Chúng tôi đến từ hệ thống cứu hộ <strong> " +
                 ORG_NAME +
                 "</strong></p><p> Chúc mừng bạn, bạn đã trở thành một tình nguyện viên của trung tâm " +
                 model.CenterName +
@@ -92,9 +92,8 @@ namespace PetRescue.Data.ConstantHelper
                 " </span></p><p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> Địa chỉ: " +
                 model.Address +
                 "</span></p><p> --------------------------------------------------</p><p>" +
-                "<sub> Góp ý cho hệ thống qua email: " +
-                MAIL +
-                " </sub></p></body></html>";
+                "<p style='line-height: 0.1;'><sub>Hệ Thống Cứu Hộ RescueMe</sub></p><p style = 'line-height: 0.2;'><sub> Góp ý cho hệ thống qua mail: " +
+                MAIL +" </sub></p></body></html>";
         }
         public static string RejectRegistrationVolunteer(string mailTo,ReturnVolunteerError error, CenterViewModel model)
         {

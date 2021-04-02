@@ -61,7 +61,6 @@ namespace PetRescue.Data.Repositories
                 CenterAddress = model.CenterAddress,
                 Description = model.Description,
                 CenterRegistrationStatus = 1,
-                UpdatedBy = null,
                 UpdatedAt = null,
                 ImageUrl = model.ImageUrl
             };
@@ -93,7 +92,6 @@ namespace PetRescue.Data.Repositories
                       CenterAddress = r.CenterAddress,
                       Description = r.Description,
                       CenterRegistrationStatus = model.Status,
-                      UpdatedBy = updateBy,
                       UpdatedAt = null,
                       ImageUrl = r.ImageUrl
                   }).FirstOrDefault();

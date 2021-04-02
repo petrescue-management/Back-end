@@ -44,7 +44,7 @@ namespace PetRescue.Data.Repositories
                     Phone = c.Phone,
                     InsertedAt = c.InsertedAt,
                     UpdatedAt = c.UpdatedAt,
-                    ImageUrl = c.ImageUrl
+                    ImageUrl = c.CenterImgUrl
                 }).FirstOrDefault();
 
             return result;
@@ -65,11 +65,10 @@ namespace PetRescue.Data.Repositories
                     Lat = c.Lat,
                     Lng = c.Lng,
                     Phone = c.Phone,
-                    InsertedBy = c.InsertedBy,
                     InsertedAt = c.InsertedAt,
                     UpdatedBy = updatedBy,
                     UpdatedAt = DateTime.Now,
-                    ImageUrl = c.ImageUrl
+                    CenterImgUrl = c.CenterImgUrl
                 }).FirstOrDefault();
 
             return center;
@@ -91,7 +90,6 @@ namespace PetRescue.Data.Repositories
               .Where(c => c.CenterId.Equals(model.CenterId))
                .Select(c => new Center
                {
-                   InsertedBy = c.InsertedBy,
                    InsertedAt = c.InsertedAt
                }).FirstOrDefault();
 
@@ -102,11 +100,10 @@ namespace PetRescue.Data.Repositories
                 Address = model.Address,
                 CenterStatus = model.CenterStatus,
                 Phone = model.Phone,
-                InsertedBy = old_center.InsertedBy,
                 InsertedAt = old_center.InsertedAt,
                 UpdatedBy = updateBy,
                 UpdatedAt = DateTime.Now,
-                ImageUrl = old_center.ImageUrl
+                CenterImgUrl = old_center.CenterImgUrl
             };
 
             return update_center;
@@ -136,10 +133,9 @@ namespace PetRescue.Data.Repositories
                 Lat = model.Lat,
                 Lng = model.Lng,
                 InsertedAt = DateTime.Now,
-                InsertedBy = insertedBy,
                 UpdatedBy = null,
                 UpdatedAt = null,
-                ImageUrl = model.ImageUrl
+                CenterImgUrl = model.ImageUrl
             };
             return center;
         }

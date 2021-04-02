@@ -102,7 +102,9 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var _domain = _uow.GetService<CenterDomain>();
-                var result = _domain.GetStatisticAboutCenter(centerId);
+                //var 
+                //var result = _domain.GetStatisticAboutCenter(centerId);
+                var result = "";
                 return Success(result);
             }
             catch (Exception ex)
