@@ -214,7 +214,8 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var _domain = _uow.GetService<PetProfileDomain>();
-                var result = _domain.GetDocumentPetById(petDocumentId);
+                //var result = _domain.GetDocumentPetById(petDocumentId);
+                var result = "";
                 return Success(result);
             }catch(Exception ex)
             {

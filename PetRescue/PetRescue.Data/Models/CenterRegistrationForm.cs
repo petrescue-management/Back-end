@@ -15,7 +15,9 @@ namespace PetRescue.Data.Models
         public string Description { get; set; }
         public int CenterRegistrationStatus { get; set; }
         public string ImageUrl { get; set; }
-        public Guid? UpdatedBy { get; set; }
+        public DateTime InsertedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
+        public virtual Center Center { get; set; }
     }
 }

@@ -42,8 +42,6 @@ namespace PetRescue.Data.Domains
                     Phone = f.Phone,
                     InsertedBy = f.InsertedBy,
                     InsertedAt = f.InsertedAt,
-                    UpdatedBy = f.UpdatedBy,
-                    UpdatedAt = f.UpdatedAt
                 }).ToList();
             return new SearchReturnModel
             {

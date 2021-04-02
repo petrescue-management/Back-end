@@ -40,8 +40,6 @@ namespace PetRescue.Data.Repositories
                 Phone = model.Phone,
                 InsertedBy = insertedBy,
                 InsertedAt = DateTime.UtcNow,
-                UpdatedBy = null,
-                UpdatedAt = null
             };
             return finderForm;
         }
@@ -65,8 +63,6 @@ namespace PetRescue.Data.Repositories
                 Phone = finderForm.Phone,
                 InsertedBy = finderForm.InsertedBy,
                 InsertedAt = finderForm.InsertedAt,
-                UpdatedBy = finderForm.UpdatedBy,
-                UpdatedAt = finderForm.UpdatedAt
             };
             return result;
 
@@ -90,8 +86,6 @@ namespace PetRescue.Data.Repositories
                     Phone = f.Phone,
                     InsertedBy = f.InsertedBy,
                     InsertedAt = f.InsertedAt,
-                    UpdatedBy = f.UpdatedBy,
-                    UpdatedAt = f.UpdatedAt
                 }).FirstOrDefault();
             return result;
         }
@@ -114,8 +108,6 @@ namespace PetRescue.Data.Repositories
                         Phone = f.Phone,
                         InsertedBy = f.InsertedBy,
                         InsertedAt = f.InsertedAt,
-                        UpdatedBy = updatedBy,
-                        UpdatedAt = DateTime.UtcNow
                     }).FirstOrDefault();
 
             return finderForm;
@@ -140,8 +132,6 @@ namespace PetRescue.Data.Repositories
                         Phone = f.Phone,
                         InsertedBy = f.InsertedBy,
                         InsertedAt = f.InsertedAt,
-                        UpdatedBy = f.UpdatedBy,
-                        UpdatedAt = f.UpdatedAt
                     }).FirstOrDefault();
             
             return result;

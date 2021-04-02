@@ -108,17 +108,17 @@ namespace PetRescue.Data.Domains
             return center.CenterId.ToString();
         }
 
-        public CenterStatistic GetStatisticAboutCenter(Guid centerId)
-        {
-            var centerRepo = uow.GetService<ICenterRepository>();
-            var finderFormService = uow.GetService<IFinderFormRepository>();
-            var petProfileService = uow.GetService<IPetProfileRepository>();
-            var result = new CenterStatistic();
-            result.RescueCase = finderFormService.Get().Where(s => s.PetDocument.PetDocumentNavigation.CenterId.Equals(centerId)).Count();
-            result.PetFindTheOwner = petProfileService.Get().Where(s => s.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
-            result.PetAdoption = petProfileService.Get().Where(s => s.PetStatus == PetStatusConst.ADOPTED).Count();
-            return result;
-        }
+        //public CenterStatistic GetStatisticAboutCenter(Guid centerId)
+        //{
+        //    var centerRepo = uow.GetService<ICenterRepository>();
+        //    var finderFormService = uow.GetService<IFinderFormRepository>();
+        //    var petProfileService = uow.GetService<IPetProfileRepository>();
+        //    var result = new CenterStatistic();
+        //    result.RescueCase = finderFormService.Get().Where(s => s.PetDocument.PetDocumentNavigation.CenterId.Equals(centerId)).Count();
+        //    result.PetFindTheOwner = petProfileService.Get().Where(s => s.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
+        //    result.PetAdoption = petProfileService.Get().Where(s => s.PetStatus == PetStatusConst.ADOPTED).Count();
+        //    return result;
+        //}
         #endregion
         public List<CenterLocationModel> GetListCenterLocation()
         {
@@ -160,7 +160,7 @@ namespace PetRescue.Data.Domains
                     CenterId = center.CenterId,
                     CenterName = center.CenterName,
                     CenterStatus = center.CenterStatus,
-                    ImageUrl = center.ImageUrl
+                    ImageUrl = center.CenterImgUrl
                 });
             }
             return result;

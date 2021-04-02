@@ -15,8 +15,6 @@ namespace PetRescue.Data.Models
         public string Phone { get; set; }
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
-        public Guid? UpdatedBy { get; set; }
-        public DateTime? UpdatedAt { get; set; }
 
         public virtual PetDocument PetDocument { get; set; }
     }

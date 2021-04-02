@@ -12,7 +12,7 @@ namespace PetRescue.Data.Models
         public int PetAttribute { get; set; }
 
         public virtual FinderForm FinderForm { get; set; }
-        public virtual PetProfile PetDocumentNavigation { get; set; }
         public virtual PickerForm PickerForm { get; set; }
+        public virtual PetProfile PetProfile { get; set; }
     }
 }

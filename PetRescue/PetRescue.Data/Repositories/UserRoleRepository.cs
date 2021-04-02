@@ -34,8 +34,6 @@ namespace PetRescue.Data.Repositories
         public UserRole Edit(UserRole entity,  UserRoleUpdateEntityModel model)
         {
             entity.IsActive = model.IsActive;
-            entity.UpdateAt = DateTime.UtcNow;
-            entity.UpdateBy = model.UpdateBy;
             return Update(entity).Entity;
         }
 
@@ -56,10 +54,9 @@ namespace PetRescue.Data.Repositories
             {
                 UserId = userId,
                 RoleId = roleId,
-                InsertedBy = insertBy,
                 InsertedAt = DateTime.Now,
-                UpdateAt = null,
-                UpdateBy = null,
+                UpdatedAt = null,
+
                 IsActive = true
             };
             return userRole; 
