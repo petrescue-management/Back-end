@@ -13,6 +13,7 @@ namespace PetRescue.Data.ViewModels
         public int Gender { get; set; }
         public string Email { get; set; }
         public Guid CenterId { get; set; }
+        public string ImageUrl { get; set; }
     }
     public class VolunteerRegistrationFormUpdateModel
     {
@@ -40,5 +41,7 @@ namespace PetRescue.Data.ViewModels
         public int Status { get; set; }
         public Guid FormId { get; set; }
         public DateTime InsertAt { get; set; }
+        public string ImageUrl { get; set; }
+        public Guid VolunteerRegistrationFormId { get; set; }
     }
 }

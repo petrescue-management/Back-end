@@ -42,4 +42,9 @@ namespace PetRescue.Data.ViewModels
         public bool IsName { get; set; }
         public string AnotherReason { get; set; }
     }
+    public class CenterRegistrationFormViewModel
+    {
+        public string Email { get; set; }
+        public string CenterName { get; set; }
+    }
 }

@@ -36,7 +36,9 @@ namespace PetRescue.Data.Repositories
                 LastName = model.LastName,
                 Phone = model.Phone,
                 VolunteerRegistrationFormStatus = VolunteerRegistrationFormConst.PROCESSING,
-                VolunteerRegistrationFormId = Guid.NewGuid()
+                VolunteerRegistrationFormId = Guid.NewGuid(),
+                InsertedAt = DateTime.UtcNow,
+                VolunteerRegistrationFormImageUrl = model.ImageUrl
             };
             return form;
         }
