@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.ConstantHelper;
+﻿using FirebaseAdmin.Messaging;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PetRescue.Data.Domains
 {
@@ -16,16 +18,27 @@ namespace PetRescue.Data.Domains
         public VolunteerRegistrationFormDomain(IUnitOfWork uow) : base(uow)
         {
         }
-        public string Create(VolunteerRegistrationFormCreateModel model)
+        public async Task<string> Create(VolunteerRegistrationFormCreateModel model, string path)
         {
             var volunteerRegistrationFormRepo = uow.GetService<IVolunteerRegistrationFormRepository>();
             var userRepo = uow.GetService<IUserRepository>();
             var currentUser = userRepo.Get().FirstOrDefault(s => s.UserEmail.Equals(model.Email));
             var userRoleDomain = uow.GetService<UserRoleDomain>();
+            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             var result = "";
             if(currentUser == null)
             {
                 volunteerRegistrationFormRepo.Create(model);
+                var tokens = notificationTokenDomain.FindDeviceTokenByApplicationNameAndRoleNameAndCenterId(ApplicationNameHelper.MANAGE_CENTER_APP, RoleConstant.MANAGER, model.CenterId);
+                Message message = new Message
+                {
+                    Notification = new Notification
+                    {
+                        Title = NotificationTitleHelper.NEW_VOLUNTEER_FORM_TITLE,
+                        Body = NotificationBodyHelper.NEW_VOLUNTEER_FORM_BODY
+                    }
+                };
+                await notificationTokenDomain.NofiticationForDeviceToken(path, tokens, message);
                 uow.saveChanges();
                 result = "Success";
             }

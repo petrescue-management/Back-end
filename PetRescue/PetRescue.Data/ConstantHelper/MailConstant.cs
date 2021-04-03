@@ -73,7 +73,6 @@ namespace PetRescue.Data.ConstantHelper
                                 "</body>" +
                 "</html>";
         }
-
         public static string ApproveRegistrationVolunteer(string mailto, CenterViewModel model)
         {
             return "<!DOCTYPE html><html><head><title></title></head>" +

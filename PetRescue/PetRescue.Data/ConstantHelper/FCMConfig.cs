@@ -27,17 +27,21 @@ namespace PetRescue.Data.ConstantHelper
     }
     public class NotificationTitleHelper
     {
-        public const string NEW_REGISTRATION_CENTER_FORM_TITLE = "You have a new center registration";
-        public const string NEW_REGISTRATON_ADOPTION_FORM_TITLE = "You have a new adoption registration";
-        public const string APPROVE_ADOPTION_FORM_TITLE = "You have new adoption pet";
-        public const string NEW_RESCUE_FORM_TITLE = "You have a new Rescue Form";
+        public const string NEW_REGISTRATION_CENTER_FORM_TITLE = "Bạn có thông báo đăng ký trung tâm";
+        public const string NEW_REGISTRATON_ADOPTION_FORM_TITLE = "Bạn có thông báo đăng ký nhận nuôi thú cưng";
+        public const string APPROVE_ADOPTION_FORM_TITLE = "Bạn có thông báo về tình trạng đăng ký nhận nuôi";
+        public const string NEW_RESCUE_FORM_TITLE = "Bạn có một yêu cầu cứu hộ";
+        public const string NEW_VOLUNTEER_FORM_TITLE = "Bạn có thông báo đăng ký tình nguyện viên";
+        public const string RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_TITLE = "Tình Nguyện Viên đã tiếp nhận";
     }
     public class NotificationBodyHelper
     {
-        public const string NEW_REGISTRATION_CENTER_FORM_BODY = "New center registration form is created";
-        public const string NEW_REGISTRATION_ADOPTION_FORM_BODY = "New adoption registration form is created";
-        public const string APPROVE_ADOPTION_FORM_BODY = "you have adoption new pet";
-        public const string NEW_RESCUE_FORM_BODY = "You have a new Rescue Form";
+        public const string NEW_REGISTRATION_CENTER_FORM_BODY = "Có đơn đăng ký thành Trung Tâm cần xử lý";
+        public const string NEW_REGISTRATION_ADOPTION_FORM_BODY = "Có đơn đăng ký nhận nuôi thú cưng cần xử lý";
+        public const string APPROVE_ADOPTION_FORM_BODY = "Bạn đã được nhận nuôi một con thú cưng";
+        public const string NEW_RESCUE_FORM_BODY = "Có đơn cứu hộ cần được xử lý";
+        public const string NEW_VOLUNTEER_FORM_BODY = "Có đơn đăng ký tình nguyện viên cần được xử lý";
+        public const string RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY = "Tình Nguyện Viên đã nhận được yêu cầu cứu hộ";
     }
     public class NotificationManagerType
     {

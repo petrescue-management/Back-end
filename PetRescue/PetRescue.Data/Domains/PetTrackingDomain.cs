@@ -25,7 +25,7 @@ namespace PetRescue.Data.Domains
                     ImageUrl = result.PetTrackingImgUrl,
                     isSterilized = (bool)result.IsSterilized,
                     isVaccinated = (bool)result.IsVaccinated,
-                    Weight = (double)result.Weight,
+                    Weight = result.Weight,
                     InsertAt = result.InsertedAt
                 };
             }

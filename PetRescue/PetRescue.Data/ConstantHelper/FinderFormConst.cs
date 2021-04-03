@@ -7,6 +7,7 @@ namespace PetRescue.Data.ConstantHelper
     public class FinderFormStatus
     {
         public const int PROCESSING = 1;
+        public const int PICKING = 2;
     }
 
     public class PetAttributeConst

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
@@ -9,14 +10,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PetRescue.Data.ViewModels
 {
     [ApiController]
     public class VolunterRegistrationFormController : BaseController
     {
-        public VolunterRegistrationFormController(IUnitOfWork uow) : base(uow)
+        private readonly IHostingEnvironment _env;
+        public VolunterRegistrationFormController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
+            this._env = environment;
         }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
@@ -36,13 +40,13 @@ namespace PetRescue.Data.ViewModels
         }
         [HttpPost]
         [Route("api/create-volunteer-registration-form")]
-        public IActionResult CreateVolunteerRegistrationForm([FromBody]VolunteerRegistrationFormCreateModel model)
+        public async Task<IActionResult> CreateVolunteerRegistrationForm([FromBody]VolunteerRegistrationFormCreateModel model)
         {
             try
             {
-
+                var path = _env.ContentRootPath;
                 var _domain = _uow.GetService<VolunteerRegistrationFormDomain>();
-                var result = _domain.Create(model);
+                var result = await _domain.Create(model, path);
                 if(!result.Contains("This"))
                 {
                     return Success(result);

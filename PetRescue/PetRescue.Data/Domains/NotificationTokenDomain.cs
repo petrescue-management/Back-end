@@ -45,6 +45,32 @@ namespace PetRescue.Data.Domains
             var notificationToken = notificationRepo.Get().FirstOrDefault(s => s.UserId == userId && s.ApplicationName.Equals(applicationName) && s.IsActive);
             return notificationToken;
         }
+        public List<string> FindDeviceTokenByApplicationNameAndRoleNameAndCenterId(string applicationName,string roleName, Guid centerId)
+        {
+            var userRoleRepo = uow.GetService<IUserRoleRepository>();
+            var userRepo = uow.GetService<IUserRepository>();
+            var notificationTokenRepo = uow.GetService<INotificationTokenRepository>();
+            var users = userRepo.Get().Where(s => s.CenterId.Equals(centerId) && (bool)s.IsBelongToCenter).Select(s => s.UserId);
+            var listId = new List<Guid>();
+            var result = new List<string>();
+            foreach(var user in users)
+            {
+                var userRole = userRoleRepo.Get().FirstOrDefault(s => s.UserId.Equals(user) && s.IsActive && s.Role.RoleName.Equals(roleName));
+                if(userRole != null)
+                {
+                    listId.Add(userRole.UserId);
+                }
+            };
+            foreach(var id in listId)
+            {
+                var temp = notificationTokenRepo.Get().FirstOrDefault(s => s.ApplicationName.Equals(applicationName) && s.UserId.Equals(id) && s.IsActive);
+                if (temp != null)
+                {
+                    result.Add(temp.DeviceToken);
+                }    
+            }
+            return result;
+        }
         public async Task<bool> NotificationForAdminWhenHaveNewCenterRegisterForm(string path)
         {
             try
@@ -118,9 +144,8 @@ namespace PetRescue.Data.Domains
         {
             try
             {
-                var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
                 var firebaseExtensions = new FireBaseExtentions();
-                var notificationToken = notificationTokenDomain.FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, insertBy);
+                var notificationToken = FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, insertBy);
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
                 Message message = new Message()
@@ -145,14 +170,11 @@ namespace PetRescue.Data.Domains
             {
                 return false;
             }
-
-
         }
         public async Task<bool> NotificationForListVolunteerOfCenter(string path, List<string> topics)
         {
             try
             {
-                var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
                 var firebaseExtensions = new FireBaseExtentions();
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
@@ -167,6 +189,27 @@ namespace PetRescue.Data.Domains
                 foreach (var topic in topics)
                 {
                     message.Topic = topic;
+                    await fcm.SendAsync(message);
+                }
+                app.Delete();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> NofiticationForDeviceToken(string path, List<string> deviceTokens, Message message)
+        {
+            try
+            {
+                var firebaseExtensions = new FireBaseExtentions();
+                var app = firebaseExtensions.GetFirebaseApp(path);
+                var fcm = FirebaseMessaging.GetMessaging(app);
+                foreach (var deviceToken in deviceTokens)
+                {
+                    message.Token = deviceToken;
                     await fcm.SendAsync(message);
                 }
                 app.Delete();
