@@ -12,6 +12,7 @@ namespace PetRescue.Data.Models
         public DateTime Dob { get; set; }
         public int Gender { get; set; }
         public string Email { get; set; }
+        public string VolunteerRegistrationFormImageUrl { get; set; }
         public Guid CenterId { get; set; }
         public int VolunteerRegistrationFormStatus { get; set; }
         public DateTime InsertedAt { get; set; }

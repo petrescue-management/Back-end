@@ -88,10 +88,11 @@ namespace PetRescue.Data.Domains
                         Address = center.Address,
                         CenterName = center.CenterName,
                         Phone = center.Phone,
+                        Email = center.CenterNavigation.Email,
                     };
                     MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationVolunteer(form.Email,centerModel), MailConstant.APPROVE_REGISTRATION_VOLUNTEER);
                     MailExtensions.SendBySendGrid(mailArguments, null, null);
-                    //uow.saveChanges();
+                    uow.saveChanges();
                 }
                 return result;
             }
@@ -103,6 +104,7 @@ namespace PetRescue.Data.Domains
                     Address = center.Address,
                     CenterName = center.CenterName,
                     Phone = center.Phone,
+                    Email = center.CenterNavigation.Email,
                 };
                 var reason = "";
                 if (model.IsEmail)
@@ -110,10 +112,10 @@ namespace PetRescue.Data.Domains
                 if (model.IsPhone)
                     reason += ErrorConst.ErrorPhone;
                 if (model.AnotherReason != null)
-                    reason += model.AnotherReason + "<br/>";
+                    reason += "<li><p>"+model.AnotherReason + "</p></li>";
                 result = "reject";
-                //uow.saveChanges();
-                MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email), MailConstant.REJECT_REGISTRATION_FORM);
+                uow.saveChanges();
+                MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationVolunteer(form.Email, reason, centerModel), MailConstant.REJECT_REGISTRATION_FORM);
                 MailExtensions.SendBySendGrid(mailArguments, null, null);
             }
             return result;
@@ -137,7 +139,10 @@ namespace PetRescue.Data.Domains
                     LastName = form.LastName,
                     Phone = form.Phone,
                     Status = form.VolunteerRegistrationFormStatus,
-                    FormId = form.VolunteerRegistrationFormId
+                    FormId = form.VolunteerRegistrationFormId,
+                    InsertAt =form.InsertedAt,
+                    ImageUrl = form.VolunteerRegistrationFormImageUrl,
+                    VolunteerRegistrationFormId = form.VolunteerRegistrationFormId
                 });
             }
             return result;

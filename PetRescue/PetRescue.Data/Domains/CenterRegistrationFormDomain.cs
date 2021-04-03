@@ -189,10 +189,16 @@ namespace PetRescue.Data.Domains
                                 else
                                 {
                                     result = "this email is belong another center";
+                                    return result;
                                 }
                             }
+                            var viewModel = new CenterRegistrationFormViewModel
+                            {
+                                CenterName = form.CenterName,
+                                Email = form.Email
+                            };
                             uow.saveChanges();
-                            MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(form.Email), MailConstant.APPROVE_REGISTRATION_FORM);
+                            MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(form.Email,viewModel), MailConstant.APPROVE_REGISTRATION_FORM);
                             MailExtensions.SendBySendGrid(mailArguments, null, null);
                             result = newCenter.CenterId.ToString();
                         }
@@ -208,7 +214,13 @@ namespace PetRescue.Data.Domains
                 {
                     form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
                     uow.saveChanges();
-                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email), MailConstant.REJECT_REGISTRATION_FORM);
+                    var error = "";
+                    var viewModel = new CenterRegistrationFormViewModel
+                    {
+                        CenterName = form.CenterName,
+                        Email = form.Email
+                    };
+                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email, viewModel, error), MailConstant.REJECT_REGISTRATION_FORM);
                     MailExtensions.SendBySendGrid(mailArguments, null, null);
                 }
             }
