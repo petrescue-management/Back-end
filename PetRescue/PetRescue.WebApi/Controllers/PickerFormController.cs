@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.ConstantHelper;
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;

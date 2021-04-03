@@ -44,7 +44,6 @@ namespace PetRescue.Data.Domains
         public bool IsAdmin (string email)
         {
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
-            var check = false;
             var currentUser = userRoleRepo.Get().FirstOrDefault(s => s.User.UserEmail.Equals(email) && s.Role.RoleName.Equals(RoleConstant.ADMIN));
             if(currentUser != null)
             {
