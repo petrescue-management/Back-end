@@ -67,7 +67,7 @@ namespace PetRescue.Data.Extensions
                     switch (field)
                     {
                         case PetFieldConst.INFO:
-                            obj["petId"] = model.PetDocumentId.ToString();
+                            obj["petId"] = model.PetProfileId.ToString();
                             obj["centerId"] = model.CenterId.ToString();
                             obj["petStatus"] = model.PetStatus;
                             obj["petName"] = model.PetName;
@@ -75,7 +75,7 @@ namespace PetRescue.Data.Extensions
                             obj["imageUrl"] = model.PetImgUrl;
                             break;
                         case PetFieldConst.DETAIL:
-                            obj["petId"] = model.PetDocumentId.ToString();
+                            obj["petId"] = model.PetProfileId.ToString();
                             obj["centerId"] = model.CenterId.ToString();
                             obj["petStatus"] = model.PetStatus;
                             obj["petName"] = model.PetName;

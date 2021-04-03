@@ -348,110 +348,115 @@ namespace PetRescue.Data.Domains
             return result;
         }
         #endregion
-        //public PetDocumentViewModel GetDocumentPetById(Guid petDocumentId)
-        //{
-        //    var petDocumentRepo = uow.GetService<IPetDocumentRepository>();
-        //    var petProfileRepo = uow.GetService<IPetProfileRepository>();
-        //    var pickerFormRepo = uow.GetService<IPickerFormRepository>();
-        //    var finderFormRepo = uow.GetService<IFinderFormRepository>();
-        //    var userRepo = uow.GetService<IUserRepository>();
-        //    var result = new PetDocumentViewModel();
-        //    var petDocument = petDocumentRepo.Get().FirstOrDefault(s => s.PetDocumentId.Equals(petDocumentId));
-        //    if (petDocument != null)
-        //    {
-        //        var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petDocument.PickerForm.InsertedBy));
-        //        var fullName = currentUser.UserProfile.FirstName + " " + currentUser.UserProfile.LastName;
-        //        var pickerForm = new PickerFormViewModel
-        //        {
-        //            PickerDate = petDocument.PickerForm.InsertedAt,
-        //            PickerDescription = petDocument.PetDocumentDescription,
-        //            PickerImageUrl = petDocument.PickerForm.PickerImageUrl,
-        //            PickerName = fullName,
-        //        };
-        //        currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petDocument.FinderForm.InsertedBy));
-        //        fullName = currentUser.UserProfile.FirstName + " " + currentUser.UserProfile.LastName;
-        //        var finderForm = new FinderFormViewModel
-        //        {
-        //            FinderDate = petDocument.FinderForm.InsertedAt,
-        //            FinderDescription = petDocument.FinderForm.FinderDescription,
-        //            FinderImageUrl = petDocument.FinderForm.FinderFormImgUrl,
-        //            FinderName = fullName
-        //        };
-        //        var tracks = petDocument.PetDocumentNavigation.PetTracking.ToList();
-        //        var list = new List<PetTrackingViewModel>();
-        //        foreach (var track in tracks)
-        //        {
-        //            list.Add(new PetTrackingViewModel
-        //            {
-        //                Description = track.Description,
-        //                ImageUrl = track.PetTrackingImgUrl,
-        //                InsertAt = track.InsertedAt,
-        //                isSterilized = (bool)track.IsSterilized,
-        //                isVaccinated = (bool)track.IsVaccinated,
-        //            });
-        //        }
-        //        result.FinderForm = finderForm;
-        //        result.PetAttribute = petDocument.PetAttribute;
-        //        result.PickerForm = pickerForm;
-        //        result.PetDocumentDescription = petDocument.PetDocumentDescription;
-        //        result.PetProfile = new PetProfileModel
-        //        {
-        //            CenterId = petDocument..CenterId,
-        //            InsertedAt = petDocument.PetDocumentNavigation.InsertedAt,
-        //            InsertedBy = petDocument.PetDocumentNavigation.InsertedBy,
-        //            PetAge = petDocument.PetDocumentNavigation.PetAge,
-        //            PetBreedId = petDocument.PetDocumentNavigation.PetBreedId,
-        //            PetBreedName = petDocument.PetDocumentNavigation.PetBreed.PetBreedName,
-        //            PetDocumentId = petDocument.PetDocumentId,
-        //            PetFurColorId = petDocument.PetDocumentNavigation.PetFurColorId,
-        //            PetFurColorName = petDocument.PetDocumentNavigation.PetFurColor.PetFurColorName,
-        //            PetGender = petDocument.PetDocumentNavigation.PetGender,
-        //            PetImgUrl = petDocument.PetDocumentNavigation.PetImgUrl,
-        //            PetName = petDocument.PetDocumentNavigation.PetName,
-        //            PetProfileDescription = petDocument.PetDocumentNavigation.PetProfileDescription,
-        //            PetStatus = petDocument.PetDocumentNavigation.PetStatus
-        //        };
-        //        result.ListTracking = list;
-        //    }
-        //    else
-        //    {
-        //        var petProfile = petProfileRepo.Get().FirstOrDefault(s => s.PetDocumentId.Equals(petDocumentId));
-        //        var list = new List<PetTrackingViewModel>();
-        //        if (petProfile != null)
-        //        {
-        //            var tracks = petProfile.PetTracking.ToList();
-        //            foreach (var track in tracks)
-        //            {
-        //                list.Add(new PetTrackingViewModel
-        //                {
-        //                    Description = track.Description,
-        //                    ImageUrl = track.PetTrackingImgUrl,
-        //                    InsertAt = track.InsertedAt,
-        //                    isSterilized = (bool)track.IsSterilized,
-        //                    isVaccinated = (bool)track.IsVaccinated,
-        //                });
-        //            }
-        //            result.ListTracking = list;
-        //            result.PetProfile = new PetProfileModel
-        //            {
-        //                CenterId = petProfile.CenterId,
-        //                InsertedAt = petProfile.InsertedAt,
-        //                InsertedBy = petProfile.InsertedBy,
-        //                PetAge = petProfile.PetAge,
-        //                PetBreedId = petProfile.PetBreedId,
-        //                PetBreedName = petProfile.PetBreed.PetBreedName,
-        //                PetDocumentId = petProfile.PetDocumentId,
-        //                PetFurColorId = petProfile.PetFurColorId,
-        //                PetFurColorName = petProfile.PetFurColor.PetFurColorName,
-        //                PetGender = petProfile.PetGender,
-        //                PetImgUrl = petProfile.PetImgUrl,
-        //                PetName = petProfile.PetName,
-        //                PetProfileDescription = petProfile.PetProfileDescription,
-        //                PetStatus = petProfile.PetStatus
-        //            };
-        //        }
-        //    }
-        //    return result;
-        //}
+        public PetDocumentViewModel GetDocumentPetById(Guid petProfileId)
+        {
+            var petDocumentRepo = uow.GetService<IPetDocumentRepository>();
+            var petProfileRepo = uow.GetService<IPetProfileRepository>();
+            var pickerFormRepo = uow.GetService<IPickerFormRepository>();
+            var finderFormRepo = uow.GetService<IFinderFormRepository>();
+            var userRepo = uow.GetService<IUserRepository>();
+            var result = new PetDocumentViewModel();
+            var petProfile = petProfileRepo.Get().FirstOrDefault(s => s.PetProfileId.Equals(petProfileId));
+            if (petProfile.PetDocument != null)
+            {
+                var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petProfile.PetDocument.PickerForm.InsertedBy));
+                var fullName = currentUser.UserProfile.FirstName + " " + currentUser.UserProfile.LastName;
+                var pickerForm = new PickerFormViewModel
+                {
+                    PickerDate = petProfile.PetDocument.PickerForm.InsertedAt,
+                    PickerDescription = petProfile.PetDocument.PetDocumentDescription,
+                    PickerImageUrl = petProfile.PetDocument.PickerForm.PickerImageUrl,
+                    PickerName = fullName,
+                };
+                currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petProfile.PetDocument.FinderForm.InsertedBy));
+                fullName = currentUser.UserProfile.FirstName + " " + currentUser.UserProfile.LastName;
+                var finderForm = new FinderFormViewModel
+                {
+                    FinderDate = petProfile.PetDocument.FinderForm.InsertedAt,
+                    FinderDescription = petProfile.PetDocument.FinderForm.FinderDescription,
+                    FinderImageUrl = petProfile.PetDocument.FinderForm.FinderFormImgUrl,
+                    FinderName = fullName
+                };
+                var tracks = petProfile.PetTracking.ToList();
+                var list = new List<PetTrackingViewModel>();
+                foreach (var track in tracks)
+                {
+                    list.Add(new PetTrackingViewModel
+                    {
+                        Weight = track.Weight,
+                        Description = track.Description,
+                        ImageUrl = track.PetTrackingImgUrl,
+                        InsertAt = track.InsertedAt,
+                        isSterilized = (bool)track.IsSterilized,
+                        isVaccinated = (bool)track.IsVaccinated,
+                        PetTrackingId = track.PetTrackingId
+                    });
+                }
+                result.FinderForm = finderForm;
+                result.PetAttribute = petProfile.PetDocument.PetAttribute;
+                result.PickerForm = pickerForm;
+                result.PetDocumentDescription = petProfile.PetDocument.PetDocumentDescription;
+                result.PetProfile = new PetProfileModel
+                {
+                    CenterId = petProfile.CenterId,
+                    InsertedAt = petProfile.InsertedAt,
+                    InsertedBy = petProfile.InsertedBy,
+                    PetAge = petProfile.PetAge,
+                    PetBreedId = petProfile.PetBreedId,
+                    PetBreedName = petProfile.PetBreed.PetBreedName,
+                    PetDocumentId = petProfile.PetDocumentId,
+                    PetFurColorId = petProfile.PetFurColorId,
+                    PetFurColorName = petProfile.PetFurColor.PetFurColorName,
+                    PetGender = petProfile.PetGender,
+                    PetImgUrl = petProfile.PetImgUrl,
+                    PetName = petProfile.PetName,
+                    PetProfileDescription = petProfile.PetProfileDescription,
+                    PetStatus = petProfile.PetStatus,
+                    PetProfileId = petProfile.PetProfileId
+                };
+                result.ListTracking = list;
+            }
+            else
+            {
+                var list = new List<PetTrackingViewModel>();
+                if (petProfile != null)
+                {
+                    var tracks = petProfile.PetTracking.ToList();
+                    foreach (var track in tracks)
+                    {
+                        list.Add(new PetTrackingViewModel
+                        {
+                            Weight = track.Weight,
+                            Description = track.Description,
+                            ImageUrl = track.PetTrackingImgUrl,
+                            InsertAt = track.InsertedAt,
+                            isSterilized = (bool)track.IsSterilized,
+                            isVaccinated = (bool)track.IsVaccinated,
+                            PetTrackingId = track.PetTrackingId
+                        });
+                    }
+                    result.ListTracking = list;
+                    result.PetProfile = new PetProfileModel
+                    {
+                        CenterId = petProfile.CenterId,
+                        InsertedAt = petProfile.InsertedAt,
+                        InsertedBy = petProfile.InsertedBy,
+                        PetAge = petProfile.PetAge,
+                        PetBreedId = petProfile.PetBreedId,
+                        PetBreedName = petProfile.PetBreed.PetBreedName,
+                        PetDocumentId = petProfile.PetDocumentId,
+                        PetFurColorId = petProfile.PetFurColorId,
+                        PetFurColorName = petProfile.PetFurColor.PetFurColorName,
+                        PetGender = petProfile.PetGender,
+                        PetImgUrl = petProfile.PetImgUrl,
+                        PetName = petProfile.PetName,
+                        PetProfileDescription = petProfile.PetProfileDescription,
+                        PetStatus = petProfile.PetStatus,
+                        PetProfileId = petProfile.PetProfileId
+                    };
+                }
+            }
+            return result;
+        }
     }
 }
