@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.ConstantHelper;
+﻿using FirebaseAdmin.Messaging;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PetRescue.Data.Domains
 {
@@ -68,7 +70,6 @@ namespace PetRescue.Data.Domains
             };
         }
         #endregion
-
         #region GET BY ID
         public AdoptionRegistrationFormModel GetAdoptionRegistrationFormById(Guid id)
         {
@@ -99,15 +100,15 @@ namespace PetRescue.Data.Domains
             return result;
         }
         #endregion
-
         #region UPDATE STATUS
-        public AdoptionRegistrationFormModel UpdateAdoptionRegistrationFormStatus(UpdateStatusModel model, Guid updateBy)
+        public async Task<object> UpdateAdoptionRegistrationFormStatus(UpdateViewModel model, Guid updateBy, string path)
         {
             var form = uow.GetService<IAdoptionRegistrationFormRepository>().UpdateAdoptionRegistrationFormStatus(model, updateBy);
             var petProfileService = uow.GetService<IPetProfileRepository>();
             var adoptionService = uow.GetService<IAdoptionRepository>();
             var adoptionRegistrationFormService = uow.GetService<IAdoptionRegistrationFormRepository>();
-            var result = new AdoptionRegistrationFormModel
+            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
+            var temp = new AdoptionRegistrationFormModel
             {
                 AdoptionRegistrationId = form.AdoptionRegistrationId,
                 PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
@@ -129,55 +130,111 @@ namespace PetRescue.Data.Domains
                 UpdatedBy = form.UpdatedBy,
                 UpdatedAt = form.UpdatedAt
             };
-            var currentPet = petProfileService.Get().FirstOrDefault(s => s.PetDocumentId.Equals(form.PetProfileId));
-            if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED)
+            var currentPet = petProfileService.Get().FirstOrDefault(s => s.PetProfileId.Equals(form.PetProfileId));
+            var context = uow.GetService<PetRescueContext>();
+            using (var transaction = context.Database.BeginTransaction())
             {
-                adoptionService.CreateAdoption(result);
-                currentPet.PetStatus = PetStatusConst.ADOPTED;
-                petProfileService.Update(currentPet);
-                var listAdoptionForm = adoptionRegistrationFormService.Get().Where(s => s.PetProfileId.Equals(form.PetProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
-                foreach(var adoptionForm in listAdoptionForm)
+                try
                 {
-                    adoptionForm.AdoptionRegistrationStatus = AdoptionRegistrationFormStatusConst.REJECTED;
-                    adoptionRegistrationFormService.Update(adoptionForm);
+                    if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED)
+                    {
+                        var result = new ApproveAdoptionViewModel();
+                        await notificationTokenDomain.NotificationForUserWhenAdoptionFormToBeApprove(path, form.InsertedBy);
+                        adoptionService.CreateAdoption(temp);
+                        currentPet.PetStatus = PetStatusConst.ADOPTED;
+                        petProfileService.Update(currentPet);
+                        uow.saveChanges();
+                        result.Approve = new AdoptionFormModel
+                        {
+                            AdoptionFormId = temp.AdoptionRegistrationId,
+                            UserId = temp.InsertedBy
+                        };
+                        var listAdoptionForm = adoptionRegistrationFormService.Get().Where(s => s.PetProfileId.Equals(form.PetProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+                        result.Rejects = new List<AdoptionFormModel>();
+                        foreach (var adoptionForm in listAdoptionForm)
+                        {
+                            adoptionForm.AdoptionRegistrationStatus = AdoptionRegistrationFormStatusConst.REJECTED;
+                            result.Rejects.Add(new AdoptionFormModel
+                            {
+                                AdoptionFormId = adoptionForm.AdoptionRegistrationId,
+                                UserId = adoptionForm.InsertedBy
+                            });
+                            await notificationTokenDomain.NotificationForuserWhenAdoptionFormToBeFounded(path, adoptionForm.InsertedBy);
+                            adoptionRegistrationFormService.Update(adoptionForm);
+                        }
+                        transaction.Commit();
+                        uow.saveChanges();
+                        return result;
+                    }
+                    else
+                    {
+                        Message message = new Message
+                        {
+                            Notification = new Notification
+                            {
+                                Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_TITLE,
+                                Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
+                            }
+                        };
+                        await notificationTokenDomain.NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
+                        var result = new RejectAdoptionViewModel
+                        {
+                            Reason = model.Reason,
+                            Reject = new AdoptionFormModel
+                            {
+                                AdoptionFormId = temp.AdoptionRegistrationId,
+                                UserId = temp.InsertedBy
+                            }
+                        };
+                        transaction.Commit();
+                        uow.saveChanges();
+                        return result;
+                    }
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return null;
                 }
             }
-            uow.saveChanges();
-            return result;
+            
         }
         #endregion
-
         #region CREATE
         public AdoptionRegistrationFormModel CreateAdoptionRegistrationForm(CreateAdoptionRegistrationFormModel model, Guid insertBy)
         {
-            var form = uow.GetService<IAdoptionRegistrationFormRepository>().CreateAdoptionRegistrationForm(model, insertBy);
-            var petProfileService = uow.GetService<IPetProfileRepository>();
-            var result = new AdoptionRegistrationFormModel
+            if (!IsExistedForm(insertBy,model.PetProfileId))
             {
-                AdoptionRegistrationId = form.AdoptionRegistrationId,
-                PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
-                UserName = form.UserName,
-                Phone = form.Phone,
-                Email = form.Email,
-                Job = form.Job,
-                Address = form.Address,
-                HouseType = form.HouseType,
-                FrequencyAtHome = form.FrequencyAtHome,
-                HaveChildren = form.HaveChildren,
-                ChildAge = form.ChildAge,
-                BeViolentTendencies = form.BeViolentTendencies,
-                HaveAgreement = form.HaveAgreement,
-                HavePet = form.HavePet,
-                AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
-                InsertedBy = form.InsertedBy,
-                InsertedAt = form.InsertedAt,
-                UpdatedBy = form.UpdatedBy,
-                UpdatedAt = form.UpdatedAt
-            };
-            uow.saveChanges();
-            return result;
+                var form = uow.GetService<IAdoptionRegistrationFormRepository>().CreateAdoptionRegistrationForm(model, insertBy);
+                var petProfileService = uow.GetService<IPetProfileRepository>();
+                var result = new AdoptionRegistrationFormModel
+                {
+                    AdoptionRegistrationId = form.AdoptionRegistrationId,
+                    PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
+                    UserName = form.UserName,
+                    Phone = form.Phone,
+                    Email = form.Email,
+                    Job = form.Job,
+                    Address = form.Address,
+                    HouseType = form.HouseType,
+                    FrequencyAtHome = form.FrequencyAtHome,
+                    HaveChildren = form.HaveChildren,
+                    ChildAge = form.ChildAge,
+                    BeViolentTendencies = form.BeViolentTendencies,
+                    HaveAgreement = form.HaveAgreement,
+                    HavePet = form.HavePet,
+                    AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
+                    InsertedBy = form.InsertedBy,
+                    InsertedAt = form.InsertedAt,
+                    UpdatedBy = form.UpdatedBy,
+                    UpdatedAt = form.UpdatedAt
+                };
+                uow.saveChanges();
+                return result;
+            }
+            return null;
         }
-            #endregion
+        #endregion
         public List<AdoptionRegistrationFormModel> GetListAdoptionByUserId(Guid userId)
         {
             var adoptionFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
@@ -211,5 +268,15 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
+        private bool IsExistedForm(Guid insertBy, Guid petProfileId)
+        {
+            var adotionFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
+            var result = adotionFormRepo.Get().FirstOrDefault(s => s.InsertedBy.Equals(insertBy) && s.PetProfileId.Equals(petProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+            if(result != null)
+            {
+                return true;
+            }
+            return false;
         }
+    }
 }

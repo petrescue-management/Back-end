@@ -26,7 +26,8 @@ namespace PetRescue.Data.Domains
                     isSterilized = (bool)result.IsSterilized,
                     isVaccinated = (bool)result.IsVaccinated,
                     Weight = result.Weight,
-                    InsertAt = result.InsertedAt
+                    InsertAt = result.InsertedAt,
+                    PetTrackingId = result.PetTrackingId
                 };
             }
             return null;

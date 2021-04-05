@@ -160,7 +160,9 @@ namespace PetRescue.Data.Domains
                     CenterId = center.CenterId,
                     CenterName = center.CenterName,
                     CenterStatus = center.CenterStatus,
-                    ImageUrl = center.CenterImgUrl
+                    ImageUrl = center.CenterImgUrl,
+                    Email = center.CenterNavigation.Email,
+                    Phone = center.CenterNavigation.Phone
                 });
             }
             return result;

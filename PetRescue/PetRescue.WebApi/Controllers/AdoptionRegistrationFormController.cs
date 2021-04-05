@@ -61,14 +61,13 @@ namespace PetRescue.WebApi.Controllers
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
         [Route("api/update-adoption-registration-form-status")]
-        public async Task<IActionResult> UpdateAdoptionRegistrationFormStatusAsync(UpdateStatusModel model)
+        public async Task<IActionResult> UpdateAdoptionRegistrationFormStatusAsync([FromBody] UpdateViewModel model)
         {
             try
             {
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _uow.GetService<AdoptionRegistrationFormDomain>().UpdateAdoptionRegistrationFormStatus(model,Guid.Parse(currentUserId));
-                await _uow.GetService<NotificationTokenDomain>().NotificationForUserWhenAdoptionFormToBeChangeStatus(path, result.InsertedBy, result.AdoptionRegistrationId);
+                var result = await _uow.GetService<AdoptionRegistrationFormDomain>().UpdateAdoptionRegistrationFormStatus(model,Guid.Parse(currentUserId), path);
                 return Success(result);
             }
             catch (Exception ex)
@@ -86,8 +85,12 @@ namespace PetRescue.WebApi.Controllers
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = _uow.GetService<AdoptionRegistrationFormDomain>().CreateAdoptionRegistrationForm(model, Guid.Parse(currentUserId));
-                await _uow.GetService<NotificationTokenDomain>().NotificationForManagerWhenHaveNewAdoptionRegisterForm(path, result.PetProfile.CenterId, result.AdoptionRegistrationId);
-                return Success(result);
+                if(result != null)
+                {
+                    await _uow.GetService<NotificationTokenDomain>().NotificationForManagerWhenHaveNewAdoptionRegisterForm(path, result.PetProfile.CenterId, result.AdoptionRegistrationId);
+                    return Success(result);
+                }
+                return BadRequest("You have registed");
             }
             catch (Exception ex)
             {

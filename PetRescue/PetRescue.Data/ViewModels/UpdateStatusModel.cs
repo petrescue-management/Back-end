@@ -11,4 +11,10 @@ namespace PetRescue.Data.ViewModels
         public Guid Id { get; set; }
         public byte Status { get; set; }
     }
+    public class UpdateViewModel
+    {
+        public Guid Id { get; set; }
+        public int Status { get; set; }
+        public string Reason { get; set; }
+    }
 }

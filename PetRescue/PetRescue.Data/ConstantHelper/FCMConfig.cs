@@ -12,11 +12,6 @@ namespace PetRescue.Data.ConstantHelper
         public static string WEBADDR = "https://fcm.googleapis.com/fcm/send";
         public static string FILE_NAME = "\\service-accounts.json";
         public static string FIREBASE_INSTANCE = "PetRescue";
-        //public static FirebaseConfig  config = new FirebaseConfig
-        //{
-        //    AuthSecret = "svKuaskcvYZpeXTo6P1q3YpfGuR8GtgxwpMSLAVK",
-        //    BasePath = "https://pet-rescue-fb-default-rtdb.firebaseio.com/"
-        //};
     }
     public class ApplicationNameHelper
     {
@@ -29,7 +24,8 @@ namespace PetRescue.Data.ConstantHelper
     {
         public const string NEW_REGISTRATION_CENTER_FORM_TITLE = "Bạn có thông báo đăng ký trung tâm";
         public const string NEW_REGISTRATON_ADOPTION_FORM_TITLE = "Bạn có thông báo đăng ký nhận nuôi thú cưng";
-        public const string APPROVE_ADOPTION_FORM_TITLE = "Bạn có thông báo về tình trạng đăng ký nhận nuôi";
+        public const string APPROVE_ADOPTION_FORM_TITLE = "Bạn có thông báo tình trạng đăng ký nhận nuôi";
+        public const string REJECT_ADOPTION_FORM_TITLE = "Bạn có thông báo tình trạng đăng ký nhận nuôi";
         public const string NEW_RESCUE_FORM_TITLE = "Bạn có một yêu cầu cứu hộ";
         public const string NEW_VOLUNTEER_FORM_TITLE = "Bạn có thông báo đăng ký tình nguyện viên";
         public const string RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_TITLE = "Tình Nguyện Viên đã tiếp nhận";
@@ -39,17 +35,10 @@ namespace PetRescue.Data.ConstantHelper
         public const string NEW_REGISTRATION_CENTER_FORM_BODY = "Có đơn đăng ký thành Trung Tâm cần xử lý";
         public const string NEW_REGISTRATION_ADOPTION_FORM_BODY = "Có đơn đăng ký nhận nuôi thú cưng cần xử lý";
         public const string APPROVE_ADOPTION_FORM_BODY = "Bạn đã được nhận nuôi một con thú cưng";
+        public const string HAVE_FOUND_ADOPTION_FORM_TITLE = "Xin lỗi, trung tâm đã tìm ra người phù hợp";
+        public const string REJECT_ADOPTION_FORM_TITLE = "Xin lỗi, bạn không phù hợp với thú cưng này";
         public const string NEW_RESCUE_FORM_BODY = "Có đơn cứu hộ cần được xử lý";
         public const string NEW_VOLUNTEER_FORM_BODY = "Có đơn đăng ký tình nguyện viên cần được xử lý";
         public const string RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY = "Tình Nguyện Viên đã nhận được yêu cầu cứu hộ";
-    }
-    public class NotificationManagerType
-    {
-        public const int NEW_ADOPTION_REGISTRATION_FORM_BE_CREATED = 2;
-        public const int NEW_RESCUE_FORM_BE_CREATED = 1;
-    }
-    public class NotificationUserType
-    {
-        public const int CHANGE_STATUS_ADOPTION_REGISTRATION_FORM = 1;
     }
 }

@@ -243,6 +243,7 @@ namespace PetRescue.Data.Domains
             var userRoleDomain = uow.GetService<UserRoleDomain>();
             var userRepo = uow.GetService<IUserRepository>();
             var context = uow.GetService<PetRescueContext>();
+            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             var userRole = userRoleDomain.CheckRoleOfUser(new UserRoleUpdateModel
             {
                 RoleName = RoleConstant.VOLUNTEER,
@@ -261,7 +262,7 @@ namespace PetRescue.Data.Domains
                             IsActive = false,
                             UpdateBy = model.InsertBy
                         });
-                        uow.saveChanges();
+                        var notificationToken = notificationTokenDomain.DeleteNotificationByUserIdAndApplicationName(currentUser.UserId, ApplicationNameHelper.VOLUNTEER_APP);
                         if (GetRoleOfUser(model.UserId).Length == 0)
                         {
                             userRepo.UpdateUserModel(currentUser, new UserUpdateModel
@@ -270,6 +271,7 @@ namespace PetRescue.Data.Domains
                                 IsBelongToCenter = false
                             });
                         }
+                        uow.saveChanges();
                         transaction.Commit();
                         result = "";
                     }

@@ -97,5 +97,84 @@ namespace PetRescue.Data.Domains
             return result;
         }
         #endregion
+        public List<AdoptionViewModel> GetListAdoptionByCenterId(Guid centerId)
+        {
+            var adoptionRepo = uow.GetService<IAdoptionRepository>();
+            var userRepo = uow.GetService<IUserRepository>();
+            var adoptions = adoptionRepo.Get().Where(s => s.AdoptionRegistration.PetProfile.CenterId.Equals(centerId)).ToList();
+            var result = new List<AdoptionViewModel>();
+            foreach(var adoption in adoptions)
+            {
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.InsertedBy));
+                result.Add(new AdoptionViewModel {
+                    AdoptedAt = adoption.AdoptedAt,
+                    AdoptionRegistrationId = adoption.AdoptionRegistrationId,
+                    AdoptionStatus = adoption.AdoptionStatus,
+                    ReturnedAt = adoption.ReturnedAt,
+                    Owner = new UserModel
+                    {
+                        Dob = user.UserProfile.Dob,
+                        FirstName = user.UserProfile.FirstName,
+                        Gender = user.UserProfile.Gender,
+                        ImageUrl = user.UserProfile.ImageUrl,
+                        LastName = user.UserProfile.LastName,
+                        Phone = user.UserProfile.Phone,
+                        UserEmail = user.UserEmail,
+                        UserId = user.UserId
+                    },
+                    Address = adoption.AdoptionRegistration.Address,
+                    Email = adoption.AdoptionRegistration.Email,
+                    Job = adoption.AdoptionRegistration.Job,
+                    PetBreedName = adoption.AdoptionRegistration.PetProfile.PetBreed.PetBreedName,
+                    PetColorName = adoption.AdoptionRegistration.PetProfile.PetFurColor.PetFurColorName,
+                    PetImgUrl = adoption.AdoptionRegistration.PetProfile.PetImgUrl,
+                    PetName = adoption.AdoptionRegistration.PetProfile.PetName,
+                    PetTypeName = adoption.AdoptionRegistration.PetProfile.PetBreed.PetType.PetTypeName,
+                    Phone = adoption.AdoptionRegistration.Phone,
+                    Username = adoption.AdoptionRegistration.UserName
+                });
+            }
+            return result;
+        }
+        public List<AdoptionViewModel> GetListAdoptionByUserId(Guid userId)
+        {
+            var adoptionRepo = uow.GetService<IAdoptionRepository>();
+            var userRepo = uow.GetService<IUserRepository>();
+            var adoptions = adoptionRepo.Get().Where(s => s.AdoptionRegistration.UpdatedBy.Equals(userId)).ToList();
+            var result = new List<AdoptionViewModel>();
+            foreach (var adoption in adoptions)
+            {
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.InsertedBy));
+                result.Add(new AdoptionViewModel
+                {
+                    AdoptedAt = adoption.AdoptedAt,
+                    AdoptionRegistrationId = adoption.AdoptionRegistrationId,
+                    AdoptionStatus = adoption.AdoptionStatus,
+                    ReturnedAt = adoption.ReturnedAt,
+                    Owner = new UserModel
+                    {
+                        Dob = user.UserProfile.Dob,
+                        FirstName = user.UserProfile.FirstName,
+                        Gender = user.UserProfile.Gender,
+                        ImageUrl = user.UserProfile.ImageUrl,
+                        LastName = user.UserProfile.LastName,
+                        Phone = user.UserProfile.Phone,
+                        UserEmail = user.UserEmail,
+                        UserId = user.UserId
+                    },
+                    Address = adoption.AdoptionRegistration.Address,
+                    Email = adoption.AdoptionRegistration.Email,
+                    Job = adoption.AdoptionRegistration.Job,
+                    PetBreedName = adoption.AdoptionRegistration.PetProfile.PetBreed.PetBreedName,
+                    PetColorName = adoption.AdoptionRegistration.PetProfile.PetFurColor.PetFurColorName,
+                    PetImgUrl = adoption.AdoptionRegistration.PetProfile.PetImgUrl,
+                    PetName = adoption.AdoptionRegistration.PetProfile.PetName,
+                    PetTypeName = adoption.AdoptionRegistration.PetProfile.PetBreed.PetType.PetTypeName,
+                    Phone = adoption.AdoptionRegistration.Phone,
+                    Username = adoption.AdoptionRegistration.UserName
+                });
+            }
+            return result;
+        }
     }
 }

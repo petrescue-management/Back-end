@@ -15,6 +15,10 @@ namespace PetRescue.Data.ViewModels
         public string FinderName { get; set; }
         [JsonProperty("finderDate")]
         public DateTime FinderDate { get; set; }
+        [JsonProperty("lat")]
+        public double Lat { get; set; }
+        [JsonProperty("lng")]
+        public double Lng { get; set; }
     }
     public class FinderFormDetailModel
     {

@@ -39,6 +39,17 @@ namespace PetRescue.Data.Domains
             var notificationRepo = uow.GetService<INotificationTokenRepository>();
             return notificationRepo.GetNotificationTokenById(notificationId);
         }
+        public bool DeleteNotificationByUserIdAndApplicationName(Guid userId, string applicationName)
+        {
+            var notificationTokenRepo = uow.GetService<INotificationTokenRepository>();
+            var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(userId) && s.ApplicationName.Equals(applicationName));
+            var result = notificationTokenRepo.Delete(notificationToken);
+            if(result != null)
+            {
+                return true;
+            }
+            return false;
+        }
         public NotificationToken FindByApplicationNameAndUserId(string applicationName,Guid userId)
         {
             var notificationRepo = uow.GetService<INotificationTokenRepository>();
@@ -124,14 +135,12 @@ namespace PetRescue.Data.Domains
                         Title = NotificationTitleHelper.NEW_REGISTRATON_ADOPTION_FORM_TITLE,
                         Body = NotificationBodyHelper.NEW_REGISTRATION_ADOPTION_FORM_BODY,
                     },
-                    Data = new Dictionary<string, string>()
-                    {
-                        { "AdoptionRegistrationId", AdoptionRegistrationId.ToString() },
-                        { "Type", NotificationManagerType.NEW_ADOPTION_REGISTRATION_FORM_BE_CREATED.ToString() },
-                    },
                 };
-                message.Token = notificationToken.DeviceToken;
-                await fcm.SendAsync(message);
+                if (notificationToken != null)
+                {
+                    message.Token = notificationToken.DeviceToken;
+                    await fcm.SendAsync(message);
+                }
                 app.Delete();
                 return true;
             }catch
@@ -140,7 +149,7 @@ namespace PetRescue.Data.Domains
             }
             
         }
-        public async Task<bool> NotificationForUserWhenAdoptionFormToBeChangeStatus(string path, Guid insertBy, Guid adoptionRegistrationId)
+        public async Task<bool> NotificationForUserWhenAdoptionFormToBeApprove(string path, Guid insertBy)
         {
             try
             {
@@ -155,14 +164,41 @@ namespace PetRescue.Data.Domains
                             Title = NotificationTitleHelper.APPROVE_ADOPTION_FORM_TITLE,
                             Body = NotificationBodyHelper.APPROVE_ADOPTION_FORM_BODY,
                         },
-                        Data = new Dictionary<string, string>()
-                        {
-                            {"notificationId", adoptionRegistrationId.ToString() },
-                            { "type", NotificationUserType.CHANGE_STATUS_ADOPTION_REGISTRATION_FORM.ToString()},
-                        },
                 };
-                message.Token = notificationToken.DeviceToken;
-                await fcm.SendAsync(message);
+                if(notificationToken != null)
+                {
+                    message.Token = notificationToken.DeviceToken;
+                    await fcm.SendAsync(message);
+                }
+                app.Delete();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public async Task<bool> NotificationForuserWhenAdoptionFormToBeFounded(string path, Guid userId)
+        {
+            try
+            {
+                var firebaseExtensions = new FireBaseExtentions();
+                var notificationToken = FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, userId);
+                var app = firebaseExtensions.GetFirebaseApp(path);
+                var fcm = FirebaseMessaging.GetMessaging(app);
+                Message message = new Message()
+                {
+                    Notification = new Notification
+                    {
+                        Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE,
+                        Body = NotificationBodyHelper.HAVE_FOUND_ADOPTION_FORM_TITLE,
+                    },
+                };
+                if (notificationToken != null)
+                {
+                    message.Token = notificationToken.DeviceToken;
+                    await fcm.SendAsync(message);
+                }
                 app.Delete();
                 return true;
             }
@@ -199,7 +235,6 @@ namespace PetRescue.Data.Domains
                 return false;
             }
         }
-
         public async Task<bool> NofiticationForDeviceToken(string path, List<string> deviceTokens, Message message)
         {
             try
@@ -212,6 +247,27 @@ namespace PetRescue.Data.Domains
                     message.Token = deviceToken;
                     await fcm.SendAsync(message);
                 }
+                app.Delete();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public async Task<bool> NotificationForUser(string path, Guid userId, string applicationName, Message message)
+        {
+            try
+            {
+                var firebaseExtensions = new FireBaseExtentions();
+                var notificationToken = FindByApplicationNameAndUserId(applicationName, userId);
+                var app = firebaseExtensions.GetFirebaseApp(path);
+                var fcm = FirebaseMessaging.GetMessaging(app);
+                if (notificationToken != null)
+                {
+                    message.Token = notificationToken.DeviceToken;
+                }
+                await fcm.SendAsync(message);
                 app.Delete();
                 return true;
             }

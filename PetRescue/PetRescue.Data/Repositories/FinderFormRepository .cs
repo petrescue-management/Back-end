@@ -40,6 +40,9 @@ namespace PetRescue.Data.Repositories
                 Phone = model.Phone,
                 InsertedBy = insertedBy,
                 InsertedAt = DateTime.UtcNow,
+                UpdatedBy = null,
+                UpdatetedAt = null
+                
             };
             return finderForm;
         }
@@ -108,8 +111,9 @@ namespace PetRescue.Data.Repositories
                         Phone = f.Phone,
                         InsertedBy = f.InsertedBy,
                         InsertedAt = f.InsertedAt,
+                        UpdatedBy = updatedBy,
+                        UpdatetedAt = DateTime.UtcNow
                     }).FirstOrDefault();
-
             return finderForm;
         }
        public FinderFormModel UpdateFinderFormStatus(UpdateStatusModel model, Guid updatedBy)
@@ -132,6 +136,8 @@ namespace PetRescue.Data.Repositories
                         Phone = f.Phone,
                         InsertedBy = f.InsertedBy,
                         InsertedAt = f.InsertedAt,
+                        UpdatedAt = f.UpdatetedAt,
+                        UpdatedBy = f.UpdatedBy
                     }).FirstOrDefault();
             
             return result;

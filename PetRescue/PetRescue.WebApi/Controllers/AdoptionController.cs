@@ -68,5 +68,40 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpGet]
+        [Route("api/get-adoption-by-centerid")]
+        public IActionResult GetadoptionByCenterId()
+        {
+            try
+            {
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var _domain = _uow.GetService<AdoptionDomain>();
+                var result = _domain.GetListAdoptionByCenterId(Guid.Parse(currentCenterId));
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [Authorize]
+        [HttpGet]
+        [Route("api/get-adoption-by-userId")]
+        public IActionResult GetadoptionByUserId()
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var _domain = _uow.GetService<AdoptionDomain>();
+                var result = _domain.GetListAdoptionByUserId(Guid.Parse(currentUserId));
+                return Success(result);
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+
     }
 }

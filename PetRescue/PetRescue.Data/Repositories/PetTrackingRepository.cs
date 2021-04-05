@@ -33,7 +33,7 @@ namespace PetRescue.Data.Repositories
                 IsVaccinated = model.isVaccinated,
                 PetProfileId = model.PetProfileId,
                 PetTrackingImgUrl = model.ImageUrl,
-                Weight = (int)model.Weight,
+                Weight = model.Weight,
                 PetTrackingId = Guid.NewGuid()
             };
             return track;

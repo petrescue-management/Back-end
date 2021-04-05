@@ -219,13 +219,13 @@ namespace PetRescue.Data.Domains
             var result = new List<PetAdoptionRegisterFormModel>();
             foreach (var petProfile in petProfiles)
             {
-                var count = adoptionRegisterFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetDocumentId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
+                var count = adoptionRegisterFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
                 if (count > 0)
                 {
                     result.Add(new PetAdoptionRegisterFormModel
                     {
                         Count = count,
-                        PetId = petProfile.PetDocumentId,
+                        PetId = petProfile.PetProfileId,
                         PetName = petProfile.PetName,
                         Age = (int)petProfile.PetAge,
                         BreedName = petProfile.PetBreed.PetBreedName,
@@ -236,12 +236,12 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public ListRegisterAdoptionOfPetViewModel GetListAdoptionRegisterFormByPetId(Guid petDocumentId)
+        public ListRegisterAdoptionOfPetViewModel GetListAdoptionRegisterFormByPetId(Guid petProfileId)
         {
             var petProfileRepo = uow.GetService<IPetProfileRepository>();
             var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
-            var forms = adoptionRegisterFormRepo.Get().Where(s => s.PetProfileId.Equals(petDocumentId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
-            var currentPet = petProfileRepo.Get().FirstOrDefault(s => s.PetDocumentId.Equals(petDocumentId));
+            var forms = adoptionRegisterFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+            var currentPet = petProfileRepo.Get().FirstOrDefault(s => s.PetProfileId.Equals(petProfileId));
             var result = new ListRegisterAdoptionOfPetViewModel
             {
                 Pet = new PetModel
@@ -255,7 +255,7 @@ namespace PetRescue.Data.Domains
                     PetFurColorId = currentPet.PetFurColorId,
                     PetFurColorName = currentPet.PetFurColor.PetFurColorName,
                     PetGender = currentPet.PetGender,
-                    PetId = currentPet.PetDocumentId,
+                    PetId = currentPet.PetProfileId,
                     PetName = currentPet.PetName,
                     PetStatus = currentPet.PetStatus,
                 },
@@ -360,7 +360,7 @@ namespace PetRescue.Data.Domains
             if (petProfile.PetDocument != null)
             {
                 var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petProfile.PetDocument.PickerForm.InsertedBy));
-                var fullName = currentUser.UserProfile.FirstName + " " + currentUser.UserProfile.LastName;
+                var fullName = currentUser.UserProfile.LastName + " "+currentUser.UserProfile.FirstName;
                 var pickerForm = new PickerFormViewModel
                 {
                     PickerDate = petProfile.PetDocument.PickerForm.InsertedAt,
@@ -369,13 +369,15 @@ namespace PetRescue.Data.Domains
                     PickerName = fullName,
                 };
                 currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petProfile.PetDocument.FinderForm.InsertedBy));
-                fullName = currentUser.UserProfile.FirstName + " " + currentUser.UserProfile.LastName;
+                fullName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
                 var finderForm = new FinderFormViewModel
                 {
                     FinderDate = petProfile.PetDocument.FinderForm.InsertedAt,
                     FinderDescription = petProfile.PetDocument.FinderForm.FinderDescription,
                     FinderImageUrl = petProfile.PetDocument.FinderForm.FinderFormImgUrl,
-                    FinderName = fullName
+                    FinderName = fullName,
+                    Lat = petProfile.PetDocument.FinderForm.Lat,
+                    Lng = petProfile.PetDocument.FinderForm.Lng,
                 };
                 var tracks = petProfile.PetTracking.ToList();
                 var list = new List<PetTrackingViewModel>();

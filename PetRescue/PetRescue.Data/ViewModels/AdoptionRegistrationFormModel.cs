@@ -30,7 +30,7 @@ namespace PetRescue.Data.ViewModels
 
     public class CreateAdoptionRegistrationFormModel
     {
-        public Guid PetDocumentId { get; set; }
+        public Guid PetProfileId { get; set; }
         public string UserName { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
@@ -71,5 +71,20 @@ namespace PetRescue.Data.ViewModels
     {
         public PetModel Pet { get; set; }
         public List<AdoptionRegistrationFormViewModel> AdoptionRegisterforms { get; set; }
+    }
+    public class ApproveAdoptionViewModel
+    {
+        public AdoptionFormModel Approve { get; set; }
+        public List<AdoptionFormModel> Rejects { get; set; }
+    }
+    public class RejectAdoptionViewModel
+    {
+        public AdoptionFormModel Reject { get; set; }
+        public string Reason { get; set; }
+    }
+    public class AdoptionFormModel
+    {
+        public Guid AdoptionFormId { get; set;}
+        public Guid UserId { get; set; }
     }
 }
