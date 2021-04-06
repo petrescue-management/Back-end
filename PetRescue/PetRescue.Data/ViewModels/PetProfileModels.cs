@@ -22,6 +22,7 @@ namespace PetRescue.Data.ViewModels
         public Guid CenterId { get; set; }
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
+        public CenterProfileViewModel CenterProfile { get; set; }
 
         public class CreatePetProfileModel
         {

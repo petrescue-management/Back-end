@@ -319,8 +319,10 @@ namespace PetRescue.Data.Domains
 
                 foreach (var petProfile in records)
                 {
+                    var center = petProfile.Center;
                     listPetProfiles.Add(new PetProfileModel
                     {
+                        PetProfileId = petProfile.PetProfileId,
                         PetDocumentId = petProfile.PetDocumentId,
                         PetName = petProfile.PetName,
                         PetGender = petProfile.PetGender,
@@ -334,7 +336,12 @@ namespace PetRescue.Data.Domains
                         PetProfileDescription = petProfile.PetProfileDescription,
                         CenterId = petProfile.CenterId,
                         InsertedBy = petProfile.InsertedBy,
-                        InsertedAt = petProfile.InsertedAt
+                        InsertedAt = petProfile.InsertedAt,
+                        CenterProfile = new CenterProfileViewModel
+                        {
+                            CenterAdrress = center.Address,
+                            CenterName = center.CenterName
+                        }
                     });
                 }
 

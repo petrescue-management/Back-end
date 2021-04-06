@@ -197,8 +197,8 @@ namespace PetRescue.Data.Domains
                                 CenterName = form.CenterName,
                                 Email = form.Email
                             };
-                            uow.saveChanges();
-                            MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(form.Email,viewModel), MailConstant.APPROVE_REGISTRATION_FORM);
+                            //uow.saveChanges();
+                            MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(viewModel), MailConstant.APPROVE_REGISTRATION_FORM);
                             MailExtensions.SendBySendGrid(mailArguments, null, null);
                             result = newCenter.CenterId.ToString();
                         }
@@ -213,14 +213,14 @@ namespace PetRescue.Data.Domains
                 else if (model.Status == CenterRegistrationFormStatusConst.REJECTED)
                 {
                     form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
-                    uow.saveChanges();
+                    //uow.saveChanges();
                     var error = "";
                     var viewModel = new CenterRegistrationFormViewModel
                     {
                         CenterName = form.CenterName,
                         Email = form.Email
                     };
-                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(form.Email, viewModel, error), MailConstant.REJECT_REGISTRATION_FORM);
+                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(viewModel, error), MailConstant.REJECT_REGISTRATION_FORM);
                     MailExtensions.SendBySendGrid(mailArguments, null, null);
                 }
             }

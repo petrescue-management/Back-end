@@ -52,7 +52,8 @@ namespace PetRescue.Data.Domains
                     InsertedBy = record.InsertedBy,
                     InsertedAt = record.InsertedAt,
                     UpdatedBy = record.UpdatedBy,
-                    UpdatedAt = record.UpdatedAt
+                    UpdatedAt = record.UpdatedAt,
+                    Dob = record.Dob
                 });
             }
 
@@ -95,7 +96,8 @@ namespace PetRescue.Data.Domains
                 InsertedBy = form.InsertedBy,
                 InsertedAt = form.InsertedAt,
                 UpdatedBy = form.UpdatedBy,
-                UpdatedAt = form.UpdatedAt
+                UpdatedAt = form.UpdatedAt,
+                Dob = form.Dob
             };
             return result;
         }
@@ -227,7 +229,9 @@ namespace PetRescue.Data.Domains
                     InsertedBy = form.InsertedBy,
                     InsertedAt = form.InsertedAt,
                     UpdatedBy = form.UpdatedBy,
-                    UpdatedAt = form.UpdatedAt
+                    UpdatedAt = form.UpdatedAt,
+                    Dob = form.Dob
+                    
                 };
                 uow.saveChanges();
                 return result;
@@ -263,7 +267,8 @@ namespace PetRescue.Data.Domains
                     InsertedBy = adoptionForm.InsertedBy,
                     InsertedAt = adoptionForm.InsertedAt,
                     UpdatedBy = adoptionForm.UpdatedBy,
-                    UpdatedAt = adoptionForm.UpdatedAt
+                    UpdatedAt = adoptionForm.UpdatedAt,
+                    Dob  = adoptionForm.Dob
                 });
             }
             return result;

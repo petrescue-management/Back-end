@@ -19,19 +19,17 @@ namespace PetRescue.Data.ConstantHelper
         public const string ORG_NAME = "RescueMe";
         public const string APP_VOLUNTEER_NAME = "VolunteerApp";
         public const string WEBSITE_NAME = "petrescue.com";
-        public static string ApproveRegistrationCenter(string mailTo, CenterRegistrationFormViewModel model)
+        public static string ApproveRegistrationCenter(CenterRegistrationFormViewModel model)
         {
-            return "<!DOCTYPE html><html><head><title></title></head><body data-new-gr-c-s-loaded = '14.1002.0' spellcheck = 'false'>< p style = 'text-align: left;'><strong><span style = 'font-size: 22px;'> " +
+            return "<!DOCTYPE html><html><head><title></title></head><body data-new-gr-c-s-loaded = '14.1002.0' spellcheck = 'false'><p style = 'text-align: left;'><strong><span style = 'font-size: 22px;'> " +
                 ORG_NAME +
-                " </span></strong></p><p>Chào bạn, " +
-                model.Email +
+                " </span></strong></p><p>Xin Chào, " +
+                model.CenterName +
                 "</p><p> Chúng tôi là đại diện đến từ hệ thống cứu hộ<strong> " +
                 ORG_NAME +
-                "</strong></p><p> Dựa vào các thông tin mà <strong> " +
-                model.Email +
-                " </strong> đã cung cấp, chúng tôi đã tra cứu, xác minh và phê duyệt trung tâm của bạn( <strong> " +
-                model.CenterName +
-                " </strong> ) đủ điều kiện để trở thành một trung tâm thành viên của hệ thống cứu hộ " +
+                "</strong></p><p> Dựa vào các thông tin mà bạn  " +
+                " đã cung cấp, chúng tôi đã tra cứu, xác minh và phê duyệt trung tâm của bạn " +
+                "đủ điều kiện để trở thành một trung tâm thành viên của hệ thống cứu hộ " +
                 ORG_NAME +
                 ".</p><p> Để sử dụng hệ thống của chúng tôi, bạn cần phải dùng email đã đăng ký; ( <span style = 'color: rgb(44, 130, 201);'><a href = 'mailto:" +
                 model.Email +
@@ -49,22 +47,42 @@ namespace PetRescue.Data.ConstantHelper
                 MAIL +
                 " </sub></p></body></html>";
         }
-        public static string RejectRegistrationCenter(string mailTo, CenterRegistrationFormViewModel model, string error)
+        public static string RejectRegistrationCenter(CenterRegistrationFormViewModel model, string error)
         {
-            return "";
+            return "<!DOCTYPE html><html><head><title></title></head><body data-new-gr-c-s-loaded = '14.1002.0' spellcheck = 'false'><p style = 'text-align: left;'><strong><span style = 'font-size: 22px;'> " +
+                ORG_NAME +
+                " </span></strong></p><p>Chào bạn, " +
+                model.CenterName +
+                "</p><p> Chúng tôi là đại diện đến từ hệ thống cứu hộ<strong> " +
+                ORG_NAME +
+                "</strong></p><p> Dựa vào các thông tin mà bạn " +
+                "đã cung cấp, chúng tôi đã tra cứu, xác minh trung tâm của bạn" +
+                " và đưa ra quyết định từ chối đơn đăng ký của bạn vì chưa đủ điều kiện để trở thành một trung tâm thành viên của hệ thống cứu hộ " +
+                ORG_NAME +
+                " với lý do như sau: </p>" +
+                "<ul>" +
+                error +
+                "</ul>" +
+                "<p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi.</p><p> Thân ái </p>" +
+                "<p> --------------------------------------------------</p>" +
+                "<p style = 'line-height: 0.1;'><sub> Hệ Thống Cứu Hộ " +
+                ORG_NAME +
+                "</sub></p><p style = 'line-height: 0.2;'><sub> Góp ý cho hệ thống qua mail: " +
+                MAIL +
+                " </sub></p></body></html>";
         }
-        public static string ApproveRegistrationVolunteer(string mailto, CenterViewModel model)
+        public static string ApproveRegistrationVolunteer(VolunteerRegistrationFormViewModel volunteerModel, CenterViewModel model)
         {
             return "<!DOCTYPE html><html><head><title></title></head>" +
                 "<body data-new-gr-c-s-loaded='14.1002.0' spellcheck='false'><p style = 'text-align: left;'><strong><span style ='font-size: 22px;'> " +
                 ORG_NAME +
                 " </span></strong></p><p> Chào bạn, " +
-                mailto +
+                volunteerModel.LastName + " " + volunteerModel.FirstName +
                 " </p><p> Chúng tôi đến từ hệ thống cứu hộ <strong> " +
                 ORG_NAME +
-                "</strong></p><p> Chúc mừng bạn, bạn đã trở thành một tình nguyện viên của " +
+                "</strong></p><p> Chúc mừng bạn, bạn đã trở thành một tình nguyện viên của <strong>" +
                 model.CenterName +
-                "</p><p> Bạn sẽ phải cần đăng nhập tại ứng dụng<span style= 'color: rgb(44, 130, 201);'> " +
+                "</strong></p><p> Bạn sẽ phải cần đăng nhập tại ứng dụng<span style= 'color: rgb(44, 130, 201);'> " +
                 APP_VOLUNTEER_NAME +
                 "</span></p><p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi </p>" +
                 "<p> Thân ái </p>" +
@@ -85,34 +103,34 @@ namespace PetRescue.Data.ConstantHelper
                 "</sub></p><p style = 'line-height: 0.2;'><sub> Góp ý cho hệ thống qua mail: " +
                 MAIL +" </sub></p></body></html>";
         }
-        public static string RejectRegistrationVolunteer(string mailTo,string error, CenterViewModel model)
+        public static string RejectRegistrationVolunteer(VolunteerRegistrationFormViewModel volunteerModel, string error, CenterViewModel model)
         {
             return "<!DOCTYPE html><html><head><title></title></head><body data-new-gr-c-s-loaded = '14.1002.0' spellcheck = 'false'><p style = 'text-align: left;' ><strong><span style='font-size: 22px;'> " +
                 ORG_NAME +
                 " </span></strong></p><p>Chào bạn, " +
-                mailTo +
-                "</p><p> Chúng tôi đến từ hệ thống cứu hộ<strong>" +
+                volunteerModel.LastName + " " + volunteerModel.FirstName +
+                "</p><p> Chúng tôi đến từ hệ thống cứu hộ <strong>" +
                 ORG_NAME +
-                "</strong></p><p> Cảm ơn bạn đã đăng ký để trở thành tình nguyện viện của " +
+                "</strong></p><p> Cảm ơn bạn đã đăng ký để trở thành tình nguyện viện của <strong>" +
                 model.CenterName +
-                ". Nhưng chúng tối rất tiếc phải thông báo rằng, trung tâm " +
+                "</strong>. Nhưng chúng tối rất tiếc phải thông báo rằng, <strong>" +
                 model.CenterName +
-                " đã từ chối đề nghị trở thành tình nguyện viên với lý do như sau:</p><ul>" +
+                "</strong> đã từ chối đơn đăng ký của bạn với lý do như sau:</p><ul>" +
                 error +
                 "</ul><p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi.</p><p> Thân ái </p>" +
                 "<p> --------------------------------------------------</p>" +
                 "<p style = 'line-height: 1;'><span style = 'font-size: 14px;'> Mọi thông tin chi tiết xin liên hệ :</span>" +
-                "</p><p style = 'line-height: 0.5;' ><span style = 'font-size: 14px;'> " +
+                "</p><p style = 'line-height: 0.5;' ><span style = 'font-size: 14px;'><strong> " +
                 model.CenterName +
-                "</span></p><p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> SĐT: " +
+                "</strong></span></p><p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> SĐT: " +
                 model.Phone +
                 "</span></p>" +
                 "<p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> Địa chỉ: " +
                 model.Address +
-                "<p style = 'line-height: 0.5;' >< span style = 'font-size: 14px;'> Email: " +
+                "<p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> Email: " +
                 model.Email +
                 "</span></p><p> --------------------------------------------------</p>" +
-                "<p style = 'line-height: 0.1;' >< sub > Hệ Thống Cứu Hộ " +
+                "<p style = 'line-height: 0.1;' ><sub> Hệ Thống Cứu Hộ " +
                 ORG_NAME +
                 "</sub></p><p style = 'line-height: 0.2;'><sub> Góp ý cho hệ thống qua mail: " +
                 MAIL + 

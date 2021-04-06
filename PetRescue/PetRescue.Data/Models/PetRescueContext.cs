@@ -105,6 +105,10 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.ChildAge).HasColumnName("child_age");
 
+                entity.Property(e => e.Dob)
+                    .HasColumnName("dob")
+                    .HasColumnType("date");
+
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasColumnName("email")

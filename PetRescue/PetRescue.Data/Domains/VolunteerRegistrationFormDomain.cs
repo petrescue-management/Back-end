@@ -26,10 +26,8 @@ namespace PetRescue.Data.Domains
             var userRoleDomain = uow.GetService<UserRoleDomain>();
             var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             var result = "";
-            if(currentUser == null)
+            if (!isExisted(model.Email, model.CenterId))
             {
-                volunteerRegistrationFormRepo.Create(model);
-                var tokens = notificationTokenDomain.FindDeviceTokenByApplicationNameAndRoleNameAndCenterId(ApplicationNameHelper.MANAGE_CENTER_APP, RoleConstant.MANAGER, model.CenterId);
                 Message message = new Message
                 {
                     Notification = new Notification
@@ -38,29 +36,40 @@ namespace PetRescue.Data.Domains
                         Body = NotificationBodyHelper.NEW_VOLUNTEER_FORM_BODY
                     }
                 };
-                await notificationTokenDomain.NofiticationForDeviceToken(path, tokens, message);
-                uow.saveChanges();
-                result = "Success";
-            }
-            else
-            {
-                if ((bool)!currentUser.IsBelongToCenter)
+                if (currentUser == null)
                 {
-                    if (!userRoleDomain.IsAdmin(model.Email))
-                    {
-                        volunteerRegistrationFormRepo.Create(model);
-                        uow.saveChanges();
-                        result = "Success";
-                    }
-                    else
-                    {
-                        result = "This email is invalid";
-                    }
+                    volunteerRegistrationFormRepo.Create(model);
+                    var tokens = notificationTokenDomain.FindDeviceTokenByApplicationNameAndRoleNameAndCenterId(ApplicationNameHelper.MANAGE_CENTER_APP, RoleConstant.MANAGER, model.CenterId);
+                    await notificationTokenDomain.NofiticationForDeviceToken(path, tokens, message);
+                    uow.saveChanges();
+                    result = "Success";
                 }
                 else
                 {
-                    result = "This email is belong anoter center";
+                    if ((bool)!currentUser.IsBelongToCenter)
+                    {
+                        if (!userRoleDomain.IsAdmin(model.Email))
+                        {
+                            volunteerRegistrationFormRepo.Create(model);
+                            var tokens = notificationTokenDomain.FindDeviceTokenByApplicationNameAndRoleNameAndCenterId(ApplicationNameHelper.MANAGE_CENTER_APP, RoleConstant.MANAGER, model.CenterId);
+                            await notificationTokenDomain.NofiticationForDeviceToken(path, tokens, message);
+                            uow.saveChanges();
+                            result = "Success";
+                        }
+                        else
+                        {
+                            result = "This email is invalid";
+                        }
+                    }
+                    else
+                    {
+                        result = "This email is belong anoter center";
+                    }
                 }
+            }
+            else
+            {
+                result = "This Volunteer Form is Existed";
             }
             return result;
         }
@@ -103,9 +112,14 @@ namespace PetRescue.Data.Domains
                         Phone = center.Phone,
                         Email = center.CenterNavigation.Email,
                     };
-                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationVolunteer(form.Email,centerModel), MailConstant.APPROVE_REGISTRATION_VOLUNTEER);
+                    var volunteerFormModel = new VolunteerRegistrationFormViewModel
+                    {
+                        FirstName = formData.FirstName,
+                        LastName = formData.LastName,
+                    };
+                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationVolunteer(volunteerFormModel, centerModel), MailConstant.APPROVE_REGISTRATION_VOLUNTEER);
                     MailExtensions.SendBySendGrid(mailArguments, null, null);
-                    uow.saveChanges();
+                    //uow.saveChanges();
                 }
                 return result;
             }
@@ -124,11 +138,18 @@ namespace PetRescue.Data.Domains
                     reason += ErrorConst.ErrorEmail;
                 if (model.IsPhone)
                     reason += ErrorConst.ErrorPhone;
+                if (model.IsName)
+                    reason += ErrorConst.ErrorName;
                 if (model.AnotherReason != null)
                     reason += "<li><p>"+model.AnotherReason + "</p></li>";
                 result = "reject";
-                uow.saveChanges();
-                MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationVolunteer(form.Email, reason, centerModel), MailConstant.REJECT_REGISTRATION_FORM);
+                var volunteerFormModel = new VolunteerRegistrationFormViewModel
+                {
+                    FirstName = formData.FirstName,
+                    LastName = formData.LastName,
+                };
+                //uow.saveChanges();
+                MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationVolunteer(volunteerFormModel, reason, centerModel), MailConstant.REJECT_REGISTRATION_FORM);
                 MailExtensions.SendBySendGrid(mailArguments, null, null);
             }
             return result;
@@ -159,6 +180,18 @@ namespace PetRescue.Data.Domains
                 });
             }
             return result;
+        }
+        private bool isExisted(string email, Guid centerId)
+        {
+            var volunteerFormRepo = uow.GetService<IVolunteerRegistrationFormRepository>();
+            var result = volunteerFormRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId) 
+                && s.Email.Equals(email) && 
+                s.VolunteerRegistrationFormStatus == VolunteerRegistrationFormConst.PROCESSING);
+            if(result != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -8,6 +8,7 @@ namespace PetRescue.Data.Models
         public Guid AdoptionRegistrationId { get; set; }
         public Guid PetProfileId { get; set; }
         public string UserName { get; set; }
+        public DateTime? Dob { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Job { get; set; }

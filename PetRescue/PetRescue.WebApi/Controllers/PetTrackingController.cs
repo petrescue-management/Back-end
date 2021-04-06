@@ -18,6 +18,38 @@ namespace PetRescue.WebApi.Controllers
         {
         }
         [Authorize]
+        [HttpGet]
+        [Route("api/get-pet-tracking-by-id")]
+        public IActionResult GetPetTrackingById([FromQuery]Guid petTrackingId)
+        {
+            try
+            {
+                var _domain = _uow.GetService<PetTrackingDomain>();
+                var result = _domain.GetPetTrackingById(petTrackingId);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [Authorize]
+        [HttpGet]
+        [Route("api/get-pet-tracking-by-petprofileid")]
+        public IActionResult GetListPetTrackingByPetProfileId([FromQuery] Guid petProfileId)
+        {
+            try
+            {
+                var _domain = _uow.GetService<PetTrackingDomain>();
+                var result = _domain.GetListPetTrackingByPetProfileId(petProfileId);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [Authorize]
         [HttpPost]
         [Route("api/create-pet-tracking")]
         public IActionResult CreatePetTracking([FromBody]PetTrackingCreateModel model) 

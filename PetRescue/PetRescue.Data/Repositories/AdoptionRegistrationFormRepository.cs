@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -54,7 +55,6 @@ namespace PetRescue.Data.Repositories
         }
         #endregion
 
-
         #region UPDATE STATUS
         private AdoptionRegistrationForm PrepareUpdate(UpdateViewModel model, Guid updateBy)
         {
@@ -80,7 +80,8 @@ namespace PetRescue.Data.Repositories
                       InsertedBy = f.InsertedBy,
                       InsertedAt = f.InsertedAt,
                       UpdatedBy = updateBy,
-                      UpdatedAt = DateTime.UtcNow
+                      UpdatedAt = DateTime.UtcNow,
+                      Dob = f.Dob
                   }).FirstOrDefault();
             return form;
         }
@@ -115,11 +116,12 @@ namespace PetRescue.Data.Repositories
                 BeViolentTendencies = model.BeViolentTendencies,
                 HaveAgreement = model.HaveAgreement,
                 HavePet = model.HavePet,
-                AdoptionRegistrationStatus = model.AdoptionRegistrationStatus,
+                AdoptionRegistrationStatus = AdoptionRegistrationFormStatusConst.PROCESSING,
                 InsertedBy = insertBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
-                UpdatedAt = null
+                UpdatedAt = null,
+                Dob = model.Dob
             };
             return form;
         }

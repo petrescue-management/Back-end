@@ -29,6 +29,7 @@ namespace PetRescue.Data.ConstantHelper
         public const string NEW_RESCUE_FORM_TITLE = "Bạn có một yêu cầu cứu hộ";
         public const string NEW_VOLUNTEER_FORM_TITLE = "Bạn có thông báo đăng ký tình nguyện viên";
         public const string RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_TITLE = "Tình Nguyện Viên đã tiếp nhận";
+        public const string FINDER_FORM_OUT_DATE_TITLE = "Đơn cứu hộ bị quá hạn";
     }
     public class NotificationBodyHelper
     {
@@ -40,5 +41,6 @@ namespace PetRescue.Data.ConstantHelper
         public const string NEW_RESCUE_FORM_BODY = "Có đơn cứu hộ cần được xử lý";
         public const string NEW_VOLUNTEER_FORM_BODY = "Có đơn đăng ký tình nguyện viên cần được xử lý";
         public const string RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY = "Tình Nguyện Viên đã nhận được yêu cầu cứu hộ";
+        public const string FINDER_FORM_OUT_DATE_BODY = "Đơn cứu hộ của bạn đã quá thời gian";
     }
 }

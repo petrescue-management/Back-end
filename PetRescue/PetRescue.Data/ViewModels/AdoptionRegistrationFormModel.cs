@@ -25,6 +25,7 @@ namespace PetRescue.Data.ViewModels
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public DateTime? Dob { get; set; }
 
     }
 
@@ -35,6 +36,7 @@ namespace PetRescue.Data.ViewModels
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Job { get; set; }
+        public DateTime Dob { get; set; }
         public string Address { get; set; }
         public int HouseType { get; set; }
         public int FrequencyAtHome { get; set; }
@@ -43,7 +45,6 @@ namespace PetRescue.Data.ViewModels
         public bool BeViolentTendencies { get; set; }
         public bool HaveAgreement { get; set; }
         public int HavePet { get; set; }
-        public int AdoptionRegistrationStatus { get; set; }
 
     }
     public class AdoptionRegistrationFormViewModel

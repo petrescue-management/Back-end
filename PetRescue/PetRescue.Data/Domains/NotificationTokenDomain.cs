@@ -276,5 +276,61 @@ namespace PetRescue.Data.Domains
                 return false;
             }
         }
+        public async Task<bool> NotificationForUserWhenPickerApprovePicked(string path, Guid userId, string applicationName)
+        {
+            try
+            {
+                var firebaseExtensions = new FireBaseExtentions();
+                var app = firebaseExtensions.GetFirebaseApp(path);
+                var fcm = FirebaseMessaging.GetMessaging(app);
+                var deviceToken = FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, userId);
+                if (deviceToken != null)
+                {
+                    var message = new Message();
+                    message.Notification = new Notification
+                    {
+                        Title = NotificationTitleHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_TITLE,
+                        Body = NotificationBodyHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY,
+                    };
+                    message.Token = deviceToken.DeviceToken;
+                    await fcm.SendAsync(message);
+                }
+                app.Delete();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            
+        }
+        public async Task<bool> NotificationForUserWhenFinderFormDelete(string path, Guid userId, string applicationName)
+        {
+            try
+            {
+                var firebaseExtensions = new FireBaseExtentions();
+                var app = firebaseExtensions.GetFirebaseApp(path);
+                var fcm = FirebaseMessaging.GetMessaging(app);
+                var deviceToken = FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, userId);
+                if (deviceToken != null)
+                {
+                    var message = new Message();
+                    message.Notification = new Notification
+                    {
+                        Title = NotificationTitleHelper.FINDER_FORM_OUT_DATE_TITLE,
+                        Body = NotificationBodyHelper.FINDER_FORM_OUT_DATE_BODY,
+                    };
+                    message.Token = deviceToken.DeviceToken;
+                    await fcm.SendAsync(message);
+                }
+                app.Delete();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
     }
 }

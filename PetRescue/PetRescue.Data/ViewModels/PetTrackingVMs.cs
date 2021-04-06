@@ -23,5 +23,6 @@ namespace PetRescue.Data.ViewModels
         public string Description { get; set; }
         public double Weight { get; set; }
         public DateTime InsertAt { get; set; }
+        public string Author { get; set; }
     }
 }

@@ -69,7 +69,7 @@ namespace PetRescue.Data.Domains
             var userProfile = profileRepo.FindById(model.UserId);
             var result = userProfile == null ? profileRepo.Create(model) 
                 : profileRepo.Edit(userProfile, model);
-            uow.saveChanges();
+            //uow.saveChanges();
             if(result != null)
             {
                 return 1;

@@ -66,24 +66,8 @@ namespace PetRescue.Data.Domains
         public async Task<FinderFormModel> UpdateFinderFormStatus(UpdateStatusModel model, Guid updatedBy)
         {
             var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(model, updatedBy);
-            //var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
+            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             uow.saveChanges();
-            //var tokens = new List<string>();
-            //var deviceToken = notificationTokenDomain.FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, finderForm.InsertedBy);
-            //if (deviceToken != null)
-            //{
-            //    var message = new Message();
-            //    if (model.Status == FinderFormStatus.PICKING)
-            //    {
-            //        message.Notification = new Notification
-            //        {
-            //            Title = NotificationTitleHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_TITLE,
-            //            Body = NotificationBodyHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY
-            //        };
-            //    }
-            //    tokens.Add(deviceToken.DeviceToken);
-            //    await notificationTokenDomain.NofiticationForDeviceToken(path, tokens, message);
-            //}
             return finderForm;
         }
         #endregion
