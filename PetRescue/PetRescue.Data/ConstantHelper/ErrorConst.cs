@@ -10,5 +10,6 @@ namespace PetRescue.Data.ConstantHelper
         public const string ErrorPhone = "<li><p>Số Điện Thoại không phù hợp</p></li>";
         public const string ErrorAddress = "<li><p>Địa chỉ không phù hợp</p></li>";
         public const string ErrorName = "<li><p>Tên không phù hợp</p></li>";
+        public const string ErrorImage = "<li><p>Hình ảnh không hợp lệ</p></li>";
     }
 }

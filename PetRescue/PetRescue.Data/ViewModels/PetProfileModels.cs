@@ -8,7 +8,7 @@ namespace PetRescue.Data.ViewModels
     public class PetProfileModel
     {
         public Guid PetProfileId { get; set; }
-        public Guid PetDocumentId { get; set; }
+        public Guid? PetDocumentId { get; set; }
         public string PetName { get; set; }
         public int PetGender { get; set; }
         public int? PetAge { get; set; }
@@ -23,7 +23,6 @@ namespace PetRescue.Data.ViewModels
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
         public CenterProfileViewModel CenterProfile { get; set; }
-
         public class CreatePetProfileModel
         {
             public Guid PetDocumentId { get; set; }
@@ -36,7 +35,6 @@ namespace PetRescue.Data.ViewModels
             public int PetStatus { get; set; }
             public string PetProfileDescription { get; set; }
         }
-
         public class UpdatePetProfileModel
         {
             public Guid PetDocumentId { get; set; }
@@ -55,7 +53,6 @@ namespace PetRescue.Data.ViewModels
             public string TypeName { get; set; }
             public List<PetProfileModel> result { get; set; }
         }
-
         public class SearchPetProfileModel
         {
             public Guid PetTypeId { get; set; }

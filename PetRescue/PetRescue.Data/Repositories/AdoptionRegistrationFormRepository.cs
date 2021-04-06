@@ -121,7 +121,7 @@ namespace PetRescue.Data.Repositories
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
                 UpdatedAt = null,
-                Dob = model.Dob
+                Dob = model.Dob,
             };
             return form;
         }

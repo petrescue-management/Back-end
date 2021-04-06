@@ -463,7 +463,6 @@ namespace PetRescue.Data.Models
                 entity.HasOne(d => d.PetDocument)
                     .WithMany(p => p.PetProfile)
                     .HasForeignKey(d => d.PetDocumentId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PetProfile_PetDocument");
 
                 entity.HasOne(d => d.PetFurColor)

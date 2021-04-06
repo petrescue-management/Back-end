@@ -113,5 +113,39 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        [Authorize(Roles = RoleConstant.VOLUNTEER)]
+        [HttpGet]
+        [Route("api/get-list-finder-form-by-status")]
+        public IActionResult GetListFinderFormByStatus([FromQuery]int status)
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var _domain = _uow.GetService<FinderFormDomain>();
+                var result = _domain.GetListByStatus(Guid.Parse(currentUserId),status);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+        [Authorize]
+        [HttpGet]
+        [Route("api/get-list-finder-form-by-userid")]
+        public IActionResult GetListFinderFormByUserId()
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var _domain = _uow.GetService<FinderFormDomain>();
+                var result = _domain.GetListByUserId(Guid.Parse(currentUserId));
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
     }
 }

@@ -203,35 +203,16 @@ namespace PetRescue.Data.Domains
         }
         #endregion
         #region CREATE
-        public AdoptionRegistrationFormModel CreateAdoptionRegistrationForm(CreateAdoptionRegistrationFormModel model, Guid insertBy)
+        public AdoptionCreateViewModel CreateAdoptionRegistrationForm(CreateAdoptionRegistrationFormModel model, Guid insertBy)
         {
             if (!IsExistedForm(insertBy,model.PetProfileId))
             {
                 var form = uow.GetService<IAdoptionRegistrationFormRepository>().CreateAdoptionRegistrationForm(model, insertBy);
-                var petProfileService = uow.GetService<IPetProfileRepository>();
-                var result = new AdoptionRegistrationFormModel
+                var petProfile = uow.GetService<IPetProfileRepository>().Get().FirstOrDefault(s => s.PetProfileId.Equals(form.PetProfileId));
+                var result = new AdoptionCreateViewModel
                 {
-                    AdoptionRegistrationId = form.AdoptionRegistrationId,
-                    PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
-                    UserName = form.UserName,
-                    Phone = form.Phone,
-                    Email = form.Email,
-                    Job = form.Job,
-                    Address = form.Address,
-                    HouseType = form.HouseType,
-                    FrequencyAtHome = form.FrequencyAtHome,
-                    HaveChildren = form.HaveChildren,
-                    ChildAge = form.ChildAge,
-                    BeViolentTendencies = form.BeViolentTendencies,
-                    HaveAgreement = form.HaveAgreement,
-                    HavePet = form.HavePet,
-                    AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
-                    InsertedBy = form.InsertedBy,
-                    InsertedAt = form.InsertedAt,
-                    UpdatedBy = form.UpdatedBy,
-                    UpdatedAt = form.UpdatedAt,
-                    Dob = form.Dob
-                    
+                    AdoptionRegistrationFormId = form.AdoptionRegistrationId,
+                    CenterId = petProfile.CenterId
                 };
                 uow.saveChanges();
                 return result;

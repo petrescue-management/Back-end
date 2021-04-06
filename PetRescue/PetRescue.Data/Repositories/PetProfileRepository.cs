@@ -28,11 +28,11 @@ namespace PetRescue.Data.Repositories
         {
             PetProfile petProfile;
 
-            if (model.PetDocumentId == null)
+            if (model.PetDocumentId == null || model.PetDocumentId.Equals(Guid.Empty))
             {
                 petProfile = new PetProfile
                 {
-                    PetDocumentId = Guid.NewGuid(),
+                    PetDocumentId = null,
                     PetName = model.PetName,
                     PetGender = model.PetGender,
                     PetAge = model.PetAge,
@@ -43,7 +43,8 @@ namespace PetRescue.Data.Repositories
                     PetProfileDescription = model.PetProfileDescription,
                     CenterId = centerId,
                     InsertedBy = insertedBy,
-                    InsertedAt = DateTime.UtcNow
+                    InsertedAt = DateTime.UtcNow,
+                    PetProfileId = Guid.NewGuid()
                 };
             }
             else
@@ -61,7 +62,8 @@ namespace PetRescue.Data.Repositories
                     PetProfileDescription = model.PetProfileDescription,
                     CenterId = centerId,
                     InsertedBy = insertedBy,
-                    InsertedAt = DateTime.UtcNow
+                    InsertedAt = DateTime.UtcNow,
+                    PetProfileId = Guid.NewGuid()
                 };
             }
             return petProfile;

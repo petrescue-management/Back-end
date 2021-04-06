@@ -23,8 +23,6 @@ namespace PetRescue.Data.Domains
 
             if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
                 records = records.Where(c => c.CenterName.Contains(model.Keyword));
-
-
             if (model.Status != 0)
                 records = records.Where(c => c.CenterStatus.Equals(model.Status));
 

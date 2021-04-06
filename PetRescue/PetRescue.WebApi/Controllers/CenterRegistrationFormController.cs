@@ -90,7 +90,7 @@ namespace PetRescue.WebApi.Controllers
         [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpPost]
         [Route("api/procress-center-registration-form")]
-        public IActionResult ProcressCenterRegistrationForm(UpdateStatusModel model)
+        public IActionResult ProcressCenterRegistrationForm(UpdateRegistrationCenter model)
         {
             try
             {

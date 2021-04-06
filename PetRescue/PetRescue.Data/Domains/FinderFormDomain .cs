@@ -66,7 +66,6 @@ namespace PetRescue.Data.Domains
         public async Task<FinderFormModel> UpdateFinderFormStatus(UpdateStatusModel model, Guid updatedBy)
         {
             var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(model, updatedBy);
-            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             uow.saveChanges();
             return finderForm;
         }
@@ -154,6 +153,55 @@ namespace PetRescue.Data.Domains
                     FinderFormStatus = finderForm.FinderFormStatus,
                     FinderImageUrl = finderForm.FinderFormImgUrl,
                     FinderName = finderUser.UserProfile.FirstName + " " + finderUser.UserProfile.LastName,
+                    Lat = finderForm.Lat,
+                    Lng = finderForm.Lng,
+                    PetAttribute = finderForm.PetAttribute,
+                    phone = finderForm.Phone,
+                });
+            }
+            return result;
+        }
+        public List<FinderFormDetailModel> GetListByUserId(Guid userId) {
+            var finderFormRepo = uow.GetService<IFinderFormRepository>();
+            var userRepo = uow.GetService<IUserRepository>();
+            var finderForms = finderFormRepo.Get().Where(s =>s.InsertedBy.Equals(userId));
+            var result = new List<FinderFormDetailModel>();
+            foreach (var finderForm in finderForms)
+            {
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(userId));
+                result.Add(new FinderFormDetailModel
+                {
+                    FinderDate = finderForm.InsertedAt,
+                    FinderDescription = finderForm.FinderDescription,
+                    FinderFormId = finderForm.FinderFormId,
+                    FinderFormStatus = finderForm.FinderFormStatus,
+                    FinderImageUrl = finderForm.FinderFormImgUrl,
+                    FinderName = user.UserProfile.FirstName + " " + user.UserProfile.LastName,
+                    Lat = finderForm.Lat,
+                    Lng = finderForm.Lng,
+                    PetAttribute = finderForm.PetAttribute,
+                    phone = finderForm.Phone,
+                });
+            }
+            return result;
+        }
+        public List<FinderFormDetailModel> GetListByStatus(Guid updatedBy, int status)
+        {
+            var finderFormRepo = uow.GetService<IFinderFormRepository>();
+            var finderForms = finderFormRepo.Get().Where(s => s.UpdatedBy.Equals(updatedBy) && s.FinderFormStatus == status);
+            var result = new List<FinderFormDetailModel>();
+            var userRepo = uow.GetService<IUserRepository>();
+            foreach (var finderForm in finderForms)
+            {
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(updatedBy));
+                result.Add(new FinderFormDetailModel
+                {
+                    FinderDate = finderForm.InsertedAt,
+                    FinderDescription = finderForm.FinderDescription,
+                    FinderFormId = finderForm.FinderFormId,
+                    FinderFormStatus = finderForm.FinderFormStatus,
+                    FinderImageUrl = finderForm.FinderFormImgUrl,
+                    FinderName = user.UserProfile.FirstName + " " + user.UserProfile.LastName,
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,

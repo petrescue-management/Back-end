@@ -43,4 +43,5 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("lng")]
         public double Lng { get; set; }
     }
+    
 }

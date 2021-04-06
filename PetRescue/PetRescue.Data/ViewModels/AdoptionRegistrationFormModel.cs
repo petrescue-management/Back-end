@@ -88,4 +88,9 @@ namespace PetRescue.Data.ViewModels
         public Guid AdoptionFormId { get; set;}
         public Guid UserId { get; set; }
     }
+    public class AdoptionCreateViewModel
+    {
+        public Guid CenterId { get; set; }
+        public Guid AdoptionRegistrationFormId { get; set; }
+    }
 }

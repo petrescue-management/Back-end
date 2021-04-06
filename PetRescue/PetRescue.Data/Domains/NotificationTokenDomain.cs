@@ -119,7 +119,7 @@ namespace PetRescue.Data.Domains
             
             
         }
-        public async Task<bool> NotificationForManagerWhenHaveNewAdoptionRegisterForm(string path, Guid centerId,Guid AdoptionRegistrationId)
+        public async Task<bool> NotificationForManagerWhenHaveNewAdoptionRegisterForm(string path, Guid centerId)
         {
             try
             {

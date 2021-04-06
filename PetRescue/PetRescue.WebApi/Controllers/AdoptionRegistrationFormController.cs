@@ -87,10 +87,10 @@ namespace PetRescue.WebApi.Controllers
                 var result = _uow.GetService<AdoptionRegistrationFormDomain>().CreateAdoptionRegistrationForm(model, Guid.Parse(currentUserId));
                 if(result != null)
                 {
-                    await _uow.GetService<NotificationTokenDomain>().NotificationForManagerWhenHaveNewAdoptionRegisterForm(path, result.PetProfile.CenterId, result.AdoptionRegistrationId);
-                    return Success(result);
+                    await _uow.GetService<NotificationTokenDomain>().NotificationForManagerWhenHaveNewAdoptionRegisterForm(path, result.CenterId);
+                    return Success(result.AdoptionRegistrationFormId);
                 }
-                return BadRequest("You have registed");
+                return BadRequest("Is Registed");
             }
             catch (Exception ex)
             {

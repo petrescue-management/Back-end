@@ -26,7 +26,7 @@ namespace PetRescue.Data.Domains
             var userRoleDomain = uow.GetService<UserRoleDomain>();
             var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             var result = "";
-            if (!isExisted(model.Email, model.CenterId))
+            if (!IsExisted(model.Email, model.CenterId))
             {
                 Message message = new Message
                 {
@@ -119,7 +119,7 @@ namespace PetRescue.Data.Domains
                     };
                     MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationVolunteer(volunteerFormModel, centerModel), MailConstant.APPROVE_REGISTRATION_VOLUNTEER);
                     MailExtensions.SendBySendGrid(mailArguments, null, null);
-                    //uow.saveChanges();
+                    uow.saveChanges();
                 }
                 return result;
             }
@@ -148,7 +148,7 @@ namespace PetRescue.Data.Domains
                     FirstName = formData.FirstName,
                     LastName = formData.LastName,
                 };
-                //uow.saveChanges();
+                uow.saveChanges();
                 MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationVolunteer(volunteerFormModel, reason, centerModel), MailConstant.REJECT_REGISTRATION_FORM);
                 MailExtensions.SendBySendGrid(mailArguments, null, null);
             }
@@ -181,7 +181,7 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        private bool isExisted(string email, Guid centerId)
+        private bool IsExisted(string email, Guid centerId)
         {
             var volunteerFormRepo = uow.GetService<IVolunteerRegistrationFormRepository>();
             var result = volunteerFormRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId) 

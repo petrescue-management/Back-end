@@ -22,8 +22,6 @@ namespace PetRescue.Data.Domains
         public SearchReturnModel SearchCenterRegistrationForm(SearchModel model)
         {
             var records = uow.GetService<ICenterRegistrationFormRepository>().Get().AsQueryable();
-
-
             if (model.Status != 0)
                 records = records.Where(f => f.CenterRegistrationStatus.Equals(model.Status));
 
@@ -41,7 +39,9 @@ namespace PetRescue.Data.Domains
                     CenterAddress = f.CenterAddress,
                     Description = f.Description,
                     CenterRegistrationStatus = f.CenterRegistrationStatus,
-                    UpdatedAt = f.UpdatedAt
+                    UpdatedAt = f.UpdatedAt,
+                    ImageUrl = f.ImageUrl,
+                    InsertedAt = f.InsertedAt
                 }).ToList();
             return new SearchReturnModel
             {
@@ -111,7 +111,7 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region PROCESS FORM
-        public string ProcressCenterRegistrationForm(UpdateStatusModel model, Guid insertBy)
+        public string ProcressCenterRegistrationForm(UpdateRegistrationCenter model, Guid insertBy)
         {
             var center_registration_form_service = uow.GetService<ICenterRegistrationFormRepository>();
             var center_service = uow.GetService<ICenterRepository>();
@@ -197,7 +197,7 @@ namespace PetRescue.Data.Domains
                                 CenterName = form.CenterName,
                                 Email = form.Email
                             };
-                            //uow.saveChanges();
+                            uow.saveChanges();
                             MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(viewModel), MailConstant.APPROVE_REGISTRATION_FORM);
                             MailExtensions.SendBySendGrid(mailArguments, null, null);
                             result = newCenter.CenterId.ToString();
@@ -213,8 +213,18 @@ namespace PetRescue.Data.Domains
                 else if (model.Status == CenterRegistrationFormStatusConst.REJECTED)
                 {
                     form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
-                    //uow.saveChanges();
+                    uow.saveChanges();
                     var error = "";
+                    if (model.IsAddress)
+                        error += ErrorConst.ErrorAddress;
+                    if (model.IsImage)
+                        error += ErrorConst.ErrorImage;
+                    if (model.IsMail)
+                        error += ErrorConst.ErrorEmail;
+                    if (model.IsPhone)
+                        error += ErrorConst.ErrorPhone;
+                    if (model.AnotherReason != null)
+                        error += "<li><p>" + model.AnotherReason + "</p></li>";
                     var viewModel = new CenterRegistrationFormViewModel
                     {
                         CenterName = form.CenterName,
@@ -222,9 +232,9 @@ namespace PetRescue.Data.Domains
                     };
                     MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(viewModel, error), MailConstant.REJECT_REGISTRATION_FORM);
                     MailExtensions.SendBySendGrid(mailArguments, null, null);
+                    result = form.CenterRegistrationId.ToString();
                 }
             }
-
             return result;
         }
         #endregion

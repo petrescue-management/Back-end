@@ -53,7 +53,6 @@ namespace PetRescue.Data.Domains
             var type = uow.GetService<IPetTypeRepository>().GetPetTypeById(id);
             return type;
         }
-
         #region SEARCH PET PROFILE
         public SearchReturnModel SearchPetProfile(SearchPetProfileModel model, Guid centerId)
         {
@@ -84,7 +83,7 @@ namespace PetRescue.Data.Domains
                .Take(model.PageSize)
                .Select(p => new PetProfileModel
                {
-                   PetDocumentId = p.PetDocumentId,
+                   PetDocumentId = (Guid)p.PetDocumentId,
                    CenterId = p.CenterId,
                    PetProfileDescription = p.PetProfileDescription,
                    PetAge = p.PetAge,
@@ -104,17 +103,14 @@ namespace PetRescue.Data.Domains
             };
         }
         #endregion
-
         #region CREATE PET PROFILE
         public PetProfileModel CreatePetProfile(CreatePetProfileModel model, Guid insertBy, Guid centerId)
         {
             var petProfile = uow.GetService<IPetProfileRepository>().CreatePetProfile(model, insertBy, centerId);
             uow.saveChanges();
             return petProfile;
-
         }
         #endregion
-
         #region UPDATE PET PROFILE
         public PetProfileModel UpdatePetProfile(UpdatePetProfileModel model, Guid updatedBy)
         {

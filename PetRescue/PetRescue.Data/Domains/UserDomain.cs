@@ -38,7 +38,7 @@ namespace PetRescue.Data.Domains
                 {
                     Email = user.UserEmail,
                     Id = user.UserId.ToString(),
-                    Roles = user.UserRole.Select(r => r.Role.RoleName).ToArray(),
+                    Roles = user.UserRole.Where(r=>r.IsActive).Select(r => r.Role.RoleName).ToArray(),
                     CenterId = user.CenterId,
                     Phone = userProfile.Phone,
                     DoB  = userProfile.Dob,
@@ -69,7 +69,7 @@ namespace PetRescue.Data.Domains
             var userProfile = profileRepo.FindById(model.UserId);
             var result = userProfile == null ? profileRepo.Create(model) 
                 : profileRepo.Edit(userProfile, model);
-            //uow.saveChanges();
+            uow.saveChanges();
             if(result != null)
             {
                 return 1;
