@@ -32,6 +32,7 @@ namespace PetRescue.Data.ViewModels
         public string PetBreedName { get; set; }
         public string PetTypeName { get; set; }
         public string PetColorName { get; set; }
+        public List<PetTrackingViewModel> PetTrackings { get; set; }
     }
 
 

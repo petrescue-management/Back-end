@@ -97,24 +97,23 @@ namespace PetRescue.Data.Repositories
         #region UPDATE
         private PetProfile PrepareUpdate(UpdatePetProfileModel model, Guid updatedBy)
         {
-            var petProfile = Get()
-                    .Where(p => p.PetDocumentId.Equals(model.PetDocumentId))
-                    .Select(p => new PetProfile
-                    {
-                        PetDocumentId = model.PetDocumentId,
-                        PetName = model.PetName,
-                        PetGender = model.PetGender,
-                        PetAge = model.PetAge,
-                        PetBreedId = model.PetBreedId,
-                        PetFurColorId = model.PetFurColorId,
-                        PetImgUrl = model.PetImgUrl,
-                        PetStatus = model.PetStatus,
-                        PetProfileDescription = model.PetProfileDescription,
-                        CenterId = p.InsertedBy,
-                        InsertedBy = p.InsertedBy,
-                        InsertedAt = p.InsertedAt
-                    }).FirstOrDefault();
-
+            var petProfile = Get().FirstOrDefault(s => s.PetProfileId.Equals(model.PetProfileId));
+            if (model.PetProfileDescription != null)
+                petProfile.PetProfileDescription = model.PetProfileDescription;
+            if (model.PetName != null)
+                petProfile.PetName = model.PetName;
+            if (model.PetStatus != 0)
+                petProfile.PetStatus = model.PetStatus;
+            if (model.PetImgUrl != null)
+                petProfile.PetImgUrl = model.PetImgUrl;
+            if (model.PetGender != 0)
+                petProfile.PetGender = model.PetGender;
+            if (!model.PetBreedId.Equals(Guid.Empty))
+                petProfile.PetBreedId = model.PetBreedId;
+            if (!model.PetFurColorId.Equals(Guid.Empty))
+                petProfile.PetFurColorId = model.PetFurColorId;
+            if (model.PetAge != 0)
+                petProfile.PetAge = model.PetAge;
             return petProfile;
         }
 
@@ -126,6 +125,7 @@ namespace PetRescue.Data.Repositories
 
             var result = new PetProfileModel
             {
+                PetProfileId = petProfile.PetProfileId,
                 PetDocumentId = petProfile.PetDocumentId,
                 PetName = petProfile.PetName,
                 PetGender = petProfile.PetGender,

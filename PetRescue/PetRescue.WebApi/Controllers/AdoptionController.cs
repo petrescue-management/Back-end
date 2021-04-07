@@ -102,6 +102,22 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
+        [Authorize]
+        [HttpGet]
+        [Route("api/get-adoption-by-petprofileid")]
+        public IActionResult GetAdoptionByPetProfileId([FromQuery]Guid petProfileId)
+        {
+            try
+            {
+                var _domain = _uow.GetService<AdoptionDomain>();
+                var result = _domain.GetAdoptionByPetId(petProfileId);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
 
     }
 }

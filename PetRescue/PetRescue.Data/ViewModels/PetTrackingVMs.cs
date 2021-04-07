@@ -17,8 +17,8 @@ namespace PetRescue.Data.ViewModels
     public class PetTrackingViewModel
     {
         public Guid PetTrackingId { get; set; }
-        public bool isVaccinated { get; set; }
-        public bool isSterilized { get; set; }
+        public bool? IsVaccinated { get; set; }
+        public bool? IsSterilized { get; set; }
         public string ImageUrl { get; set; }
         public string Description { get; set; }
         public double Weight { get; set; }

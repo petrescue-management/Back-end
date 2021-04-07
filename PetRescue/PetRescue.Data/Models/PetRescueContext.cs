@@ -366,13 +366,9 @@ namespace PetRescue.Data.Models
                     .HasColumnName("pet_document_id")
                     .ValueGeneratedNever();
 
+                entity.Property(e => e.CenterId).HasColumnName("centerId");
+
                 entity.Property(e => e.FinderFormId).HasColumnName("finder_form_id");
-
-                entity.Property(e => e.PetAttribute).HasColumnName("pet_attribute");
-
-                entity.Property(e => e.PetDocumentDescription)
-                    .IsRequired()
-                    .HasColumnName("pet_document_description");
 
                 entity.Property(e => e.PickerFormId).HasColumnName("picker_form_id");
 
@@ -459,11 +455,6 @@ namespace PetRescue.Data.Models
                     .HasForeignKey(d => d.PetBreedId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PetProfile_PetBreed1");
-
-                entity.HasOne(d => d.PetDocument)
-                    .WithMany(p => p.PetProfile)
-                    .HasForeignKey(d => d.PetDocumentId)
-                    .HasConstraintName("FK_PetProfile_PetDocument");
 
                 entity.HasOne(d => d.PetFurColor)
                     .WithMany(p => p.PetProfile)

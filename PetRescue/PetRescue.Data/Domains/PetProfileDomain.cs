@@ -355,32 +355,31 @@ namespace PetRescue.Data.Domains
         {
             var petDocumentRepo = uow.GetService<IPetDocumentRepository>();
             var petProfileRepo = uow.GetService<IPetProfileRepository>();
-            var pickerFormRepo = uow.GetService<IPickerFormRepository>();
-            var finderFormRepo = uow.GetService<IFinderFormRepository>();
             var userRepo = uow.GetService<IUserRepository>();
             var result = new PetDocumentViewModel();
             var petProfile = petProfileRepo.Get().FirstOrDefault(s => s.PetProfileId.Equals(petProfileId));
-            if (petProfile.PetDocument != null)
+            var petDocument = petDocumentRepo.Get().FirstOrDefault(s => s.PetDocumentId.Equals(petProfile.PetDocumentId));
+            if (petDocument != null)
             {
-                var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petProfile.PetDocument.PickerForm.InsertedBy));
+                var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petDocument.PickerForm.InsertedBy));
                 var fullName = currentUser.UserProfile.LastName + " "+currentUser.UserProfile.FirstName;
                 var pickerForm = new PickerFormViewModel
                 {
-                    PickerDate = petProfile.PetDocument.PickerForm.InsertedAt,
-                    PickerDescription = petProfile.PetDocument.PetDocumentDescription,
-                    PickerImageUrl = petProfile.PetDocument.PickerForm.PickerImageUrl,
+                    PickerDate = petDocument.PickerForm.InsertedAt,
+                    PickerDescription = petDocument.PickerForm.PickerDescription,
+                    PickerImageUrl = petDocument.PickerForm.PickerImageUrl,
                     PickerName = fullName,
                 };
-                currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petProfile.PetDocument.FinderForm.InsertedBy));
+                currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petDocument.FinderForm.InsertedBy));
                 fullName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
                 var finderForm = new FinderFormViewModel
                 {
-                    FinderDate = petProfile.PetDocument.FinderForm.InsertedAt,
-                    FinderDescription = petProfile.PetDocument.FinderForm.FinderDescription,
-                    FinderImageUrl = petProfile.PetDocument.FinderForm.FinderFormImgUrl,
+                    FinderDate = petDocument.FinderForm.InsertedAt,
+                    FinderDescription = petDocument.FinderForm.FinderDescription,
+                    FinderImageUrl = petDocument.FinderForm.FinderFormImgUrl,
                     FinderName = fullName,
-                    Lat = petProfile.PetDocument.FinderForm.Lat,
-                    Lng = petProfile.PetDocument.FinderForm.Lng,
+                    Lat = petDocument.FinderForm.Lat,
+                    Lng = petDocument.FinderForm.Lng,
                 };
                 var tracks = petProfile.PetTracking.ToList();
                 var list = new List<PetTrackingViewModel>();
@@ -392,15 +391,14 @@ namespace PetRescue.Data.Domains
                         Description = track.Description,
                         ImageUrl = track.PetTrackingImgUrl,
                         InsertAt = track.InsertedAt,
-                        isSterilized = (bool)track.IsSterilized,
-                        isVaccinated = (bool)track.IsVaccinated,
+                        IsSterilized = track.IsSterilized,
+                        IsVaccinated = track.IsVaccinated,
                         PetTrackingId = track.PetTrackingId
                     });
                 }
                 result.FinderForm = finderForm;
-                result.PetAttribute = petProfile.PetDocument.PetAttribute;
+                result.PetAttribute = petDocument.FinderForm.PetAttribute;
                 result.PickerForm = pickerForm;
-                result.PetDocumentDescription = petProfile.PetDocument.PetDocumentDescription;
                 result.PetProfile = new PetProfileModel
                 {
                     CenterId = petProfile.CenterId,
@@ -435,8 +433,8 @@ namespace PetRescue.Data.Domains
                             Description = track.Description,
                             ImageUrl = track.PetTrackingImgUrl,
                             InsertAt = track.InsertedAt,
-                            isSterilized = (bool)track.IsSterilized,
-                            isVaccinated = (bool)track.IsVaccinated,
+                            IsSterilized = track.IsSterilized,
+                            IsVaccinated = track.IsVaccinated,
                             PetTrackingId = track.PetTrackingId
                         });
                     }

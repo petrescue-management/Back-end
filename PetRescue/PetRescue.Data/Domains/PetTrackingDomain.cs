@@ -26,8 +26,8 @@ namespace PetRescue.Data.Domains
                 {
                     Description = result.Description,
                     ImageUrl = result.PetTrackingImgUrl,
-                    isSterilized = (bool)result.IsSterilized,
-                    isVaccinated = (bool)result.IsVaccinated,
+                    IsSterilized = result.IsSterilized,
+                    IsVaccinated = result.IsVaccinated,
                     Weight = result.Weight,
                     InsertAt = result.InsertedAt,
                     PetTrackingId = result.PetTrackingId,
@@ -44,8 +44,8 @@ namespace PetRescue.Data.Domains
                 Description = s.Description,
                 ImageUrl = s.PetTrackingImgUrl,
                 InsertAt = s.InsertedAt,
-                isSterilized = (bool)s.IsSterilized,
-                isVaccinated = (bool)s.IsVaccinated,
+                IsSterilized = s.IsSterilized,
+                IsVaccinated = s.IsVaccinated,
                 PetTrackingId = s.PetTrackingId,
                 Weight =s.Weight,
             }).ToList();
@@ -62,8 +62,8 @@ namespace PetRescue.Data.Domains
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petTracking.InsertedBy));
                 result.Description = petTracking.Description;
                 result.InsertAt = petTracking.InsertedAt;
-                result.isSterilized = (bool)petTracking.IsSterilized;
-                result.isVaccinated = (bool)petTracking.IsVaccinated;
+                result.IsSterilized = petTracking.IsSterilized;
+                result.IsVaccinated = petTracking.IsVaccinated;
                 result.ImageUrl = petTracking.PetTrackingImgUrl;
                 result.Weight = petTracking.Weight;
                 result.Author = user.UserProfile.LastName + " " + user.UserProfile.FirstName;
