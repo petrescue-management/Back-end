@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
@@ -17,8 +18,10 @@ namespace PetRescue.WebApi.Controllers
     [Route("/api/users/")]
     public class UserController : BaseController
     {
-        public UserController(IUnitOfWork uow) : base(uow)
+        private readonly IHostingEnvironment _env;
+        public UserController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
+            _env = environment;
         }
         #region GET
         [Authorize]
