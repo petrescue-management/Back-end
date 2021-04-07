@@ -50,31 +50,34 @@ namespace PetRescue.Data.Services
             string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
 
             var json = File.ReadAllText(FILEPATH);
-
-            var jObject = JObject.Parse(json);
-            JArray notiArrary = (JArray)jObject["notifications"];            
-
-            var tmp = notiArrary.ElementAt(0);
-
+           
             if(json != null)
             {
-                if (DateTime.UtcNow.Minute == tmp["CurrentTime"].Value<DateTime>().AddMinutes(2).Minute)
-                {
-                    _domain.ReNotification(Guid.Parse(tmp["FinderFormId"].Value<string>()), tmp["path"].Value<string>());
-                    _logger.LogInformation("noti lại nè heeee !!!!");
-                }
+                var jObject = JObject.Parse(json);
+                JArray notiArrary = (JArray)jObject["notifications"];
 
-                if(DateTime.UtcNow.Minute == tmp["CurrentTime"].Value<DateTime>().AddMinutes(5).Minute)
+                if (notiArrary != null)
                 {
-                    File.WriteAllText(FILEPATH , "");
-                    if (_domain.GetFinderFormById(Guid.Parse(tmp["FinderFormId"].Value<string>())).FinderFormStatus == 1)
+                    var tmp = notiArrary.ElementAt(0);
+
+                    if (DateTime.UtcNow.Minute == tmp["CurrentTime"].Value<DateTime>().AddMinutes(2).Minute)
                     {
-                        _domain.DestroyNotification(Guid.Parse(tmp["FinderFormId"].Value<string>()), Guid.Parse(tmp["InsertedBy"].Value<string>()));
-                        notiArrary.Remove(notiArrary.ElementAt(0));
+                        _domain.ReNotification(Guid.Parse(tmp["FinderFormId"].Value<string>()), tmp["path"].Value<string>());
+                        _logger.LogInformation("noti lại nè heeee !!!!");
+                    }
 
-                        string output = Newtonsoft.Json.JsonConvert.SerializeObject(jObject, Newtonsoft.Json.Formatting.Indented);
-                        File.WriteAllText(FILEPATH, output);
-                        _logger.LogInformation("xóa gòi nè heeee !!!!");
+                    if (DateTime.UtcNow.Minute == tmp["CurrentTime"].Value<DateTime>().AddMinutes(5).Minute)
+                    {
+                        File.WriteAllText(FILEPATH, "");
+                        if (_domain.GetFinderFormById(Guid.Parse(tmp["FinderFormId"].Value<string>())).FinderFormStatus == 1)
+                        {
+                            _domain.DestroyNotification(Guid.Parse(tmp["FinderFormId"].Value<string>()), Guid.Parse(tmp["InsertedBy"].Value<string>()));
+                            notiArrary.Remove(notiArrary.ElementAt(0));
+
+                            string output = Newtonsoft.Json.JsonConvert.SerializeObject(jObject, Newtonsoft.Json.Formatting.Indented);
+                            File.WriteAllText(FILEPATH, output);
+                            _logger.LogInformation("xóa gòi nè heeee !!!!");
+                        }
                     }
                 }
             }
