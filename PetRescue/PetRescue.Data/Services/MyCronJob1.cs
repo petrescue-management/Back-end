@@ -71,7 +71,7 @@ namespace PetRescue.Data.Services
                         File.WriteAllText(FILEPATH, "");
                         if (_domain.GetFinderFormById(Guid.Parse(tmp["FinderFormId"].Value<string>())).FinderFormStatus == 1)
                         {
-                            _domain.DestroyNotification(Guid.Parse(tmp["FinderFormId"].Value<string>()), Guid.Parse(tmp["InsertedBy"].Value<string>()));
+                            _domain.DestroyNotification(Guid.Parse(tmp["FinderFormId"].Value<string>()), Guid.Parse(tmp["InsertedBy"].Value<string>()), tmp["path"].Value<string>());
                             notiArrary.Remove(notiArrary.ElementAt(0));
 
                             string output = Newtonsoft.Json.JsonConvert.SerializeObject(jObject, Newtonsoft.Json.Formatting.Indented);

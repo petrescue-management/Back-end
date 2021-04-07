@@ -68,6 +68,27 @@ namespace PetRescue.Data.Domains
         {
             var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(model, updatedBy);
             uow.saveChanges();
+            if (model.Status == 2)
+            {
+                string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
+
+                string fileJson = File.ReadAllText(FILEPATH);
+
+                var jsonObj = JObject.Parse(fileJson);
+
+                var notiArrary = jsonObj.GetValue("notifications") as JArray;
+
+                foreach (var noti in notiArrary) { 
+
+                if (Guid.Parse(notiArrary["FinderFormId"].Value<string>()).Equals(model.Id))
+                    {
+                        notiArrary.Remove(noti);
+                    }
+
+                    string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+                    File.WriteAllText(FILEPATH, output);
+                }
+            }
             return finderForm;
         }
         #endregion
@@ -81,6 +102,7 @@ namespace PetRescue.Data.Domains
 
             var finderForm = finderFormService.CreateFinderForm(model, insertedBy);
             uow.saveChanges();
+
             //tạo object lưu xuống json
             var newJson
                 = new NotificationToVolunteers {
@@ -148,7 +170,7 @@ namespace PetRescue.Data.Domains
             }
         }
 
-        public void DestroyNotification(Guid finderFormId, Guid insertedBy)
+        public void DestroyNotification(Guid finderFormId, Guid insertedBy, string path)
         {
             if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
             {
@@ -158,7 +180,7 @@ namespace PetRescue.Data.Domains
                         Status = 3
                     },
                      Guid.Empty);
-                uow.GetService<NotificationTokenDomain>().DeleteNotificationByUserIdAndApplicationName(insertedBy, ApplicationNameHelper.USER_APP);
+                uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, insertedBy, ApplicationNameHelper.USER_APP);
                 uow.saveChanges();
             }
         }
