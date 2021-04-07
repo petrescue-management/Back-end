@@ -1,6 +1,7 @@
 ﻿using FirebaseAdmin.Messaging;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
@@ -80,18 +81,38 @@ namespace PetRescue.Data.Domains
 
             var finderForm = finderFormService.CreateFinderForm(model, insertedBy);
             uow.saveChanges();
-
             //tạo object lưu xuống json
-            var objectJson = new NotificationToVolunteers { 
-            FinderFormId = finderForm.FinderFormId,
-            CurrentTime = currentTime,
-            InsertedBy = insertedBy,
-            path = path
-            };
+            var newJson
+                = new NotificationToVolunteers {
+                    FinderFormId = finderForm.FinderFormId,
+                    CurrentTime = currentTime,
+                    InsertedBy = insertedBy,
+                    path = path
+                };
 
-            string json = JsonConvert.SerializeObject(objectJson);
+            var serialObject = JsonConvert.SerializeObject(newJson);
+
             string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
-            System.IO.File.WriteAllText(FILEPATH, json);
+
+            string fileJson = File.ReadAllText(FILEPATH);
+
+            var jsonObj = JObject.Parse(fileJson);
+
+            var notiArrary = jsonObj.GetValue("notifications") as JArray;
+
+            var newNoti = JObject.Parse(serialObject);
+
+            if (notiArrary.Count == 0)
+                notiArrary = new JArray();
+
+            notiArrary.Add(newNoti);
+
+            jsonObj["notifications"] = notiArrary;
+            string newJsonResult = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj,
+                                   Newtonsoft.Json.Formatting.Indented);
+
+            File.WriteAllText(FILEPATH, newJsonResult);
+
             var centerService = uow.GetService<CenterDomain>();
             var centers = centerService.GetListCenterLocation();
             var googleMapExtension = new GoogleMapExtensions();
@@ -113,18 +134,10 @@ namespace PetRescue.Data.Domains
             }
             uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listCenterId);
             uow.saveChanges();
-
-            if (DateTime.UtcNow >= currentTime.AddMinutes(2))
-            {
-                if (finderFormService.GetFinderFormById(finderForm.FinderFormId).FinderFormStatus == 1)
-                {
-
-                }
-            }
             return finderForm;
         }
 
-        public void ReNotification(Guid finderFormId, Guid insertedBy, string path)
+        public void ReNotification(Guid finderFormId, string path)
         {
             if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
             {
@@ -134,6 +147,22 @@ namespace PetRescue.Data.Domains
                 uow.saveChanges();
             }
         }
+
+        public void DestroyNotification(Guid finderFormId, Guid insertedBy)
+        {
+            if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
+            {
+                var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(
+                    new UpdateStatusModel {
+                        Id = finderFormId,
+                        Status = 3
+                    },
+                     Guid.Empty);
+                uow.GetService<NotificationTokenDomain>().DeleteNotificationByUserIdAndApplicationName(insertedBy, ApplicationNameHelper.USER_APP);
+                uow.saveChanges();
+            }
+        }
+
         #endregion
 
         public List<FinderFormDetailModel> GetAllListFinderForm()
