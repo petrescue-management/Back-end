@@ -37,6 +37,7 @@ namespace PetRescue.Data.Repositories
         public NotificationToken Edit(NotificationToken entity, NotificationTokenUpdateModel model)
         {
             entity.DeviceToken = model.DeviceToken;
+            entity.IsActive = true;
             return Update(entity).Entity;
         }
 
