@@ -56,7 +56,7 @@ namespace PetRescue.Data.Services
                 var jObject = JObject.Parse(json);
                 JArray notiArrary = (JArray)jObject["notifications"];
 
-                if (notiArrary != null)
+                if (notiArrary.Count != 0)
                 {
                     var tmp = notiArrary.ElementAt(0);
 
