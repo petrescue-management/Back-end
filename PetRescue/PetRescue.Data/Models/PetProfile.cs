@@ -29,7 +29,6 @@ namespace PetRescue.Data.Models
 
         public virtual Center Center { get; set; }
         public virtual PetBreed PetBreed { get; set; }
-        public virtual PetDocument PetDocument { get; set; }
         public virtual PetFurColor PetFurColor { get; set; }
         public virtual ICollection<AdoptionRegistrationForm> AdoptionRegistrationForm { get; set; }
         public virtual ICollection<PetTracking> PetTracking { get; set; }

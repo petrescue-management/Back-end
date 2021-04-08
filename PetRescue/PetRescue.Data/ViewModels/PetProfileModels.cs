@@ -37,6 +37,7 @@ namespace PetRescue.Data.ViewModels
         }
         public class UpdatePetProfileModel
         {
+            public Guid PetProfileId { get; set; }
             public Guid PetDocumentId { get; set; }
             public string PetName { get; set; }
             public int PetGender { get; set; }
