@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.Repositories;
+﻿using PetRescue.Data.Models;
+using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 using System;
@@ -49,13 +50,34 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public bool Edit(PetDocumentUpdateModel model)
+        public bool Edit(PetDocumentUpdateModel model, Guid insertedBy)
         {
             var petDocumentRepo = uow.GetService<IPetDocumentRepository>();
+            var petProfileRepo = uow.GetService<IPetProfileRepository>();
             var petDocument = petDocumentRepo.Get().FirstOrDefault(s => s.PetDocumentId.Equals(model.PetDocumentId));
+            var context = uow.GetService<PetRescueContext>();
             if (petDocument != null)
             {
-                petDocument = petDocumentRepo.Edit(petDocument, model);
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        petDocument = petDocumentRepo.Edit(petDocument, model);
+                        if(model.Pets != null)
+                        {
+                            foreach (var pet in model.Pets)
+                            {
+                                petProfileRepo.CreatePetProfile(pet, insertedBy, petDocument.CenterId);
+                            }
+                        }
+                        
+                        transaction.Commit();
+                    }catch(Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw ex;
+                    }
+                }  
                 uow.saveChanges();
                 return true;
             }

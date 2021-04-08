@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static PetRescue.Data.ViewModels.PetProfileModel;
 
 namespace PetRescue.Data.ViewModels
 {
@@ -26,5 +27,6 @@ namespace PetRescue.Data.ViewModels
         public Guid PetDocumentId { get; set; }
         [JsonProperty("petDocumentStatus")]
         public int PetDocumentStatus { get; set; }
+        public List<CreatePetProfileModel> Pets {get;set ;}
     }
 }

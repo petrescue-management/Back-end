@@ -7,6 +7,7 @@ using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -41,9 +42,9 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var _domain = _uow.GetService<PetDocumentDomain>();
-                var result = _domain.Edit(model);
+                var result = _domain.Edit(model, Guid.Parse(currentUserId));
                 return Success(result);
             }
             catch (Exception e)
