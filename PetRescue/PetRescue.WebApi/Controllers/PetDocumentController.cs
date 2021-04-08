@@ -35,6 +35,21 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
+        [HttpGet]
+        [Route("api/get-pet-document-by-id")]
+        public IActionResult GetPetDocumentById([FromQuery]Guid petDocumentId)
+        {
+            try
+            {
+                var _domain = _uow.GetService<PetDocumentDomain>();
+                var result = _domain.GetPetDocumentByPetDocumentId(petDocumentId);
+                return Success(result);
+            }
+            catch (Exception e)
+            {
+                return Error(e.Message);
+            }
+        }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
         [Route("api/update-pet-document")]
