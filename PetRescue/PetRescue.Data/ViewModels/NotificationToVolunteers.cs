@@ -17,7 +17,7 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("InsertedBy")]
         public Guid InsertedBy { get; set; }
 
-        [JsonProperty("path")]
-        public string path { get; set; }
+        [JsonProperty("Path")]
+        public string Path { get; set; }
     }
 }

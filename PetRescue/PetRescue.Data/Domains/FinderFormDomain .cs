@@ -64,29 +64,36 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public async Task<FinderFormModel> UpdateFinderFormStatus(UpdateStatusModel model, Guid updatedBy)
+        public FinderFormModel UpdateFinderFormStatus(UpdateStatusModel model, Guid updatedBy)
         {
             var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(model, updatedBy);
             uow.saveChanges();
-            if (model.Status == 2)
+            if (model.Status == 2 || model.Status == 3)
             {
                 string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
 
                 string fileJson = File.ReadAllText(FILEPATH);
+                if (fileJson != null)
+                {
 
-                var jsonObj = JObject.Parse(fileJson);
+                    var objJson = JObject.Parse(fileJson);
 
-                var notiArrary = jsonObj.GetValue("notifications") as JArray;
-
-                foreach (var noti in notiArrary) { 
-
-                if (Guid.Parse(notiArrary["FinderFormId"].Value<string>()).Equals(model.Id))
+                    var notiArrary = objJson.GetValue("Notifications") as JArray;
+                    if (notiArrary.Count != 0)
                     {
-                        notiArrary.Remove(noti);
-                    }
 
-                    string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
-                    File.WriteAllText(FILEPATH, output);
+                        foreach (var noti in notiArrary)
+                        {
+
+                            if (Guid.Parse(noti["FinderFormId"].Value<string>()).Equals(model.Id))
+                            {
+                                notiArrary.Remove(noti);
+                            }
+
+                            string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
+                            File.WriteAllText(FILEPATH, output);
+                        }
+                    }
                 }
             }
             return finderForm;
@@ -109,7 +116,7 @@ namespace PetRescue.Data.Domains
                     FinderFormId = finderForm.FinderFormId,
                     CurrentTime = currentTime,
                     InsertedBy = insertedBy,
-                    path = path
+                    Path = path
                 };
 
             var serialObject = JsonConvert.SerializeObject(newJson);
@@ -118,9 +125,9 @@ namespace PetRescue.Data.Domains
 
             string fileJson = File.ReadAllText(FILEPATH);
 
-            var jsonObj = JObject.Parse(fileJson);
+            var objJson = JObject.Parse(fileJson);
 
-            var notiArrary = jsonObj.GetValue("notifications") as JArray;
+            var notiArrary = objJson.GetValue("Notifications") as JArray;
 
             var newNoti = JObject.Parse(serialObject);
 
@@ -129,11 +136,10 @@ namespace PetRescue.Data.Domains
 
             notiArrary.Add(newNoti);
 
-            jsonObj["notifications"] = notiArrary;
-            string newJsonResult = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj,
-                                   Newtonsoft.Json.Formatting.Indented);
+            objJson["Notifications"] = notiArrary;
+            string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
 
-            File.WriteAllText(FILEPATH, newJsonResult);
+            File.WriteAllText(FILEPATH, output);
 
             var centerService = uow.GetService<CenterDomain>();
             var centers = centerService.GetListCenterLocation();
@@ -180,7 +186,8 @@ namespace PetRescue.Data.Domains
                         Status = 3
                     },
                      Guid.Empty);
-                uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, insertedBy, ApplicationNameHelper.USER_APP);
+                uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, insertedBy,
+                    ApplicationNameHelper.USER_APP);
                 uow.saveChanges();
             }
         }
