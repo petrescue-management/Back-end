@@ -140,7 +140,7 @@ namespace PetRescue.Data.Domains
         {
             var adoptionRepo = uow.GetService<IAdoptionRepository>();
             var userRepo = uow.GetService<IUserRepository>();
-            var adoptions = adoptionRepo.Get().Where(s => s.AdoptionRegistration.UpdatedBy.Equals(userId)).ToList();
+            var adoptions = adoptionRepo.Get().Where(s => s.AdoptionRegistration.InsertedBy.Equals(userId)).ToList();
             var result = new List<AdoptionViewModel>();
             foreach (var adoption in adoptions)
             {

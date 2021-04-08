@@ -332,5 +332,33 @@ namespace PetRescue.Data.Domains
             }
 
         }
+        public async Task<bool> NotificationForUserAlertAfterAdoption(string path, Guid userId, string applicationName)
+        {
+            try
+            {
+                var firebaseExtensions = new FireBaseExtentions();
+                var app = firebaseExtensions.GetFirebaseApp(path);
+                var fcm = FirebaseMessaging.GetMessaging(app);
+                var deviceToken = FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, userId);
+                if (deviceToken != null)
+                {
+                    var message = new Message();
+                    message.Notification = new Notification
+                    {
+                        Title = NotificationTitleHelper.ALERT_AFTER_ADOPTION_TITLE,
+                        Body = NotificationBodyHelper.ALERT_AFTER_ADOPTION_BODY,
+                    };
+                    message.Token = deviceToken.DeviceToken;
+                    await fcm.SendAsync(message);
+                }
+                app.Delete();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
     }
 }

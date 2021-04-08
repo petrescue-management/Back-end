@@ -23,6 +23,7 @@ namespace PetRescue.Data.ViewModels
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
         public CenterProfileViewModel CenterProfile { get; set; }
+        public PetTypeUpdateModel PetType { get; set; }
         public class CreatePetProfileModel
         {
             public Guid PetDocumentId { get; set; }
@@ -84,5 +85,7 @@ namespace PetRescue.Data.ViewModels
         public string PetBreedName { get; set; }
         [JsonProperty("petFurColorName")]
         public string PetFurColorName { get; set; }
+        [JsonProperty("petAge")]
+        public int PetAge { get; set; }
     }
 }

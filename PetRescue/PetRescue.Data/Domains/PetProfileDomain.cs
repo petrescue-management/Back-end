@@ -295,7 +295,7 @@ namespace PetRescue.Data.Domains
             return query.GetData(filter, page, limit, totalPage, fields);
         }
         #region GET PET BY TYPE NAME
-        public List<GetPetByTypeNameModel> GetPetByTypeName()
+        public List<GetPetByTypeNameModel> GetPetByTypeName(PetProfileFilter filter)
         {
             var petProfileService = uow.GetService<IPetProfileRepository>();
             var petTypeService = uow.GetService<IPetTypeRepository>();
@@ -311,8 +311,11 @@ namespace PetRescue.Data.Domains
                 var records = petProfileService.Get()
                     .Include(p => p.PetBreed)
                     .Include(p => p.PetFurColor)
-                    .Where(p => p.PetBreed.PetType.PetTypeName.Equals(petType.PetTypeName) && p.PetStatus == PetStatusConst.FINDINGADOPTER).ToList();
-
+                    .Where(p => p.PetBreed.PetType.PetTypeName.Equals(petType.PetTypeName) && p.PetStatus == PetStatusConst.FINDINGADOPTER);
+                if (filter.PetFurColorName != null)
+                    records = records.Where(p => p.PetFurColor.PetFurColorName.Equals(filter.PetFurColorName));
+                if (filter.PetAge != 0)
+                    records = records.Where(p => p.PetAge == filter.PetAge);
                 foreach (var petProfile in records)
                 {
                     var center = petProfile.Center;
@@ -415,7 +418,12 @@ namespace PetRescue.Data.Domains
                     PetName = petProfile.PetName,
                     PetProfileDescription = petProfile.PetProfileDescription,
                     PetStatus = petProfile.PetStatus,
-                    PetProfileId = petProfile.PetProfileId
+                    PetProfileId = petProfile.PetProfileId,
+                    PetType = new PetTypeUpdateModel
+                    {
+                        PetTypeId = petProfile.PetBreed.PetType.PetTypeId,
+                        PetTypeName = petProfile.PetBreed.PetType.PetTypeName
+                    }
                 };
                 result.ListTracking = list;
             }

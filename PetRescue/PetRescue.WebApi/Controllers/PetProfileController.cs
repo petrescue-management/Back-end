@@ -176,12 +176,12 @@ namespace PetRescue.WebApi.Controllers
         }
         [HttpGet]
         [Route("api/get-pet-by-typename")]
-        public IActionResult GetPetByTypeName()
+        public IActionResult GetPetByTypeName([FromQuery]PetProfileFilter filter) 
         {
             try
             {
                 var _domain = _uow.GetService<PetProfileDomain>();
-                var result = _domain.GetPetByTypeName();
+                var result = _domain.GetPetByTypeName(filter);
                 return Success(result);
             }
             catch (Exception ex)
