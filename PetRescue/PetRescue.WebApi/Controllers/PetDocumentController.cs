@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Uow;
+using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PetRescue.WebApi.Controllers
@@ -26,6 +28,38 @@ namespace PetRescue.WebApi.Controllers
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _domain = _uow.GetService<PetDocumentDomain>();
                 var result = _domain.GetListPetDocumentByCenterId(Guid.Parse(currentCenterId));
+                return Success(result);
+            }
+            catch (Exception e)
+            {
+                return Error(e.Message);
+            }
+        }
+        [HttpGet]
+        [Route("api/get-pet-document-by-id")]
+        public IActionResult GetPetDocumentById([FromQuery]Guid petDocumentId)
+        {
+            try
+            {
+                var _domain = _uow.GetService<PetDocumentDomain>();
+                var result = _domain.GetPetDocumentByPetDocumentId(petDocumentId);
+                return Success(result);
+            }
+            catch (Exception e)
+            {
+                return Error(e.Message);
+            }
+        }
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpPut]
+        [Route("api/update-pet-document")]
+        public IActionResult UpdatePetDocument([FromBody]PetDocumentUpdateModel model)
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var _domain = _uow.GetService<PetDocumentDomain>();
+                var result = _domain.Edit(model, Guid.Parse(currentUserId));
                 return Success(result);
             }
             catch (Exception e)

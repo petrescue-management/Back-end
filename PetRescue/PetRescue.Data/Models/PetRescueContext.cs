@@ -366,9 +366,11 @@ namespace PetRescue.Data.Models
                     .HasColumnName("pet_document_id")
                     .ValueGeneratedNever();
 
-                entity.Property(e => e.CenterId).HasColumnName("centerId");
+                entity.Property(e => e.CenterId).HasColumnName("center_id");
 
                 entity.Property(e => e.FinderFormId).HasColumnName("finder_form_id");
+
+                entity.Property(e => e.PetDocumentStatus).HasColumnName("pet_document_status");
 
                 entity.Property(e => e.PickerFormId).HasColumnName("picker_form_id");
 
@@ -416,9 +418,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.PetBreedId).HasColumnName("pet_breed_id");
 
-                entity.Property(e => e.PetDocumentId)
-                    .HasColumnName("pet_document_id")
-                    .HasDefaultValueSql("(newid())");
+                entity.Property(e => e.PetDocumentId).HasColumnName("pet_document_id");
 
                 entity.Property(e => e.PetFurColorId).HasColumnName("pet_fur_color_id");
 

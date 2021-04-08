@@ -8,7 +8,8 @@ namespace PetRescue.Data.Models
         public Guid PetDocumentId { get; set; }
         public Guid FinderFormId { get; set; }
         public Guid PickerFormId { get; set; }
-        public Guid? CenterId { get; set; }
+        public Guid CenterId { get; set; }
+        public int? PetDocumentStatus { get; set; }
 
         public virtual FinderForm FinderForm { get; set; }
         public virtual PickerForm PickerForm { get; set; }
