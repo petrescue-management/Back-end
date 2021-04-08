@@ -463,7 +463,12 @@ namespace PetRescue.Data.Domains
                         PetName = petProfile.PetName,
                         PetProfileDescription = petProfile.PetProfileDescription,
                         PetStatus = petProfile.PetStatus,
-                        PetProfileId = petProfile.PetProfileId
+                        PetProfileId = petProfile.PetProfileId,
+                         PetType = new PetTypeUpdateModel
+                         {
+                             PetTypeId = petProfile.PetBreed.PetType.PetTypeId,
+                             PetTypeName = petProfile.PetBreed.PetType.PetTypeName
+                         }
                     };
                 }
             }
