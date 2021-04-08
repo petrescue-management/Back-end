@@ -43,10 +43,23 @@ namespace PetRescue.Data.Domains
                 {
                     FinderForm = finderForm,
                     PetDocumentId = petDocument.PetDocumentId,
-                    PickerForm = pickerForm
+                    PickerForm = pickerForm,
+                    PetDocumentStatus = petDocument.PetDocumentStatus
                 });
             }
             return result;
+        }
+        public bool Edit(PetDocumentUpdateModel model)
+        {
+            var petDocumentRepo = uow.GetService<IPetDocumentRepository>();
+            var petDocument = petDocumentRepo.Get().FirstOrDefault(s => s.PetDocumentId.Equals(model.PetDocumentId));
+            if (petDocument != null)
+            {
+                petDocument = petDocumentRepo.Edit(petDocument, model);
+                uow.saveChanges();
+                return true;
+            }
+            return false;
         }
     }
 }
