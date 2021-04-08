@@ -34,5 +34,20 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
+
+        [HttpGet]
+        [Route("api/config-time-to-remind-for-report-after-adopt")]
+        public IActionResult ConfigTimeToRemindForReportAfterAdopt([FromQuery] int RemindTime)
+        {
+            try
+            {
+                var _domain = _uow.GetService<ConfigDomain>().ConfigTimeToRemindForReportAfterAdopt(RemindTime);
+                return Success(_domain);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
     }
 }

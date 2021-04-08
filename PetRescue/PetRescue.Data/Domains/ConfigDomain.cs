@@ -44,5 +44,24 @@ namespace PetRescue.Data.Domains
             return false;
         }
         #endregion
+
+        #region CONFIG TIME TO REMIND FOR REPORT AFTER ADOPT
+        public bool ConfigTimeToRemindForReportAfterAdopt(int RemindTime)
+        {
+                string newJson = "{" +
+                     "'RemindTime': '" + RemindTime + "'}";
+
+                string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToRemindForReportAfterAdopt.json");
+
+                var fileJson = File.ReadAllText(FILEPATH);
+
+                var newConfigTime = JObject.Parse(newJson);
+
+                string output = Newtonsoft.Json.JsonConvert.SerializeObject(newConfigTime, Newtonsoft.Json.Formatting.Indented);
+
+                File.WriteAllText(FILEPATH, output);
+                return true;
+        }
+        #endregion
     }
 }

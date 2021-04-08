@@ -1,9 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -78,13 +82,14 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public AdoptionModel UpdateAdoptionStatus(UpdateStatusModel model)
+        public AdoptionModel UpdateAdoptionStatus(UpdateStatusModel model, string path)
         {
             var adoption = uow.GetService<IAdoptionRepository>().UpdateAdoptionStatus(model);
             var form = uow.GetService<IAdoptionRegistrationFormRepository>().GetAdoptionRegistrationFormById(model.Id);
             var userService = uow.GetService<IUserRepository>();
             var petProfileService = uow.GetService<IPetProfileRepository>();
-            AdoptionModel result = new AdoptionModel
+
+                AdoptionModel result = new AdoptionModel
             {
                 AdoptionRegistrationId = model.Id,
                 Owner = userService.GetUserById(form.InsertedBy),
@@ -93,8 +98,50 @@ namespace PetRescue.Data.Domains
                 AdoptedAt = adoption.AdoptedAt,
                 ReturnedAt = adoption.ReturnedAt
             };
+
             uow.saveChanges();
+
+            if (model.Status == AdoptionStatusConst.ADOPTED)
+            {
+                var newJson
+                    = new NotificationRemindReportAfterAdopt
+                    {
+                        AdoptionId = result.AdoptionRegistrationId,
+                        AdoptedAt = result.AdoptedAt,
+                        OwnerId = result.Owner.UserId,
+                        Path = path
+                    };
+
+                var serialObject = JsonConvert.SerializeObject(newJson);
+
+                string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "RemindReportAfterAdopt.json");
+
+                string fileJson = File.ReadAllText(FILEPATH);
+
+                var objJson = JObject.Parse(fileJson);
+
+                var remindArrary = objJson.GetValue("Reminders") as JArray;
+
+                var newNoti = JObject.Parse(serialObject);
+
+                if (remindArrary.Count == 0)
+                    remindArrary = new JArray();
+
+                remindArrary.Add(newNoti);
+
+                objJson["Reminders"] = remindArrary;
+                string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
+
+                File.WriteAllText(FILEPATH, output);
+            }
+
             return result;
+        }
+
+        public void Remind(Guid ownerId, string path)
+        {
+            uow.GetService<NotificationTokenDomain>().NotificationForUserAlertAfterAdoption(path, ownerId,
+                   ApplicationNameHelper.USER_APP);
         }
         #endregion
         public List<AdoptionViewModel> GetListAdoptionByCenterId(Guid centerId)

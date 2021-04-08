@@ -65,27 +65,23 @@ namespace PetRescue.Data.Services
                 {
                     var objJsonConfigTime = JObject.Parse(fileJsonConfigTime);
 
-                    var tmp = notiArrary.ElementAt(0);
-
-                    _logger.LogInformation(int.Parse(objJsonConfigTime["ReNotiTime"].Value<string>()) + "-"
-                        + int.Parse(objJsonConfigTime["DestroyNotiTime"].Value<string>()));
-
-                    if (DateTime.UtcNow.Minute == 
-                        tmp["CurrentTime"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["ReNotiTime"].Value<string>())).Minute)
-                    {
-                        _domain.ReNotification(Guid.Parse(tmp["FinderFormId"].Value<string>()), tmp["Path"].Value<string>());
-                        _logger.LogInformation("noti lại nè heeee !!!!" );
-                    }
-
-                    if (DateTime.UtcNow.Minute == 
-                        tmp["CurrentTime"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["DestroyNotiTime"].Value<string>())).Minute)
-                    {
-                        File.WriteAllText(FILEPATH_NOTI, "");
-                        if (_domain.GetFinderFormById(Guid.Parse(tmp["FinderFormId"].Value<string>())).FinderFormStatus == 1)
+                    foreach (var noti in notiArrary.Children().ToList()) {
+                        if (noti["InsertedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["ReNotiTime"].Value<string>())).Minute
+                            == DateTime.UtcNow.Minute)
                         {
-                            _domain.DestroyNotification(Guid.Parse(tmp["FinderFormId"].Value<string>()),
-                                Guid.Parse(tmp["InsertedBy"].Value<string>()), tmp["Path"].Value<string>());
-                            _logger.LogInformation("xóa gòi nè heeee !!!!");
+                            _domain.ReNotification(Guid.Parse(noti["FinderFormId"].Value<string>()), noti["Path"].Value<string>());
+                            _logger.LogInformation("noti lại nè heeee !!!!");
+                        }
+
+                        if (noti["InsertedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["DestroyNotiTime"].Value<string>())).Minute
+                            == DateTime.UtcNow.Minute)
+                        {
+                            if (_domain.GetFinderFormById(Guid.Parse(noti["FinderFormId"].Value<string>())).FinderFormStatus == 1)
+                            {
+                                _domain.DestroyNotification(Guid.Parse(noti["FinderFormId"].Value<string>()),
+                                    Guid.Parse(noti["InsertedBy"].Value<string>()), noti["Path"].Value<string>());
+                                _logger.LogInformation("xóa gòi nè heeee !!!!");
+                            }
                         }
                     }
                 }

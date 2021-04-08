@@ -64,7 +64,7 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public FinderFormModel UpdateFinderFormStatus(UpdateStatusModel model, Guid updatedBy)
+        public FinderFormModel UpdateFinderFormStatus(UpdateStatusModel model, Guid updatedBy, string path)
         {
             var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(model, updatedBy);
             uow.saveChanges();
@@ -82,19 +82,27 @@ namespace PetRescue.Data.Domains
                     if (notiArrary.Count != 0)
                     {
 
-                        foreach (var noti in notiArrary)
+                        foreach (var noti in notiArrary.Children().ToList())
                         {
 
                             if (Guid.Parse(noti["FinderFormId"].Value<string>()).Equals(model.Id))
                             {
                                 notiArrary.Remove(noti);
+
+                                if (notiArrary.Count == 0)
+                                    notiArrary = new JArray();
+
+                                string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
+                                File.WriteAllText(FILEPATH, output);
                             }
 
-                            string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
-                            File.WriteAllText(FILEPATH, output);
                         }
                     }
                 }
+
+                if(model.Status == 3)
+                    uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, finderForm.InsertedBy,
+                   ApplicationNameHelper.USER_APP);
             }
             return finderForm;
         }
@@ -114,7 +122,7 @@ namespace PetRescue.Data.Domains
             var newJson
                 = new NotificationToVolunteers {
                     FinderFormId = finderForm.FinderFormId,
-                    CurrentTime = currentTime,
+                    InsertedAt = currentTime,
                     InsertedBy = insertedBy,
                     Path = path
                 };
@@ -172,7 +180,6 @@ namespace PetRescue.Data.Domains
                 var centerService = uow.GetService<CenterDomain>();
                 var records = centerService.GetListCenter().Select(c => c.CenterId.ToString()).ToList();
                 uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, records);
-                uow.saveChanges();
             }
         }
 
@@ -180,14 +187,11 @@ namespace PetRescue.Data.Domains
         {
             if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
             {
-                var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(
-                    new UpdateStatusModel {
-                        Id = finderFormId,
-                        Status = 3
-                    },
-                     Guid.Empty);
-                uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, insertedBy,
-                    ApplicationNameHelper.USER_APP);
+                var finderForm = UpdateFinderFormStatus(new UpdateStatusModel
+                {
+                    Id = finderFormId,
+                    Status = 3
+                }, Guid.Empty, path);
                 uow.saveChanges();
             }
         }

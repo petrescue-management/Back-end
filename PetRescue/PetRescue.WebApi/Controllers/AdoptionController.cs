@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.ConstantHelper;
@@ -16,8 +17,10 @@ namespace PetRescue.WebApi.Controllers
     [ApiController]
     public class AdoptionController : BaseController
     {
-        public AdoptionController(IUnitOfWork uow) : base(uow)
+        private readonly IHostingEnvironment _env;
+        public AdoptionController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
+            _env = environment;
         }
 
         [Authorize(Roles = RoleConstant.MANAGER)]
@@ -60,7 +63,8 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var result = _uow.GetService<AdoptionDomain>().UpdateAdoptionStatus(model);
+                var path = _env.ContentRootPath;
+                var result = _uow.GetService<AdoptionDomain>().UpdateAdoptionStatus(model, path);
                 return Success(result);
             }
             catch (Exception ex)

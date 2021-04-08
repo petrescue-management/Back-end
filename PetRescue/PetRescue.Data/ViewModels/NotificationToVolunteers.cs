@@ -11,8 +11,8 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("FinderFormId")]
         public Guid FinderFormId { get; set; }
 
-        [JsonProperty("CurrentTime")]
-        public DateTime CurrentTime { get; set; }
+        [JsonProperty("InsertedAt")]
+        public DateTime InsertedAt { get; set; }
 
         [JsonProperty("InsertedBy")]
         public Guid InsertedBy { get; set; }
