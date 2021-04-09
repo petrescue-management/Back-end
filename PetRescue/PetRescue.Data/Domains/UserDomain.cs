@@ -19,6 +19,7 @@ namespace PetRescue.Data.Domains
         {
             var userRepo = uow.GetService<IUserRepository>();
             var userProfileRepo = uow.GetService<IUserProfileRepository>();
+            var centerRepo = uow.GetService<ICenterRepository>();
             var handler = new JwtSecurityTokenHandler();
             var result = handler.ReadJwtToken(token) as JwtSecurityToken;
             var currentClaims = result.Claims.ToList();
@@ -47,6 +48,15 @@ namespace PetRescue.Data.Domains
                     LastName = userProfile.LastName,
                     ImgUrl = userProfile.ImageUrl
                 };
+                if ((bool)user.IsBelongToCenter)
+                {
+                    var center = centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(user.CenterId));
+                    returnResult.Center = new CenterProfileViewModel 
+                    {
+                    CenterAdrress = center.Address,
+                    CenterName = center.CenterName
+                    };
+                }
                 return returnResult;
             }
             else

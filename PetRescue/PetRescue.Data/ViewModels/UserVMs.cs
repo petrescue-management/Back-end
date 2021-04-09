@@ -29,6 +29,7 @@ namespace PetRescue.Data.ViewModels
         public string Phone { get; set; }
         [JsonProperty("imgUrl")]
         public string ImgUrl { get; set; }
+        public CenterProfileViewModel Center { get; set; }
 
     }
     public class UserProfileUpdateModel
