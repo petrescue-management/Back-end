@@ -73,7 +73,7 @@ namespace PetRescue.Data.ViewModels
         public PetModel Pet { get; set; }
         public List<AdoptionRegistrationFormViewModel> AdoptionRegisterforms { get; set; }
     }
-    public class ApproveAdoptionViewModel
+    public class ReturnAdoptionViewModel
     {
         public AdoptionFormModel Approve { get; set; }
         public List<AdoptionFormModel> Rejects { get; set; }

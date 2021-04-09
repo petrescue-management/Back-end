@@ -115,5 +115,24 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
+        public List<PetProfileModel> GetListPetProfileByPetDocumentId (Guid petDocumentId)
+        {
+            var petProfileRepo = uow.GetService<IPetProfileRepository>();
+            var result = new List<PetProfileModel>();
+            var pets = petProfileRepo.Get().Where(s => s.PetDocumentId.Equals(petDocumentId));
+            foreach(var pet in pets)
+            {
+                result.Add(new PetProfileModel {
+                PetProfileId = pet.PetProfileId,
+                PetBreedName = pet.PetBreed.PetBreedName,
+                PetFurColorName = pet.PetFurColor.PetFurColorName,
+                PetAge = pet.PetAge,
+                PetGender = pet.PetGender,
+                PetStatus = pet.PetStatus,
+                PetImgUrl = pet.PetImgUrl
+                });
+            }
+            return result;
+        }
     }
 }

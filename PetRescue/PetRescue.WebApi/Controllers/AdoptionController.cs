@@ -56,15 +56,16 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
-
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
         [Route("api/update-adoption-status")]
         public IActionResult UpdateAdoptionStatus(UpdateStatusModel model)
         {
             try
             {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var path = _env.ContentRootPath;
-                var result = _uow.GetService<AdoptionDomain>().UpdateAdoptionStatus(model, path);
+                var result = _uow.GetService<AdoptionDomain>().UpdateAdoptionStatus(model, path, Guid.Parse(currentUserId));
                 return Success(result);
             }
             catch (Exception ex)

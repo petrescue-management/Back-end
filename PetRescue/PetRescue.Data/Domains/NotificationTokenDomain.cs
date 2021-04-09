@@ -283,7 +283,7 @@ namespace PetRescue.Data.Domains
                 var firebaseExtensions = new FireBaseExtentions();
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
-                var deviceToken = FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, userId);
+                var deviceToken = FindByApplicationNameAndUserId(applicationName, userId);
                 if (deviceToken != null)
                 {
                     var message = new Message();
@@ -311,7 +311,7 @@ namespace PetRescue.Data.Domains
                 var firebaseExtensions = new FireBaseExtentions();
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
-                var deviceToken = FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, userId);
+                var deviceToken = FindByApplicationNameAndUserId(applicationName, userId);
                 if (deviceToken != null)
                 {
                     var message = new Message();
@@ -339,7 +339,7 @@ namespace PetRescue.Data.Domains
                 var firebaseExtensions = new FireBaseExtentions();
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
-                var deviceToken = FindByApplicationNameAndUserId(ApplicationNameHelper.USER_APP, userId);
+                var deviceToken = FindByApplicationNameAndUserId(applicationName, userId);
                 if (deviceToken != null)
                 {
                     var message = new Message();

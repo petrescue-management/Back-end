@@ -347,7 +347,7 @@ namespace PetRescue.Data.Domains
                 var tmp = new GetPetByTypeNameModel
                 {
                     TypeName = petType.PetTypeName,
-                    result = listPetProfiles
+                    Result = listPetProfiles
                 };
                 result.Add(tmp);
             }

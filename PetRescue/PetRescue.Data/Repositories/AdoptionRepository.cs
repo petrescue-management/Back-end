@@ -13,7 +13,7 @@ namespace PetRescue.Data.Repositories
     {
         Adoption GetAdoptionById(Guid id);
 
-        Adoption UpdateAdoptionStatus(UpdateStatusModel model);
+        Adoption UpdateAdoptionStatus(UpdateStatusModel model, Guid updateBy);
 
         Adoption CreateAdoption(AdoptionRegistrationFormModel model);
     }
@@ -42,7 +42,7 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region UPDATE STATUS
-        private Adoption PrepareUpdate(UpdateStatusModel model)
+        private Adoption PrepareUpdate(UpdateStatusModel model, Guid updateBy)
         {
             Adoption adoption;
 
@@ -59,7 +59,7 @@ namespace PetRescue.Data.Repositories
                    AdoptionRegistration = a.AdoptionRegistration,
                    InsertedBy = a.InsertedBy,
                    InsertedAt = a.InsertedAt,
-                   UpdatedBy = null,
+                   UpdatedBy = updateBy,
                    UpdatedAt = DateTime.UtcNow
                }).FirstOrDefault();
             }
@@ -76,16 +76,16 @@ namespace PetRescue.Data.Repositories
                    AdoptionRegistration = a.AdoptionRegistration,
                    InsertedBy = a.InsertedBy,
                    InsertedAt = a.InsertedAt,
-                   UpdatedBy = null,
+                   UpdatedBy = updateBy,
                    UpdatedAt = DateTime.UtcNow
                }).FirstOrDefault();
             }
             
             return adoption;
         }
-        public Adoption UpdateAdoptionStatus(UpdateStatusModel model)
+        public Adoption UpdateAdoptionStatus(UpdateStatusModel model, Guid updateBy)
         {
-            Adoption adoption = PrepareUpdate(model);         
+            Adoption adoption = PrepareUpdate(model, updateBy);         
 
             Update(adoption);
 

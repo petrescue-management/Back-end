@@ -36,6 +36,21 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [HttpGet]
+        [Route("api/get-list-petprofile-by-petdocumentid")]
+        public IActionResult GetListPetProfileByPetDocumentId([FromQuery] Guid petDocumentId)
+        {
+            try
+            {
+                var _domain = _uow.GetService<PetDocumentDomain>();
+                var result = _domain.GetListPetProfileByPetDocumentId(petDocumentId);
+                return Success(result);
+            }
+            catch (Exception e)
+            {
+                return Error(e.Message);
+            }
+        }
+        [HttpGet]
         [Route("api/get-pet-document-by-id")]
         public IActionResult GetPetDocumentById([FromQuery]Guid petDocumentId)
         {

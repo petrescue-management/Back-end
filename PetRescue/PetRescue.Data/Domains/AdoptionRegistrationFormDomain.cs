@@ -108,7 +108,6 @@ namespace PetRescue.Data.Domains
             var form = uow.GetService<IAdoptionRegistrationFormRepository>().UpdateAdoptionRegistrationFormStatus(model, updateBy);
             var petProfileService = uow.GetService<IPetProfileRepository>();
             var adoptionService = uow.GetService<IAdoptionRepository>();
-            var adoptionRegistrationFormService = uow.GetService<IAdoptionRegistrationFormRepository>();
             var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             var temp = new AdoptionRegistrationFormModel
             {
@@ -132,7 +131,6 @@ namespace PetRescue.Data.Domains
                 UpdatedBy = form.UpdatedBy,
                 UpdatedAt = form.UpdatedAt
             };
-            var currentPet = petProfileService.Get().FirstOrDefault(s => s.PetProfileId.Equals(form.PetProfileId));
             var context = uow.GetService<PetRescueContext>();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -140,30 +138,21 @@ namespace PetRescue.Data.Domains
                 {
                     if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED)
                     {
-                        var result = new ApproveAdoptionViewModel();
+                        var result = new ReturnAdoptionViewModel();
                         await notificationTokenDomain.NotificationForUserWhenAdoptionFormToBeApprove(path, form.InsertedBy);
                         adoptionService.CreateAdoption(temp);
-                        currentPet.PetStatus = PetStatusConst.ADOPTED;
-                        petProfileService.Update(currentPet);
+                        var updatePetModel = new UpdatePetProfileModel
+                        {
+                            PetProfileId = form.PetProfileId,
+                            PetStatus = PetStatusConst.WAITING
+                        };
+                        petProfileService.UpdatePetProfile(updatePetModel, updateBy);
                         uow.saveChanges();
                         result.Approve = new AdoptionFormModel
                         {
                             AdoptionFormId = temp.AdoptionRegistrationId,
                             UserId = temp.InsertedBy
                         };
-                        var listAdoptionForm = adoptionRegistrationFormService.Get().Where(s => s.PetProfileId.Equals(form.PetProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
-                        result.Rejects = new List<AdoptionFormModel>();
-                        foreach (var adoptionForm in listAdoptionForm)
-                        {
-                            adoptionForm.AdoptionRegistrationStatus = AdoptionRegistrationFormStatusConst.REJECTED;
-                            result.Rejects.Add(new AdoptionFormModel
-                            {
-                                AdoptionFormId = adoptionForm.AdoptionRegistrationId,
-                                UserId = adoptionForm.InsertedBy
-                            });
-                            await notificationTokenDomain.NotificationForuserWhenAdoptionFormToBeFounded(path, adoptionForm.InsertedBy);
-                            adoptionRegistrationFormService.Update(adoptionForm);
-                        }
                         transaction.Commit();
                         uow.saveChanges();
                         return result;

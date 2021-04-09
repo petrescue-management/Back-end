@@ -15,7 +15,7 @@ namespace PetRescue.Data.Models
         public Guid? PetDocumentId { get; set; }
         public string PetName { get; set; }
         public int PetGender { get; set; }
-        public int? PetAge { get; set; }
+        public int PetAge { get; set; }
         public Guid PetBreedId { get; set; }
         public Guid PetFurColorId { get; set; }
         public string PetImgUrl { get; set; }

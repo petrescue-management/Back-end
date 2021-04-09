@@ -434,7 +434,9 @@ namespace PetRescue.Data.Models
                     .HasColumnName("pet_name")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.PetProfileDescription).HasColumnName("pet_profile_description");
+                entity.Property(e => e.PetProfileDescription)
+                    .IsRequired()
+                    .HasColumnName("pet_profile_description");
 
                 entity.Property(e => e.PetStatus).HasColumnName("pet_status");
 

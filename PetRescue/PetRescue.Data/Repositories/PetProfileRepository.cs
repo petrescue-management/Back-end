@@ -114,6 +114,8 @@ namespace PetRescue.Data.Repositories
                 petProfile.PetFurColorId = model.PetFurColorId;
             if (model.PetAge != 0)
                 petProfile.PetAge = model.PetAge;
+            petProfile.UpdatedAt = DateTime.UtcNow;
+            petProfile.UpdatedBy = updatedBy;
             return petProfile;
         }
 
@@ -148,7 +150,7 @@ namespace PetRescue.Data.Repositories
         public PetProfileModel GetPetProfileById(Guid id)
         {
             var result = Get()
-               .Where(p => p.PetDocumentId.Equals(id))
+               .Where(p => p.PetProfileId.Equals(id))
                .Include(p => p.PetBreed)
                .Include(p => p.PetFurColor)
                .Select(p => new PetProfileModel
@@ -164,7 +166,8 @@ namespace PetRescue.Data.Repositories
                    PetGender = p.PetGender,
                    PetName = p.PetName,
                    PetStatus = p.PetStatus,
-                   PetImgUrl = p.PetImgUrl
+                   PetImgUrl = p.PetImgUrl,
+                   PetProfileId = p.PetProfileId
                }).FirstOrDefault();
             return result;
         }
