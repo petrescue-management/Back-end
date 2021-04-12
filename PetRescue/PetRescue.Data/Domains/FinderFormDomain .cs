@@ -255,7 +255,7 @@ namespace PetRescue.Data.Domains
             var userRepo = uow.GetService<IUserRepository>();
             foreach (var finderForm in finderForms)
             {
-                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(updatedBy));
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
                 result.Add(new FinderFormDetailModel
                 {
                     FinderDate = finderForm.InsertedAt,
