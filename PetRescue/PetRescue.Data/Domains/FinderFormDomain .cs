@@ -68,7 +68,8 @@ namespace PetRescue.Data.Domains
         {
             var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(model, updatedBy);
             uow.saveChanges();
-            if (model.Status == 2 || model.Status == 3)
+
+            if (model.Status == FinderFormStatusConst.RESCUING)
             {
                 string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
 
@@ -99,11 +100,11 @@ namespace PetRescue.Data.Domains
                         }
                     }
                 }
-
-                if(model.Status == 3)
-                    uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, finderForm.InsertedBy,
-                   ApplicationNameHelper.USER_APP);
             }
+            if (model.Status == FinderFormStatusConst.CANCELED)
+                uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, finderForm.InsertedBy,
+               ApplicationNameHelper.USER_APP);
+
             return finderForm;
         }
         #endregion
@@ -120,7 +121,8 @@ namespace PetRescue.Data.Domains
 
             //tạo object lưu xuống json
             var newJson
-                = new NotificationToVolunteers {
+                = new NotificationToVolunteers
+                {
                     FinderFormId = finderForm.FinderFormId,
                     InsertedAt = currentTime,
                     InsertedBy = insertedBy,
@@ -203,15 +205,15 @@ namespace PetRescue.Data.Domains
             var userRepo = uow.GetService<IUserRepository>();
             var finderFormRepo = uow.GetService<IFinderFormRepository>();
             var result = new List<FinderFormDetailModel>();
-            var finderForms = finderFormRepo.Get().Where(s => s.FinderFormStatus == FinderFormStatus.PROCESSING);
-            foreach(var finderForm in finderForms)
+            var finderForms = finderFormRepo.Get().Where(s => s.FinderFormStatus == FinderFormStatusConst.PROCESSING);
+            foreach (var finderForm in finderForms)
             {
                 var finderUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
                 result.Add(new FinderFormDetailModel
                 {
                     FinderDate = finderForm.InsertedAt,
                     FinderDescription = finderForm.FinderDescription,
-                    FinderFormId =finderForm.FinderFormId,
+                    FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
                     FinderImageUrl = finderForm.FinderFormImgUrl,
                     FinderName = finderUser.UserProfile.FirstName + " " + finderUser.UserProfile.LastName,
@@ -223,10 +225,11 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public List<FinderFormDetailModel> GetListByUserId(Guid userId) {
+        public List<FinderFormDetailModel> GetListByUserId(Guid userId)
+        {
             var finderFormRepo = uow.GetService<IFinderFormRepository>();
             var userRepo = uow.GetService<IUserRepository>();
-            var finderForms = finderFormRepo.Get().Where(s =>s.InsertedBy.Equals(userId));
+            var finderForms = finderFormRepo.Get().Where(s => s.InsertedBy.Equals(userId));
             var result = new List<FinderFormDetailModel>();
             foreach (var finderForm in finderForms)
             {
