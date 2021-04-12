@@ -247,7 +247,7 @@ namespace PetRescue.Data.Domains
             var result = new List<AdoptionViewModel>();
             foreach (var adoption in adoptions)
             {
-                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.InsertedBy));
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
                 result.Add(new AdoptionViewModel
                 {
                     AdoptedAt = adoption.AdoptedAt,
@@ -294,6 +294,62 @@ namespace PetRescue.Data.Domains
                 {
                     var trackingUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petTracking.InsertedBy));
                     list.Add(new PetTrackingViewModel 
+                    {
+                        Description = petTracking.Description,
+                        ImageUrl = petTracking.PetTrackingImgUrl,
+                        InsertAt = petTracking.InsertedAt,
+                        IsSterilized = petTracking.IsSterilized,
+                        IsVaccinated = petTracking.IsVaccinated,
+                        PetTrackingId = petTracking.PetTrackingId,
+                        Weight = petTracking.Weight,
+                        Author = trackingUser.UserProfile.LastName + " " + trackingUser.UserProfile.FirstName
+                    });
+                }
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.InsertedBy));
+                result.AdoptedAt = adoption.AdoptedAt;
+                result.AdoptionRegistrationId = adoption.AdoptionRegistrationId;
+                result.AdoptionStatus = adoption.AdoptionStatus;
+                result.ReturnedAt = adoption.ReturnedAt;
+                result.Owner = new UserModel
+                {
+                    Dob = user.UserProfile.Dob,
+                    FirstName = user.UserProfile.FirstName,
+                    Gender = user.UserProfile.Gender,
+                    ImageUrl = user.UserProfile.ImageUrl,
+                    LastName = user.UserProfile.LastName,
+                    Phone = user.UserProfile.Phone,
+                    UserEmail = user.UserEmail,
+                    UserId = user.UserId
+                };
+                result.Address = adoption.AdoptionRegistration.Address;
+                result.Email = adoption.AdoptionRegistration.Email;
+                result.Job = adoption.AdoptionRegistration.Job;
+                result.PetBreedName = adoption.AdoptionRegistration.PetProfile.PetBreed.PetBreedName;
+                result.PetColorName = adoption.AdoptionRegistration.PetProfile.PetFurColor.PetFurColorName;
+                result.PetImgUrl = adoption.AdoptionRegistration.PetProfile.PetImgUrl;
+                result.PetName = adoption.AdoptionRegistration.PetProfile.PetName;
+                result.PetTypeName = adoption.AdoptionRegistration.PetProfile.PetBreed.PetType.PetTypeName;
+                result.Phone = adoption.AdoptionRegistration.Phone;
+                result.Username = adoption.AdoptionRegistration.UserName;
+                result.PetTrackings = list;
+            }
+            return result;
+        }
+        public AdoptionViewModel GetAdoptionByAdoptionId(Guid adoptionId)
+        {
+            var adoptionRepo = uow.GetService<IAdoptionRepository>();
+            var userRepo = uow.GetService<IUserRepository>();
+            var petTrackingRepo = uow.GetService<IPetTrackingRepository>();
+            var adoption = adoptionRepo.Get().FirstOrDefault(s => s.AdoptionRegistrationId.Equals(adoptionId));
+            var result = new AdoptionViewModel();
+            if (adoption != null)
+            {
+                var petTrackings = petTrackingRepo.Get().Where(s => s.PetProfile.PetProfileId.Equals(adoption.AdoptionRegistration.PetProfileId));
+                var list = new List<PetTrackingViewModel>();
+                foreach (var petTracking in petTrackings)
+                {
+                    var trackingUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petTracking.InsertedBy));
+                    list.Add(new PetTrackingViewModel
                     {
                         Description = petTracking.Description,
                         ImageUrl = petTracking.PetTrackingImgUrl,

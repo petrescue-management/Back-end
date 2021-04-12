@@ -129,7 +129,8 @@ namespace PetRescue.Data.Domains
                 PetAge = pet.PetAge,
                 PetGender = pet.PetGender,
                 PetStatus = pet.PetStatus,
-                PetImgUrl = pet.PetImgUrl
+                PetImgUrl = pet.PetImgUrl,
+                PetName = pet.PetName
                 });
             }
             return result;

@@ -306,7 +306,7 @@ namespace PetRescue.Data.Domains
 
             foreach (var petType in petTypes)
             {
-                var listPetProfiles = new List<PetProfileModel>();
+                var listPetProfiles = new List<PetProfileModel3>();
 
                 var records = petProfileService.Get()
                     .Include(p => p.PetBreed)
@@ -319,7 +319,7 @@ namespace PetRescue.Data.Domains
                 foreach (var petProfile in records)
                 {
                     var center = petProfile.Center;
-                    listPetProfiles.Add(new PetProfileModel
+                    listPetProfiles.Add(new PetProfileModel3
                     {
                         PetProfileId = petProfile.PetProfileId,
                         PetDocumentId = petProfile.PetDocumentId,
@@ -336,11 +336,8 @@ namespace PetRescue.Data.Domains
                         CenterId = petProfile.CenterId,
                         InsertedBy = petProfile.InsertedBy,
                         InsertedAt = petProfile.InsertedAt,
-                        CenterProfile = new CenterProfileViewModel
-                        {
-                            CenterAdrress = center.Address,
-                            CenterName = center.CenterName
-                        }
+                        CenterName = center.CenterName,
+                        CenterAddress = center.Address
                     });
                 }
 
