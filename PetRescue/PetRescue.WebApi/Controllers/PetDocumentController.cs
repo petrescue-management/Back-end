@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
@@ -15,8 +16,10 @@ namespace PetRescue.WebApi.Controllers
     [ApiController]
     public class PetDocumentController : BaseController
     {
-        public PetDocumentController(IUnitOfWork uow) : base(uow)
+        private readonly IHostingEnvironment _env;
+        public PetDocumentController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
+            this._env = environment;
         }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
@@ -65,6 +68,28 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
+        [HttpPost]
+        [Route("api/create-pet-document")]
+        public async Task<IActionResult> CreatePetDocument([FromBody] PetDocumentCreateModel model)
+        {
+            try
+            {
+                var path = _env.ContentRootPath;
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var _domain = _uow.GetService<PetDocumentDomain>();
+                var result = _domain.CreatePetDocument(model, Guid.Parse(currentCenterId), Guid.Parse(currentUserId), path);
+                if (result.Result)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
         [Route("api/update-pet-document")]
@@ -82,5 +107,6 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
+        
     }
 }

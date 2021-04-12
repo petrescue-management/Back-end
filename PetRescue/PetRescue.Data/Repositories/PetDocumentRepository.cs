@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -9,7 +10,7 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IPetDocumentRepository : IBaseRepository<PetDocument, string>
     {
-        PetDocument Create();
+        PetDocument Create(PetDocumentCreateModel model, Guid centerId);
         PetDocument Edit(PetDocument entity, PetDocumentUpdateModel model);
     }
     public partial class PetDocumentRepository : BaseRepository<PetDocument, string>, IPetDocumentRepository
@@ -17,10 +18,22 @@ namespace PetRescue.Data.Repositories
         public PetDocumentRepository(DbContext context) : base(context)
         {
         }
-
-        public PetDocument Create()
+        public PetDocument Create(PetDocumentCreateModel model, Guid centerId)
         {
-            throw new NotImplementedException();
+            var result = PrepareCreate(model, centerId);
+            return Create(result).Entity;
+        }
+        private PetDocument PrepareCreate(PetDocumentCreateModel model, Guid centerId)
+        {
+            var petDocument = new PetDocument
+            {
+                CenterId = centerId,
+                FinderFormId = model.FinderId,
+                PetDocumentId = Guid.NewGuid(),
+                PetDocumentStatus = PetDocumentConst.WAITING,
+                PickerFormId = model.PickerId
+            };
+            return petDocument;
         }
 
         public PetDocument Edit(PetDocument entity, PetDocumentUpdateModel model)

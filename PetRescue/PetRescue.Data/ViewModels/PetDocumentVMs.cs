@@ -30,5 +30,10 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("pets")]
         public List<CreatePetProfileModel> Pets {get;set ;}
     }
+    public class PetDocumentCreateModel
+    {
+        public Guid PickerId { get; set; }
+        public Guid FinderId { get; set; }
+    }
 
 }
