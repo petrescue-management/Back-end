@@ -64,7 +64,7 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public FinderFormModel UpdateFinderFormStatus(UpdateStatusModel model, Guid updatedBy, string path)
+        public async Task<FinderFormModel> UpdateFinderFormStatusAsync(UpdateStatusModel model, Guid updatedBy, string path)
         {
             var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(model, updatedBy);
             uow.saveChanges();
@@ -82,7 +82,6 @@ namespace PetRescue.Data.Domains
                     var notiArrary = objJson.GetValue("Notifications") as JArray;
                     if (notiArrary.Count != 0)
                     {
-
                         foreach (var noti in notiArrary.Children().ToList())
                         {
 
@@ -101,10 +100,23 @@ namespace PetRescue.Data.Domains
                     }
                 }
             }
-            if (model.Status == FinderFormStatusConst.CANCELED)
-                uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, finderForm.InsertedBy,
+            else if (model.Status == FinderFormStatusConst.CANCELED)
+            {
+                await uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, finderForm.InsertedBy,
                ApplicationNameHelper.USER_APP);
-
+            }
+            else if(model.Status == FinderFormStatusConst.ARRIVED)
+            {
+                await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy,ApplicationNameHelper.USER_APP, new Message 
+                {
+                    Notification = new Notification
+                    {
+                        Title = NotificationTitleHelper.ARRIVED_RESCUE_PET_TITLE,
+                        Body = NotificationBodyHelper.ARRIVED_RESCUE_PET_BODY
+                    }                
+                });
+            }
+                
             return finderForm;
         }
         #endregion
@@ -189,7 +201,7 @@ namespace PetRescue.Data.Domains
         {
             if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
             {
-                var finderForm = UpdateFinderFormStatus(new UpdateStatusModel
+                var finderForm = UpdateFinderFormStatusAsync(new UpdateStatusModel
                 {
                     Id = finderFormId,
                     Status = 3
