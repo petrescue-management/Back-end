@@ -75,6 +75,6 @@ namespace PetRescue.Data.ViewModels
     public class CenterProfileViewModel
     {
         public string CenterName { get; set; }
-        public string CenterAdrress { get; set; }
+        public string CenterAddrress { get; set; }
     }
 }

@@ -60,7 +60,7 @@ namespace PetRescue.WebApi.Controllers
         #endregion
 
         #region UPDATE STATUS
-        [HttpPut]
+        [HttpPost]
         [Route("api/update-finder-form-status")]
         public IActionResult UpdateFinderFormStatus(UpdateStatusModel model)
         {

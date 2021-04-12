@@ -25,6 +25,27 @@ namespace PetRescue.Data.ViewModels
         public CenterProfileViewModel CenterProfile { get; set; }
         public PetTypeUpdateModel PetType { get; set; }
     }
+    public class PetProfileModel2
+    {
+        public Guid PetProfileId { get; set; }
+        public Guid? PetDocumentId { get; set; }
+        public string PetName { get; set; }
+        public int PetGender { get; set; }
+        public int? PetAge { get; set; }
+        public Guid PetBreedId { get; set; }
+        public string PetBreedName { get; set; }
+        public Guid PetFurColorId { get; set; }
+        public string PetFurColorName { get; set; }
+        public string PetImgUrl { get; set; }
+        public int PetStatus { get; set; }
+        public string PetProfileDescription { get; set; }
+        public Guid CenterId { get; set; }
+        public Guid InsertedBy { get; set; }
+        public DateTime InsertedAt { get; set; }
+        public string CenterAddress { get; set; }
+        public string CenterName { get; set; }
+        public PetTypeUpdateModel PetType { get; set; }
+    }
     public class PetProfileFilter
     {
         [JsonProperty("petDocumentId")]
@@ -41,6 +62,27 @@ namespace PetRescue.Data.ViewModels
         public string PetFurColorName { get; set; }
         [JsonProperty("petAge")]
         public int PetAge { get; set; }
+    }
+    public class PetProfileModel3
+    {
+        public Guid PetProfileId { get; set; }
+        public Guid? PetDocumentId { get; set; }
+        public string PetName { get; set; }
+        public int PetGender { get; set; }
+        public int? PetAge { get; set; }
+        public Guid PetBreedId { get; set; }
+        public string PetBreedName { get; set; }
+        public Guid PetFurColorId { get; set; }
+        public string PetFurColorName { get; set; }
+        public string PetImgUrl { get; set; }
+        public int PetStatus { get; set; }
+        public string PetProfileDescription { get; set; }
+        public Guid CenterId { get; set; }
+        public Guid InsertedBy { get; set; }
+        public DateTime InsertedAt { get; set; }
+        public string CenterAddress { get; set; }
+        public string CenterName { get; set; }
+
     }
     public class CreatePetProfileModel
     {
@@ -71,7 +113,7 @@ namespace PetRescue.Data.ViewModels
     public class GetPetByTypeNameModel
     {
         public string TypeName { get; set; }
-        public List<PetProfileModel> Result { get; set; }
+        public List<PetProfileModel3> Result { get; set; }
     }
     public class SearchPetProfileModel
     {

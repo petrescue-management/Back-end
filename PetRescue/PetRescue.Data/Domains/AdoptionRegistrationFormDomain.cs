@@ -209,18 +209,18 @@ namespace PetRescue.Data.Domains
             return null;
         }
         #endregion
-        public List<AdoptionRegistrationFormModel> GetListAdoptionByUserId(Guid userId)
+        public List<AdoptionRegistrationFormModelWithCenter> GetListAdoptionByUserId(Guid userId)
         {
             var adoptionFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
             var petRepo = uow.GetService<IPetProfileRepository>();
-            var result = new List<AdoptionRegistrationFormModel>();
+            var result = new List<AdoptionRegistrationFormModelWithCenter>();
             var listAdoptionForm = adoptionFormRepo.Get().Where(s => s.InsertedBy.Equals(userId)).ToList();
             foreach(var adoptionForm in listAdoptionForm)
             {
-                result.Add(new AdoptionRegistrationFormModel
+                result.Add(new AdoptionRegistrationFormModelWithCenter
                 {
                     AdoptionRegistrationId = adoptionForm.AdoptionRegistrationId,
-                    PetProfile = petRepo.GetPetProfileById(adoptionForm.PetProfileId),
+                    PetProfile = petRepo.GetPetProfileById2(adoptionForm.PetProfileId),
                     UserName = adoptionForm.UserName,
                     Phone = adoptionForm.Phone,
                     Email = adoptionForm.Email,
@@ -238,7 +238,7 @@ namespace PetRescue.Data.Domains
                     InsertedAt = adoptionForm.InsertedAt,
                     UpdatedBy = adoptionForm.UpdatedBy,
                     UpdatedAt = adoptionForm.UpdatedAt,
-                    Dob  = adoptionForm.Dob
+                    Dob  = adoptionForm.Dob,
                 });
             }
             return result;

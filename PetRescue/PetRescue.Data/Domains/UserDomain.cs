@@ -53,7 +53,7 @@ namespace PetRescue.Data.Domains
                     var center = centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(user.CenterId));
                     returnResult.Center = new CenterProfileViewModel 
                     {
-                    CenterAdrress = center.Address,
+                    CenterAddrress = center.Address,
                     CenterName = center.CenterName
                     };
                 }

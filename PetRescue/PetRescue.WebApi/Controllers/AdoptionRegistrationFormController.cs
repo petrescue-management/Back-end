@@ -107,11 +107,8 @@ namespace PetRescue.WebApi.Controllers
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var _domain = _uow.GetService<AdoptionRegistrationFormDomain>();
                 var result = _domain.GetListAdoptionByUserId(Guid.Parse(currentUserId));
-                if(result.Count > 0)
-                {
-                    return Success(result);
-                }
-                return BadRequest(result);
+                return Success(result);
+               
             }
             catch(Exception ex)
             {

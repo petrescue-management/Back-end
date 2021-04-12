@@ -15,6 +15,7 @@ namespace PetRescue.Data.Repositories
         PetProfileModel UpdatePetProfile(UpdatePetProfileModel model, Guid updatedBy);
 
         PetProfileModel GetPetProfileById(Guid id);
+        PetProfileModel2 GetPetProfileById2(Guid id);
     }
 
     public partial class PetProfileRepository : BaseRepository<PetProfile, string>, IPetProfileRepository
@@ -139,7 +140,7 @@ namespace PetRescue.Data.Repositories
                 PetProfileDescription = petProfile.PetProfileDescription,
                 CenterId = petProfile.CenterId,
                 InsertedBy = petProfile.InsertedBy,
-                InsertedAt = petProfile.InsertedAt
+                InsertedAt = petProfile.InsertedAt,
             };
 
             return result;
@@ -168,6 +169,33 @@ namespace PetRescue.Data.Repositories
                    PetStatus = p.PetStatus,
                    PetImgUrl = p.PetImgUrl,
                    PetProfileId = p.PetProfileId
+               }).FirstOrDefault();
+            return result;
+        }
+
+        public PetProfileModel2 GetPetProfileById2(Guid id)
+        {
+            var result = Get()
+               .Where(p => p.PetProfileId.Equals(id))
+               .Include(p => p.PetBreed)
+               .Include(p => p.PetFurColor)
+               .Select(p => new PetProfileModel2
+               {
+                   PetDocumentId = p.PetDocumentId,
+                   CenterId = p.CenterId,
+                   PetProfileDescription = p.PetProfileDescription,
+                   PetAge = p.PetAge,
+                   PetBreedId = p.PetBreedId,
+                   PetBreedName = p.PetBreed.PetBreedName,
+                   PetFurColorId = p.PetFurColorId,
+                   PetFurColorName = p.PetFurColor.PetFurColorName,
+                   PetGender = p.PetGender,
+                   PetName = p.PetName,
+                   PetStatus = p.PetStatus,
+                   PetImgUrl = p.PetImgUrl,
+                   PetProfileId = p.PetProfileId,
+                   CenterAddress = p.Center.Address,
+                   CenterName = p.Center.CenterName
                }).FirstOrDefault();
             return result;
         }

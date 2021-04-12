@@ -216,7 +216,7 @@ namespace PetRescue.Data.Domains
                     FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
                     FinderImageUrl = finderForm.FinderFormImgUrl,
-                    FinderName = finderUser.UserProfile.FirstName + " " + finderUser.UserProfile.LastName,
+                    FinderName = finderUser.UserProfile.LastName +" "+ finderUser.UserProfile.FirstName,
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,
@@ -241,7 +241,7 @@ namespace PetRescue.Data.Domains
                     FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
                     FinderImageUrl = finderForm.FinderFormImgUrl,
-                    FinderName = user.UserProfile.FirstName + " " + user.UserProfile.LastName,
+                    FinderName = user.UserProfile.LastName + " " + user.UserProfile.FirstName,
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,
@@ -258,7 +258,7 @@ namespace PetRescue.Data.Domains
             var userRepo = uow.GetService<IUserRepository>();
             foreach (var finderForm in finderForms)
             {
-                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(updatedBy));
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
                 result.Add(new FinderFormDetailModel
                 {
                     FinderDate = finderForm.InsertedAt,
@@ -266,7 +266,7 @@ namespace PetRescue.Data.Domains
                     FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
                     FinderImageUrl = finderForm.FinderFormImgUrl,
-                    FinderName = user.UserProfile.FirstName + " " + user.UserProfile.LastName,
+                    FinderName = user.UserProfile.LastName + " " + user.UserProfile.FirstName,
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,

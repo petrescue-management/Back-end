@@ -56,6 +56,20 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
+        [HttpGet]
+        [Route("api/get-adoption-by-adoptionid")]
+        public IActionResult GetAdoptionByAdoptionId(Guid id)
+        {
+            try
+            {
+                var result = _uow.GetService<AdoptionDomain>().GetAdoptionByAdoptionId(id);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
         [Route("api/update-adoption-status")]
