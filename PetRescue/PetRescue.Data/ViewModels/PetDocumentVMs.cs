@@ -32,8 +32,8 @@ namespace PetRescue.Data.ViewModels
     }
     public class PetDocumentCreateModel
     {
-        public Guid PickerId { get; set; }
-        public Guid FinderId { get; set; }
+        public Guid PickerFormId { get; set; }
+        public Guid FinderFormId { get; set; }
     }
 
 }
