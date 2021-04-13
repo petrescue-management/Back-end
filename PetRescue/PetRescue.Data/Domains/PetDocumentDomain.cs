@@ -141,23 +141,9 @@ namespace PetRescue.Data.Domains
         public async Task<bool> CreatePetDocument(PetDocumentCreateModel model, Guid centerId, Guid updateBy, string path) 
         {
             var petDocumentRepo = uow.GetService<IPetDocumentRepository>();
-            var finderFormRepo = uow.GetService<IFinderFormRepository>();
             //update finder Form
-            finderFormRepo.UpdateFinderFormStatus(new UpdateStatusModel 
-            {
-                Id = model.FinderFormId,
-                Status = FinderFormStatusConst.DONE
-            }, updateBy);
-            var finderForm = finderFormRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(model.FinderFormId));
             var result = petDocumentRepo.Create(model, centerId);
-            await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP,
-                new Message {
-                  Notification = new Notification
-                  {
-                      Title = NotificationTitleHelper.DONE_RESCUE_PET_TITLE,
-                      Body = NotificationBodyHelper.DONE_RESCUE_PET_BODY
-                  }
-                });
+            
             if(result != null)
             {
                 uow.saveChanges();
