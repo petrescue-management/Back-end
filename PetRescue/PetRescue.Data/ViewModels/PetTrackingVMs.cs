@@ -25,4 +25,12 @@ namespace PetRescue.Data.ViewModels
         public DateTime InsertAt { get; set; }
         public string Author { get; set; }
     }
+
+
+    public class CreatePetTrackingByUserModel
+    {
+        public Guid PetProfileId { get; set; }
+        public string ImageUrl { get; set; }
+        public string Description { get; set; }
+    }
 }

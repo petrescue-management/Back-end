@@ -70,5 +70,27 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("api/create-pet-tracking-by-user")]
+        public IActionResult CreatePetTrackingByUser([FromBody] CreatePetTrackingByUserModel model)
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var _domain = _uow.GetService<PetTrackingDomain>();
+                var result = _domain.CreatePetTrackingByUser(model, Guid.Parse(currentUserId));
+                if (result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
     }
 }
