@@ -33,8 +33,8 @@ namespace PetRescue.Data.Repositories
                {
                    AdoptionRegistrationId = a.AdoptionRegistrationId,             
                    AdoptionStatus = a.AdoptionStatus,
-                   AdoptedAt = a.AdoptedAt,
-                   ReturnedAt = a.ReturnedAt
+                   InsertedAt = a.InsertedAt,
+                   UpdatedAt = a.UpdatedAt
                }).FirstOrDefault();
 
             return result;
@@ -54,8 +54,6 @@ namespace PetRescue.Data.Repositories
                {
                    AdoptionRegistrationId = a.AdoptionRegistrationId,
                    AdoptionStatus = model.Status,
-                   AdoptedAt = DateTime.UtcNow,
-                   ReturnedAt = null,
                    AdoptionRegistration = a.AdoptionRegistration,
                    InsertedBy = a.InsertedBy,
                    InsertedAt = a.InsertedAt,
@@ -71,8 +69,6 @@ namespace PetRescue.Data.Repositories
                {
                    AdoptionRegistrationId = a.AdoptionRegistrationId,
                    AdoptionStatus = model.Status,
-                   AdoptedAt = a.AdoptedAt,
-                   ReturnedAt = DateTime.UtcNow,
                    AdoptionRegistration = a.AdoptionRegistration,
                    InsertedBy = a.InsertedBy,
                    InsertedAt = a.InsertedAt,
@@ -105,8 +101,7 @@ namespace PetRescue.Data.Repositories
                 InsertedBy = (Guid)model.UpdatedBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
-                UpdatedAt = null,
-                AdoptedAt = DateTime.UtcNow
+                UpdatedAt = null
             };
             return adoption;
         }

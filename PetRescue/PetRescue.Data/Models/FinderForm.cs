@@ -13,6 +13,7 @@ namespace PetRescue.Data.Models
         public int PetAttribute { get; set; }
         public int FinderFormStatus { get; set; }
         public string Phone { get; set; }
+        public string CancelledReason { get; set; }
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }

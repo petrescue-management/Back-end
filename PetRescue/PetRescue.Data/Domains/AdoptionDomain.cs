@@ -42,8 +42,8 @@ namespace PetRescue.Data.Domains
                     Owner = userService.GetUserById(a.AdoptionRegistration.InsertedBy),
                     PetProfile = petProfileService.GetPetProfileById(a.AdoptionRegistration.PetProfileId),
                     AdoptionStatus = a.AdoptionStatus,
-                    AdoptedAt = a.AdoptedAt,
-                    ReturnedAt = a.ReturnedAt
+                    AdoptedAt = a.InsertedAt,
+                    ReturnedAt = a.UpdatedAt
                 }).ToList();
 
             if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
@@ -74,8 +74,8 @@ namespace PetRescue.Data.Domains
                 Owner = userService.GetUserById(form.InsertedBy),
                 PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
                 AdoptionStatus = adoption.AdoptionStatus,
-                AdoptedAt = adoption.AdoptedAt,
-                ReturnedAt = adoption.ReturnedAt
+                AdoptedAt = adoption.InsertedAt,
+                ReturnedAt = adoption.UpdatedAt
             };
             uow.saveChanges();
             return result;
@@ -97,8 +97,8 @@ namespace PetRescue.Data.Domains
                 Owner = userService.GetUserById(form.InsertedBy),
                 PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
                 AdoptionStatus = adoption.AdoptionStatus,
-                AdoptedAt = adoption.AdoptedAt,
-                ReturnedAt = adoption.ReturnedAt
+                AdoptedAt = adoption.InsertedAt,
+                ReturnedAt = adoption.UpdatedAt
             };
             if (model.Status == AdoptionStatusConst.ADOPTED)
             {
@@ -210,10 +210,10 @@ namespace PetRescue.Data.Domains
             {
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.InsertedBy));
                 result.Add(new AdoptionViewModel {
-                    AdoptedAt = adoption.AdoptedAt,
+                    AdoptedAt = adoption.InsertedAt,
                     AdoptionRegistrationId = adoption.AdoptionRegistrationId,
                     AdoptionStatus = adoption.AdoptionStatus,
-                    ReturnedAt = adoption.ReturnedAt,
+                    ReturnedAt = adoption.UpdatedAt,
                     Owner = new UserModel
                     {
                         Dob = user.UserProfile.Dob,
@@ -250,10 +250,10 @@ namespace PetRescue.Data.Domains
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
                 result.Add(new AdoptionViewModel
                 {
-                    AdoptedAt = adoption.AdoptedAt,
+                    AdoptedAt = adoption.InsertedAt,
                     AdoptionRegistrationId = adoption.AdoptionRegistrationId,
                     AdoptionStatus = adoption.AdoptionStatus,
-                    ReturnedAt = adoption.ReturnedAt,
+                    ReturnedAt = adoption.UpdatedAt,
                     Owner = new UserModel
                     {
                         Dob = user.UserProfile.Dob,
@@ -306,10 +306,10 @@ namespace PetRescue.Data.Domains
                     });
                 }
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.InsertedBy));
-                result.AdoptedAt = adoption.AdoptedAt;
+                result.AdoptedAt = adoption.InsertedAt;
                 result.AdoptionRegistrationId = adoption.AdoptionRegistrationId;
                 result.AdoptionStatus = adoption.AdoptionStatus;
-                result.ReturnedAt = adoption.ReturnedAt;
+                result.ReturnedAt = adoption.UpdatedAt;
                 result.Owner = new UserModel
                 {
                     Dob = user.UserProfile.Dob,
@@ -362,10 +362,10 @@ namespace PetRescue.Data.Domains
                     });
                 }
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.InsertedBy));
-                result.AdoptedAt = adoption.AdoptedAt;
+                result.AdoptedAt = adoption.InsertedAt;
                 result.AdoptionRegistrationId = adoption.AdoptionRegistrationId;
                 result.AdoptionStatus = adoption.AdoptionStatus;
-                result.ReturnedAt = adoption.ReturnedAt;
+                result.ReturnedAt = adoption.UpdatedAt;
                 result.Owner = new UserModel
                 {
                     Dob = user.UserProfile.Dob,

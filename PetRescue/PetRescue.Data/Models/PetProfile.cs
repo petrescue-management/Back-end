@@ -8,6 +8,7 @@ namespace PetRescue.Data.Models
         public PetProfile()
         {
             AdoptionRegistrationForm = new HashSet<AdoptionRegistrationForm>();
+            AdoptionReportTracking = new HashSet<AdoptionReportTracking>();
             PetTracking = new HashSet<PetTracking>();
         }
 
@@ -31,6 +32,7 @@ namespace PetRescue.Data.Models
         public virtual PetBreed PetBreed { get; set; }
         public virtual PetFurColor PetFurColor { get; set; }
         public virtual ICollection<AdoptionRegistrationForm> AdoptionRegistrationForm { get; set; }
+        public virtual ICollection<AdoptionReportTracking> AdoptionReportTracking { get; set; }
         public virtual ICollection<PetTracking> PetTracking { get; set; }
     }
 }

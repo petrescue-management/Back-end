@@ -15,6 +15,8 @@ namespace PetRescue.Data.Models
         public string VolunteerRegistrationFormImageUrl { get; set; }
         public Guid CenterId { get; set; }
         public int VolunteerRegistrationFormStatus { get; set; }
+        public string RejectedReason { get; set; }
         public DateTime InsertedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }
