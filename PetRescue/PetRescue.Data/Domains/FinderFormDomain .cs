@@ -289,4 +289,34 @@ namespace PetRescue.Data.Domains
                 return result;
             }
         }
+        public List<FinderFormViewModel2> GetListFinderFormFinishByUserId(Guid userId)
+        {
+            var finderFormRepo = uow.GetService<IFinderFormRepository>();
+            var userRepo = uow.GetService<IUserRepository>();
+            var result = new List<FinderFormViewModel2>();
+            var finders = finderFormRepo.Get().Where(s => s.UpdatedBy.Equals(userId) && s.FinderFormStatus == FinderFormStatusConst.DONE);
+            foreach(var finder in finders)
+            {
+                var temp = new FinderFormViewModel2
+                {
+                    FinderDate = finder.InsertedAt,
+                    FinderFormStatus = finder.FinderFormStatus,
+                    FinderDescription = finder.FinderDescription,
+                    FinderFormId = finder.FinderFormId,
+                    FinderImageUrl = finder.FinderFormImgUrl,
+                    PetAttribute = finder.PetAttribute,
+                    PickerDate = finder.PetDocument.PickerForm.InsertedAt,
+                    PickerFormDescription = finder.PetDocument.PickerForm.PickerDescription,
+                    PickerFormId = finder.PetDocument.PickerForm.PickerFormId,
+                    PickerFormImg = finder.PetDocument.PickerForm.PickerImageUrl,
+
+                };
+                var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finder.InsertedBy));
+                temp.FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
+                currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finder.UpdatedBy));
+                temp.PickerName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
+                result.Add(temp);
+            }
+            return result;
+        }
     }

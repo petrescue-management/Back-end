@@ -70,7 +70,7 @@ namespace PetRescue.WebApi.Controllers
         }
         [HttpPost]
         [Route("api/create-pet-document")]
-        public async Task<IActionResult> CreatePetDocument([FromBody] PetDocumentCreateModel model)
+        public IActionResult CreatePetDocument([FromBody] PetDocumentCreateModel model)
         {
             try
             {
