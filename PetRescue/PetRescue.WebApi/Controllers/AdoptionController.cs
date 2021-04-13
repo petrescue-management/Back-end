@@ -23,7 +23,7 @@ namespace PetRescue.WebApi.Controllers
             _env = environment;
         }
 
-        [Authorize(Roles = RoleConstant.MANAGER)]
+       /* [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
         [Route("api/search-adoption")]
         public IActionResult SearchAdoption([FromQuery] SearchModel model)
@@ -40,9 +40,9 @@ namespace PetRescue.WebApi.Controllers
             {
                 return Error(ex);
             }
-        }
+        }*/
 
-        [HttpGet]
+/*        [HttpGet]
         [Route("api/get-adoption-by-id/{id}")]
         public IActionResult GetAdoptionById(Guid id)
         {
@@ -55,7 +55,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 return Error(ex);
             }
-        }
+        }*/
         [HttpGet]
         [Route("api/get-adoption-by-adoptionid")]
         public IActionResult GetAdoptionByAdoptionId(Guid id)
@@ -70,23 +70,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
-        [Authorize(Roles = RoleConstant.MANAGER)]
-        [HttpPut]
-        [Route("api/update-adoption-status")]
-        public IActionResult UpdateAdoptionStatus(UpdateStatusModel model)
-        {
-            try
-            {
-                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var path = _env.ContentRootPath;
-                var result = _uow.GetService<AdoptionDomain>().UpdateAdoptionStatus(model, path, Guid.Parse(currentUserId));
-                return Success(result);
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
+
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
         [Route("api/get-adoption-by-centerid")]
@@ -138,5 +122,45 @@ namespace PetRescue.WebApi.Controllers
             }
         }
 
+        #region CREATE
+        [Authorize]
+        [HttpGet]
+        [Route("api/create-adoption")]
+        public IActionResult CreateAdoption([FromQuery] Guid adoptionRegistrationFormId)
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var path = _env.ContentRootPath;
+                var result = _uow.GetService<AdoptionDomain>()
+                    .CreateAdoption(adoptionRegistrationFormId, Guid.Parse(currentUserId), path);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        #endregion
+
+        #region UPDATE STATUS
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpPut]
+        [Route("api/update-adoption-status")]
+        public IActionResult UpdateAdoptionStatus(CancelModel model)
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var path = _env.ContentRootPath;
+                var result = _uow.GetService<AdoptionDomain>().UpdateAdoptionStatus(model, Guid.Parse(currentUserId), path);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+        #endregion
     }
 }

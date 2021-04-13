@@ -6,9 +6,7 @@ namespace PetRescue.Data.ConstantHelper
 {
     public class AdoptionStatusConst
     {
-        public const int PROCESSING = 1;
-        public const int ADOPTED = 2;
-        public const int RETURNED = 3;
-        public const int DONTGET = 4;
+        public const int ADOPTED = 1;
+        public const int RETURNED = 2;
     }
 }

@@ -11,11 +11,11 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IAdoptionRepository : IBaseRepository<Adoption, string>
     {
-        Adoption GetAdoptionById(Guid id);
+        Adoption GetAdoptionById(Guid adoptionRegistrationFormId);
 
-        Adoption UpdateAdoptionStatus(UpdateStatusModel model, Guid updateBy);
+        Adoption UpdateAdoptionStatus(CancelModel model, Guid updatedBy);
 
-        Adoption CreateAdoption(AdoptionRegistrationFormModel model);
+        Adoption CreateAdoption(Guid adoptionRegistrationFormId, Guid insertedBy);
     }
 
     public partial class AdoptionRepository : BaseRepository<Adoption, string>, IAdoptionRepository
@@ -25,10 +25,10 @@ namespace PetRescue.Data.Repositories
         }
 
         #region GET_BY_ID
-        public Adoption GetAdoptionById(Guid id)
+        public Adoption GetAdoptionById(Guid adoptionRegistrationFormId)
         {
             var result = Get()
-               .Where(a => a.AdoptionRegistrationId.Equals(id))
+               .Where(a => a.AdoptionRegistrationId.Equals(adoptionRegistrationFormId))
                .Select(a => new Adoption
                {
                    AdoptionRegistrationId = a.AdoptionRegistrationId,             
@@ -42,46 +42,27 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region UPDATE STATUS
-        private Adoption PrepareUpdate(UpdateStatusModel model, Guid updateBy)
+        private Adoption PrepareUpdate(CancelModel model, Guid updatedBy)
         {
-            Adoption adoption;
-
-            if (model.Status == AdoptionStatusConst.ADOPTED)
-            {
-                adoption = Get()
+            Adoption adoption = Get()
                .Where(a => a.AdoptionRegistrationId.Equals(model.Id))
                .Select(a => new Adoption
                {
                    AdoptionRegistrationId = a.AdoptionRegistrationId,
                    AdoptionStatus = model.Status,
                    AdoptionRegistration = a.AdoptionRegistration,
+                   ReturnedReason = model.Reason,
                    InsertedBy = a.InsertedBy,
                    InsertedAt = a.InsertedAt,
-                   UpdatedBy = updateBy,
+                   UpdatedBy = updatedBy,
                    UpdatedAt = DateTime.UtcNow
                }).FirstOrDefault();
-            }
-            else
-            {
-                adoption = Get()
-               .Where(a => a.AdoptionRegistrationId.Equals(model.Id))
-               .Select(a => new Adoption
-               {
-                   AdoptionRegistrationId = a.AdoptionRegistrationId,
-                   AdoptionStatus = model.Status,
-                   AdoptionRegistration = a.AdoptionRegistration,
-                   InsertedBy = a.InsertedBy,
-                   InsertedAt = a.InsertedAt,
-                   UpdatedBy = updateBy,
-                   UpdatedAt = DateTime.UtcNow
-               }).FirstOrDefault();
-            }
             
             return adoption;
         }
-        public Adoption UpdateAdoptionStatus(UpdateStatusModel model, Guid updateBy)
+        public Adoption UpdateAdoptionStatus(CancelModel model, Guid updatedBy)
         {
-            Adoption adoption = PrepareUpdate(model, updateBy);         
+            Adoption adoption = PrepareUpdate(model, updatedBy);         
 
             Update(adoption);
 
@@ -91,14 +72,15 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region CREATE
-        private Adoption PrepareCreate(AdoptionRegistrationFormModel model)
+        private Adoption PrepareCreate(Guid adoptionRegistrationFormId, Guid insertedBy)
         {
 
             var adoption = new Adoption
             {
-                AdoptionRegistrationId = model.AdoptionRegistrationId,
-                AdoptionStatus = 1,
-                InsertedBy = (Guid)model.UpdatedBy,
+                AdoptionRegistrationId = adoptionRegistrationFormId,
+                AdoptionStatus = AdoptionStatusConst.ADOPTED,
+                ReturnedReason = null,
+                InsertedBy = insertedBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
                 UpdatedAt = null
@@ -106,9 +88,9 @@ namespace PetRescue.Data.Repositories
             return adoption;
         }
 
-        public Adoption CreateAdoption(AdoptionRegistrationFormModel model)
+        public Adoption CreateAdoption(Guid adoptionRegistrationFormId, Guid insertedBy)
         {
-            var adoption = PrepareCreate(model);
+            var adoption = PrepareCreate(adoptionRegistrationFormId, insertedBy);
             Create(adoption);
 
             return adoption;

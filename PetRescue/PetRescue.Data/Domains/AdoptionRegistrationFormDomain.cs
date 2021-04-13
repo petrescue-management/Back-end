@@ -102,7 +102,7 @@ namespace PetRescue.Data.Domains
             return result;
         }
         #endregion
-        #region UPDATE STATUS
+/*        #region UPDATE STATUS
         public async Task<object> UpdateAdoptionRegistrationFormStatus(UpdateViewModel model, Guid updateBy, string path)
         {
             var form = uow.GetService<IAdoptionRegistrationFormRepository>().UpdateAdoptionRegistrationFormStatus(model, updateBy);
@@ -190,7 +190,7 @@ namespace PetRescue.Data.Domains
             }
             
         }
-        #endregion
+        #endregion*/
         #region CREATE
         public AdoptionCreateViewModel CreateAdoptionRegistrationForm(CreateAdoptionRegistrationFormModel model, Guid insertBy)
         {
