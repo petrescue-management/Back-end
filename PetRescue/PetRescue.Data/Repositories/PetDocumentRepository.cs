@@ -28,10 +28,10 @@ namespace PetRescue.Data.Repositories
             var petDocument = new PetDocument
             {
                 CenterId = centerId,
-                FinderFormId = model.FinderId,
+                FinderFormId = model.FinderFormId,
                 PetDocumentId = Guid.NewGuid(),
                 PetDocumentStatus = PetDocumentConst.WAITING,
-                PickerFormId = model.PickerId
+                PickerFormId = model.PickerFormId
             };
             return petDocument;
         }
