@@ -78,7 +78,6 @@ namespace PetRescue.Data.Domains
                 {
 
                     var objJson = JObject.Parse(fileJson);
-
                     var notiArrary = objJson.GetValue("Notifications") as JArray;
                     if (notiArrary.Count != 0)
                     {
@@ -99,7 +98,11 @@ namespace PetRescue.Data.Domains
                         }
                     }
                 }
-
+                if (model.Status == FinderFormStatusConst.RESCUING)
+                {
+                    await uow.GetService<NotificationTokenDomain>().NotificationForUserWhenPickerApprovePicked(path, finderForm.InsertedBy,
+                   ApplicationNameHelper.USER_APP);
+                }
                 if (model.Status == FinderFormStatusConst.CANCELED)
                 {
                     await uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, finderForm.InsertedBy,
@@ -117,103 +120,114 @@ namespace PetRescue.Data.Domains
                     }
                 });
             }
-
-                return finderForm;
+            else if(model.Status == FinderFormStatusConst.DONE)
+            {
+               await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP,
+               new Message
+               {
+                   Notification = new Notification
+                   {
+                       Title = NotificationTitleHelper.DONE_RESCUE_PET_TITLE,
+                       Body = NotificationBodyHelper.DONE_RESCUE_PET_BODY
+                   }
+               });
+            }
+            return finderForm;
         }
-            #endregion
+        #endregion
+        #region CREATE
+        public FinderFormModel CreateFinderForm(CreateFinderFormModel model, Guid insertedBy, string path)
+        {
+            DateTime currentTime = DateTime.UtcNow;
 
-            #region CREATE
-            public FinderFormModel CreateFinderForm(CreateFinderFormModel model, Guid insertedBy, string path)
+            var finderFormService = uow.GetService<IFinderFormRepository>();
+
+            var finderForm = finderFormService.CreateFinderForm(model, insertedBy);
+            uow.saveChanges();
+
+            //tạo object lưu xuống json
+            var newJson
+                = new NotificationToVolunteers
+                {
+                    FinderFormId = finderForm.FinderFormId,
+                    InsertedAt = currentTime,
+                    InsertedBy = insertedBy,
+                    Path = path
+                };
+
+            var serialObject = JsonConvert.SerializeObject(newJson);
+
+            string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
+
+            string fileJson = File.ReadAllText(FILEPATH);
+
+            var objJson = JObject.Parse(fileJson);
+
+            var notiArrary = objJson.GetValue("Notifications") as JArray;
+
+            var newNoti = JObject.Parse(serialObject);
+
+            if (notiArrary.Count == 0)
+                notiArrary = new JArray();
+
+            notiArrary.Add(newNoti);
+
+            objJson["Notifications"] = notiArrary;
+            string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
+
+            File.WriteAllText(FILEPATH, output);
+
+            var centerService = uow.GetService<CenterDomain>();
+            var centers = centerService.GetListCenterLocation();
+            var googleMapExtension = new GoogleMapExtensions();
+            var location = model.Lat + ", " + model.Lng;
+            var records = googleMapExtension.FindListShortestCenter(location, centers);
+            var listCenterId = new List<string>();
+
+            if (records.Count != 0)
             {
-                DateTime currentTime = DateTime.UtcNow;
+                if (records.Count >= 2)
+                {
+                    listCenterId.Add(records[0].CenterId);
+                    listCenterId.Add(records[1].CenterId);
+                }
+                else
+                {
+                    listCenterId.Add(records[0].CenterId);
+                }
+            }
+            uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listCenterId);
+            uow.saveChanges();
+            return finderForm;
+        }
 
-                var finderFormService = uow.GetService<IFinderFormRepository>();
-
-                var finderForm = finderFormService.CreateFinderForm(model, insertedBy);
-                uow.saveChanges();
-
-                //tạo object lưu xuống json
-                var newJson
-                    = new NotificationToVolunteers
-                    {
-                        FinderFormId = finderForm.FinderFormId,
-                        InsertedAt = currentTime,
-                        InsertedBy = insertedBy,
-                        Path = path
-                    };
-
-                var serialObject = JsonConvert.SerializeObject(newJson);
-
-                string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
-
-                string fileJson = File.ReadAllText(FILEPATH);
-
-                var objJson = JObject.Parse(fileJson);
-
-                var notiArrary = objJson.GetValue("Notifications") as JArray;
-
-                var newNoti = JObject.Parse(serialObject);
-
-                if (notiArrary.Count == 0)
-                    notiArrary = new JArray();
-
-                notiArrary.Add(newNoti);
-
-                objJson["Notifications"] = notiArrary;
-                string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
-
-                File.WriteAllText(FILEPATH, output);
-
+        public void ReNotification(Guid finderFormId, string path)
+        {
+            if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
+            {
                 var centerService = uow.GetService<CenterDomain>();
-                var centers = centerService.GetListCenterLocation();
-                var googleMapExtension = new GoogleMapExtensions();
-                var location = model.Lat + ", " + model.Lng;
-                var records = googleMapExtension.FindListShortestCenter(location, centers);
-                var listCenterId = new List<string>();
+                var records = centerService.GetListCenter().Select(c => c.CenterId.ToString()).ToList();
+                uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, records);
+            }
+        }
 
-                if (records.Count != 0)
+        public void DestroyNotification(Guid finderFormId, Guid insertedBy, string path)
+        {
+            if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
+            {
+                var finderForm = UpdateFinderFormStatusAsync(new UpdateStatusModel
                 {
-                    if (records.Count >= 2)
-                    {
-                        listCenterId.Add(records[0].CenterId);
-                        listCenterId.Add(records[1].CenterId);
-                    }
-                    else
-                    {
-                        listCenterId.Add(records[0].CenterId);
-                    }
-                }
-                uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listCenterId);
+                    Id = finderFormId,
+                    Status = 3
+                }, Guid.Empty, path);
                 uow.saveChanges();
-                return finderForm;
             }
+        }
 
-            public void ReNotification(Guid finderFormId, string path)
-            {
-                if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
-                {
-                    var centerService = uow.GetService<CenterDomain>();
-                    var records = centerService.GetListCenter().Select(c => c.CenterId.ToString()).ToList();
-                    uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, records);
-                }
-            }
+        #endregion
 
-            public void DestroyNotification(Guid finderFormId, Guid insertedBy, string path)
-            {
-                if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
-                {
-                    var finderForm = UpdateFinderFormStatusAsync(new UpdateStatusModel
-                    {
-                        Id = finderFormId,
-                        Status = 3
-                    }, Guid.Empty, path);
-                    uow.saveChanges();
-                }
-            }
 
-            #endregion
-
-            public List<FinderFormDetailModel> GetAllListFinderForm()
+        public List<FinderFormDetailModel> GetAllListFinderForm()
             {
                 var userRepo = uow.GetService<IUserRepository>();
                 var finderFormRepo = uow.GetService<IFinderFormRepository>();
@@ -238,56 +252,55 @@ namespace PetRescue.Data.Domains
                 }
                 return result;
             }
-            public List<FinderFormDetailModel> GetListByUserId(Guid userId)
+        public List<FinderFormDetailModel> GetListByUserId(Guid userId)
+        {
+            var finderFormRepo = uow.GetService<IFinderFormRepository>();
+            var userRepo = uow.GetService<IUserRepository>();
+            var finderForms = finderFormRepo.Get().Where(s => s.InsertedBy.Equals(userId));
+            var result = new List<FinderFormDetailModel>();
+            foreach (var finderForm in finderForms)
             {
-                var finderFormRepo = uow.GetService<IFinderFormRepository>();
-                var userRepo = uow.GetService<IUserRepository>();
-                var finderForms = finderFormRepo.Get().Where(s => s.InsertedBy.Equals(userId));
-                var result = new List<FinderFormDetailModel>();
-                foreach (var finderForm in finderForms)
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(userId));
+                result.Add(new FinderFormDetailModel
                 {
-                    var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(userId));
-                    result.Add(new FinderFormDetailModel
-                    {
-                        FinderDate = finderForm.InsertedAt,
-                        FinderDescription = finderForm.FinderDescription,
-                        FinderFormId = finderForm.FinderFormId,
-                        FinderFormStatus = finderForm.FinderFormStatus,
-                        FinderImageUrl = finderForm.FinderFormImgUrl,
-                        FinderName = user.UserProfile.LastName + " " + user.UserProfile.FirstName,
-                        Lat = finderForm.Lat,
-                        Lng = finderForm.Lng,
-                        PetAttribute = finderForm.PetAttribute,
-                        phone = finderForm.Phone,
-                    });
-                }
-                return result;
+                    FinderDate = finderForm.InsertedAt,
+                    FinderDescription = finderForm.FinderDescription,
+                    FinderFormId = finderForm.FinderFormId,
+                    FinderFormStatus = finderForm.FinderFormStatus,
+                    FinderImageUrl = finderForm.FinderFormImgUrl,
+                    FinderName = user.UserProfile.LastName + " " + user.UserProfile.FirstName,
+                    Lat = finderForm.Lat,
+                    Lng = finderForm.Lng,
+                    PetAttribute = finderForm.PetAttribute,
+                    phone = finderForm.Phone,
+                });
             }
-            public List<FinderFormDetailModel> GetListByStatus(Guid updatedBy, int status)
+            return result;
+        }
+        public List<FinderFormDetailModel> GetListByStatus(Guid updatedBy, int status)
+        {
+            var finderFormRepo = uow.GetService<IFinderFormRepository>();
+            var finderForms = finderFormRepo.Get().Where(s => s.UpdatedBy.Equals(updatedBy) && s.FinderFormStatus == status);
+            var result = new List<FinderFormDetailModel>();
+            var userRepo = uow.GetService<IUserRepository>();
+            foreach (var finderForm in finderForms)
             {
-                var finderFormRepo = uow.GetService<IFinderFormRepository>();
-                var finderForms = finderFormRepo.Get().Where(s => s.UpdatedBy.Equals(updatedBy) && s.FinderFormStatus == status);
-                var result = new List<FinderFormDetailModel>();
-                var userRepo = uow.GetService<IUserRepository>();
-                foreach (var finderForm in finderForms)
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
+                result.Add(new FinderFormDetailModel
                 {
-                    var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
-                    result.Add(new FinderFormDetailModel
-                    {
-                        FinderDate = finderForm.InsertedAt,
-                        FinderDescription = finderForm.FinderDescription,
-                        FinderFormId = finderForm.FinderFormId,
-                        FinderFormStatus = finderForm.FinderFormStatus,
-                        FinderImageUrl = finderForm.FinderFormImgUrl,
-                        FinderName = user.UserProfile.LastName + " " + user.UserProfile.FirstName,
-                        Lat = finderForm.Lat,
-                        Lng = finderForm.Lng,
-                        PetAttribute = finderForm.PetAttribute,
-                        phone = finderForm.Phone,
-                    });
-                }
-                return result;
+                    FinderDate = finderForm.InsertedAt,
+                    FinderDescription = finderForm.FinderDescription,
+                    FinderFormId = finderForm.FinderFormId,
+                    FinderFormStatus = finderForm.FinderFormStatus,
+                    FinderImageUrl = finderForm.FinderFormImgUrl,
+                    FinderName = user.UserProfile.LastName + " " + user.UserProfile.FirstName,
+                    Lat = finderForm.Lat,
+                    Lng = finderForm.Lng,
+                    PetAttribute = finderForm.PetAttribute,
+                    phone = finderForm.Phone,
+                });
             }
+            return result;
         }
         public List<FinderFormViewModel2> GetListFinderFormFinishByUserId(Guid userId)
         {
@@ -295,7 +308,7 @@ namespace PetRescue.Data.Domains
             var userRepo = uow.GetService<IUserRepository>();
             var result = new List<FinderFormViewModel2>();
             var finders = finderFormRepo.Get().Where(s => s.UpdatedBy.Equals(userId) && s.FinderFormStatus == FinderFormStatusConst.DONE);
-            foreach(var finder in finders)
+            foreach (var finder in finders)
             {
                 var temp = new FinderFormViewModel2
                 {
@@ -320,3 +333,5 @@ namespace PetRescue.Data.Domains
             return result;
         }
     }
+       
+}

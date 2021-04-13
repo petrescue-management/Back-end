@@ -292,7 +292,7 @@ namespace PetRescue.Data.Domains
                     }
                 } 
             }
-            uow.saveChanges();
+            //uow.saveChanges();
             return result;
         }
         public List<UserProfileViewModel> GetListProfileOfVolunter(Guid centerId) 

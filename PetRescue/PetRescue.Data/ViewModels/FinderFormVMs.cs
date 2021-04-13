@@ -19,6 +19,8 @@ namespace PetRescue.Data.ViewModels
         public double Lat { get; set; }
         [JsonProperty("lng")]
         public double Lng { get; set; }
+        [JsonProperty("petAttributes")]
+        public int PetAttributes { get; set; }
     }
     public class FinderFormDetailModel
     {

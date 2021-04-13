@@ -43,10 +43,14 @@ namespace PetRescue.Data.Domains
         {
             var notificationTokenRepo = uow.GetService<INotificationTokenRepository>();
             var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(userId) && s.ApplicationName.Equals(applicationName));
-            var result = notificationTokenRepo.Delete(notificationToken);
-            if(result != null)
+            if(notificationToken != null)
             {
-                return true;
+                var result = notificationTokenRepo.Delete(notificationToken);
+                if (result != null)
+                {
+                    return true;
+                }
+                return false;
             }
             return false;
         }

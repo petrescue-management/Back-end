@@ -380,6 +380,7 @@ namespace PetRescue.Data.Domains
                     FinderName = fullName,
                     Lat = petDocument.FinderForm.Lat,
                     Lng = petDocument.FinderForm.Lng,
+                    PetAttributes = petDocument.FinderForm.PetAttribute
                 };
                 var tracks = petProfile.PetTracking.ToList();
                 var list = new List<PetTrackingViewModel>();
