@@ -190,7 +190,7 @@ namespace PetRescue.Data.Domains
 
             public void ReNotification(Guid finderFormId, string path)
             {
-                if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
+                if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
                 {
                     var centerService = uow.GetService<CenterDomain>();
                     var records = centerService.GetListCenter().Select(c => c.CenterId.ToString()).ToList();
@@ -200,12 +200,12 @@ namespace PetRescue.Data.Domains
 
             public void DestroyNotification(Guid finderFormId, Guid insertedBy, string path)
             {
-                if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == 1)
+                if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
                 {
                     var finderForm = UpdateFinderFormStatusAsync(new UpdateStatusModel
                     {
                         Id = finderFormId,
-                        Status = 3
+                        Status = FinderFormStatusConst.CANCELED
                     }, Guid.Empty, path);
                     uow.saveChanges();
                 }
@@ -288,14 +288,13 @@ namespace PetRescue.Data.Domains
                 }
                 return result;
             }
-        }
         public List<FinderFormViewModel2> GetListFinderFormFinishByUserId(Guid userId)
         {
             var finderFormRepo = uow.GetService<IFinderFormRepository>();
             var userRepo = uow.GetService<IUserRepository>();
             var result = new List<FinderFormViewModel2>();
             var finders = finderFormRepo.Get().Where(s => s.UpdatedBy.Equals(userId) && s.FinderFormStatus == FinderFormStatusConst.DONE);
-            foreach(var finder in finders)
+            foreach (var finder in finders)
             {
                 var temp = new FinderFormViewModel2
                 {
@@ -319,4 +318,6 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
+    }
+        
     }
