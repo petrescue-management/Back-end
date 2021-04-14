@@ -41,7 +41,9 @@ namespace PetRescue.Data.Repositories
                     CenterAddress = f.CenterAddress,
                     Description = f.Description,
                     CenterRegistrationStatus = f.CenterRegistrationStatus,
-                    UpdatedAt = f.UpdatedAt,               
+                    UpdatedAt = f.UpdatedAt,
+                    ImageUrl = f.ImageUrl,
+                    InsertedAt = f.InsertedAt
                 }).FirstOrDefault();
             return result;
         }
