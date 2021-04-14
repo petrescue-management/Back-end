@@ -1,5 +1,6 @@
 ﻿using FirebaseAdmin.Messaging;
 using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
@@ -102,12 +103,11 @@ namespace PetRescue.Data.Domains
             return result;
         }
         #endregion
-/*        #region UPDATE STATUS
+        #region UPDATE STATUS
         public async Task<object> UpdateAdoptionRegistrationFormStatus(UpdateViewModel model, Guid updateBy, string path)
         {
             var form = uow.GetService<IAdoptionRegistrationFormRepository>().UpdateAdoptionRegistrationFormStatus(model, updateBy);
             var petProfileService = uow.GetService<IPetProfileRepository>();
-            var adoptionService = uow.GetService<IAdoptionRepository>();
             var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             var temp = new AdoptionRegistrationFormModel
             {
@@ -140,7 +140,6 @@ namespace PetRescue.Data.Domains
                     {
                         var result = new ReturnAdoptionViewModel();
                         await notificationTokenDomain.NotificationForUserWhenAdoptionFormToBeApprove(path, form.InsertedBy);
-                        adoptionService.CreateAdoption(temp);
                         var updatePetModel = new UpdatePetProfileModel
                         {
                             PetProfileId = form.PetProfileId,
@@ -148,6 +147,16 @@ namespace PetRescue.Data.Domains
                         };
                         petProfileService.UpdatePetProfile(updatePetModel, updateBy);
                         uow.saveChanges();
+                        ///Send mail
+                        var centerModel = new CenterViewModel
+                        {
+                            Address = form.PetProfile.Center.Address,
+                            CenterName = form.PetProfile.Center.CenterName,
+                            Email = form.PetProfile.Center.CenterNavigation.Phone,
+                            Phone = form.PetProfile.Center.Phone
+                        };
+                        MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveAdoption(centerModel, form.PetProfile.PetName, form.UserName), MailConstant.APPROVE_ADOPTION);
+                        MailExtensions.SendBySendGrid(mailArguments, null, null);
                         result.Approve = new AdoptionFormModel
                         {
                             AdoptionFormId = temp.AdoptionRegistrationId,
@@ -188,9 +197,8 @@ namespace PetRescue.Data.Domains
                     return null;
                 }
             }
-            
         }
-        #endregion*/
+        #endregion
         #region CREATE
         public AdoptionCreateViewModel CreateAdoptionRegistrationForm(CreateAdoptionRegistrationFormModel model, Guid insertBy)
         {

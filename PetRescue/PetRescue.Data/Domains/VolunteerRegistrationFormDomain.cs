@@ -98,6 +98,16 @@ namespace PetRescue.Data.Domains
                 result = userDomain.AddUserToCenter(newModel);
                 if (!result.Contains("This"))
                 {
+                    userDomain.UpdateUserProfile(new UserProfileUpdateModel
+                    {
+                        DoB = form.Dob,
+                        FirstName = form.FirstName,
+                        Gender = (byte)form.Gender,
+                        ImgUrl = form.VolunteerRegistrationFormImageUrl,
+                        LastName = form.LastName,
+                        Phone = form.Phone,
+                        UserId = userDomain.GetUserIdByEmail(form.Email)
+                    });
                     var listForm = volunteerRegistrationFormRepo.Get().Where(s => s.Email.Equals(form.Email) && s.VolunteerRegistrationFormStatus == VolunteerRegistrationFormConst.PROCESSING).ToList();
                     foreach (var item in listForm)
                     {

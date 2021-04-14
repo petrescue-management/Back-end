@@ -346,5 +346,15 @@ namespace PetRescue.Data.Domains
             }
             return null;
         }
+        public Guid GetUserIdByEmail(string email)
+        {
+            var userRepo = uow.GetService<IUserRepository>();
+            var currentUser = userRepo.Get().FirstOrDefault(s => email.Equals(s.UserEmail));
+            if(currentUser != null)
+            {
+                return currentUser.UserId;
+            }
+            return Guid.Empty;
+        }
     }
 }

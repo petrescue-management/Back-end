@@ -276,6 +276,29 @@ namespace PetRescue.Data.Domains
                 return false;
             }
         }
+        public async Task<bool> NotificationForManager(string path, Guid centerId, Message message)
+        {
+            try
+            {
+                var firebaseExtensions = new FireBaseExtentions();
+                var userDomain = uow.GetService<UserDomain>();
+                var notificationToken = userDomain.GetManagerDeviceTokenByCenterId(centerId);
+                var app = firebaseExtensions.GetFirebaseApp(path);
+                var fcm = FirebaseMessaging.GetMessaging(app);
+                if (notificationToken != null)
+                {
+                    message.Token = notificationToken.DeviceToken;
+                    await fcm.SendAsync(message);
+                }
+                app.Delete();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
         public async Task<bool> NotificationForUserWhenPickerApprovePicked(string path, Guid userId, string applicationName)
         {
             try

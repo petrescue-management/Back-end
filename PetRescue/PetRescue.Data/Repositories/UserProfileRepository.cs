@@ -39,6 +39,7 @@ namespace PetRescue.Data.Repositories
             entity.Gender = model.Gender;
             entity.Phone = model.Phone;
             entity.ImageUrl = model.ImgUrl;
+            entity.UpdatedAt = DateTime.UtcNow;
             return Update(entity).Entity;
         }
         public UserProfile FindById(Guid userId)
@@ -59,7 +60,8 @@ namespace PetRescue.Data.Repositories
                 Dob = model.DoB,
                 Phone = model.Phone,
                 Gender = 3,
-                ImageUrl = model.ImgUrl
+                ImageUrl = model.ImgUrl,
+                InsertedAt = DateTime.UtcNow
             };
             return newUserProfile;
         }

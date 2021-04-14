@@ -74,7 +74,7 @@ namespace PetRescue.WebApi.Controllers
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
         [Route("api/get-adoption-by-centerid")]
-        public IActionResult GetadoptionByCenterId()
+        public IActionResult GetAdoptionByCenterId()
         {
             try
             {
@@ -91,7 +91,7 @@ namespace PetRescue.WebApi.Controllers
         [Authorize]
         [HttpGet]
         [Route("api/get-adoption-by-userId")]
-        public IActionResult GetadoptionByUserId()
+        public IActionResult GetAdoptionByUserId()
         {
             try
             {
@@ -153,7 +153,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var path = _env.ContentRootPath;
-                var result = _uow.GetService<AdoptionDomain>().UpdateAdoptionStatus(model, Guid.Parse(currentUserId), path);
+                var result = _uow.GetService<AdoptionDomain>().UpdateAdoptionStatusAsync(model, Guid.Parse(currentUserId), path);
                 return Success(result);
             }
             catch (Exception ex)

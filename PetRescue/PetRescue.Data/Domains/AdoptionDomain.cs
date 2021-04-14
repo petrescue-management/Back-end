@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FirebaseAdmin.Messaging;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PetRescue.Data.ConstantHelper;
@@ -84,15 +85,43 @@ namespace PetRescue.Data.Domains
         #endregion*/
 
         #region CREATE
-        public bool CreateAdoption(Guid adoptionRegistrationFormId, Guid insertedBy, string path)
+        public ReturnAdoptionViewModel CreateAdoption(Guid adoptionRegistrationFormId, Guid insertedBy, string path)
         {
+            var petProfileRepo = uow.GetService<IPetProfileRepository>();
+            var adoptionFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
             var result = uow.GetService<IAdoptionRepository>().CreateAdoption(adoptionRegistrationFormId, insertedBy);
             var form = uow.GetService<IAdoptionRegistrationFormRepository>().GetAdoptionRegistrationFormById(adoptionRegistrationFormId);
-
+            var model = new ReturnAdoptionViewModel();
             if (result != null)
             {
+                petProfileRepo.UpdatePetProfile(new UpdatePetProfileModel
+                {
+                    PetProfileId = form.PetProfileId,
+                    PetStatus = PetStatusConst.ADOPTED
+                }, insertedBy);
+                model.Approve = new AdoptionFormModel
+                {
+                    AdoptionFormId = form.AdoptionRegistrationId,
+                    UserId = form.InsertedBy
+                };
+                model.Rejects = adoptionFormRepo.Get()
+                    .Where(s => s.PetProfileId.Equals(form.PetProfileId)
+                    && !s.AdoptionRegistrationId.Equals(form.AdoptionRegistrationId)
+                    && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Select(s=>new AdoptionFormModel 
+                    {
+                        AdoptionFormId = s.AdoptionRegistrationId,
+                        UserId = s.InsertedBy
+                    }).ToList();
+                foreach(var reject in model.Rejects)
+                {
+                    adoptionFormRepo.UpdateAdoptionRegistrationFormStatus(new UpdateViewModel 
+                    {
+                        Id = reject.AdoptionFormId,
+                        Status  = AdoptionRegistrationFormStatusConst.REJECTED,
+                        Reason = ErrorConst.CancelReasonAdoptionForm
+                    },insertedBy);
+                }
                 uow.saveChanges();
-
                 var newJson
                             = new NotificationRemindReportAfterAdopt
                             {
@@ -122,12 +151,9 @@ namespace PetRescue.Data.Domains
                 objJson["Reminders"] = remindArrary;
                 string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
                 File.WriteAllText(FILEPATH, output);
-
-                return true;
             }
-            return false;
+            return model;
         }
-
         public void Remind(Guid ownerId, string path)
         {
             uow.GetService<NotificationTokenDomain>().NotificationForUserAlertAfterAdoption(path, ownerId,
@@ -136,19 +162,30 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public bool UpdateAdoptionStatus(CancelModel model, Guid updatedBy, string path)
+        public async Task<bool> UpdateAdoptionStatusAsync(CancelModel model, Guid updatedBy, string path)
         {
+            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
             var result = uow.GetService<IAdoptionRepository>().UpdateAdoptionStatus(model, updatedBy);
             if (result != null)
             {
+                if(model.Status == AdoptionStatusConst.RETURNED)
+                {
+                    Message message = new Message
+                    {
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.RETURNED_ADOPTION_TITLE,
+                            Body = NotificationBodyHelper.RETURNED_ADOPTION_BODY
+                        }
+                    };
+                    await notificationTokenDomain.NotificationForManager(path, result.AdoptionRegistration.PetProfile.CenterId, message);
+                }
                 uow.saveChanges();
                 return true;
             }
             return false;
         }
         #endregion
-
-
 
         /*        #region UPDATE STATUS
                 public async Task<object> UpdateAdoptionStatus(UpdateStatusModel model, string path, Guid updateBy)
@@ -276,7 +313,7 @@ namespace PetRescue.Data.Domains
             var result = new List<AdoptionViewModel>();
             foreach(var adoption in adoptions)
             {
-                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.InsertedBy));
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
                 result.Add(new AdoptionViewModel {
                     AdoptedAt = adoption.InsertedAt,
                     AdoptionRegistrationId = adoption.AdoptionRegistrationId,
