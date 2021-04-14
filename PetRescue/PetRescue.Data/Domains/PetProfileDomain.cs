@@ -117,7 +117,6 @@ namespace PetRescue.Data.Domains
             var petProfile = uow.GetService<IPetProfileRepository>().UpdatePetProfile(model, updatedBy);
             uow.saveChanges();
             return petProfile;
-
         }
         #endregion
 
@@ -128,7 +127,6 @@ namespace PetRescue.Data.Domains
             return petProfile;
         }
         #endregion
-
         public int CreatePetFurColor(PetFurColorCreateModel model)
         {
             var result = -1;

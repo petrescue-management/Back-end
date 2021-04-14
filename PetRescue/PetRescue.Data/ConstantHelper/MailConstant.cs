@@ -16,9 +16,12 @@ namespace PetRescue.Data.ConstantHelper
         public const string REJECT_REGISTRATION_FORM = "THƯ THÔNG BÁO TỪ CHỐI TRỞ THÀNH TRUNG TÂM CỦA HỆ THỐNG";
         public const string APPROVE_REGISTRATION_VOLUNTEER = "THƯ THÔNG BÁO TRỞ THÀNH TÌNH NGUYỆN VIÊN";
         public const string REJECT_REGISTRATION_VOLUNTEER = "THƯ THÔNG BÁO TỪ CHỐI TRỞ THÀNH TÌNH NGUYỆN VIÊN";
+        public const string APPROVE_ADOPTION = "THƯ THÔNG BÁO ĐÃ ĐƯỢC DUYỆT ĐƠN ĐĂNG KÝ NHẬN NUÔI";
         public const string ORG_NAME = "RescueMe";
         public const string APP_VOLUNTEER_NAME = "VolunteerApp";
         public const string WEBSITE_NAME = "petrescue.com";
+        public const string TIME_WORK = "Từ 8h đến 20h các ngày trong tuần";
+        public const string DEFAULT_DATE = "7 Ngay";
         public static string ApproveRegistrationCenter(CenterRegistrationFormViewModel model)
         {
             return "<!DOCTYPE html><html><head><title></title></head><body data-new-gr-c-s-loaded = '14.1002.0' spellcheck = 'false'><p style = 'text-align: left;'><strong><span style = 'font-size: 22px;'> " +
@@ -135,6 +138,51 @@ namespace PetRescue.Data.ConstantHelper
                 "</sub></p><p style = 'line-height: 0.2;'><sub> Góp ý cho hệ thống qua mail: " +
                 MAIL + 
                 "</body></html> ";
+        }
+        public static string ApproveAdoption(CenterViewModel model, string petName, string username)
+        {
+            return "<!DOCTYPE html>" +
+                "<html><head><title></title></head>" +
+                "<body data-new-gr-c-s-loaded='14.1002.0' spellcheck = 'false'>" +
+                "<p style = 'text-align: left;'><strong><span style = 'font-size: 22px;'> " +
+                ORG_NAME +
+                " </span></strong></p><p> Chào bạn, " +
+                username +
+                "</p><p> Chúng tôi đến từ hệ thống cứu hộ <strong> " +
+                ORG_NAME +
+                "</strong></p><p> Chúng tôi đại điện cho " +
+                ORG_NAME +
+                "MiMivo Pet Rescue chúc mừng bạn, đơn đăng ký nhận nuôi của bạn đã được duyệt, bạn đã đăng ký thành công " +
+                petName +
+                " của " +
+                model.CenterName +
+                ". Chúng tôi trân trọng kính mời bạn đến trung tâm để hoành thànnh các thủ tục, hồ sơ để đón bé về.</p>" +
+                "<p> Thời gian: " +
+                TIME_WORK +
+                "Từ 8h đến 20h các ngày trong tuần </p>" +
+                "<p> Địa điểm: " +
+                model.Address +
+                "Đại học Fpt, Tp Hcm</p>" +
+                "<p> Lưu ý : bạn cần phải đem vật dụng dùng để vận chuyển bé về, nếu bạn không hoành thành các thủ tục hoặc không đến lấy sau " +
+                DEFAULT_DATE +
+                " chúng tôi sẽ hủy kết quả của bạn và tìm người chủ mới cho bé.</p>" +
+                "<p> Thân ái </p>" +
+                "<p> --------------------------------------------------</p>" +
+                "<p style = 'line-height: 1;' ><span style = 'font-size: 14px;'> Mọi thông tin chi tiết xin liên hệ :</span></p>" +
+                "<p style='line-height: 0.5;'><span style='font-size: 14px;'> " +
+                model.CenterName +
+                "</span></p>" +
+                "<p style = 'line-height: 0.5;' ><span style = 'font-size: 14px;'> SDT: " +
+                model.Phone +
+                " </span></p>" +
+                "<p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> Địa chỉ: " +
+                model.Address +
+                "</span></p>" +
+                "<p> --------------------------------------------------</p><p style='line-height: 0.1;'><sub> Hệ Thống Cứu Hộ " +
+                ORG_NAME +
+                "</sub></p><p style = 'line-height: 0.2;'><sub> Góp ý cho hệ thống qua mail: " +
+                MAIL +
+                " </sub></p></body></html>";
         }
     }
 }

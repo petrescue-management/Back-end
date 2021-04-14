@@ -81,7 +81,8 @@ namespace PetRescue.Data.Repositories
                       InsertedAt = f.InsertedAt,
                       UpdatedBy = updateBy,
                       UpdatedAt = DateTime.UtcNow,
-                      Dob = f.Dob
+                      Dob = f.Dob,
+                      CanceledRejectedReason = model.Reason
                   }).FirstOrDefault();
             return form;
         }

@@ -40,7 +40,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=.\\SQLExpress, 1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
+                optionsBuilder.UseSqlServer("Server=petrescue.database.windows.net;Database=PetRescue;Trusted_Connection=False;Encrypt=True;User Id=petrescue;Password=Admin123");
             }
         }
 
@@ -61,7 +61,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
@@ -70,7 +70,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")
-                    .HasColumnType("date");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
@@ -123,7 +123,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
@@ -143,7 +143,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")
-                    .HasColumnType("date");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
@@ -212,7 +212,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Lat).HasColumnName("lat");
@@ -227,7 +227,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")
-                    .HasColumnType("date");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 

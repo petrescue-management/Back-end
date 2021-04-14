@@ -58,7 +58,7 @@ namespace PetRescue.WebApi.Controllers
             }
         }
 
-/*        [Authorize(Roles = RoleConstant.MANAGER)]
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
         [Route("api/update-adoption-registration-form-status")]
         public async Task<IActionResult> UpdateAdoptionRegistrationFormStatusAsync([FromBody] UpdateViewModel model)
@@ -74,7 +74,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 return Error(ex.Message);
             }
-        }*/
+        }
         [Authorize]
         [HttpPost]
         [Route("api/create-adoption-registration-form")]

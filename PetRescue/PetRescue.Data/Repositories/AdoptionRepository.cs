@@ -46,6 +46,7 @@ namespace PetRescue.Data.Repositories
         {
             Adoption adoption = Get()
                .Where(a => a.AdoptionRegistrationId.Equals(model.Id))
+               .Include(a=>a.AdoptionRegistration)
                .Select(a => new Adoption
                {
                    AdoptionRegistrationId = a.AdoptionRegistrationId,
@@ -55,7 +56,7 @@ namespace PetRescue.Data.Repositories
                    InsertedBy = a.InsertedBy,
                    InsertedAt = a.InsertedAt,
                    UpdatedBy = updatedBy,
-                   UpdatedAt = DateTime.UtcNow
+                   UpdatedAt = DateTime.UtcNow,
                }).FirstOrDefault();
             
             return adoption;

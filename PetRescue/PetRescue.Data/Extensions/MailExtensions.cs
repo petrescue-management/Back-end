@@ -137,7 +137,7 @@ namespace PetRescue.Data.Extensions
                     Timeout = 99999,
                     EnableSsl = false
                 };
-                client.Send(message);
+                client.SendMailAsync(message);
                 return true;
             }
             catch

@@ -76,8 +76,10 @@ namespace PetRescue.Data.Domains
         {
             var result = uow.GetService<IPetTrackingRepository>().CreatePetTrackingByUser(model, insertedBy);
             if (result != null)
+            {
                 uow.saveChanges();
                 return true;
+            }
             return false;
         }
     }

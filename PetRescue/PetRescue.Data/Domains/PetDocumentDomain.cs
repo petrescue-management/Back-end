@@ -138,12 +138,10 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public async Task<bool> CreatePetDocument(PetDocumentCreateModel model, Guid centerId, Guid updateBy, string path) 
+        public bool CreatePetDocument(PetDocumentCreateModel model, Guid centerId, Guid updateBy, string path) 
         {
             var petDocumentRepo = uow.GetService<IPetDocumentRepository>();
-            //update finder Form
             var result = petDocumentRepo.Create(model, centerId);
-            
             if(result != null)
             {
                 uow.saveChanges();
