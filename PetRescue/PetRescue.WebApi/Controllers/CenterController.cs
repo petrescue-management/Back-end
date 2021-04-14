@@ -23,6 +23,7 @@ namespace PetRescue.WebApi.Controllers
         }
 
         #region SEARCH
+        [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpGet]
         [Route("api/search-center")]
         public IActionResult SearchCenter([FromQuery] SearchModel model)
@@ -42,6 +43,7 @@ namespace PetRescue.WebApi.Controllers
         #endregion
 
         #region GET BY ID
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
         [Route("api/get-center-by-id/{id}")]
         public IActionResult GetCenterById(Guid id)
@@ -78,6 +80,7 @@ namespace PetRescue.WebApi.Controllers
         #endregion
 
         #region UPDATE
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
         [Route("api/update-center")]
         public IActionResult UpdateCenter(UpdateCenterModel model)
@@ -94,6 +97,26 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         #endregion
+
+        #region GET COUNT FOR CENTER HOMEPAGE
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpGet]
+        [Route("api/get-count-for-center-home-page")]
+        public IActionResult GetCountForCenterHomePage()
+        {
+            try
+            {
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var result = _uow.GetService<CenterDomain>().GetCountForCenterHomePage(Guid.Parse(currentCenterId));
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        #endregion
+
         //[Authorize(Roles =RoleConstant.ADMIN)]
         [HttpGet]
         [Route("api/get-statistic-about-center")]

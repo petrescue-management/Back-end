@@ -38,6 +38,7 @@ namespace PetRescue.Data.Domains
                     Long = c.Lng,
                     CenterStatus = c.CenterStatus,
                     Phone = c.Phone,
+                    CenterImageUrl = c.CenterImgUrl,
                     InsertedAt = c.InsertedAt,
                     UpdatedAt = c.UpdatedAt,
                     
@@ -76,7 +77,7 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE
-        public string UpdateCenter(UpdateCenterModel model, Guid currentUserId)
+        public string UpdateCenter(UpdateCenterModel model, Guid updatedBy)
         {
             //call CenterService
             var center_service = uow.GetService<ICenterRepository>();
@@ -101,24 +102,40 @@ namespace PetRescue.Data.Domains
             if (check_dup_address.Any())
                 return "This address is already registered !";
 
-            var center = center_service.UpdateCenter(model, currentUserId);
+            var center = center_service.UpdateCenter(model, updatedBy);
             uow.saveChanges();
             return center.CenterId.ToString();
         }
-
-        //public CenterStatistic GetStatisticAboutCenter(Guid centerId)
-        //{
-        //    var centerRepo = uow.GetService<ICenterRepository>();
-        //    var finderFormService = uow.GetService<IFinderFormRepository>();
-        //    var petProfileService = uow.GetService<IPetProfileRepository>();
-        //    var result = new CenterStatistic();
-        //    result.RescueCase = finderFormService.Get().Where(s => s.PetDocument.PetDocumentNavigation.CenterId.Equals(centerId)).Count();
-        //    result.PetFindTheOwner = petProfileService.Get().Where(s => s.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
-        //    result.PetAdoption = petProfileService.Get().Where(s => s.PetStatus == PetStatusConst.ADOPTED).Count();
-        //    return result;
-        //}
         #endregion
-        public List<CenterLocationModel> GetListCenterLocation()
+
+        #region GET COUNT FOR CENTER HOMEPAGE
+        public object GetCountForCenterHomePage(Guid centerId)
+        {
+            var records = uow.GetService<ICenterRepository>().Get().AsQueryable();
+
+            var rescues = uow.GetService<IPetDocumentRepository>().Get()
+                .Where(d => d.CenterId.Equals(centerId)).Count();
+
+            var petProfileService = uow.GetService<IPetProfileRepository>();
+
+            var pets_adopted = petProfileService.Get()
+                .Where(p => p.CenterId.Equals(centerId))
+                .Where(p => p.PetStatus == PetStatusConst.ADOPTED).Count();
+
+            var pets_finding_owner = petProfileService.Get()
+                .Where(p => p.CenterId.Equals(centerId))
+                .Where(p => p.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
+
+            var volunteers = uow.GetService<IUserRepository>().Get()
+                .Where(u => u.CenterId.Equals(centerId)).Count();
+
+            return new {
+                    rescues = rescues, petsAdopted = pets_adopted, petsFindingOwner = pets_finding_owner, volunteers = volunteers};
+        }
+            #endregion
+
+
+            public List<CenterLocationModel> GetListCenterLocation()
         {
             var centerRepo = uow.GetService<ICenterRepository>();
             var userRoleRepo = uow.GetService<IUserRoleRepository>();

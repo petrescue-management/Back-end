@@ -16,7 +16,7 @@ namespace PetRescue.Data.ViewModels
         public int CenterStatus { get; set; }
         public DateTime InsertedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public string ImageUrl { get; set; }
+        public string CenterImageUrl { get; set; }
     }
 
 
