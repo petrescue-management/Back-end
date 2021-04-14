@@ -35,7 +35,7 @@ namespace PetRescue.Data.Repositories
             var adoptionReportTracking = Get().FirstOrDefault(s => s.AdoptionReportTrackingId.Equals(model.AdoptionReportTrackingId));
             if(model.AdoptionReportImage != null)
             {
-                adoptionReportTracking.AdoptionReportTrackingImgUrl = model.AdoptionReportImage,
+                adoptionReportTracking.AdoptionReportTrackingImgUrl = model.AdoptionReportImage;
             }
             if(model.Description != null)
             {
