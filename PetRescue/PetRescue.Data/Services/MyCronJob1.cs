@@ -51,7 +51,7 @@ namespace PetRescue.Data.Services
             string FILEPATH_NOTI = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
 
             string FILEPATH_CONFIG_TIME = 
-                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotificationForFinderForm.json");
+                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotification.json");
 
             var fileJsonNoti = File.ReadAllText(FILEPATH_NOTI);
             
@@ -67,21 +67,21 @@ namespace PetRescue.Data.Services
                     var objJsonConfigTime = JObject.Parse(fileJsonConfigTime);
 
                     foreach (var noti in notiArrary.Children().ToList()) {
-                        if (noti["InsertedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["ReNotiTime"].Value<string>())).Minute
+                        if (noti["InsertedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["ReNotiTimeForRescue"].Value<string>())).Minute
                             == DateTime.UtcNow.Minute)
                         {
                             _domain.ReNotification(Guid.Parse(noti["FinderFormId"].Value<string>()), noti["Path"].Value<string>());
-                            _logger.LogInformation("noti lại nè heeee !!!!");
+                            /*_logger.LogInformation("noti lại nè heeee !!!!");*/
                         }
 
-                        if (noti["InsertedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["DestroyNotiTime"].Value<string>())).Minute
+                        if (noti["InsertedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["DestroyNotiTimeForRescue"].Value<string>())).Minute
                             == DateTime.UtcNow.Minute)
                         {
                             if (_domain.GetFinderFormById(Guid.Parse(noti["FinderFormId"].Value<string>())).FinderFormStatus == FinderFormStatusConst.PROCESSING)
                             {
                                 _domain.DestroyNotification(Guid.Parse(noti["FinderFormId"].Value<string>()),
                                     Guid.Parse(noti["InsertedBy"].Value<string>()), noti["Path"].Value<string>());
-                                _logger.LogInformation("xóa gòi nè heeee !!!!");
+                                /*_logger.LogInformation("xóa gòi nè heeee !!!!");*/
                             }
                         }
                     }

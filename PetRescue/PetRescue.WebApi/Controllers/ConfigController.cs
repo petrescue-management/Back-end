@@ -20,15 +20,15 @@ namespace PetRescue.WebApi.Controllers
         {
         }
 
-        #region GET TIME TO NOTIFICATION FOR FINDER FORM
+        #region GET TIME TO NOTIFICATION
         [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpGet]
-        [Route("api/get-time-to-notification-for-finder-form")]
-        public IActionResult GetTimeToNotificationForFinderForm()
+        [Route("api/get-time-to-notification")]
+        public IActionResult GetTimeToNotification()
         {
             try
             {
-                var result = _uow.GetService<ConfigDomain>().GetTimeToNotificationForFinderForm();                
+                var result = _uow.GetService<ConfigDomain>().GetTimeToNotification();                
                 return Success(result);
             }
             catch (Exception ex)
@@ -38,15 +38,15 @@ namespace PetRescue.WebApi.Controllers
         }
         #endregion
 
-        #region CONFIG TIME TO NOTIFICATION FOR FINDER FORM
+        #region CONFIG TIME TO NOTIFICATION
         [Authorize(Roles = RoleConstant.ADMIN)]
-        [HttpGet]
-        [Route("api/config-time-to-notification-for-finder-form")]
-        public IActionResult ConfigTimeToNotificationForFinderForm([FromQuery] int ReNotiTime, int DestroyNotiTime)
+        [HttpPost]
+        [Route("api/config-time-to-notification")]
+        public IActionResult ConfigTimeToNotification([FromQuery] int reNotiTime, int destroyNotiTime, int remindTime)
         {
             try
             {
-                var result = _uow.GetService<ConfigDomain>().ConfigTimeToNotificationForFinderForm(ReNotiTime, DestroyNotiTime);
+                var result = _uow.GetService<ConfigDomain>().ConfigTimeToNotification(reNotiTime, destroyNotiTime, remindTime);
                 if (result == false)
                     return BadRequest("Time for Destroy Notification must be larger than Time for Re-Notification !");
                 return Success(result);
@@ -58,40 +58,5 @@ namespace PetRescue.WebApi.Controllers
         }
         #endregion
 
-        #region GET TIME TO REMIND FOR REPORT AFTER ADOPT
-        [Authorize(Roles = RoleConstant.ADMIN)]
-        [HttpGet]
-        [Route("api/get-time-to-remind-for-report-after-adopt")]
-        public IActionResult GetTimeToRemindForReportAfterAdopt()
-        {
-            try
-            {
-                var result = _uow.GetService<ConfigDomain>().GetTimeToRemindForReportAfterAdopt();
-                return Success(result);
-            }
-            catch (Exception ex)
-            {
-                return Error(ex.Message);
-            }
-        }
-        #endregion
-
-        #region CONFIG TIME TO REMIND FOR REPORT AFTER ADOPT
-        [Authorize(Roles = RoleConstant.ADMIN)]
-        [HttpGet]
-        [Route("api/config-time-to-remind-for-report-after-adopt")]
-        public IActionResult ConfigTimeToRemindForReportAfterAdopt([FromQuery] int RemindTime)
-        {
-            try
-            {
-                var result = _uow.GetService<ConfigDomain>().ConfigTimeToRemindForReportAfterAdopt(RemindTime);
-                return Success(result);
-            }
-            catch (Exception ex)
-            {
-                return Error(ex.Message);
-            }
-        }
-        #endregion
     }
 }

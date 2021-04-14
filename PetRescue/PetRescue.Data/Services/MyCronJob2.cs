@@ -50,7 +50,7 @@ namespace PetRescue.Data.Services
             string FILEPATH_REMIND = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "RemindReportAfterAdopt.json");
 
             string FILEPATH_CONFIG_TIME =
-                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToRemindForReportAfterAdopt.json");
+                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotification.json");
 
             var fileJsonNoti = File.ReadAllText(FILEPATH_REMIND);
 
@@ -67,25 +67,25 @@ namespace PetRescue.Data.Services
 
                     foreach (var remind in remindArrary.Children().ToList())
                     {
-                        if(remind["AdoptedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["RemindTime"].Value<string>())).Minute
+                        if(remind["AdoptedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["RemindTimeAfterAdopt"].Value<string>())).Minute
                             == DateTime.UtcNow.Minute)
                         {
                             _domain.Remind(Guid.Parse(remind["OwnerId"].Value<string>()), remind["Path"].Value<string>());
-                            _logger.LogInformation("month 1");
+                           /* _logger.LogInformation("month 1");*/
                         }
 
-                        if (remind["AdoptedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["RemindTime"].Value<string>()) * 2).Minute
+                        if (remind["AdoptedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["RemindTimeAfterAdopt"].Value<string>()) * 2).Minute
                             == DateTime.UtcNow.Minute)
                         {
                             _domain.Remind(Guid.Parse(remind["OwnerId"].Value<string>()), remind["Path"].Value<string>());
-                            _logger.LogInformation("month 2");
+                            /*_logger.LogInformation("month 2");*/
                         }
 
-                        if (remind["AdoptedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["RemindTime"].Value<string>()) * 3).Minute 
+                        if (remind["AdoptedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["RemindTimeAfterAdopt"].Value<string>()) * 3).Minute 
                             == DateTime.UtcNow.Minute)
                         {
                             _domain.Remind(Guid.Parse(remind["OwnerId"].Value<string>()), remind["Path"].Value<string>());
-                            _logger.LogInformation("month 3");
+                            /*_logger.LogInformation("month 3");*/
 
                             remindArrary.Remove(remind);
 

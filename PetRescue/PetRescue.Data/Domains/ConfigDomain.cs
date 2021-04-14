@@ -22,32 +22,41 @@ namespace PetRescue.Data.Domains
         {
         }
 
-        #region GET TIME TO NOTIFICATION FOR FINDER FORM
-        public object GetTimeToNotificationForFinderForm()
+        #region GET TIME TO NOTIFICATION
+        public object GetTimeToNotification()
         {
             
-                string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotificationForFinderForm.json");
+                string FILEPATH = 
+                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotification.json");
 
                 var fileJson = File.ReadAllText(FILEPATH);
 
                 var time = JObject.Parse(fileJson);
           
-                return new { reNotiTime = int.Parse(time["ReNotiTime"].Value<string>()),
-                    destroyNotiTime = int.Parse(time["DestroyNotiTime"].Value<string>())};           
+                return new {
+                    reNotiTimeForRescue = int.Parse(time["ReNotiTimeForRescue"].Value<string>()),
+                    destroyNotiTimeForRescue = int.Parse(time["DestroyNotiTimeForRescue"].Value<string>()),
+                    remindTimeAfterAdopt = int.Parse(time["RemindTimeAfterAdopt"].Value<string>())
+                };           
         }
         #endregion
 
-        #region CONFIG TIME TO NOTIFICATION FOR FINDER FORM
-        public bool ConfigTimeToNotificationForFinderForm(int reNotiTime, int destroyNotiTime)
+        #region CONFIG TIME TO NOTIFICATION
+        public bool ConfigTimeToNotification(int reNotiTime, int destroyNotiTime, int remindTime)
         {
-            if (reNotiTime < destroyNotiTime)
+            string FILEPATH = 
+                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotification.json");
+
+            var fileJson = File.ReadAllText(FILEPATH);
+
+            var time = JObject.Parse(fileJson);
+
+            if (remindTime != 0)
             {
                 string newJson = "{" +
-                     "'ReNotiTime': '" + reNotiTime + "'," +
-                     "'DestroyNotiTime': '" + destroyNotiTime + "'}";
-                string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotificationForFinderForm.json");
-
-                var fileJson = File.ReadAllText(FILEPATH);
+                  "'ReNotiTimeForRescue': '" + time["ReNotiTimeForRescue"].Value<string>() + "'," +
+                  "'DestroyNotiTimeForRescue': '" + time["DestroyNotiTimeForRescue"].Value<string>() + "'," +
+                  "'RemindTimeAfterAdopt': '" + remindTime + "'}";
 
                 var newConfigTime = JObject.Parse(newJson);
 
@@ -56,40 +65,27 @@ namespace PetRescue.Data.Domains
                 File.WriteAllText(FILEPATH, output);
                 return true;
             }
+            else
+            {
+                if (reNotiTime < destroyNotiTime)
+                {
+                    string newJson = "{" +
+                     "'ReNotiTimeForRescue': '" + reNotiTime + "'," +
+                     "'DestroyNotiTimeForRescue': '" + destroyNotiTime + "'," +
+                     "'RemindTimeAfterAdopt': '" + time["RemindTimeAfterAdopt"].Value<string>() + "'}";
+
+
+                    var newConfigTime = JObject.Parse(newJson);
+
+                    string output = Newtonsoft.Json.JsonConvert.SerializeObject(newConfigTime, Newtonsoft.Json.Formatting.Indented);
+
+                    File.WriteAllText(FILEPATH, output);
+                    return true;
+                }
+            }
             return false;
         }
         #endregion
 
-        #region GET TIME TO REMIND FOR REPORT AFTER ADOPT
-        public object GetTimeToRemindForReportAfterAdopt()
-        {
-            string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToRemindForReportAfterAdopt.json");
-
-            var fileJson = File.ReadAllText(FILEPATH);
-
-            var time = JObject.Parse(fileJson);
-
-            return new { remindTime = int.Parse(time["RemindTime"].Value<string>()) };
-        }
-        #endregion
-
-        #region CONFIG TIME TO REMIND FOR REPORT AFTER ADOPT
-        public bool ConfigTimeToRemindForReportAfterAdopt(int RemindTime)
-        {
-                string newJson = "{" +
-                     "'RemindTime': '" + RemindTime + "'}";
-
-                string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToRemindForReportAfterAdopt.json");
-
-                var fileJson = File.ReadAllText(FILEPATH);
-
-                var newConfigTime = JObject.Parse(newJson);
-
-                string output = Newtonsoft.Json.JsonConvert.SerializeObject(newConfigTime, Newtonsoft.Json.Formatting.Indented);
-
-                File.WriteAllText(FILEPATH, output);
-                return true;
-        }
-        #endregion
     }
 }
