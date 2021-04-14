@@ -97,6 +97,25 @@ namespace PetRescue.WebApi.Controllers
         }
         #endregion
 
+        [HttpPost]
+        [Route("api/cancel-finder-form")]
+        public IActionResult CancelFinderForm([FromBody]CancelViewModel model)
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var _domain = _uow.GetService<FinderFormDomain>();
+                var result = _domain.CancelFinderForm(model, Guid.Parse(currentUserId));
+                if (result)
+                {
+                    return Success(result);
+                }
+                return BadRequest(result);
+            }catch(Exception ex)
+            {
+                return Error(ex);
+            }
+        }
         [Authorize(Roles = RoleConstant.VOLUNTEER)]
         [HttpGet]
         [Route("api/get-list-finder-form")]

@@ -15,7 +15,7 @@ namespace PetRescue.Data.Domains
         }
         public bool Create(AdoptionReportTrackingCreateModel model, Guid insertedBy, string path)
         {
-            var adoptionReport = uow.GetService<IAdoptionReportTrackingRepository>().Create(model, insertBy);
+            var adoptionReport = uow.GetService<IAdoptionReportTrackingRepository>().Create(model, insertedBy);
             if (adoptionReport != null)
             {
                 uow.saveChanges();
@@ -25,7 +25,7 @@ namespace PetRescue.Data.Domains
         }
         public bool Edit(AdoptionReportTrackingUpdateModel model, Guid insertedBy)
         {
-            var adoptionReport = uow.GetService<IAdoptionReportTrackingRepository>().Edit(model, insertBy);
+            var adoptionReport = uow.GetService<IAdoptionReportTrackingRepository>().Edit(model, insertedBy);
             if (adoptionReport != null)
             {
                 uow.saveChanges();

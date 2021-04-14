@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -15,6 +16,7 @@ namespace PetRescue.Data.Repositories
         FinderFormModel GetFinderFormById(Guid id);
 
         FinderFormModel UpdateFinderFormStatus(UpdateStatusModel model, Guid updateBy);
+        FinderForm CancelFinderForm(CancelViewModel model, Guid updatedBy);
 
         FinderFormModel CreateFinderForm(CreateFinderFormModel model, Guid insertedBy);
     }
@@ -142,6 +144,20 @@ namespace PetRescue.Data.Repositories
             
             return result;
        }
+
+        public FinderForm CancelFinderForm(CancelViewModel model, Guid updatedBy)
+        {
+            var finderForm = Get().FirstOrDefault(s=>s.FinderFormId.Equals(model.Id));
+            if(finderForm != null)
+            {
+                finderForm.CancelledReason = model.Reason;
+                finderForm.FinderFormStatus = FinderFormStatusConst.CANCELED;
+                finderForm.UpdatedBy = updatedBy;
+                finderForm.UpdatetedAt = DateTime.UtcNow;
+                return Update(finderForm).Entity;
+            }
+            return null;
+        }
         #endregion
 
     }
