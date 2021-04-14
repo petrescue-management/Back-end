@@ -44,7 +44,7 @@ namespace PetRescue.Data.Repositories
                     Phone = c.Phone,
                     InsertedAt = c.InsertedAt,
                     UpdatedAt = c.UpdatedAt,
-                    ImageUrl = c.CenterImgUrl
+                    CenterImageUrl = c.CenterImgUrl
                 }).FirstOrDefault();
 
             return result;
