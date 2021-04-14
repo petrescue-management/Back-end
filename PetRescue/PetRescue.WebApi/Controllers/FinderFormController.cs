@@ -96,7 +96,7 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         #endregion
-
+        [Authorize]
         [HttpPost]
         [Route("api/cancel-finder-form")]
         public IActionResult CancelFinderForm([FromBody]CancelViewModel model)
