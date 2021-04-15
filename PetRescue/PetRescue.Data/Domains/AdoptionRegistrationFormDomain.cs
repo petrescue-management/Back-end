@@ -166,30 +166,31 @@ namespace PetRescue.Data.Domains
                         uow.saveChanges();
                         return result;
                     }
-                    else
-                    {
-                        Message message = new Message
-                        {
-                            Notification = new Notification
-                            {
-                                Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_TITLE,
-                                Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
-                            }
-                        };
-                        await notificationTokenDomain.NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
-                        var result = new RejectAdoptionViewModel
-                        {
-                            Reason = model.Reason,
-                            Reject = new AdoptionFormModel
-                            {
-                                AdoptionFormId = temp.AdoptionRegistrationId,
-                                UserId = temp.InsertedBy
-                            }
-                        };
-                        transaction.Commit();
-                        uow.saveChanges();
-                        return result;
-                    }
+                    //else
+                    //{
+                    //Message message = new Message
+                    //{
+                    //    Notification = new Notification
+                    //    {
+                    //        Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_TITLE,
+                    //        Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
+                    //    }
+                    //};
+                    //    await notificationTokenDomain.NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
+                    //    var result = new RejectAdoptionViewModel
+                    //    {
+                    //        Reason = model.Reason,
+                    //        Reject = new AdoptionFormModel
+                    //        {
+                    //            AdoptionFormId = temp.AdoptionRegistrationId,
+                    //            UserId = temp.InsertedBy
+                    //        }
+                    //    };
+                    //    transaction.Commit();
+                    //    uow.saveChanges();
+                    //    return result;
+                    //}
+                    return null;
                 }
                 catch
                 {
@@ -202,19 +203,24 @@ namespace PetRescue.Data.Domains
         #region CREATE
         public AdoptionCreateViewModel CreateAdoptionRegistrationForm(CreateAdoptionRegistrationFormModel model, Guid insertBy)
         {
-            if (!IsExistedForm(insertBy,model.PetProfileId))
+            var form = uow.GetService<IAdoptionRegistrationFormRepository>().CreateAdoptionRegistrationForm(model, insertBy);
+            var petProfile = uow.GetService<IPetProfileRepository>().Get().FirstOrDefault(s => s.PetProfileId.Equals(form.PetProfileId));
+            var result = new AdoptionCreateViewModel
             {
-                var form = uow.GetService<IAdoptionRegistrationFormRepository>().CreateAdoptionRegistrationForm(model, insertBy);
-                var petProfile = uow.GetService<IPetProfileRepository>().Get().FirstOrDefault(s => s.PetProfileId.Equals(form.PetProfileId));
-                var result = new AdoptionCreateViewModel
-                {
-                    AdoptionRegistrationFormId = form.AdoptionRegistrationId,
-                    CenterId = petProfile.CenterId
-                };
-                uow.saveChanges();
+                AdoptionRegistrationFormId = form.AdoptionRegistrationId,
+                CenterId = petProfile.CenterId
+            };
+            uow.saveChanges();
+            if(result != null)
+            {
                 return result;
             }
             return null;
+
+        }
+        public bool CheckIsExistedForm(Guid insertedBy, Guid petProfileId)
+        {
+            return IsExistedForm(insertedBy, petProfileId);
         }
         #endregion
         public List<AdoptionRegistrationFormModelWithCenter> GetListAdoptionByUserId(Guid userId)
@@ -251,15 +257,36 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        private bool IsExistedForm(Guid insertBy, Guid petProfileId)
+        private bool IsExistedForm(Guid insertedBy, Guid petProfileId)
         {
             var adotionFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
-            var result = adotionFormRepo.Get().FirstOrDefault(s => s.InsertedBy.Equals(insertBy) && s.PetProfileId.Equals(petProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+            var result = adotionFormRepo.Get().FirstOrDefault(s => s.InsertedBy.Equals(insertedBy) && s.PetProfileId.Equals(petProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
             if(result != null)
             {
                 return true;
             }
             return false;
+        }
+        public async Task<bool> CancelAdoptionRegistrationForm(UpdateViewModel model, Guid updateBy, string path)
+        {
+            var form = uow.GetService<IAdoptionRegistrationFormRepository>().UpdateAdoptionRegistrationFormStatus(model, updateBy);
+            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
+            if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.REJECTED)
+            {
+                Message message = new Message
+                {
+                    Notification = new Notification
+                    {
+                        Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_TITLE,
+                        Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
+                    }
+                };
+                await notificationTokenDomain.NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
+                uow.saveChanges();
+                return true;
+            }
+            return false;
+
         }
     }
 }

@@ -29,6 +29,7 @@ namespace PetRescue.Data.ViewModels
         public string Phone { get; set; }
         [JsonProperty("imgUrl")]
         public string ImgUrl { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public CenterProfileViewModel Center { get; set; }
 
     }
@@ -51,7 +52,7 @@ namespace PetRescue.Data.ViewModels
     }
     public class UserProfileViewModel
     {
-        public string email { get; set; }
+        public string Email { get; set; }
         public Guid UserId { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }

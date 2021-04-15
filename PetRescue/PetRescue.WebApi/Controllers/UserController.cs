@@ -21,7 +21,7 @@ namespace PetRescue.WebApi.Controllers
         private readonly IHostingEnvironment _env;
         public UserController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
-            _env = environment;
+            this._env = environment;
         }
         #region GET
         [Authorize]

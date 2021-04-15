@@ -344,16 +344,16 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public List<AdoptionViewModel> GetListAdoptionByUserId(Guid userId)
+        public List<AdoptionViewModelMobile> GetListAdoptionByUserId(Guid userId)
         {
             var adoptionRepo = uow.GetService<IAdoptionRepository>();
             var userRepo = uow.GetService<IUserRepository>();
             var adoptions = adoptionRepo.Get().Where(s => s.AdoptionRegistration.InsertedBy.Equals(userId)).ToList();
-            var result = new List<AdoptionViewModel>();
+            var result = new List<AdoptionViewModelMobile>();
             foreach (var adoption in adoptions)
             {
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
-                result.Add(new AdoptionViewModel
+                result.Add(new AdoptionViewModelMobile
                 {
                     AdoptedAt = adoption.InsertedAt,
                     AdoptionRegistrationId = adoption.AdoptionRegistrationId,
@@ -374,12 +374,15 @@ namespace PetRescue.Data.Domains
                     Email = adoption.AdoptionRegistration.Email,
                     Job = adoption.AdoptionRegistration.Job,
                     PetBreedName = adoption.AdoptionRegistration.PetProfile.PetBreed.PetBreedName,
-                    PetColorName = adoption.AdoptionRegistration.PetProfile.PetFurColor.PetFurColorName,
+                    PetFurColorName = adoption.AdoptionRegistration.PetProfile.PetFurColor.PetFurColorName,
                     PetImgUrl = adoption.AdoptionRegistration.PetProfile.PetImgUrl,
                     PetName = adoption.AdoptionRegistration.PetProfile.PetName,
-                    PetTypeName = adoption.AdoptionRegistration.PetProfile.PetBreed.PetType.PetTypeName,
                     Phone = adoption.AdoptionRegistration.Phone,
-                    Username = adoption.AdoptionRegistration.UserName
+                    Username = adoption.AdoptionRegistration.UserName,
+                    Age = adoption.AdoptionRegistration.PetProfile.PetAge,
+                    Gender = adoption.AdoptionRegistration.PetProfile.PetGender,
+                    CenterName = adoption.AdoptionRegistration.PetProfile.Center.CenterName,
+                    CenterAddress = adoption.AdoptionRegistration.PetProfile.Center.Address
                 });
             }
             return result;
