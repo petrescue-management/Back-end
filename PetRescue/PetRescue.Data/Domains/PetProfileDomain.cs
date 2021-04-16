@@ -469,5 +469,20 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
+        public object GetAllPetBreeds()
+        {
+            var petBreedRepo = uow.GetService<IPetBreedRepository>();
+            var result = new List<PetBreedDetailModel>();
+            foreach(var petBreed in petBreedRepo.Get().ToList())
+            {
+                result.Add(new PetBreedDetailModel 
+                {
+                    PetBreedId = petBreed.PetBreedId,
+                    PetBreedName = petBreed.PetBreedName,
+                    PetTypeName = petBreed.PetType.PetTypeName
+                });
+            }
+            return result;
+        }
     }
 }

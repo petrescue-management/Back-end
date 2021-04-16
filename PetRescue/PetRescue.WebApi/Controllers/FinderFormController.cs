@@ -79,6 +79,7 @@ namespace PetRescue.WebApi.Controllers
         #endregion
 
         #region CREATE
+        [Authorize]
         [HttpPost]
         [Route("api/create-finder-form")]
         public IActionResult CreateFinderForm(CreateFinderFormModel model)

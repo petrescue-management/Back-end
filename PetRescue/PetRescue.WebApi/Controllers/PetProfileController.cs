@@ -103,6 +103,20 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [HttpGet]
+        [Route("api/get-all-pet-breeds")]
+        public IActionResult GetAllPetBreed()
+        {
+            try
+            {
+                var result = _uow.GetService<PetProfileDomain>().GetAllPetBreeds();
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [HttpGet]
         [Route("api/get-pet-type-by-id/")]
         public IActionResult GetPetTypeById(Guid id)
         {

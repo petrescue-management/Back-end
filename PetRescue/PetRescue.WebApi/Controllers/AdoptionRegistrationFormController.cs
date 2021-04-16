@@ -76,6 +76,43 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [Authorize]
+        [HttpGet]
+        [Route("api/check-exist-form")]
+        public IActionResult CheckExistForm([FromQuery] Guid petProfileId)
+        {
+            try
+            {
+                var _domain = _uow.GetService<AdoptionRegistrationFormDomain>();
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                return Success(_domain.CheckIsExistedForm(Guid.Parse(currentUserId), petProfileId));
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [HttpPut]
+        [Route("api/cancel-adoption-registration-form")]
+        public IActionResult CancelAdoptionRegistrationForm([FromBody]UpdateViewModel model)
+        {
+            try
+            {
+                var _domain = _uow.GetService<AdoptionRegistrationFormDomain>();
+                var path = _env.ContentRootPath;
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _domain.CancelAdoptionRegistrationForm(model, Guid.Parse(currentUserId));
+                if (result)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [Authorize]
         [HttpPost]
         [Route("api/create-adoption-registration-form")]
         public async Task<IActionResult> CreateUpdateAdoptionRegisterFormStatus(CreateAdoptionRegistrationFormModel model)

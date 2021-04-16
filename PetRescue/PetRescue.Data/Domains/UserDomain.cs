@@ -46,7 +46,8 @@ namespace PetRescue.Data.Domains
                     FirstName = userProfile.FirstName,
                     Gender = userProfile.Gender,
                     LastName = userProfile.LastName,
-                    ImgUrl = userProfile.ImageUrl
+                    ImgUrl = userProfile.ImageUrl,
+                    UpdatedAt = userProfile.UpdatedAt
                 };
                 if ((bool)user.IsBelongToCenter)
                 {
@@ -313,7 +314,7 @@ namespace PetRescue.Data.Domains
                 {
                     result.Add(new UserProfileViewModel 
                     {
-                        email = user.UserEmail,
+                        Email = user.UserEmail,
                         DoB = user.UserProfile.Dob,
                         FirstName = user.UserProfile.FirstName,
                         Gender = user.UserProfile.Gender,
@@ -334,7 +335,7 @@ namespace PetRescue.Data.Domains
             {
                 return new UserProfileViewModel
                 {
-                    email = user.UserEmail,
+                    Email = user.UserEmail,
                     DoB = user.UserProfile.Dob,
                     FirstName = user.UserProfile.FirstName,
                     Gender = user.UserProfile.Gender,

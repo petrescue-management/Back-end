@@ -67,10 +67,23 @@ namespace PetRescue.Data.Domains
         public async Task<FinderFormModel> UpdateFinderFormStatusAsync(UpdateStatusModel model, Guid updatedBy, string path)
         {
             var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(model, updatedBy);
+            
             uow.saveChanges();
 
             if (model.Status == FinderFormStatusConst.RESCUING || model.Status == FinderFormStatusConst.CANCELED)
             {
+                if(model.Status == FinderFormStatusConst.RESCUING)
+                {
+                    var centerId = uow.GetService<IUserRepository>().Get().FirstOrDefault(s=>s.UserId.Equals(updatedBy)).CenterId;
+                    await uow.GetService<NotificationTokenDomain>().NotificationForManager(path,(Guid) centerId, new Message 
+                    {
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.VOLUNTEER_APPROVE_PICKER_TITLE,
+                            Body = NotificationBodyHelper.VOLUNTEER_APPROVE_PICKER_BODY
+                        }
+                    });
+                }
                 string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
 
                 string fileJson = File.ReadAllText(FILEPATH);

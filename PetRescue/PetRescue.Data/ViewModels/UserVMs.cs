@@ -24,11 +24,12 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("dob")]
         public DateTime DoB { get; set; }
         [JsonProperty("gender")]
-        public byte Gender { get; set; }
+        public int Gender { get; set; }
         [JsonProperty("phone")]
         public string Phone { get; set; }
         [JsonProperty("imgUrl")]
         public string ImgUrl { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public CenterProfileViewModel Center { get; set; }
 
     }
@@ -51,12 +52,12 @@ namespace PetRescue.Data.ViewModels
     }
     public class UserProfileViewModel
     {
-        public string email { get; set; }
+        public string Email { get; set; }
         public Guid UserId { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public DateTime DoB { get; set; }
-        public byte Gender { get; set; }
+        public int Gender { get; set; }
         public string Phone { get; set; }
         public string ImgUrl { get; set; }
     }
@@ -108,7 +109,7 @@ namespace PetRescue.Data.ViewModels
         public string FirstName { get; set; }
         public DateTime Dob { get; set; }
         public string Phone { get; set; }
-        public byte Gender { get; set; }
+        public int Gender { get; set; }
         public string ImageUrl { get; set; }
 
     }
