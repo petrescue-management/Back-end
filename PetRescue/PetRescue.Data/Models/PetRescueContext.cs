@@ -66,7 +66,9 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
 
-                entity.Property(e => e.ReturnedReason).HasColumnName("returned_reason");
+                entity.Property(e => e.ReturnedReason)
+                    .HasColumnName("returned_reason")
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")
@@ -92,13 +94,16 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.Address)
                     .IsRequired()
-                    .HasColumnName("address");
+                    .HasColumnName("address")
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.AdoptionRegistrationStatus).HasColumnName("adoption_registration_status");
 
                 entity.Property(e => e.BeViolentTendencies).HasColumnName("be_violent_tendencies");
 
-                entity.Property(e => e.CanceledRejectedReason).HasColumnName("canceled_rejected_reason");
+                entity.Property(e => e.CanceledRejectedReason)
+                    .HasColumnName("canceled_rejected_reason")
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.ChildAge).HasColumnName("child_age");
 
@@ -109,6 +114,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasColumnName("email")
+                    .HasMaxLength(150)
                     .IsUnicode(false);
 
                 entity.Property(e => e.FrequencyAtHome).HasColumnName("frequency_at_home");
@@ -150,7 +156,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.UserName)
                     .IsRequired()
                     .HasColumnName("user_name")
-                    .HasMaxLength(50);
+                    .HasMaxLength(70);
 
                 entity.HasOne(d => d.PetProfile)
                     .WithMany(p => p.AdoptionRegistrationForm)
@@ -171,7 +177,8 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.Description)
                     .IsRequired()
-                    .HasColumnName("description");
+                    .HasColumnName("description")
+                    .HasMaxLength(1000);
 
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
@@ -197,7 +204,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.Address)
                     .IsRequired()
                     .HasColumnName("address")
-                    .HasMaxLength(80);
+                    .HasMaxLength(150);
 
                 entity.Property(e => e.CenterImgUrl)
                     .HasColumnName("center_img_url")
@@ -258,7 +265,9 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.CenterRegistrationStatus).HasColumnName("center_registration_status");
 
-                entity.Property(e => e.Description).HasColumnName("description");
+                entity.Property(e => e.Description)
+                    .HasColumnName("description")
+                    .HasMaxLength(1000);
 
                 entity.Property(e => e.Email)
                     .IsRequired()
@@ -272,7 +281,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Lat).HasColumnName("lat");
@@ -285,11 +294,13 @@ namespace PetRescue.Data.Models
                     .HasMaxLength(15)
                     .IsUnicode(false);
 
-                entity.Property(e => e.RejectedReason).HasColumnName("rejected_reason");
+                entity.Property(e => e.RejectedReason)
+                    .HasColumnName("rejected_reason")
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")
-                    .HasColumnType("date");
+                    .HasColumnType("datetime");
             });
 
             modelBuilder.Entity<FinderForm>(entity =>
@@ -298,9 +309,13 @@ namespace PetRescue.Data.Models
                     .HasColumnName("finder_form_id")
                     .HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.CancelledReason).HasColumnName("cancelled_reason");
+                entity.Property(e => e.CancelledReason)
+                    .HasColumnName("cancelled_reason")
+                    .HasMaxLength(200);
 
-                entity.Property(e => e.FinderDescription).HasColumnName("finder_description");
+                entity.Property(e => e.FinderDescription)
+                    .HasColumnName("finder_description")
+                    .HasMaxLength(1000);
 
                 entity.Property(e => e.FinderFormImgUrl)
                     .IsRequired()
@@ -308,6 +323,10 @@ namespace PetRescue.Data.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.FinderFormStatus).HasColumnName("finder_form_status");
+
+                entity.Property(e => e.FinderFormVidUrl)
+                    .HasColumnName("finder_form_vid_url")
+                    .IsUnicode(false);
 
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
@@ -349,6 +368,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.DeviceToken)
                     .HasColumnName("device_token")
+                    .HasMaxLength(255)
                     .IsUnicode(false);
 
                 entity.Property(e => e.IsActive).HasColumnName("is_active");
@@ -439,7 +459,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
@@ -466,13 +486,14 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.PetProfileDescription)
                     .IsRequired()
-                    .HasColumnName("pet_profile_description");
+                    .HasColumnName("pet_profile_description")
+                    .HasMaxLength(1000);
 
                 entity.Property(e => e.PetStatus).HasColumnName("pet_status");
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")
-                    .HasColumnType("date");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
@@ -503,7 +524,8 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.Description)
                     .IsRequired()
-                    .HasColumnName("description");
+                    .HasColumnName("description")
+                    .HasMaxLength(1000);
 
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
@@ -555,7 +577,9 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.InsertedBy).HasColumnName("inserted_by");
 
-                entity.Property(e => e.PickerDescription).HasColumnName("picker_description");
+                entity.Property(e => e.PickerDescription)
+                    .HasColumnName("picker_description")
+                    .HasMaxLength(1000);
 
                 entity.Property(e => e.PickerImageUrl)
                     .IsRequired()
@@ -596,7 +620,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.UserEmail)
                     .IsRequired()
                     .HasColumnName("user_email")
-                    .HasMaxLength(50)
+                    .HasMaxLength(150)
                     .IsUnicode(false);
             });
 
@@ -659,13 +683,13 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
-                    .HasColumnType("date");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.IsActive).HasColumnName("is_active");
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")
-                    .HasColumnType("date");
+                    .HasColumnType("datetime");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.UserRole)
@@ -701,7 +725,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.FirstName)
                     .IsRequired()
                     .HasColumnName("first_name")
-                    .HasMaxLength(100);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Gender).HasColumnName("gender");
 
@@ -712,7 +736,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.LastName)
                     .IsRequired()
                     .HasColumnName("last_name")
-                    .HasMaxLength(100);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Phone)
                     .IsRequired()
@@ -720,7 +744,9 @@ namespace PetRescue.Data.Models
                     .HasMaxLength(15)
                     .IsUnicode(false);
 
-                entity.Property(e => e.RejectedReason).HasColumnName("rejected_reason");
+                entity.Property(e => e.RejectedReason)
+                    .HasColumnName("rejected_reason")
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")

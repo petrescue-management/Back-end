@@ -166,30 +166,30 @@ namespace PetRescue.Data.Domains
                         uow.saveChanges();
                         return result;
                     }
-                    //else
-                    //{
-                    //Message message = new Message
-                    //{
-                    //    Notification = new Notification
-                    //    {
-                    //        Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_TITLE,
-                    //        Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
-                    //    }
-                    //};
-                    //    await notificationTokenDomain.NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
-                    //    var result = new RejectAdoptionViewModel
-                    //    {
-                    //        Reason = model.Reason,
-                    //        Reject = new AdoptionFormModel
-                    //        {
-                    //            AdoptionFormId = temp.AdoptionRegistrationId,
-                    //            UserId = temp.InsertedBy
-                    //        }
-                    //    };
-                    //    transaction.Commit();
-                    //    uow.saveChanges();
-                    //    return result;
-                    //}
+                    else if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.REJECTED)
+                    {
+                        Message message = new Message
+                        {
+                            Notification = new Notification
+                            {
+                                Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_TITLE,
+                                Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
+                            }
+                        };
+                        await notificationTokenDomain.NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
+                        var result = new RejectAdoptionViewModel
+                        {
+                            Reason = model.Reason,
+                            Reject = new AdoptionFormModel
+                            {
+                                AdoptionFormId = temp.AdoptionRegistrationId,
+                                UserId = temp.InsertedBy
+                            }
+                        };
+                        transaction.Commit();
+                        uow.saveChanges();
+                        return result;
+                    }
                     return null;
                 }
                 catch
@@ -267,21 +267,11 @@ namespace PetRescue.Data.Domains
             }
             return false;
         }
-        public async Task<bool> CancelAdoptionRegistrationForm(UpdateViewModel model, Guid updateBy, string path)
+        public bool CancelAdoptionRegistrationForm(UpdateViewModel model, Guid updatedBy)
         {
-            var form = uow.GetService<IAdoptionRegistrationFormRepository>().UpdateAdoptionRegistrationFormStatus(model, updateBy);
-            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
-            if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.REJECTED)
+            var form = uow.GetService<IAdoptionRegistrationFormRepository>().UpdateAdoptionRegistrationFormStatus(model, updatedBy);
+            if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.CANCEL)
             {
-                Message message = new Message
-                {
-                    Notification = new Notification
-                    {
-                        Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_TITLE,
-                        Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
-                    }
-                };
-                await notificationTokenDomain.NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
                 uow.saveChanges();
                 return true;
             }

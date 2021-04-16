@@ -100,8 +100,8 @@ namespace PetRescue.WebApi.Controllers
                 var _domain = _uow.GetService<AdoptionRegistrationFormDomain>();
                 var path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _domain.CancelAdoptionRegistrationForm(model, Guid.Parse(currentUserId), path);
-                if (result != null)
+                var result = _domain.CancelAdoptionRegistrationForm(model, Guid.Parse(currentUserId));
+                if (result)
                 {
                     return Success(result);
                 }

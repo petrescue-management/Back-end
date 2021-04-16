@@ -99,8 +99,6 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("petFurColorName")]
         public string PetFurColorName { get; set; }
-        [JsonProperty("petTypeId")]
-        public Guid PetTypeId { get; set; }
     }
     public class PetFurColorUpdateModel
     {

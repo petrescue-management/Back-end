@@ -10,7 +10,7 @@ namespace PetRescue.Data.Models
         public string FirstName { get; set; }
         public DateTime Dob { get; set; }
         public string Phone { get; set; }
-        public byte Gender { get; set; }
+        public int Gender { get; set; }
         public string ImageUrl { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? InsertedAt { get; set; }
