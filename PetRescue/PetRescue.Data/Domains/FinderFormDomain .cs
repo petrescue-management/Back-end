@@ -187,7 +187,6 @@ namespace PetRescue.Data.Domains
 
             if (notiArrary.Count == 0)
                 notiArrary = new JArray();
-
             notiArrary.Add(newNoti);
 
             objJson["Notifications"] = notiArrary;

@@ -204,7 +204,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.Address)
                     .IsRequired()
                     .HasColumnName("address")
-                    .HasMaxLength(150);
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.CenterImgUrl)
                     .HasColumnName("center_img_url")
@@ -256,7 +256,7 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.CenterAddress)
                     .IsRequired()
                     .HasColumnName("center_address")
-                    .HasMaxLength(150);
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.CenterName)
                     .IsRequired()
