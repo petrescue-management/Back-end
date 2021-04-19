@@ -213,20 +213,43 @@ namespace PetRescue.Data.Domains
             var result = new List<PetAdoptionRegisterFormModel>();
             foreach (var petProfile in petProfiles)
             {
-                var count = adoptionRegisterFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
-                if (count > 0)
+                if(filter.PetStatus == PetStatusConst.FINDINGADOPTER)
                 {
-                    result.Add(new PetAdoptionRegisterFormModel
+                    var count = adoptionRegisterFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
+                    if (count > 0)
                     {
-                        Count = count,
-                        PetId = petProfile.PetProfileId,
-                        PetName = petProfile.PetName,
-                        Age = (int)petProfile.PetAge,
-                        BreedName = petProfile.PetBreed.PetBreedName,
-                        Gender = petProfile.PetGender,
-                        ImageUrl = petProfile.PetImgUrl
-                    });
+                        result.Add(new PetAdoptionRegisterFormModel
+                        {
+                            Count = count,
+                            PetId = petProfile.PetProfileId,
+                            PetName = petProfile.PetName,
+                            Age = (int)petProfile.PetAge,
+                            BreedName = petProfile.PetBreed.PetBreedName,
+                            Gender = petProfile.PetGender,
+                            ImageUrl = petProfile.PetImgUrl,
+                            UpdatedAt = petProfile.UpdatedAt
+                        });
+                    }
                 }
+                else if(filter.PetStatus == PetStatusConst.WAITING)
+                {
+                    var count = adoptionRegisterFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED).Count();
+                    if (count > 0)
+                    {
+                        result.Add(new PetAdoptionRegisterFormModel
+                        {
+                            Count = count,
+                            PetId = petProfile.PetProfileId,
+                            PetName = petProfile.PetName,
+                            Age = (int)petProfile.PetAge,
+                            BreedName = petProfile.PetBreed.PetBreedName,
+                            Gender = petProfile.PetGender,
+                            ImageUrl = petProfile.PetImgUrl,
+                            UpdatedAt = petProfile.UpdatedAt
+                        });
+                    }
+                }
+                
             }
             return result;
         }
@@ -234,7 +257,7 @@ namespace PetRescue.Data.Domains
         {
             var petProfileRepo = uow.GetService<IPetProfileRepository>();
             var adoptionRegisterFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
-            var forms = adoptionRegisterFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+            var forms = adoptionRegisterFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfileId));
             var currentPet = petProfileRepo.Get().FirstOrDefault(s => s.PetProfileId.Equals(petProfileId));
             var result = new ListRegisterAdoptionOfPetViewModel
             {
@@ -255,29 +278,60 @@ namespace PetRescue.Data.Domains
                 },
                 AdoptionRegisterforms = new List<AdoptionRegistrationFormViewModel>()
             };
-            foreach (var form in forms)
+            if(currentPet.PetStatus == PetStatusConst.FINDINGADOPTER)
             {
-                result.AdoptionRegisterforms.Add(new AdoptionRegistrationFormViewModel
+                forms = forms.Where(s => s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+                foreach (var form in forms)
                 {
-                    Address = form.Address,
-                    AdoptionRegistrationId = form.AdoptionRegistrationId,
-                    AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
-                    BeViolentTendencies = form.BeViolentTendencies,
-                    ChildAge = form.ChildAge,
-                    Email = form.Email,
-                    FrequencyAtHome = form.FrequencyAtHome,
-                    HaveAgreement = form.HaveAgreement,
-                    HaveChildren = form.HaveChildren,
-                    HavePet = form.HavePet,
-                    HouseType = form.HouseType,
-                    InsertedAt = form.InsertedAt,
-                    InsertedBy = form.InsertedBy,
-                    Job = form.Job,
-                    UpdatedAt = form.UpdatedAt,
-                    UpdatedBy = form.UpdatedBy,
-                    UserName = form.UserName,
-                    Phone = form.Phone,
-                });
+                    result.AdoptionRegisterforms.Add(new AdoptionRegistrationFormViewModel
+                    {
+                        Address = form.Address,
+                        AdoptionRegistrationId = form.AdoptionRegistrationId,
+                        AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
+                        BeViolentTendencies = form.BeViolentTendencies,
+                        ChildAge = form.ChildAge,
+                        Email = form.Email,
+                        FrequencyAtHome = form.FrequencyAtHome,
+                        HaveAgreement = form.HaveAgreement,
+                        HaveChildren = form.HaveChildren,
+                        HavePet = form.HavePet,
+                        HouseType = form.HouseType,
+                        InsertedAt = form.InsertedAt,
+                        InsertedBy = form.InsertedBy,
+                        Job = form.Job,
+                        UpdatedAt = form.UpdatedAt,
+                        UpdatedBy = form.UpdatedBy,
+                        UserName = form.UserName,
+                        Phone = form.Phone,
+                    });
+                }
+            }else if(currentPet.PetStatus == PetStatusConst.WAITING)
+            {
+                forms = forms.Where(s => s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED);
+                foreach (var form in forms)
+                {
+                    result.AdoptionRegisterforms.Add(new AdoptionRegistrationFormViewModel
+                    {
+                        Address = form.Address,
+                        AdoptionRegistrationId = form.AdoptionRegistrationId,
+                        AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
+                        BeViolentTendencies = form.BeViolentTendencies,
+                        ChildAge = form.ChildAge,
+                        Email = form.Email,
+                        FrequencyAtHome = form.FrequencyAtHome,
+                        HaveAgreement = form.HaveAgreement,
+                        HaveChildren = form.HaveChildren,
+                        HavePet = form.HavePet,
+                        HouseType = form.HouseType,
+                        InsertedAt = form.InsertedAt,
+                        InsertedBy = form.InsertedBy,
+                        Job = form.Job,
+                        UpdatedAt = form.UpdatedAt,
+                        UpdatedBy = form.UpdatedBy,
+                        UserName = form.UserName,
+                        Phone = form.Phone,
+                    });
+                }
             }
             return result;
         }

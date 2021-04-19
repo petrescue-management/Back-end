@@ -18,6 +18,7 @@ namespace PetRescue.Data.ViewModels
         public DateTime InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string FinderFormVideoUrl { get; set; }
     }
 
     public class CreateFinderFormModel
@@ -28,5 +29,6 @@ namespace PetRescue.Data.ViewModels
         public string FinderFormImgUrl { get; set; }
         public int PetAttribute { get; set; }
         public string Phone { get; set; }
+        public string FinderFormVideoUrl { get; set; }
     }
 }

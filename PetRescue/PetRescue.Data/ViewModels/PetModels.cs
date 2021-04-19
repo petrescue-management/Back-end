@@ -124,6 +124,8 @@ namespace PetRescue.Data.ViewModels
         public string BreedName { get; set; }
         [JsonProperty("imgUrl")]
         public string ImageUrl { get; set; }
+        [JsonProperty("updatedAt")]
+        public DateTime? UpdatedAt { get; set; }
     }
     public class PetMobileViewModel
     {
