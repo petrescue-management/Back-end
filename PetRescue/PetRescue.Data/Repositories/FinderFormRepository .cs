@@ -43,7 +43,8 @@ namespace PetRescue.Data.Repositories
                 InsertedBy = insertedBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
-                UpdatetedAt = null
+                UpdatetedAt = null,
+                FinderFormVidUrl = model.FinderFormVideoUrl
                 
             };
             return finderForm;
@@ -68,6 +69,7 @@ namespace PetRescue.Data.Repositories
                 Phone = finderForm.Phone,
                 InsertedBy = finderForm.InsertedBy,
                 InsertedAt = finderForm.InsertedAt,
+                FinderFormVideoUrl = finderForm.FinderFormVidUrl
             };
             return result;
 
