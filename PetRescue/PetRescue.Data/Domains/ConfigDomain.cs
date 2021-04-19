@@ -44,18 +44,15 @@ namespace PetRescue.Data.Domains
         #region CONFIG TIME TO NOTIFICATION
         public bool ConfigTimeToNotification(int reNotiTime, int destroyNotiTime, int remindTime)
         {
-            string FILEPATH = 
-                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotification.json");
-
-            var fileJson = File.ReadAllText(FILEPATH);
-
-            var time = JObject.Parse(fileJson);
-
-            if (remindTime != 0)
+            if (reNotiTime < destroyNotiTime)
             {
+                string FILEPATH =
+                    Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotification.json");
+
+
                 string newJson = "{" +
-                  "'ReNotiTimeForRescue': '" + time["ReNotiTimeForRescue"].Value<string>() + "'," +
-                  "'DestroyNotiTimeForRescue': '" + time["DestroyNotiTimeForRescue"].Value<string>() + "'," +
+                  "'ReNotiTimeForRescue': '" + reNotiTime + "'," +
+                  "'DestroyNotiTimeForRescue': '" + destroyNotiTime + "'," +
                   "'RemindTimeAfterAdopt': '" + remindTime + "'}";
 
                 var newConfigTime = JObject.Parse(newJson);
@@ -64,24 +61,6 @@ namespace PetRescue.Data.Domains
 
                 File.WriteAllText(FILEPATH, output);
                 return true;
-            }
-            else
-            {
-                if (reNotiTime < destroyNotiTime)
-                {
-                    string newJson = "{" +
-                     "'ReNotiTimeForRescue': '" + reNotiTime + "'," +
-                     "'DestroyNotiTimeForRescue': '" + destroyNotiTime + "'," +
-                     "'RemindTimeAfterAdopt': '" + time["RemindTimeAfterAdopt"].Value<string>() + "'}";
-
-
-                    var newConfigTime = JObject.Parse(newJson);
-
-                    string output = Newtonsoft.Json.JsonConvert.SerializeObject(newConfigTime, Newtonsoft.Json.Formatting.Indented);
-
-                    File.WriteAllText(FILEPATH, output);
-                    return true;
-                }
             }
             return false;
         }
