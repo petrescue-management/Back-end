@@ -278,5 +278,40 @@ namespace PetRescue.Data.Domains
             return false;
 
         }
+        public async Task<object> RejectAdoptionFormAfterAccepted(UpdateViewModel model, Guid updatedBy, string path)
+        {
+            var form = uow.GetService<IAdoptionRegistrationFormRepository>().UpdateAdoptionRegistrationFormStatus(model, updatedBy);
+            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
+            var petProfileRepo = uow.GetService<IPetProfileRepository>();
+            if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.REJECTED)
+            {
+                Message message = new Message
+                {
+                    Notification = new Notification
+                    {
+                        Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_TITLE,
+                        Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
+                    }
+                };
+                await notificationTokenDomain.NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
+                petProfileRepo.UpdatePetProfile(new UpdatePetProfileModel 
+                {
+                    PetProfileId = form.PetProfileId,
+                    PetStatus = PetStatusConst.FINDINGADOPTER
+                }, updatedBy);
+                var result = new RejectAdoptionViewModel
+                {
+                    Reason = model.Reason,
+                    Reject = new AdoptionFormModel
+                    {
+                        AdoptionFormId = form.AdoptionRegistrationId,
+                        UserId = form.InsertedBy
+                    }
+                };
+                uow.saveChanges();
+                return result;
+            }
+            return null;
+        }
     }
 }

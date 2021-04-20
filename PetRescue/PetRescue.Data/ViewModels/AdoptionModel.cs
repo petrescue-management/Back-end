@@ -55,6 +55,10 @@ namespace PetRescue.Data.ViewModels
         public string CenterName { get; set; }
         public string CenterAddress { get; set; }
     }
+    public class AdoptionCreateModel
+    {
+        public Guid AdoptionRegistrationFormId { get; set; }
+    }
 
 
 }

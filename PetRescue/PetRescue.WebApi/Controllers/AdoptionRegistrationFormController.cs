@@ -67,8 +67,12 @@ namespace PetRescue.WebApi.Controllers
             {
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = await _uow.GetService<AdoptionRegistrationFormDomain>().UpdateAdoptionRegistrationFormStatus(model,Guid.Parse(currentUserId), path);
-                return Success(result);
+                var result = await _uow.GetService<AdoptionRegistrationFormDomain>().UpdateAdoptionRegistrationFormStatus(model, Guid.Parse(currentUserId), path);
+                if(result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
             }
             catch (Exception ex)
             {
@@ -93,7 +97,7 @@ namespace PetRescue.WebApi.Controllers
         }
         [HttpPut]
         [Route("api/cancel-adoption-registration-form")]
-        public IActionResult CancelAdoptionRegistrationForm([FromBody]UpdateViewModel model)
+        public IActionResult CancelAdoptionRegistrationForm([FromBody] UpdateViewModel model)
         {
             try
             {
@@ -122,7 +126,7 @@ namespace PetRescue.WebApi.Controllers
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = _uow.GetService<AdoptionRegistrationFormDomain>().CreateAdoptionRegistrationForm(model, Guid.Parse(currentUserId));
-                if(result != null)
+                if (result != null)
                 {
                     await _uow.GetService<NotificationTokenDomain>().NotificationForManagerWhenHaveNewAdoptionRegisterForm(path, result.CenterId);
                     return Success(result.AdoptionRegistrationFormId);
@@ -145,13 +149,34 @@ namespace PetRescue.WebApi.Controllers
                 var _domain = _uow.GetService<AdoptionRegistrationFormDomain>();
                 var result = _domain.GetListAdoptionByUserId(Guid.Parse(currentUserId));
                 return Success(result);
-               
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Error(ex.Message);
             }
         }
-        
+        [Authorize(Roles =RoleConstant.MANAGER)]
+        [HttpPut]
+        [Route("api/reject-adoption-form-after-accepted")]
+        public async Task<IActionResult> RejectAdoptionFormAfterAccepted([FromBody]UpdateViewModel model)
+        {
+            try
+            {
+                var _domain = _uow.GetService<AdoptionRegistrationFormDomain>();
+                var path = _env.ContentRootPath;
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = await _domain.RejectAdoptionFormAfterAccepted(model, Guid.Parse(currentUserId), path);
+                if (result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
     }
 }

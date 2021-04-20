@@ -124,16 +124,16 @@ namespace PetRescue.WebApi.Controllers
 
         #region CREATE
         [Authorize]
-        [HttpGet]
+        [HttpPost]
         [Route("api/create-adoption")]
-        public IActionResult CreateAdoption([FromQuery] Guid adoptionRegistrationFormId)
+        public IActionResult CreateAdoption([FromBody] AdoptionCreateModel model)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var path = _env.ContentRootPath;
                 var result = _uow.GetService<AdoptionDomain>()
-                    .CreateAdoption(adoptionRegistrationFormId, Guid.Parse(currentUserId), path);
+                    .CreateAdoption(model.AdoptionRegistrationFormId, Guid.Parse(currentUserId), path);
                 return Success(result);
             }
             catch (Exception ex)
