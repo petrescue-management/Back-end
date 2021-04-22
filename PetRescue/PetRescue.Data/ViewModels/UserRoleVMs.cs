@@ -39,6 +39,8 @@ namespace PetRescue.Data.ViewModels
         public Guid CenterId { get; set; }
         [JsonProperty("insertBy")]
         public Guid InsertBy { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; }
     }
     public class UserRoleUpdateEntityModel
     {

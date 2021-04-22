@@ -49,11 +49,7 @@ namespace PetRescue.WebApi.Controllers
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _domain = _uow.GetService<UserDomain>();
                 var result = _domain.GetListProfileOfVolunter(Guid.Parse(currentCenterId));
-                if (result != null)
-                {
-                    return Success(result);
-                }
-                return BadRequest();
+                return Success(result);
             }
             catch(Exception ex)
             {
@@ -137,7 +133,7 @@ namespace PetRescue.WebApi.Controllers
         #region DELETE
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpDelete("remove-role-volunteer-for-user")]
-        public IActionResult RemoveRoleForUser ([FromQuery]Guid userId)
+        public IActionResult RemoveRoleForUser ([FromQuery] RemoveRoleVolunteerModel model)
         {
             try
             {
@@ -148,7 +144,8 @@ namespace PetRescue.WebApi.Controllers
                 {
                     CenterId = Guid.Parse(_currentCenterId),
                     InsertBy = Guid.Parse(_currentUserId),
-                    UserId = userId
+                    UserId = model.UserId,
+                    Description = model.Description
                 });
                 if (result.Equals(""))
                 {

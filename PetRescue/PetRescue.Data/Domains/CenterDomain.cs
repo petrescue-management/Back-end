@@ -112,7 +112,6 @@ namespace PetRescue.Data.Domains
         public object GetCountForCenterHomePage(Guid centerId)
         {
             var records = uow.GetService<ICenterRepository>().Get().AsQueryable();
-
             var rescues = uow.GetService<IPetDocumentRepository>().Get()
                 .Where(d => d.CenterId.Equals(centerId)).Count();
 
@@ -126,24 +125,27 @@ namespace PetRescue.Data.Domains
                 .Where(p => p.CenterId.Equals(centerId))
                 .Where(p => p.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
 
-            var volunteers = uow.GetService<IUserRepository>().Get()
-                .Where(u => u.CenterId.Equals(centerId)).Count();
+            var volunteers = uow.GetService<IWorkingHistoryRepository>().Get().Where(u => u.CenterId.Equals(centerId)).Count();
 
-            return new {
-                    rescues = rescues, petsAdopted = pets_adopted, petsFindingOwner = pets_finding_owner, volunteers = volunteers};
+            return new
+            {
+                rescues = rescues,
+                petsAdopted = pets_adopted,
+                petsFindingOwner = pets_finding_owner,
+                volunteers = volunteers
+            };
         }
-            #endregion
-
-
-            public List<CenterLocationModel> GetListCenterLocation()
+        #endregion
+        public List<CenterLocationModel> GetListCenterLocation()
         {
             var centerRepo = uow.GetService<ICenterRepository>();
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
-            var userRoles = userRoleRepo.Get().Where(s => (bool)s.User.IsBelongToCenter && s.IsActive && s.Role.RoleName.Equals(RoleConstant.VOLUNTEER)).ToList();
+            var workingHistoryRepo = uow.GetService<IWorkingHistoryRepository>();
+            var works = workingHistoryRepo.Get().Where(s => s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).ToList();
             var setCenterId = new HashSet<Guid>();
-            foreach (var userRole in userRoles)
+            foreach (var work in works)
             {
-                setCenterId.Add((Guid)userRole.User.CenterId);
+                setCenterId.Add((Guid)work.CenterId);
             }
             var result = new List<CenterLocationModel>();
             if (setCenterId.Count != 0)
@@ -161,7 +163,6 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-
         public List<CenterViewModel> GetListCenter()
         {
             var centerRepo = uow.GetService<ICenterRepository>();
@@ -182,7 +183,6 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-
         public int ChangeStateOfCenter(UpdateCenterStatus model, Guid centerId)
         {
             var centerRepo = uow.GetService<ICenterRepository>();

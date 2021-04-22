@@ -34,6 +34,7 @@ namespace PetRescue.Data.Models
         public virtual DbSet<UserProfile> UserProfile { get; set; }
         public virtual DbSet<UserRole> UserRole { get; set; }
         public virtual DbSet<VolunteerRegistrationForm> VolunteerRegistrationForm { get; set; }
+        public virtual DbSet<WorkingHistory> WorkingHistory { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -509,6 +510,11 @@ namespace PetRescue.Data.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PetProfile_PetBreed1");
 
+                entity.HasOne(d => d.PetDocument)
+                    .WithMany(p => p.PetProfile)
+                    .HasForeignKey(d => d.PetDocumentId)
+                    .HasConstraintName("FK_PetProfile_PetDocument");
+
                 entity.HasOne(d => d.PetFurColor)
                     .WithMany(p => p.PetProfile)
                     .HasForeignKey(d => d.PetFurColorId)
@@ -605,8 +611,6 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.UserId)
                     .HasColumnName("user_id")
                     .HasDefaultValueSql("(newid())");
-
-                entity.Property(e => e.CenterId).HasColumnName("center_id");
 
                 entity.Property(e => e.IsBelongToCenter)
                     .HasColumnName("is_belong_to_center")
@@ -757,6 +761,49 @@ namespace PetRescue.Data.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.VolunteerRegistrationFormStatus).HasColumnName("volunteer_registration_form_status");
+            });
+
+            modelBuilder.Entity<WorkingHistory>(entity =>
+            {
+                entity.Property(e => e.WorkingHistoryId)
+                    .HasColumnName("working_history_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.CenterId).HasColumnName("center_id");
+
+                entity.Property(e => e.DateEnded)
+                    .HasColumnName("date_ended")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.DateStarted)
+                    .HasColumnName("date_started")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Description)
+                    .HasColumnName("description")
+                    .HasMaxLength(1000);
+
+                entity.Property(e => e.IsActive).HasColumnName("is_active");
+
+                entity.Property(e => e.RoleName)
+                    .IsRequired()
+                    .HasColumnName("role_name")
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+
+                entity.HasOne(d => d.Center)
+                    .WithMany(p => p.WorkingHistory)
+                    .HasForeignKey(d => d.CenterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkingHistory_Center");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.WorkingHistory)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkingHistory_User");
             });
         }
     }

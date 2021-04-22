@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Uow;
@@ -25,10 +26,32 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+
                 var _domain = _uow.GetService<AdoptionReportTrackingDomain>();
                 var result = _domain.GetByAdoptionReportTrackingId(adoptionReportTrackingId);
                 return Success(result);
             }catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [Authorize]
+        [HttpGet]
+        [Route("api/get-list-adoption-report-tracking-by-userid")]
+        public IActionResult GetListAdoptionReportTrackingByUserId([FromQuery] Guid petProfileId)
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var _domain = _uow.GetService<AdoptionReportTrackingDomain>();
+                if(petProfileId.Equals(Guid.Empty) || petProfileId != null)
+                {
+                    var result = _domain.GetListAdoptionReportTrackingByUserId(Guid.Parse(currentUserId), petProfileId);
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
             {
                 return Error(ex.Message);
             }
@@ -55,7 +78,7 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [HttpPut]
-        [Route("api/Update-adoption-report-tracking")]
+        [Route("api/update-adoption-report-tracking")]
         public IActionResult UpdateAdoptionReportTracking([FromBody] AdoptionReportTrackingUpdateModel model)
         {
             try
@@ -75,5 +98,6 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
+
     }
 }

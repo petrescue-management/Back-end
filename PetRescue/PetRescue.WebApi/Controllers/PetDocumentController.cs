@@ -74,11 +74,9 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var path = _env.ContentRootPath;
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var _domain = _uow.GetService<PetDocumentDomain>();
-                var result = _domain.CreatePetDocument(model, Guid.Parse(currentCenterId), Guid.Parse(currentUserId), path);
+                var result = _domain.CreatePetDocument(model, Guid.Parse(currentCenterId));
                 if (result)
                 {
                     return Success(result);
