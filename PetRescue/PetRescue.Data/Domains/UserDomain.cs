@@ -136,7 +136,6 @@ namespace PetRescue.Data.Domains
             var userRepo = uow.GetService<IUserRepository>();
             var userRoleDomain = uow.GetService<UserRoleDomain>();
             var currentUser = userRepo.Get().FirstOrDefault(s=> s.UserEmail.Equals(model.Email));
-            var workingHistoryRepo = uow.GetService<IWorkingHistoryRepository>();
             var result = "";
             if(currentUser != null)
             {
@@ -154,13 +153,6 @@ namespace PetRescue.Data.Domains
                     {
                         userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
                         result = currentUser.UserId.ToString();
-                        workingHistoryRepo.Create(new WorkingHistoryCreateModel 
-                        {
-                            CenterId = model.CenterId,
-                            Description = "",
-                            RoleName = model.RoleName,
-                            UserId = currentUser.UserId
-                        });
                     }
                     // if another role isn't existed
                     else
@@ -170,13 +162,6 @@ namespace PetRescue.Data.Domains
                             IsBelongToCenter = true
                         });
                         userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
-                        workingHistoryRepo.Create(new WorkingHistoryCreateModel
-                        {
-                            CenterId = model.CenterId,
-                            Description = "",
-                            RoleName = model.RoleName,
-                            UserId = currentUser.UserId
-                        });
                         result =  currentUser.UserId.ToString();
                     }
                 }
@@ -196,13 +181,6 @@ namespace PetRescue.Data.Domains
                                 //CenterId = model.CenterId,
                                 IsBelongToCenter = true
                             });
-                            workingHistoryRepo.Create(new WorkingHistoryCreateModel
-                            {
-                                CenterId = model.CenterId,
-                                Description = "",
-                                RoleName = model.RoleName,
-                                UserId = currentUser.UserId
-                            });
                             result = currentUser.UserId.ToString();
                         }
                         else
@@ -218,13 +196,6 @@ namespace PetRescue.Data.Domains
                             {
                                 IsActive = true,
                                 UpdateBy = model.InsertBy
-                            });
-                            workingHistoryRepo.Create(new WorkingHistoryCreateModel
-                            {
-                                CenterId = model.CenterId,
-                                Description = "",
-                                RoleName = model.RoleName,
-                                UserId = currentUser.UserId
                             });
                             result = currentUser.UserId.ToString();
                         }

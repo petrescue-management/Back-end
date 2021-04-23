@@ -48,6 +48,7 @@ namespace PetRescue.Data.Repositories
             var workingHistory = Get().FirstOrDefault(s => s.WorkingHistoryId.Equals(model.WorkingHistoryId));
             workingHistory.IsActive = model.IsActive;
             workingHistory.Description = model.Description;
+            workingHistory.DateEnded = DateTime.UtcNow;
             return workingHistory;
         }
     }

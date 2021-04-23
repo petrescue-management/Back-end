@@ -48,7 +48,7 @@ namespace PetRescue.Data.ConstantHelper
         public const string NEW_VOLUNTEER_FORM_BODY = "Có đơn đăng ký tình nguyện viên cần được xử lý";
         public const string RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY = "Tình Nguyện Viên đã nhận được yêu cầu cứu hộ";
         public const string FINDER_FORM_OUT_DATE_BODY = "Đơn cứu hộ của bạn đã quá thời gian";
-        public const string ALERT_AFTER_ADOPTION_BODY = "Bạn cần cập nhật trình trạnh cho bé";
+        public const string ALERT_AFTER_ADOPTION_BODY = "Bạn cần cập nhật tình trạnh cho bé";
         public const string USER_DONT_GET_PET_BODY = "Bạn có thông báo tình trạng đăng ký nhận nuôi";
         public const string ARRIVED_RESCUE_PET_BODY = "Tình Nguyện Viên đã đến nơi hỗ trợ cho bé";
         public const string DONE_RESCUE_PET_BODY = "Cảm ơn bạn đã giúp đỡ";
