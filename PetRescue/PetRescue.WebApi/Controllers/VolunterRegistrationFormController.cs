@@ -68,6 +68,7 @@ namespace PetRescue.Data.ViewModels
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var _domain = _uow.GetService<VolunteerRegistrationFormDomain>();
                 var result = _domain.Edit(model, Guid.Parse(currentUserId));
+
                 if (result.Contains("This"))
                 {
                     return BadRequest(result);

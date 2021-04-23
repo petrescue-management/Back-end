@@ -74,7 +74,7 @@ namespace PetRescue.Data.Domains
             {
                 if(model.Status == FinderFormStatusConst.RESCUING)
                 {
-                    var centerId = uow.GetService<IUserRepository>().Get().FirstOrDefault(s=>s.UserId.Equals(updatedBy)).CenterId;
+                    var centerId = uow.GetService<IWorkingHistoryRepository>().Get().FirstOrDefault(s=>s.UserId.Equals(updatedBy) && s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).CenterId;
                     await uow.GetService<NotificationTokenDomain>().NotificationForManager(path,(Guid) centerId, new Message 
                     {
                         Notification = new Notification
@@ -143,14 +143,14 @@ namespace PetRescue.Data.Domains
             }
             return finderForm;
         }
-        public bool CancelFinderForm(CancelViewModel model,Guid updatedBy)
+        public object CancelFinderForm(CancelViewModel model,Guid updatedBy)
         {
             var finderForm = uow.GetService<IFinderFormRepository>().CancelFinderForm(model, updatedBy);
             if(finderForm != null)
             {
-                return true;
+                return finderForm;
             }
-            return false;
+            return null;
         }
         #endregion
         #region CREATE
@@ -262,7 +262,9 @@ namespace PetRescue.Data.Domains
                         Lat = finderForm.Lat,
                         Lng = finderForm.Lng,
                         PetAttribute = finderForm.PetAttribute,
-                        phone = finderForm.Phone,
+                        Phone = finderForm.Phone,
+                        FinderFormVidUrl = finderForm.FinderFormVidUrl,
+                        InsertedBy = finderForm.InsertedBy
                     });
                 }
                 return result;
@@ -287,7 +289,9 @@ namespace PetRescue.Data.Domains
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,
-                    phone = finderForm.Phone,
+                    Phone = finderForm.Phone,
+                    FinderFormVidUrl = finderForm.FinderFormVidUrl,
+                    InsertedBy = finderForm.InsertedBy
                 });
             }
             return result;
@@ -312,7 +316,9 @@ namespace PetRescue.Data.Domains
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,
-                    phone = finderForm.Phone,
+                    Phone = finderForm.Phone,
+                    FinderFormVidUrl = finderForm.FinderFormVidUrl,
+                    InsertedBy = finderForm.InsertedBy
                 });
             }
             return result;
@@ -332,6 +338,7 @@ namespace PetRescue.Data.Domains
                     FinderDescription = finder.FinderDescription,
                     FinderFormId = finder.FinderFormId,
                     FinderImageUrl = finder.FinderFormImgUrl,
+                    FinderFormVidUrl = finder.FinderFormVidUrl,
                     PetAttribute = finder.PetAttribute,
                     PickerDate = finder.PetDocument.PickerForm.InsertedAt,
                     PickerFormDescription = finder.PetDocument.PickerForm.PickerDescription,

@@ -72,8 +72,6 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("email")]
         public string Email { get; set; }
-        [JsonProperty("centerId")]
-        public Guid CenterId { get; set; }
         [JsonProperty("isBelongToCenter")]
         public bool IsBelongToCenter { get; set; }
     }
@@ -95,12 +93,16 @@ namespace PetRescue.Data.ViewModels
     }
     public class UserUpdateModel
     {
-        [JsonProperty("centerId")]
-        public Guid CenterId { get; set; }
+        //[JsonProperty("centerId")]
+        //public Guid CenterId { get; set; }
         [JsonProperty("isBelongToCenter")]
         public bool IsBelongToCenter { get; set; }
     }
-
+    public class RemoveRoleVolunteerModel
+    {
+        public Guid UserId { get; set; }
+        public string Description { get; set; }
+    }
     public class UserModel
     {
         public Guid UserId { get; set; }

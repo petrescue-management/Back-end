@@ -12,11 +12,7 @@ namespace PetRescue.Data.Repositories
     {
         User CreateUser(UserCreateByAppModel model);
         User PrepareCreate(UserCreateByAppModel model);
-
         User FindById(string email = null, string id = null);
-
-        User Edit(User entity, Guid centerId);
-
         User CreateUserByModel(UserCreateModel model);
         User UpdateUserModel(User entity, UserUpdateModel model);
         UserModel GetUserById(Guid id);
@@ -56,20 +52,11 @@ namespace PetRescue.Data.Repositories
             };
             return user;  
         }
-
-        public User Edit(User entity, Guid centerId)
-        {
-            entity.CenterId = centerId;
-            entity.IsBelongToCenter = true;
-            return Update(entity).Entity;
-        }
-
         public User CreateUserByModel(UserCreateModel model)
         {
             var newUser = new User
             {
                 UserId = Guid.NewGuid(),
-                CenterId = model.CenterId,
                 IsBelongToCenter = model.IsBelongToCenter,
                 UserEmail = model.Email
             };
@@ -77,7 +64,7 @@ namespace PetRescue.Data.Repositories
         }
         public User UpdateUserModel(User entity, UserUpdateModel model)
         {
-            entity.CenterId = model.CenterId;
+            //entity.CenterId = model.CenterId;
             entity.IsBelongToCenter = model.IsBelongToCenter;
             return Update(entity).Entity;
         }

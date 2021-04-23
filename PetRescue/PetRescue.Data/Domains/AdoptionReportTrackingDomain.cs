@@ -36,15 +36,39 @@ namespace PetRescue.Data.Domains
         public AdoptionReportTrackingViewModel GetByAdoptionReportTrackingId(Guid reportId)
         {
             var adoptionReport = uow.GetService<IAdoptionReportTrackingRepository>().Get().FirstOrDefault(s => s.AdoptionReportTrackingId.Equals(reportId));
+            var userRepo = uow.GetService<IUserRepository>();
             var result = new AdoptionReportTrackingViewModel();
             if(adoptionReport != null)
             {
+                var userCreated = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoptionReport.InsertedBy));
                 result.AdoptionReportTrackingId = adoptionReport.AdoptionReportTrackingId;
                 result.InsertedAt = adoptionReport.InsertedAt;
                 result.InsertedBy = adoptionReport.InsertedBy;
                 result.Description = adoptionReport.Description;
                 result.AdoptionReportTrackingImgUrl = adoptionReport.AdoptionReportTrackingImgUrl;
                 result.PetProfileId = adoptionReport.PetProfileId;
+                result.Author = userCreated.UserProfile.LastName +" " + userCreated.UserProfile.FirstName;
+            }
+            return result;
+        }
+
+        public List<AdoptionReportTrackingViewMobileModel> GetListAdoptionReportTrackingByUserId(Guid userId, Guid petProfileId)
+        {
+            var reports = uow.GetService<IAdoptionReportTrackingRepository>().Get().Where(s => s.InsertedBy.Equals(userId) && s.PetProfileId.Equals(petProfileId));
+            var userRepo = uow.GetService<IUserRepository>();
+            var result = new List<AdoptionReportTrackingViewMobileModel>();
+            foreach(var report in reports)
+            {
+                result.Add(new AdoptionReportTrackingViewMobileModel
+                {
+
+                    AdoptionReportTrackingId = report.AdoptionReportTrackingId,
+                    InsertedAt = report.InsertedAt,
+                    InsertedBy = report.InsertedBy,
+                    Description = report.Description,
+                    AdoptionReportTrackingImgUrl = report.AdoptionReportTrackingImgUrl,
+                    PetProfileId = report.PetProfileId,
+                });
             }
             return result;
         }

@@ -42,7 +42,7 @@ namespace PetRescue.WebApi.Controllers
             }
         }*/
 
-/*        [HttpGet]
+        /*        [HttpGet]
         [Route("api/get-adoption-by-id/{id}")]
         public IActionResult GetAdoptionById(Guid id)
         {

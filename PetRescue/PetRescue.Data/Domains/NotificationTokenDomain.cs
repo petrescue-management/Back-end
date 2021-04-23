@@ -43,12 +43,16 @@ namespace PetRescue.Data.Domains
         {
             var notificationTokenRepo = uow.GetService<INotificationTokenRepository>();
             var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(userId) && s.ApplicationName.Equals(applicationName));
-            var result = notificationTokenRepo.Delete(notificationToken);
-            if(result != null)
+            if(notificationToken != null)
             {
-                return true;
+                var result = notificationTokenRepo.Delete(notificationToken);
+                if (result != null)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
+            return true;
         }
         public NotificationToken FindByApplicationNameAndUserId(string applicationName,Guid userId)
         {
@@ -61,7 +65,8 @@ namespace PetRescue.Data.Domains
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
             var userRepo = uow.GetService<IUserRepository>();
             var notificationTokenRepo = uow.GetService<INotificationTokenRepository>();
-            var users = userRepo.Get().Where(s => s.CenterId.Equals(centerId) && (bool)s.IsBelongToCenter).Select(s => s.UserId);
+            var workingHistoryRepo = uow.GetService<IWorkingHistoryRepository>();
+            var users = workingHistoryRepo.Get().Where(s => s.CenterId.Equals(centerId) && s.IsActive && (bool)s.User.IsBelongToCenter);
             var listId = new List<Guid>();
             var result = new List<string>();
             foreach(var user in users)

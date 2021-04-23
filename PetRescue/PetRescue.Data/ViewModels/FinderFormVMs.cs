@@ -37,11 +37,14 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("finderFormStatus")]
         public int FinderFormStatus { get; set; }
         [JsonProperty("phone")]
-        public string phone { get; set; }
+        public string Phone { get; set; }
         [JsonProperty("lat")]
         public double Lat { get; set; }
         [JsonProperty("lng")]
         public double Lng { get; set; }
+        [JsonProperty("finderFormVidUrl")]
+        public string FinderFormVidUrl { get; set; }
+        public Guid InsertedBy { get; set; }
     }
     public class FinderFormViewModel2
     {
@@ -69,7 +72,8 @@ namespace PetRescue.Data.ViewModels
         public string PickerName { get; set; }
         [JsonProperty("pickerDate")]
         public DateTime PickerDate { get; set; }
-
+        [JsonProperty("finderFormVidUrl")]
+        public string FinderFormVidUrl { get; set; }
 
     }
 

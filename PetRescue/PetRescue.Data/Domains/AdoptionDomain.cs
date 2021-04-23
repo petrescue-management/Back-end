@@ -382,7 +382,8 @@ namespace PetRescue.Data.Domains
                     Age = adoption.AdoptionRegistration.PetProfile.PetAge,
                     Gender = adoption.AdoptionRegistration.PetProfile.PetGender,
                     CenterName = adoption.AdoptionRegistration.PetProfile.Center.CenterName,
-                    CenterAddress = adoption.AdoptionRegistration.PetProfile.Center.Address
+                    CenterAddress = adoption.AdoptionRegistration.PetProfile.Center.Address,
+                    PetProfileId = adoption.AdoptionRegistration.PetProfile.PetProfileId
                 });
             }
             return result;
@@ -413,7 +414,7 @@ namespace PetRescue.Data.Domains
                         Author = trackingUser.UserProfile.LastName + " " + trackingUser.UserProfile.FirstName
                     });
                 }
-                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.InsertedBy));
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
                 result.AdoptedAt = adoption.InsertedAt;
                 result.AdoptionRegistrationId = adoption.AdoptionRegistrationId;
                 result.AdoptionStatus = adoption.AdoptionStatus;
@@ -443,17 +444,21 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public AdoptionViewModel GetAdoptionByAdoptionId(Guid adoptionId)
+        public AdoptionViewModelWeb GetAdoptionByAdoptionId(Guid adoptionId)
         {
             var adoptionRepo = uow.GetService<IAdoptionRepository>();
             var userRepo = uow.GetService<IUserRepository>();
             var petTrackingRepo = uow.GetService<IPetTrackingRepository>();
+            var adoptionReportTrackingRepo = uow.GetService<IAdoptionReportTrackingRepository>();
             var adoption = adoptionRepo.Get().FirstOrDefault(s => s.AdoptionRegistrationId.Equals(adoptionId));
-            var result = new AdoptionViewModel();
+            var result = new AdoptionViewModelWeb();
             if (adoption != null)
             {
                 var petTrackings = petTrackingRepo.Get().Where(s => s.PetProfile.PetProfileId.Equals(adoption.AdoptionRegistration.PetProfileId));
+                var reports = adoptionReportTrackingRepo.Get().Where(s => s.PetProfileId.Equals(adoption.AdoptionRegistration.PetProfileId));
                 var list = new List<PetTrackingViewModel>();
+                var listReport = new List<AdoptionReportTrackingViewModel>();
+                
                 foreach (var petTracking in petTrackings)
                 {
                     var trackingUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petTracking.InsertedBy));
@@ -469,7 +474,21 @@ namespace PetRescue.Data.Domains
                         Author = trackingUser.UserProfile.LastName + " " + trackingUser.UserProfile.FirstName
                     });
                 }
-                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.InsertedBy));
+                foreach (var report in reports)
+                {
+                    var userCreate = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(report.InsertedBy));
+                    listReport.Add(new AdoptionReportTrackingViewModel 
+                    {
+                        AdoptionReportTrackingId = report.AdoptionReportTrackingId,
+                        AdoptionReportTrackingImgUrl = report.AdoptionReportTrackingImgUrl,
+                        Description = report.Description,
+                        InsertedAt = report.InsertedAt,
+                        Author = userCreate.UserProfile.LastName + " "+ userCreate.UserProfile.FirstName,
+                        InsertedBy = report.InsertedBy,
+                        PetProfileId = report.PetProfileId
+                    });
+                }
+                var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
                 result.AdoptedAt = adoption.InsertedAt;
                 result.AdoptionRegistrationId = adoption.AdoptionRegistrationId;
                 result.AdoptionStatus = adoption.AdoptionStatus;
@@ -496,6 +515,7 @@ namespace PetRescue.Data.Domains
                 result.Phone = adoption.AdoptionRegistration.Phone;
                 result.Username = adoption.AdoptionRegistration.UserName;
                 result.PetTrackings = list;
+                result.AdoptionReports = listReport;
             }
             return result;
         }

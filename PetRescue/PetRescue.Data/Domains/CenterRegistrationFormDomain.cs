@@ -117,6 +117,7 @@ namespace PetRescue.Data.Domains
             var center_service = uow.GetService<ICenterRepository>();
             var userDomain = uow.GetService<UserDomain>();
             var userRepo = uow.GetService<IUserRepository>();
+            var workingHistoryRepo = uow.GetService<IWorkingHistoryRepository>();
             var form = center_registration_form_service.GetCenterRegistrationFormById(model.Id);
             var result = "";
             //Find user
@@ -150,7 +151,6 @@ namespace PetRescue.Data.Domains
                                 var newCreateUserModel = new UserCreateModel
                                 {
                                     Email = form.Email,
-                                    CenterId = newCenter.CenterId,
                                     IsBelongToCenter = UserConst.BELONG,
                                 };
                                 // create new Role for newUser
@@ -162,6 +162,13 @@ namespace PetRescue.Data.Domains
                                     UserId = newUser.UserId,
                                 };
                                 userDomain.AddRoleManagerToUser(newUserRoleUpdateModel, insertBy);
+                                workingHistoryRepo.Create(new WorkingHistoryCreateModel
+                                {
+                                    CenterId = newCenter.CenterId,
+                                    Description = "",
+                                    RoleName = RoleConstant.MANAGER,
+                                    UserId = newUser.UserId
+                                });
                                 transaction.Commit();
                                 result = newCenter.CenterId.ToString();
                             }
@@ -173,7 +180,7 @@ namespace PetRescue.Data.Domains
                                     var userUpdateModel = new UserUpdateModel
                                     {
                                         IsBelongToCenter = UserConst.BELONG,
-                                        CenterId = newCenter.CenterId
+                                        //CenterId = newCenter.CenterId
                                     };
                                     currentUser = userRepo.UpdateUserModel(currentUser, userUpdateModel);
                                     //Create new Role for currentUser
@@ -184,6 +191,13 @@ namespace PetRescue.Data.Domains
                                         UserId = currentUser.UserId,
                                     };
                                     userDomain.AddRoleManagerToUser(userRoleUpdateModel, insertBy);
+                                    workingHistoryRepo.Create(new WorkingHistoryCreateModel
+                                    {
+                                        CenterId = newCenter.CenterId,
+                                        Description = "",
+                                        RoleName = RoleConstant.MANAGER,
+                                        UserId = currentUser.UserId
+                                    });
                                     transaction.Commit();
                                 }
                                 else
@@ -238,9 +252,5 @@ namespace PetRescue.Data.Domains
             return result;
         }
         #endregion
-        public NotificationToken SendInformationCenter()
-        {
-            return null;
-        }
     }
 }

@@ -81,7 +81,7 @@ namespace PetRescue.WebApi.Controllers
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var _domain = _uow.GetService<PetTrackingDomain>();
                 var result = _domain.CreatePetTrackingByUser(model, Guid.Parse(currentUserId));
-                if (result != null)
+                if (result)
                 {
                     return Success(result);
                 }

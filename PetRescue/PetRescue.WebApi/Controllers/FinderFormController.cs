@@ -107,11 +107,11 @@ namespace PetRescue.WebApi.Controllers
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var _domain = _uow.GetService<FinderFormDomain>();
                 var result = _domain.CancelFinderForm(model, Guid.Parse(currentUserId));
-                if (result)
+                if (result != null)
                 {
                     return Success(result);
                 }
-                return BadRequest(result);
+                return BadRequest();
             }catch(Exception ex)
             {
                 return Error(ex);

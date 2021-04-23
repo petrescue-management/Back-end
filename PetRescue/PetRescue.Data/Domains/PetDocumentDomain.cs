@@ -138,7 +138,7 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public bool CreatePetDocument(PetDocumentCreateModel model, Guid centerId, Guid updateBy, string path) 
+        public bool CreatePetDocument(PetDocumentCreateModel model, Guid centerId) 
         {
             var petDocumentRepo = uow.GetService<IPetDocumentRepository>();
             var result = petDocumentRepo.Create(model, centerId);

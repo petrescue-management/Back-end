@@ -24,5 +24,15 @@ namespace PetRescue.Data.ViewModels
         public string AdoptionReportTrackingImgUrl { get; set; }
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
+        public string Author { get; set; }
+    }
+    public class AdoptionReportTrackingViewMobileModel
+    {
+        public Guid AdoptionReportTrackingId { get; set; }
+        public Guid PetProfileId { get; set; }
+        public string Description { get; set; }
+        public string AdoptionReportTrackingImgUrl { get; set; }
+        public Guid InsertedBy { get; set; }
+        public DateTime InsertedAt { get; set; }
     }
 }

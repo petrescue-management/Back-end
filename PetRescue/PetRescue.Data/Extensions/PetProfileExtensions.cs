@@ -73,6 +73,7 @@ namespace PetRescue.Data.Extensions
                             obj["petName"] = model.PetName;
                             obj["petType"] = petTypeObj;
                             obj["imageUrl"] = model.PetImgUrl;
+                            obj["insertAt"] = model.InsertedAt;
                             break;
                         case PetFieldConst.DETAIL:
                             obj["petId"] = model.PetProfileId.ToString();
@@ -85,6 +86,7 @@ namespace PetRescue.Data.Extensions
                             obj["petBreedName"] = model.PetBreed.PetBreedName;
                             obj["petFurColorName"] = model.PetFurColor.PetFurColorName;
                             obj["imageUrl"] = model.PetImgUrl;
+                            obj["insertAt"] = model.InsertedAt;
                             break;
                     }
                     listResult.Add(obj);

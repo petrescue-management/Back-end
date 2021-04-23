@@ -38,11 +38,11 @@ namespace PetRescue.Data.Domains
                 };
                 if (currentUser == null)
                 {
-                    volunteerRegistrationFormRepo.Create(model);
+                    var form =volunteerRegistrationFormRepo.Create(model);
                     var tokens = notificationTokenDomain.FindDeviceTokenByApplicationNameAndRoleNameAndCenterId(ApplicationNameHelper.MANAGE_CENTER_APP, RoleConstant.MANAGER, model.CenterId);
                     await notificationTokenDomain.NofiticationForDeviceToken(path, tokens, message);
                     uow.saveChanges();
-                    result = "Success";
+                    result = form.VolunteerRegistrationFormId.ToString();
                 }
                 else
                 {
@@ -50,11 +50,11 @@ namespace PetRescue.Data.Domains
                     {
                         if (!userRoleDomain.IsAdmin(model.Email))
                         {
-                            volunteerRegistrationFormRepo.Create(model);
+                            var form = volunteerRegistrationFormRepo.Create(model);
                             var tokens = notificationTokenDomain.FindDeviceTokenByApplicationNameAndRoleNameAndCenterId(ApplicationNameHelper.MANAGE_CENTER_APP, RoleConstant.MANAGER, model.CenterId);
                             await notificationTokenDomain.NofiticationForDeviceToken(path, tokens, message);
                             uow.saveChanges();
-                            result = "Success";
+                            result = form.VolunteerRegistrationFormId.ToString();
                         }
                         else
                         {
@@ -78,6 +78,7 @@ namespace PetRescue.Data.Domains
             var volunteerRegistrationFormRepo = uow.GetService<IVolunteerRegistrationFormRepository>();
             var userDomain = uow.GetService<UserDomain>();
             var centerRepo = uow.GetService<ICenterRepository>();
+            var workingHistoryRepo = uow.GetService<IWorkingHistoryRepository>();
             var form = volunteerRegistrationFormRepo.Get().FirstOrDefault(s => s.VolunteerRegistrationFormId.Equals(model.VolunteerRegistrationFormId));
             var formData = volunteerRegistrationFormRepo.Edit(form, model);
             var result = "";
@@ -114,6 +115,13 @@ namespace PetRescue.Data.Domains
                         item.VolunteerRegistrationFormStatus = VolunteerRegistrationFormConst.REJECT;
                         volunteerRegistrationFormRepo.Update(item);
                     }
+                    workingHistoryRepo.Create(new WorkingHistoryCreateModel
+                    {
+                        CenterId = formData.CenterId,
+                        Description = "",
+                        RoleName = RoleConstant.VOLUNTEER,
+                        UserId = userDomain.GetUserIdByEmail(form.Email)
+                    });
                     var center = centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(form.CenterId));
                     var centerModel = new CenterViewModel
                     {
