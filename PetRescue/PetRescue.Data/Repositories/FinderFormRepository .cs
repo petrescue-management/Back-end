@@ -111,6 +111,8 @@ namespace PetRescue.Data.Repositories
                         FinderFormImgUrl = f.FinderFormImgUrl,
                         PetAttribute = f.PetAttribute,
                         FinderDescription = f.FinderDescription,
+                        FinderFormVidUrl  = f.FinderFormVidUrl,
+                        CancelledReason = f.CancelledReason,
                         FinderFormStatus = model.Status,
                         Phone = f.Phone,
                         InsertedBy = f.InsertedBy,
