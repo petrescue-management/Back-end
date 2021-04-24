@@ -13,7 +13,7 @@ namespace PetRescue.Data.Models
         }
 
         public Guid PetProfileId { get; set; }
-        public Guid? PetDocumentId { get; set; }
+        public Guid? RescueDocumentId { get; set; }
         public string PetName { get; set; }
         public int PetGender { get; set; }
         public int PetAge { get; set; }
@@ -30,8 +30,8 @@ namespace PetRescue.Data.Models
 
         public virtual Center Center { get; set; }
         public virtual PetBreed PetBreed { get; set; }
-        public virtual PetDocument PetDocument { get; set; }
         public virtual PetFurColor PetFurColor { get; set; }
+        public virtual RescueDocument RescueDocument { get; set; }
         public virtual ICollection<AdoptionRegistrationForm> AdoptionRegistrationForm { get; set; }
         public virtual ICollection<AdoptionReportTracking> AdoptionReportTracking { get; set; }
         public virtual ICollection<PetTracking> PetTracking { get; set; }

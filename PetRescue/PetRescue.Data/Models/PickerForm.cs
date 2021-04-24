@@ -11,6 +11,6 @@ namespace PetRescue.Data.Models
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
 
-        public virtual PetDocument PetDocument { get; set; }
+        public virtual RescueDocument RescueDocument { get; set; }
     }
 }

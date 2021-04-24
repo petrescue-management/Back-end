@@ -24,13 +24,13 @@ namespace PetRescue.WebApi.Controllers
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
         [Route("api/get-list-pet-document")]
-        public IActionResult GetListPetDocument()
+        public IActionResult GetListRescueDocumentByCenterId()
         {
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var _domain = _uow.GetService<PetDocumentDomain>();
-                var result = _domain.GetListPetDocumentByCenterId(Guid.Parse(currentCenterId));
+                var _domain = _uow.GetService<RescueDocumentDomain>();
+                var result = _domain.GetListRescueDocumentByCenterId(Guid.Parse(currentCenterId));
                 return Success(result);
             }
             catch (Exception e)
@@ -40,12 +40,12 @@ namespace PetRescue.WebApi.Controllers
         }
         [HttpGet]
         [Route("api/get-list-petprofile-by-petdocumentid")]
-        public IActionResult GetListPetProfileByPetDocumentId([FromQuery] Guid petDocumentId)
+        public IActionResult GetListPetProfileByRescueDocumentId([FromQuery] Guid petDocumentId)
         {
             try
             {
-                var _domain = _uow.GetService<PetDocumentDomain>();
-                var result = _domain.GetListPetProfileByPetDocumentId(petDocumentId);
+                var _domain = _uow.GetService<RescueDocumentDomain>();
+                var result = _domain.GetListPetProfileByRescueDocumentId(petDocumentId);
                 return Success(result);
             }
             catch (Exception e)
@@ -55,12 +55,12 @@ namespace PetRescue.WebApi.Controllers
         }
         [HttpGet]
         [Route("api/get-pet-document-by-id")]
-        public IActionResult GetPetDocumentById([FromQuery]Guid petDocumentId)
+        public IActionResult GetRescueDocumentById([FromQuery]Guid petDocumentId)
         {
             try
             {
-                var _domain = _uow.GetService<PetDocumentDomain>();
-                var result = _domain.GetPetDocumentByPetDocumentId(petDocumentId);
+                var _domain = _uow.GetService<RescueDocumentDomain>();
+                var result = _domain.GetRescueDocumentByRescueDocumentId(petDocumentId);
                 return Success(result);
             }
             catch (Exception e)
@@ -70,13 +70,13 @@ namespace PetRescue.WebApi.Controllers
         }
         [HttpPost]
         [Route("api/create-pet-document")]
-        public IActionResult CreatePetDocument([FromBody] PetDocumentCreateModel model)
+        public IActionResult CreateRescueDocument([FromBody] RescueDocumentCreateModel model)
         {
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var _domain = _uow.GetService<PetDocumentDomain>();
-                var result = _domain.CreatePetDocument(model, Guid.Parse(currentCenterId));
+                var _domain = _uow.GetService<RescueDocumentDomain>();
+                var result = _domain.CreateRescueDocument(model, Guid.Parse(currentCenterId));
                 if (result)
                 {
                     return Success(result);
@@ -91,12 +91,12 @@ namespace PetRescue.WebApi.Controllers
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
         [Route("api/update-pet-document")]
-        public IActionResult UpdatePetDocument([FromBody]PetDocumentUpdateModel model)
+        public IActionResult UpdateRescueDocument([FromBody] RescueDocumentUpdateModel model)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var _domain = _uow.GetService<PetDocumentDomain>();
+                var _domain = _uow.GetService<RescueDocumentDomain>();
                 var result = _domain.Edit(model, Guid.Parse(currentUserId));
                 return Success(result);
             }

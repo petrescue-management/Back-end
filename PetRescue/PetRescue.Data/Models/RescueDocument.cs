@@ -3,18 +3,18 @@ using System.Collections.Generic;
 
 namespace PetRescue.Data.Models
 {
-    public partial class PetDocument
+    public partial class RescueDocument
     {
-        public PetDocument()
+        public RescueDocument()
         {
             PetProfile = new HashSet<PetProfile>();
         }
 
-        public Guid PetDocumentId { get; set; }
+        public Guid RescueDocumentId { get; set; }
         public Guid FinderFormId { get; set; }
         public Guid PickerFormId { get; set; }
         public Guid CenterId { get; set; }
-        public int? PetDocumentStatus { get; set; }
+        public int? RescueDocumentStatus { get; set; }
 
         public virtual FinderForm FinderForm { get; set; }
         public virtual PickerForm PickerForm { get; set; }

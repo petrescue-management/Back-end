@@ -83,7 +83,7 @@ namespace PetRescue.Data.Domains
                .Take(model.PageSize)
                .Select(p => new PetProfileModel
                {
-                   PetDocumentId = (Guid)p.PetDocumentId,
+                   PetDocumentId = (Guid)p.RescueDocumentId,
                    CenterId = p.CenterId,
                    PetProfileDescription = p.PetProfileDescription,
                    PetAge = p.PetAge,
@@ -374,7 +374,7 @@ namespace PetRescue.Data.Domains
                     listPetProfiles.Add(new PetProfileModel3
                     {
                         PetProfileId = petProfile.PetProfileId,
-                        PetDocumentId = petProfile.PetDocumentId,
+                        PetDocumentId = petProfile.RescueDocumentId,
                         PetName = petProfile.PetName,
                         PetGender = petProfile.PetGender,
                         PetAge = petProfile.PetAge,
@@ -403,35 +403,35 @@ namespace PetRescue.Data.Domains
             return result;
         }
         #endregion
-        public PetDocumentViewModel GetDocumentPetById(Guid petProfileId)
+        public RescueDocumentViewModel GetRescueDocumentByPetId(Guid petProfileId)
         {
-            var petDocumentRepo = uow.GetService<IPetDocumentRepository>();
+            var rescueDocumentRepo = uow.GetService<IRescueDocumentRepository>();
             var petProfileRepo = uow.GetService<IPetProfileRepository>();
             var userRepo = uow.GetService<IUserRepository>();
-            var result = new PetDocumentViewModel();
+            var result = new RescueDocumentViewModel();
             var petProfile = petProfileRepo.Get().FirstOrDefault(s => s.PetProfileId.Equals(petProfileId));
-            var petDocument = petDocumentRepo.Get().FirstOrDefault(s => s.PetDocumentId.Equals(petProfile.PetDocumentId));
-            if (petDocument != null)
+            var rescueDocument = rescueDocumentRepo.Get().FirstOrDefault(s => s.RescueDocumentId.Equals(petProfile.RescueDocumentId));
+            if (rescueDocument != null)
             {
-                var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petDocument.PickerForm.InsertedBy));
+                var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
                 var fullName = currentUser.UserProfile.LastName + " "+currentUser.UserProfile.FirstName;
                 var pickerForm = new PickerFormViewModel
                 {
-                    PickerDate = petDocument.PickerForm.InsertedAt,
-                    PickerDescription = petDocument.PickerForm.PickerDescription,
-                    PickerImageUrl = petDocument.PickerForm.PickerImageUrl,
+                    PickerDate = rescueDocument.PickerForm.InsertedAt,
+                    PickerDescription = rescueDocument.PickerForm.PickerDescription,
+                    PickerImageUrl = rescueDocument.PickerForm.PickerImageUrl,
                     PickerName = fullName,
                 };
-                currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petDocument.FinderForm.InsertedBy));
+                currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.FinderForm.InsertedBy));
                 fullName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
                 var finderForm = new FinderFormViewModel
                 {
-                    FinderDate = petDocument.FinderForm.InsertedAt,
-                    FinderDescription = petDocument.FinderForm.FinderDescription,
-                    FinderImageUrl = petDocument.FinderForm.FinderFormImgUrl,
+                    FinderDate = rescueDocument.FinderForm.InsertedAt,
+                    FinderDescription = rescueDocument.FinderForm.FinderDescription,
+                    FinderImageUrl = rescueDocument.FinderForm.FinderFormImgUrl,
                     FinderName = fullName,
-                    Lat = petDocument.FinderForm.Lat,
-                    Lng = petDocument.FinderForm.Lng,
+                    Lat = rescueDocument.FinderForm.Lat,
+                    Lng = rescueDocument.FinderForm.Lng,
                 };
                 var tracks = petProfile.PetTracking.ToList();
                 var list = new List<PetTrackingViewModel>();
@@ -449,7 +449,7 @@ namespace PetRescue.Data.Domains
                     });
                 }
                 result.FinderForm = finderForm;
-                result.PetAttribute = petDocument.FinderForm.PetAttribute;
+                result.PetAttribute = rescueDocument.FinderForm.PetAttribute;
                 result.PickerForm = pickerForm;
                 result.PetProfile = new PetProfileModel
                 {
@@ -459,7 +459,7 @@ namespace PetRescue.Data.Domains
                     PetAge = petProfile.PetAge,
                     PetBreedId = petProfile.PetBreedId,
                     PetBreedName = petProfile.PetBreed.PetBreedName,
-                    PetDocumentId = petProfile.PetDocumentId,
+                    PetDocumentId = petProfile.RescueDocumentId,
                     PetFurColorId = petProfile.PetFurColorId,
                     PetFurColorName = petProfile.PetFurColor.PetFurColorName,
                     PetGender = petProfile.PetGender,
@@ -504,7 +504,7 @@ namespace PetRescue.Data.Domains
                         PetAge = petProfile.PetAge,
                         PetBreedId = petProfile.PetBreedId,
                         PetBreedName = petProfile.PetBreed.PetBreedName,
-                        PetDocumentId = petProfile.PetDocumentId,
+                        PetDocumentId = petProfile.RescueDocumentId,
                         PetFurColorId = petProfile.PetFurColorId,
                         PetFurColorName = petProfile.PetFurColor.PetFurColorName,
                         PetGender = petProfile.PetGender,

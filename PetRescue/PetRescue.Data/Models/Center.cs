@@ -8,6 +8,7 @@ namespace PetRescue.Data.Models
         public Center()
         {
             PetProfile = new HashSet<PetProfile>();
+            VolunteerRegistrationForm = new HashSet<VolunteerRegistrationForm>();
             WorkingHistory = new HashSet<WorkingHistory>();
         }
 
@@ -25,6 +26,7 @@ namespace PetRescue.Data.Models
 
         public virtual CenterRegistrationForm CenterNavigation { get; set; }
         public virtual ICollection<PetProfile> PetProfile { get; set; }
+        public virtual ICollection<VolunteerRegistrationForm> VolunteerRegistrationForm { get; set; }
         public virtual ICollection<WorkingHistory> WorkingHistory { get; set; }
     }
 }

@@ -112,7 +112,7 @@ namespace PetRescue.Data.Domains
         public object GetCountForCenterHomePage(Guid centerId)
         {
             var records = uow.GetService<ICenterRepository>().Get().AsQueryable();
-            var rescues = uow.GetService<IPetDocumentRepository>().Get()
+            var rescues = uow.GetService<IRescueDocumentRepository>().Get()
                 .Where(d => d.CenterId.Equals(centerId)).Count();
 
             var petProfileService = uow.GetService<IPetProfileRepository>();
