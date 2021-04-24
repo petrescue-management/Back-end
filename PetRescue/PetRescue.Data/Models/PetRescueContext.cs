@@ -41,7 +41,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=petrescue.database.windows.net;Database=PetRescue;Trusted_Connection=False;Encrypt=True;User Id=petrescue;Password=Admin123");
+                optionsBuilder.UseSqlServer("Server=.\\SQLExpress, 1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
             }
         }
 
@@ -310,8 +310,8 @@ namespace PetRescue.Data.Models
                     .HasColumnName("finder_form_id")
                     .HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.CancelledReason)
-                    .HasColumnName("cancelled_reason")
+                entity.Property(e => e.CanceledReason)
+                    .HasColumnName("canceled_reason")
                     .HasMaxLength(200);
 
                 entity.Property(e => e.FinderDescription)
@@ -348,11 +348,11 @@ namespace PetRescue.Data.Models
                     .HasMaxLength(15)
                     .IsUnicode(false);
 
-                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
-
-                entity.Property(e => e.UpdatetedAt)
-                    .HasColumnName("updateted_at")
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
                     .HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
             });
 
             modelBuilder.Entity<NotificationToken>(entity =>

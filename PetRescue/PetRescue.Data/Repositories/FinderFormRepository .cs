@@ -43,7 +43,7 @@ namespace PetRescue.Data.Repositories
                 InsertedBy = insertedBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,
-                UpdatetedAt = null,
+                UpdatedAt = null,
                 FinderFormVidUrl = model.FinderFormVideoUrl
                 
             };
@@ -88,7 +88,7 @@ namespace PetRescue.Data.Repositories
                     Lng = f.Lng,
                     FinderFormImgUrl = f.FinderFormImgUrl,
                     FinderFormVideoUrl = f.FinderFormVidUrl,
-                    CancelledReason = f.CancelledReason,
+                    CanceledReason = f.CanceledReason,
                     PetAttribute = f.PetAttribute,
                     FinderDescription = f.FinderDescription,
                     FinderFormStatus = f.FinderFormStatus,
@@ -114,13 +114,13 @@ namespace PetRescue.Data.Repositories
                         PetAttribute = f.PetAttribute,
                         FinderDescription = f.FinderDescription,
                         FinderFormVidUrl  = f.FinderFormVidUrl,
-                        CancelledReason = f.CancelledReason,
+                        CanceledReason = f.CanceledReason,
                         FinderFormStatus = model.Status,
                         Phone = f.Phone,
                         InsertedBy = f.InsertedBy,
                         InsertedAt = f.InsertedAt,
                         UpdatedBy = updatedBy,
-                        UpdatetedAt = DateTime.UtcNow
+                        UpdatedAt = DateTime.UtcNow
                     }).FirstOrDefault();
             return finderForm;
         }
@@ -144,7 +144,7 @@ namespace PetRescue.Data.Repositories
                         Phone = f.Phone,
                         InsertedBy = f.InsertedBy,
                         InsertedAt = f.InsertedAt,
-                        UpdatedAt = f.UpdatetedAt,
+                        UpdatedAt = f.UpdatedAt,
                         UpdatedBy = f.UpdatedBy
                     }).FirstOrDefault();
             
@@ -156,10 +156,10 @@ namespace PetRescue.Data.Repositories
             var finderForm = Get().FirstOrDefault(s=>s.FinderFormId.Equals(model.Id));
             if(finderForm != null)
             {
-                finderForm.CancelledReason = model.Reason;
+                finderForm.CanceledReason = model.Reason;
                 finderForm.FinderFormStatus = FinderFormStatusConst.CANCELED;
                 finderForm.UpdatedBy = updatedBy;
-                finderForm.UpdatetedAt = DateTime.UtcNow;
+                finderForm.UpdatedAt = DateTime.UtcNow;
                 return Update(finderForm).Entity;
             }
             return null;

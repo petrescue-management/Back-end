@@ -19,7 +19,7 @@ namespace PetRescue.Data.ViewModels
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string FinderFormVideoUrl { get; set; }
-        public string CancelledReason { get; set; }
+        public string CanceledReason { get; set; }
     }
 
     public class CreateFinderFormModel
