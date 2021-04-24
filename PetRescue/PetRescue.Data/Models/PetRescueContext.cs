@@ -310,8 +310,8 @@ namespace PetRescue.Data.Models
                     .HasColumnName("finder_form_id")
                     .HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.CancelledReason)
-                    .HasColumnName("cancelled_reason")
+                entity.Property(e => e.CanceledReason)
+                    .HasColumnName("canceled_reason")
                     .HasMaxLength(200);
 
                 entity.Property(e => e.FinderDescription)
@@ -348,11 +348,11 @@ namespace PetRescue.Data.Models
                     .HasMaxLength(15)
                     .IsUnicode(false);
 
-                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
-
-                entity.Property(e => e.UpdatetedAt)
-                    .HasColumnName("updateted_at")
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
                     .HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
             });
 
             modelBuilder.Entity<NotificationToken>(entity =>

@@ -36,14 +36,15 @@ namespace PetRescue.Data.ConstantHelper
         public const string DONE_RESCUE_PET_TITLE = "Tình Nguyện Viên đã đến hoàn thành cứu hộ";
         public const string RETURNED_ADOPTION_TITLE = "Bạn có một thông báo về thú cưng";
         public const string VOLUNTEER_APPROVE_PICKER_TITLE = "Bạn có một thông báo về tình nguyện viên";
+        public const string VOLUNTEER_REJECT_FINDER_FOM_TITLE = "Bạn có một thông báo về yêu cầu cứu hộ";
     }
     public class NotificationBodyHelper
     {
         public const string NEW_REGISTRATION_CENTER_FORM_BODY = "Có đơn đăng ký thành Trung Tâm cần xử lý";
         public const string NEW_REGISTRATION_ADOPTION_FORM_BODY = "Có đơn đăng ký nhận nuôi thú cưng cần xử lý";
         public const string APPROVE_ADOPTION_FORM_BODY = "Bạn đã được nhận nuôi một con thú cưng";
-        public const string HAVE_FOUND_ADOPTION_FORM_TITLE = "Xin lỗi, trung tâm đã tìm ra người phù hợp";
-        public const string REJECT_ADOPTION_FORM_TITLE = "Xin lỗi, bạn không phù hợp với thú cưng này";
+        public const string HAVE_FOUND_ADOPTION_FORM_BODY = "Xin lỗi, trung tâm đã tìm ra người phù hợp";
+        public const string REJECT_ADOPTION_FORM_BODY = "Xin lỗi, bạn không phù hợp với thú cưng này";
         public const string NEW_RESCUE_FORM_BODY = "Có đơn cứu hộ cần được xử lý";
         public const string NEW_VOLUNTEER_FORM_BODY = "Có đơn đăng ký tình nguyện viên cần được xử lý";
         public const string RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY = "Tình Nguyện Viên đã nhận được yêu cầu cứu hộ";
@@ -54,5 +55,7 @@ namespace PetRescue.Data.ConstantHelper
         public const string DONE_RESCUE_PET_BODY = "Cảm ơn bạn đã giúp đỡ";
         public const string RETURNED_ADOPTION_BODY = "Thú cưng của bạn được yêu cầu trả lại";
         public const string VOLUNTEER_APPROVE_PICKER_BODY = "Tình nguyện viên của trung tâm bạn đã nhận một đơn cứu hộ";
+        public const string VOLUNTEER_REJECT_FINDER_FOM_BODY = "Yêu cầu cứu hộ của bạn đã bị từ chối";
+        
     }
 }

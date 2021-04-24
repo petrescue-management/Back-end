@@ -196,7 +196,7 @@ namespace PetRescue.Data.Domains
                     Notification = new Notification
                     {
                         Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE,
-                        Body = NotificationBodyHelper.HAVE_FOUND_ADOPTION_FORM_TITLE,
+                        Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_BODY,
                     },
                 };
                 if (notificationToken != null)

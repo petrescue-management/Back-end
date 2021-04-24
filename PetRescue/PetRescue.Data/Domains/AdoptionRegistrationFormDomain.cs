@@ -163,7 +163,6 @@ namespace PetRescue.Data.Domains
                             UserId = temp.InsertedBy
                         };
                         transaction.Commit();
-                        uow.saveChanges();
                         return result;
                     }
                     else if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.REJECTED)
@@ -172,7 +171,7 @@ namespace PetRescue.Data.Domains
                         {
                             Notification = new Notification
                             {
-                                Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_TITLE,
+                                Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_BODY,
                                 Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
                             }
                         };
@@ -267,11 +266,25 @@ namespace PetRescue.Data.Domains
             }
             return false;
         }
-        public bool CancelAdoptionRegistrationForm(UpdateViewModel model, Guid updatedBy)
+        public async Task<bool> CancelAdoptionRegistrationForm(UpdateViewModel model, Guid updatedBy,List<string> roleName, string path)
         {
             var form = uow.GetService<IAdoptionRegistrationFormRepository>().UpdateAdoptionRegistrationFormStatus(model, updatedBy);
             if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.CANCEL)
             {
+                if (roleName != null)
+                {
+                    if (roleName.Contains(RoleConstant.MANAGER))
+                    {
+                        await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                        {
+                            Notification = new Notification
+                            {
+                                Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE,
+                                Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_BODY
+                            }
+                        });
+                    }
+                }
                 uow.saveChanges();
                 return true;
             }
@@ -289,7 +302,7 @@ namespace PetRescue.Data.Domains
                 {
                     Notification = new Notification
                     {
-                        Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_TITLE,
+                        Body = NotificationBodyHelper.REJECT_ADOPTION_FORM_BODY,
                         Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
                     }
                 };

@@ -98,15 +98,17 @@ namespace PetRescue.WebApi.Controllers
         }
         #endregion
         [Authorize]
-        [HttpPost]
+        [HttpPut]
         [Route("api/cancel-finder-form")]
-        public IActionResult CancelFinderForm([FromBody]CancelViewModel model)
+        public async Task<IActionResult> CancelFinderForm([FromBody]CancelViewModel model)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var currentRole = HttpContext.User.Claims.Where(c => c.Type.Equals(ClaimTypes.Role)).Select(s=>s.Value).ToList();
+                var path = _env.ContentRootPath;
                 var _domain = _uow.GetService<FinderFormDomain>();
-                var result = _domain.CancelFinderForm(model, Guid.Parse(currentUserId));
+                var result = await _domain.CancelFinderForm(model, Guid.Parse(currentUserId), currentRole, path);
                 if (result != null)
                 {
                     return Success(result);
