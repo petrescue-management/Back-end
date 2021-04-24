@@ -87,6 +87,8 @@ namespace PetRescue.Data.Repositories
                     Lat = f.Lat,
                     Lng = f.Lng,
                     FinderFormImgUrl = f.FinderFormImgUrl,
+                    FinderFormVideoUrl = f.FinderFormVidUrl,
+                    CancelledReason = f.CancelledReason,
                     PetAttribute = f.PetAttribute,
                     FinderDescription = f.FinderDescription,
                     FinderFormStatus = f.FinderFormStatus,
