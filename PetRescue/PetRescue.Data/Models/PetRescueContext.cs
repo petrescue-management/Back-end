@@ -23,12 +23,12 @@ namespace PetRescue.Data.Models
         public virtual DbSet<FinderForm> FinderForm { get; set; }
         public virtual DbSet<NotificationToken> NotificationToken { get; set; }
         public virtual DbSet<PetBreed> PetBreed { get; set; }
-        public virtual DbSet<PetDocument> PetDocument { get; set; }
         public virtual DbSet<PetFurColor> PetFurColor { get; set; }
         public virtual DbSet<PetProfile> PetProfile { get; set; }
         public virtual DbSet<PetTracking> PetTracking { get; set; }
         public virtual DbSet<PetType> PetType { get; set; }
         public virtual DbSet<PickerForm> PickerForm { get; set; }
+        public virtual DbSet<RescueDocument> RescueDocument { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<UserProfile> UserProfile { get; set; }
@@ -41,7 +41,7 @@ namespace PetRescue.Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=.\\SQLExpress, 1433;Database=PetRescue;Trusted_Connection=True;User Id=sa;Password=tranphimai");
+                optionsBuilder.UseSqlServer("Server=petrescue.database.windows.net;Database=PetRescue;Trusted_Connection=False;Encrypt=True;User Id=petrescue;Password=Admin123");
             }
         }
 
@@ -403,41 +403,6 @@ namespace PetRescue.Data.Models
                     .HasConstraintName("FK_PetBreed_PetType");
             });
 
-            modelBuilder.Entity<PetDocument>(entity =>
-            {
-                entity.HasIndex(e => e.FinderFormId)
-                    .HasName("IX_PetDocument_1")
-                    .IsUnique();
-
-                entity.HasIndex(e => e.PickerFormId)
-                    .HasName("IX_PetDocument_2")
-                    .IsUnique();
-
-                entity.Property(e => e.PetDocumentId)
-                    .HasColumnName("pet_document_id")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.CenterId).HasColumnName("center_id");
-
-                entity.Property(e => e.FinderFormId).HasColumnName("finder_form_id");
-
-                entity.Property(e => e.PetDocumentStatus).HasColumnName("pet_document_status");
-
-                entity.Property(e => e.PickerFormId).HasColumnName("picker_form_id");
-
-                entity.HasOne(d => d.FinderForm)
-                    .WithOne(p => p.PetDocument)
-                    .HasForeignKey<PetDocument>(d => d.FinderFormId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PetDocument_FinderForm");
-
-                entity.HasOne(d => d.PickerForm)
-                    .WithOne(p => p.PetDocument)
-                    .HasForeignKey<PetDocument>(d => d.PickerFormId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PetDocument_PickerForm");
-            });
-
             modelBuilder.Entity<PetFurColor>(entity =>
             {
                 entity.Property(e => e.PetFurColorId)
@@ -469,8 +434,6 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.PetBreedId).HasColumnName("pet_breed_id");
 
-                entity.Property(e => e.PetDocumentId).HasColumnName("pet_document_id");
-
                 entity.Property(e => e.PetFurColorId).HasColumnName("pet_fur_color_id");
 
                 entity.Property(e => e.PetGender).HasColumnName("pet_gender");
@@ -492,6 +455,8 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.PetStatus).HasColumnName("pet_status");
 
+                entity.Property(e => e.RescueDocumentId).HasColumnName("rescue_document_id");
+
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")
                     .HasColumnType("datetime");
@@ -510,16 +475,16 @@ namespace PetRescue.Data.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PetProfile_PetBreed1");
 
-                entity.HasOne(d => d.PetDocument)
-                    .WithMany(p => p.PetProfile)
-                    .HasForeignKey(d => d.PetDocumentId)
-                    .HasConstraintName("FK_PetProfile_PetDocument");
-
                 entity.HasOne(d => d.PetFurColor)
                     .WithMany(p => p.PetProfile)
                     .HasForeignKey(d => d.PetFurColorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PetProfile_PetFurColor1");
+
+                entity.HasOne(d => d.RescueDocument)
+                    .WithMany(p => p.PetProfile)
+                    .HasForeignKey(d => d.RescueDocumentId)
+                    .HasConstraintName("FK_PetProfile_PetDocument");
             });
 
             modelBuilder.Entity<PetTracking>(entity =>
@@ -591,6 +556,41 @@ namespace PetRescue.Data.Models
                     .IsRequired()
                     .HasColumnName("picker_image_url")
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<RescueDocument>(entity =>
+            {
+                entity.HasIndex(e => e.FinderFormId)
+                    .HasName("IX_PetDocument_1")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.PickerFormId)
+                    .HasName("IX_PetDocument_2")
+                    .IsUnique();
+
+                entity.Property(e => e.RescueDocumentId)
+                    .HasColumnName("rescue_document_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.CenterId).HasColumnName("center_id");
+
+                entity.Property(e => e.FinderFormId).HasColumnName("finder_form_id");
+
+                entity.Property(e => e.PickerFormId).HasColumnName("picker_form_id");
+
+                entity.Property(e => e.RescueDocumentStatus).HasColumnName("rescue_document_status");
+
+                entity.HasOne(d => d.FinderForm)
+                    .WithOne(p => p.RescueDocument)
+                    .HasForeignKey<RescueDocument>(d => d.FinderFormId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PetDocument_FinderForm");
+
+                entity.HasOne(d => d.PickerForm)
+                    .WithOne(p => p.RescueDocument)
+                    .HasForeignKey<RescueDocument>(d => d.PickerFormId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PetDocument_PickerForm");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -761,6 +761,12 @@ namespace PetRescue.Data.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.VolunteerRegistrationFormStatus).HasColumnName("volunteer_registration_form_status");
+
+                entity.HasOne(d => d.Center)
+                    .WithMany(p => p.VolunteerRegistrationForm)
+                    .HasForeignKey(d => d.CenterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_VolunteerRegistrationForm_Center");
             });
 
             modelBuilder.Entity<WorkingHistory>(entity =>

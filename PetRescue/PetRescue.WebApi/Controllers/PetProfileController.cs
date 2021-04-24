@@ -223,12 +223,12 @@ namespace PetRescue.WebApi.Controllers
         }
         [HttpGet]
         [Route("api/get-document-pet")]
-        public IActionResult GetDocumentPetBy([FromQuery]Guid petProfileId)
+        public IActionResult GetRescueDocumentByPetId([FromQuery]Guid petProfileId)
         {
             try
             {
                 var _domain = _uow.GetService<PetProfileDomain>();
-                var result = _domain.GetDocumentPetById(petProfileId);
+                var result = _domain.GetRescueDocumentByPetId(petProfileId);
                 return Success(result);
             }catch(Exception ex)
             {

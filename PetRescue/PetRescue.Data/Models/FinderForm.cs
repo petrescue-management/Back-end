@@ -20,6 +20,6 @@ namespace PetRescue.Data.Models
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual PetDocument PetDocument { get; set; }
+        public virtual RescueDocument RescueDocument { get; set; }
     }
 }

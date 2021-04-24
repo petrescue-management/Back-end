@@ -24,7 +24,7 @@ namespace PetRescue.Data.Extensions
             }
             if (filter.PetDocumentId != null && !filter.PetDocumentId.Equals(Guid.Empty))
             {
-                query = query.Where(s => s.PetDocumentId.Equals(filter.PetDocumentId));
+                query = query.Where(s => s.RescueDocumentId.Equals(filter.PetDocumentId));
             }
             if (filter.PetStatus != 0)
             {

@@ -363,10 +363,10 @@ namespace PetRescue.Data.Domains
                     FinderImageUrl = finder.FinderFormImgUrl,
                     FinderFormVidUrl = finder.FinderFormVidUrl,
                     PetAttribute = finder.PetAttribute,
-                    PickerDate = finder.PetDocument.PickerForm.InsertedAt,
-                    PickerFormDescription = finder.PetDocument.PickerForm.PickerDescription,
-                    PickerFormId = finder.PetDocument.PickerForm.PickerFormId,
-                    PickerFormImg = finder.PetDocument.PickerForm.PickerImageUrl,
+                    PickerDate = finder.RescueDocument.PickerForm.InsertedAt,
+                    PickerFormDescription = finder.RescueDocument.PickerForm.PickerDescription,
+                    PickerFormId = finder.RescueDocument.PickerForm.PickerFormId,
+                    PickerFormImg = finder.RescueDocument.PickerForm.PickerImageUrl,
 
                 };
                 var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finder.InsertedBy));

@@ -18,5 +18,7 @@ namespace PetRescue.Data.Models
         public string RejectedReason { get; set; }
         public DateTime InsertedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
+        public virtual Center Center { get; set; }
     }
 }

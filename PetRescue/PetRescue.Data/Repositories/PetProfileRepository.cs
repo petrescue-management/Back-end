@@ -33,7 +33,7 @@ namespace PetRescue.Data.Repositories
             {
                 petProfile = new PetProfile
                 {
-                    PetDocumentId = null,
+                    RescueDocumentId = null,
                     PetName = model.PetName,
                     PetGender = model.PetGender,
                     PetAge = model.PetAge,
@@ -52,7 +52,7 @@ namespace PetRescue.Data.Repositories
             {
                 petProfile = new PetProfile
                 {
-                    PetDocumentId = model.PetDocumentId,
+                    RescueDocumentId = model.PetDocumentId,
                     PetName = model.PetName,
                     PetGender = model.PetGender,
                     PetAge = model.PetAge,
@@ -77,7 +77,7 @@ namespace PetRescue.Data.Repositories
 
             var result = new PetProfileModel
             {
-                PetDocumentId = petProfile.PetDocumentId,
+                PetDocumentId = petProfile.RescueDocumentId,
                 PetName = petProfile.PetName,
                 PetGender = petProfile.PetGender,
                 PetAge = petProfile.PetAge,
@@ -129,7 +129,7 @@ namespace PetRescue.Data.Repositories
             var result = new PetProfileModel
             {
                 PetProfileId = petProfile.PetProfileId,
-                PetDocumentId = petProfile.PetDocumentId,
+                PetDocumentId = petProfile.RescueDocumentId,
                 PetName = petProfile.PetName,
                 PetGender = petProfile.PetGender,
                 PetAge = petProfile.PetAge,
@@ -156,7 +156,7 @@ namespace PetRescue.Data.Repositories
                .Include(p => p.PetFurColor)
                .Select(p => new PetProfileModel
                {
-                   PetDocumentId = p.PetDocumentId,
+                   PetDocumentId = p.RescueDocumentId,
                    CenterId = p.CenterId,
                    PetProfileDescription = p.PetProfileDescription,
                    PetAge = p.PetAge,
@@ -181,7 +181,7 @@ namespace PetRescue.Data.Repositories
                .Include(p => p.PetFurColor)
                .Select(p => new PetProfileModel2
                {
-                   PetDocumentId = p.PetDocumentId,
+                   PetDocumentId = p.RescueDocumentId,
                    CenterId = p.CenterId,
                    PetProfileDescription = p.PetProfileDescription,
                    PetAge = p.PetAge,
