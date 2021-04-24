@@ -97,14 +97,15 @@ namespace PetRescue.WebApi.Controllers
         }
         [HttpPut]
         [Route("api/cancel-adoption-registration-form")]
-        public IActionResult CancelAdoptionRegistrationForm([FromBody] UpdateViewModel model)
+        public async Task<IActionResult> CancelAdoptionRegistrationForm([FromBody] UpdateViewModel model)
         {
             try
             {
                 var _domain = _uow.GetService<AdoptionRegistrationFormDomain>();
                 var path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _domain.CancelAdoptionRegistrationForm(model, Guid.Parse(currentUserId));
+                var currentRole = HttpContext.User.Claims.Where(c => c.Type.Equals(ClaimTypes.Role)).Select(s => s.Value).ToList();
+                var result = await _domain.CancelAdoptionRegistrationForm(model, Guid.Parse(currentUserId), currentRole, path);
                 if (result)
                 {
                     return Success(result);

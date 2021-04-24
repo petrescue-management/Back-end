@@ -190,7 +190,7 @@ namespace PetRescue.Data.Domains
                     }
                     else
                     {
-                        if (currentUser.WorkingHistory.FirstOrDefault(s=>s.IsActive).CenterId.Equals(model.CenterId))
+                        if (currentUser.WorkingHistory.FirstOrDefault(s => s.IsActive).CenterId.Equals(model.CenterId))
                         {
                             userRoleDomain.Edit(userRole, new UserRoleUpdateEntityModel
                             {

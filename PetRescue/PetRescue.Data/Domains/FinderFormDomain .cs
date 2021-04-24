@@ -83,6 +83,14 @@ namespace PetRescue.Data.Domains
                             Body = NotificationBodyHelper.VOLUNTEER_APPROVE_PICKER_BODY
                         }
                     });
+                    await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                    {
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_TITLE,
+                            Body = NotificationBodyHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY
+                        }
+                    });
                 }
                 string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
 
@@ -143,11 +151,26 @@ namespace PetRescue.Data.Domains
             }
             return finderForm;
         }
-        public object CancelFinderForm(CancelViewModel model,Guid updatedBy)
+        public async Task<object> CancelFinderForm(CancelViewModel model,Guid updatedBy, List<string> roleName, string path)
         {
             var finderForm = uow.GetService<IFinderFormRepository>().CancelFinderForm(model, updatedBy);
-            if(finderForm != null)
+            if (finderForm != null)
             {
+                if (roleName != null)
+                {
+                    if (roleName.Contains(RoleConstant.VOLUNTEER)) 
+                    {
+                        await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                        {
+                            Notification = new Notification
+                            {
+                                Title = NotificationTitleHelper.VOLUNTEER_REJECT_FINDER_FOM_TITLE,
+                                Body = NotificationBodyHelper.VOLUNTEER_REJECT_FINDER_FOM_BODY
+                            }
+                        });
+                    }
+                }
+                uow.saveChanges();
                 return finderForm;
             }
             return null;
