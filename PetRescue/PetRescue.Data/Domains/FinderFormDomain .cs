@@ -58,7 +58,24 @@ namespace PetRescue.Data.Domains
         #region GET BY ID
         public FinderFormModel GetFinderFormById(Guid id)
         {
+            
             var finderForm = uow.GetService<IFinderFormRepository>().GetFinderFormById(id);
+            var user = uow.GetService<IUserRepository>().GetUserById(finderForm.InsertedBy);
+            var result = new FinderFormDetailModel
+            {
+                FinderDate = finderForm.InsertedAt,
+                FinderDescription = finderForm.FinderDescription,
+                FinderFormId = finderForm.FinderFormId,
+                FinderFormStatus = finderForm.FinderFormStatus,
+                FinderImageUrl = finderForm.FinderFormImgUrl,
+                FinderName = user.LastName + " " + user.FirstName,
+                Lat = finderForm.Lat,
+                Lng = finderForm.Lng,
+                PetAttribute = finderForm.PetAttribute,
+                Phone = finderForm.Phone,
+                FinderFormVidUrl = finderForm.FinderFormVideoUrl,
+                InsertedBy = finderForm.InsertedBy
+            };
             return finderForm;
         }
         #endregion
