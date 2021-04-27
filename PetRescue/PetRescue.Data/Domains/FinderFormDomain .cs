@@ -56,7 +56,7 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region GET BY ID
-        public FinderFormModel GetFinderFormById(Guid id)
+        public FinderFormDetailModel GetFinderFormById(Guid id)
         {
             
             var finderForm = uow.GetService<IFinderFormRepository>().GetFinderFormById(id);
@@ -76,7 +76,7 @@ namespace PetRescue.Data.Domains
                 FinderFormVidUrl = finderForm.FinderFormVideoUrl,
                 InsertedBy = finderForm.InsertedBy
             };
-            return finderForm;
+            return result;
         }
         #endregion
 
