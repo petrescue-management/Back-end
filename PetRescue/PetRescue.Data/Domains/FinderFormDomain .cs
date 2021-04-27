@@ -84,9 +84,7 @@ namespace PetRescue.Data.Domains
         public async Task<FinderFormModel> UpdateFinderFormStatusAsync(UpdateStatusModel model, Guid updatedBy, string path)
         {
             var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(model, updatedBy);
-            
             uow.saveChanges();
-
             if (model.Status == FinderFormStatusConst.RESCUING || model.Status == FinderFormStatusConst.CANCELED)
             {
                 if(model.Status == FinderFormStatusConst.RESCUING)
@@ -154,8 +152,10 @@ namespace PetRescue.Data.Domains
                         Body = NotificationBodyHelper.ARRIVED_RESCUE_PET_BODY
                     }
                 });
-            }else if(model.Status == FinderFormStatusConst.DONE)
+            }
+            else if(model.Status == FinderFormStatusConst.DONE)
             {
+                var centerId = uow.GetService<IWorkingHistoryRepository>().Get().FirstOrDefault(s => s.UserId.Equals(updatedBy) && s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).CenterId;
                 await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP,
                 new Message
                 {
@@ -163,6 +163,15 @@ namespace PetRescue.Data.Domains
                     {
                         Title = NotificationTitleHelper.DONE_RESCUE_PET_TITLE,
                         Body = NotificationBodyHelper.DONE_RESCUE_PET_BODY
+                    }
+                });
+                await uow.GetService<NotificationTokenDomain>().NotificationForManager(path, centerId,
+                new Message
+                {
+                    Notification = new Notification
+                    {
+                        Title = NotificationTitleHelper.VOLUNTEER_DONE_RESCUE_PET_TITLE,
+                        Body = NotificationBodyHelper.VOLUNTEER_DONE_RESCUE_PET_BODY
                     }
                 });
             }
@@ -194,7 +203,7 @@ namespace PetRescue.Data.Domains
         }
         #endregion
         #region CREATE
-        public FinderFormModel CreateFinderForm(CreateFinderFormModel model, Guid insertedBy, string path)
+        public async Task<FinderFormModel> CreateFinderForm(CreateFinderFormModel model, Guid insertedBy, string path)
         {
             DateTime currentTime = DateTime.UtcNow;
 
@@ -253,26 +262,26 @@ namespace PetRescue.Data.Domains
                     listCenterId.Add(records[0].CenterId);
                 }
             }
-            uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listCenterId);
+            await uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listCenterId);
             uow.saveChanges();
             return finderForm;
         }
 
-        public void ReNotification(Guid finderFormId, string path)
+        public async void ReNotification(Guid finderFormId, string path)
         {
             if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
             {
                 var centerService = uow.GetService<CenterDomain>();
                 var records = centerService.GetListCenter().Select(c => c.CenterId.ToString()).ToList();
-                uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, records);
+                await uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, records);
             }
         }
 
-        public void DestroyNotification(Guid finderFormId, Guid insertedBy, string path)
+        public async void DestroyNotification(Guid finderFormId, Guid insertedBy, string path)
         {
             if (uow.GetService<IFinderFormRepository>().GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
             {
-                var finderForm = UpdateFinderFormStatusAsync(new UpdateStatusModel
+                var finderForm = await UpdateFinderFormStatusAsync(new UpdateStatusModel
                 {
                     Id = finderFormId,
                     Status = FinderFormStatusConst.CANCELED

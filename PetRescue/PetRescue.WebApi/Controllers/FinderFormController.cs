@@ -62,13 +62,13 @@ namespace PetRescue.WebApi.Controllers
         #region UPDATE STATUS
         [HttpPost]
         [Route("api/update-finder-form-status")]
-        public IActionResult UpdateFinderFormStatus(UpdateStatusModel model)
+        public async Task<IActionResult> UpdateFinderFormStatus(UpdateStatusModel model)
         {
             try
             {
                 var path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _uow.GetService<FinderFormDomain>().UpdateFinderFormStatusAsync(model, Guid.Parse(currentUserId), path);
+                var result = await _uow.GetService<FinderFormDomain>().UpdateFinderFormStatusAsync(model, Guid.Parse(currentUserId), path);
                 return Success(result);
             }
             catch (Exception ex)
@@ -82,13 +82,13 @@ namespace PetRescue.WebApi.Controllers
         [Authorize]
         [HttpPost]
         [Route("api/create-finder-form")]
-        public IActionResult CreateFinderForm(CreateFinderFormModel model)
+        public async Task<IActionResult> CreateFinderForm(CreateFinderFormModel model)
         {
             try
             {
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result =  _uow.GetService<FinderFormDomain>().CreateFinderForm(model, Guid.Parse(currentUserId), path);
+                var result = await _uow.GetService<FinderFormDomain>().CreateFinderForm(model, Guid.Parse(currentUserId), path);
                 return Success(result);
             }
             catch (Exception ex)
