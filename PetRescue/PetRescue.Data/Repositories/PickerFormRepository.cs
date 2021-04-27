@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -52,7 +53,7 @@ namespace PetRescue.Data.Repositories
                 PickerDescription = pickerForm.PickerDescription,
                 PickerImageUrl = pickerForm.PickerImageUrl,
                 InsertedBy = pickerForm.InsertedBy,
-                InsertedAt = pickerForm.InsertedAt
+                InsertedAt = pickerForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM)
             };
             return result;
 
@@ -70,7 +71,7 @@ namespace PetRescue.Data.Repositories
                     PickerDescription = p.PickerDescription,
                     PickerImageUrl = p.PickerImageUrl,
                     InsertedBy = p.InsertedBy,
-                    InsertedAt = p.InsertedAt
+                    InsertedAt = p.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM)
                 }).FirstOrDefault();
             return result;
         }
@@ -106,7 +107,7 @@ namespace PetRescue.Data.Repositories
                         PickerDescription = p.PickerDescription,
                         PickerImageUrl = p.PickerImageUrl,
                         InsertedBy = p.InsertedBy,
-                        InsertedAt = p.InsertedAt
+                        InsertedAt = p.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM)
                     }).FirstOrDefault();
             
             return result;

@@ -305,20 +305,34 @@ namespace PetRescue.Data.Domains
                            ApplicationNameHelper.USER_APP);
                 }
                 #endregion*/
-        public List<AdoptionViewModel> GetListAdoptionByCenterId(Guid centerId)
+        public object GetListAdoptionByCenterId(Guid centerId, int page, int limit)
         {
             var adoptionRepo = uow.GetService<IAdoptionRepository>();
             var userRepo = uow.GetService<IUserRepository>();
-            var adoptions = adoptionRepo.Get().Where(s => s.AdoptionRegistration.PetProfile.CenterId.Equals(centerId)).ToList();
-            var result = new List<AdoptionViewModel>();
+            var adoptions = adoptionRepo.Get().Where(s => s.AdoptionRegistration.PetProfile.CenterId.Equals(centerId));
+            var total = 0;
+            if (limit == 0)
+            {
+                limit = 1;
+            }
+            if (limit > -1)
+            {
+                total = adoptions.Count() / limit;
+            }
+            adoptions = adoptions.OrderByDescending(s => s.InsertedBy);
+            if (limit > -1 && page >= 0)
+            {
+                adoptions = adoptions.Skip(page * limit).Take(limit);
+            }
+            var listAdoption = new List<AdoptionViewModel>();
             foreach(var adoption in adoptions)
             {
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
-                result.Add(new AdoptionViewModel {
-                    AdoptedAt = adoption.InsertedAt,
+                listAdoption.Add(new AdoptionViewModel {
+                    AdoptedAt = adoption.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     AdoptionRegistrationId = adoption.AdoptionRegistrationId,
                     AdoptionStatus = adoption.AdoptionStatus,
-                    ReturnedAt = adoption.UpdatedAt,
+                    ReturnedAt = adoption.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     Owner = new UserModel
                     {
                         Dob = user.UserProfile.Dob,
@@ -342,6 +356,9 @@ namespace PetRescue.Data.Domains
                     Username = adoption.AdoptionRegistration.UserName
                 });
             }
+            var result = new Dictionary<string, object>();
+            result["totalPages"] = total;
+            result["result"] = listAdoption;
             return result;
         }
         public List<AdoptionViewModelMobile> GetListAdoptionByUserId(Guid userId)
@@ -355,10 +372,10 @@ namespace PetRescue.Data.Domains
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
                 result.Add(new AdoptionViewModelMobile
                 {
-                    AdoptedAt = adoption.InsertedAt,
+                    AdoptedAt = adoption.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     AdoptionRegistrationId = adoption.AdoptionRegistrationId,
                     AdoptionStatus = adoption.AdoptionStatus,
-                    ReturnedAt = adoption.UpdatedAt,
+                    ReturnedAt = adoption.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     Owner = new UserModel
                     {
                         Dob = user.UserProfile.Dob,
@@ -415,10 +432,10 @@ namespace PetRescue.Data.Domains
                     });
                 }
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
-                result.AdoptedAt = adoption.InsertedAt;
+                result.AdoptedAt = adoption.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM);
                 result.AdoptionRegistrationId = adoption.AdoptionRegistrationId;
                 result.AdoptionStatus = adoption.AdoptionStatus;
-                result.ReturnedAt = adoption.UpdatedAt;
+                result.ReturnedAt = adoption.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM);
                 result.Owner = new UserModel
                 {
                     Dob = user.UserProfile.Dob,
@@ -466,7 +483,7 @@ namespace PetRescue.Data.Domains
                     {
                         Description = petTracking.Description,
                         ImageUrl = petTracking.PetTrackingImgUrl,
-                        InsertAt = petTracking.InsertedAt,
+                        InsertAt = petTracking.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                         IsSterilized = petTracking.IsSterilized,
                         IsVaccinated = petTracking.IsVaccinated,
                         PetTrackingId = petTracking.PetTrackingId,
@@ -489,10 +506,10 @@ namespace PetRescue.Data.Domains
                     });
                 }
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
-                result.AdoptedAt = adoption.InsertedAt;
+                result.AdoptedAt = adoption.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM);
                 result.AdoptionRegistrationId = adoption.AdoptionRegistrationId;
                 result.AdoptionStatus = adoption.AdoptionStatus;
-                result.ReturnedAt = adoption.UpdatedAt;
+                result.ReturnedAt = adoption.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM);
                 result.Owner = new UserModel
                 {
                     Dob = user.UserProfile.Dob,

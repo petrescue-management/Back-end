@@ -192,7 +192,7 @@ namespace PetRescue.Data.Domains
                     Phone = form.Phone,
                     Status = form.VolunteerRegistrationFormStatus,
                     FormId = form.VolunteerRegistrationFormId,
-                    InsertAt =form.InsertedAt,
+                    InsertAt =form.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     ImageUrl = form.VolunteerRegistrationFormImageUrl,
                     VolunteerRegistrationFormId = form.VolunteerRegistrationFormId
                 });

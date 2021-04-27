@@ -127,9 +127,9 @@ namespace PetRescue.Data.Domains
                 HavePet = form.HavePet,
                 AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
                 InsertedBy = form.InsertedBy,
-                InsertedAt = form.InsertedAt,
+                InsertedAt = form.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                 UpdatedBy = form.UpdatedBy,
-                UpdatedAt = form.UpdatedAt
+                UpdatedAt = form.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM)
             };
             var context = uow.GetService<PetRescueContext>();
             using (var transaction = context.Database.BeginTransaction())
@@ -248,9 +248,9 @@ namespace PetRescue.Data.Domains
                     HavePet = adoptionForm.HavePet,
                     AdoptionRegistrationStatus = adoptionForm.AdoptionRegistrationStatus,
                     InsertedBy = adoptionForm.InsertedBy,
-                    InsertedAt = adoptionForm.InsertedAt,
+                    InsertedAt = adoptionForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     UpdatedBy = adoptionForm.UpdatedBy,
-                    UpdatedAt = adoptionForm.UpdatedAt,
+                    UpdatedAt = adoptionForm.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     Dob  = adoptionForm.Dob,
                 });
             }

@@ -293,7 +293,7 @@ namespace PetRescue.Data.Domains
                     var finderUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
                     result.Add(new FinderFormDetailModel
                     {
-                        FinderDate = finderForm.InsertedAt,
+                        FinderDate = finderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                         FinderDescription = finderForm.FinderDescription,
                         FinderFormId = finderForm.FinderFormId,
                         FinderFormStatus = finderForm.FinderFormStatus,
@@ -320,7 +320,7 @@ namespace PetRescue.Data.Domains
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(userId));
                 result.Add(new FinderFormDetailModel
                 {
-                    FinderDate = finderForm.InsertedAt,
+                    FinderDate = finderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     FinderDescription = finderForm.FinderDescription,
                     FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
@@ -347,7 +347,7 @@ namespace PetRescue.Data.Domains
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
                 result.Add(new FinderFormDetailModel
                 {
-                    FinderDate = finderForm.InsertedAt,
+                    FinderDate = finderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     FinderDescription = finderForm.FinderDescription,
                     FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
@@ -373,14 +373,14 @@ namespace PetRescue.Data.Domains
             {
                 var temp = new FinderFormViewModel2
                 {
-                    FinderDate = finder.InsertedAt,
+                    FinderDate = finder.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     FinderFormStatus = finder.FinderFormStatus,
                     FinderDescription = finder.FinderDescription,
                     FinderFormId = finder.FinderFormId,
                     FinderImageUrl = finder.FinderFormImgUrl,
                     FinderFormVidUrl = finder.FinderFormVidUrl,
                     PetAttribute = finder.PetAttribute,
-                    PickerDate = finder.RescueDocument.PickerForm.InsertedAt,
+                    PickerDate = finder.RescueDocument.PickerForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     PickerFormDescription = finder.RescueDocument.PickerForm.PickerDescription,
                     PickerFormId = finder.RescueDocument.PickerForm.PickerFormId,
                     PickerFormImg = finder.RescueDocument.PickerForm.PickerImageUrl,

@@ -56,6 +56,5 @@ namespace PetRescue.Data.ConstantHelper
         public const string RETURNED_ADOPTION_BODY = "Thú cưng của bạn được yêu cầu trả lại";
         public const string VOLUNTEER_APPROVE_PICKER_BODY = "Tình nguyện viên của trung tâm bạn đã nhận một đơn cứu hộ";
         public const string VOLUNTEER_REJECT_FINDER_FOM_BODY = "Yêu cầu cứu hộ của bạn đã bị từ chối";
-        
     }
 }

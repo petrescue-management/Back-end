@@ -227,7 +227,7 @@ namespace PetRescue.Data.Domains
                             BreedName = petProfile.PetBreed.PetBreedName,
                             Gender = petProfile.PetGender,
                             ImageUrl = petProfile.PetImgUrl,
-                            UpdatedAt = petProfile.UpdatedAt
+                            UpdatedAt = petProfile.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM)
                         });
                     }
                 }
@@ -245,7 +245,7 @@ namespace PetRescue.Data.Domains
                             BreedName = petProfile.PetBreed.PetBreedName,
                             Gender = petProfile.PetGender,
                             ImageUrl = petProfile.PetImgUrl,
-                            UpdatedAt = petProfile.UpdatedAt
+                            UpdatedAt = petProfile.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM)
                         });
                     }
                 }
@@ -296,10 +296,10 @@ namespace PetRescue.Data.Domains
                         HaveChildren = form.HaveChildren,
                         HavePet = form.HavePet,
                         HouseType = form.HouseType,
-                        InsertedAt = form.InsertedAt,
+                        InsertedAt = form.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                         InsertedBy = form.InsertedBy,
                         Job = form.Job,
-                        UpdatedAt = form.UpdatedAt,
+                        UpdatedAt = form.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                         UpdatedBy = form.UpdatedBy,
                         UserName = form.UserName,
                         Phone = form.Phone,
@@ -323,10 +323,10 @@ namespace PetRescue.Data.Domains
                         HaveChildren = form.HaveChildren,
                         HavePet = form.HavePet,
                         HouseType = form.HouseType,
-                        InsertedAt = form.InsertedAt,
+                        InsertedAt = form.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                         InsertedBy = form.InsertedBy,
                         Job = form.Job,
-                        UpdatedAt = form.UpdatedAt,
+                        UpdatedAt = form.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                         UpdatedBy = form.UpdatedBy,
                         UserName = form.UserName,
                         Phone = form.Phone,
@@ -339,12 +339,11 @@ namespace PetRescue.Data.Domains
         {
             var petProfileRepo = uow.GetService<IPetProfileRepository>();
             var query = petProfileRepo.Get();
-            int totalPage = 0;
-            if (limit > -1)
+            if (limit == 0)
             {
-                totalPage = query.Count() / limit;
+                limit = 1;
             }
-            return query.GetData(filter, page, limit, totalPage, fields);
+            return query.GetData(filter, page, limit, fields);
         }
         #region GET PET BY TYPE NAME
         public List<GetPetByTypeNameModel> GetPetByTypeName(PetProfileFilter filter)
@@ -387,7 +386,7 @@ namespace PetRescue.Data.Domains
                         PetProfileDescription = petProfile.PetProfileDescription,
                         CenterId = petProfile.CenterId,
                         InsertedBy = petProfile.InsertedBy,
-                        InsertedAt = petProfile.InsertedAt,
+                        InsertedAt = petProfile.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                         CenterName = center.CenterName,
                         CenterAddress = center.Address
                     });
@@ -417,7 +416,7 @@ namespace PetRescue.Data.Domains
                 var fullName = currentUser.UserProfile.LastName + " "+currentUser.UserProfile.FirstName;
                 var pickerForm = new PickerFormViewModel
                 {
-                    PickerDate = rescueDocument.PickerForm.InsertedAt,
+                    PickerDate = rescueDocument.PickerForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     PickerDescription = rescueDocument.PickerForm.PickerDescription,
                     PickerImageUrl = rescueDocument.PickerForm.PickerImageUrl,
                     PickerName = fullName,
@@ -426,7 +425,7 @@ namespace PetRescue.Data.Domains
                 fullName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
                 var finderForm = new FinderFormViewModel
                 {
-                    FinderDate = rescueDocument.FinderForm.InsertedAt,
+                    FinderDate = rescueDocument.FinderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     FinderDescription = rescueDocument.FinderForm.FinderDescription,
                     FinderImageUrl = rescueDocument.FinderForm.FinderFormImgUrl,
                     FinderName = fullName,
@@ -442,7 +441,7 @@ namespace PetRescue.Data.Domains
                         Weight = track.Weight,
                         Description = track.Description,
                         ImageUrl = track.PetTrackingImgUrl,
-                        InsertAt = track.InsertedAt,
+                        InsertAt = track.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                         IsSterilized = track.IsSterilized,
                         IsVaccinated = track.IsVaccinated,
                         PetTrackingId = track.PetTrackingId
@@ -454,7 +453,7 @@ namespace PetRescue.Data.Domains
                 result.PetProfile = new PetProfileModel
                 {
                     CenterId = petProfile.CenterId,
-                    InsertedAt = petProfile.InsertedAt,
+                    InsertedAt = petProfile.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     InsertedBy = petProfile.InsertedBy,
                     PetAge = petProfile.PetAge,
                     PetBreedId = petProfile.PetBreedId,
@@ -489,7 +488,7 @@ namespace PetRescue.Data.Domains
                             Weight = track.Weight,
                             Description = track.Description,
                             ImageUrl = track.PetTrackingImgUrl,
-                            InsertAt = track.InsertedAt,
+                            InsertAt = track.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                             IsSterilized = track.IsSterilized,
                             IsVaccinated = track.IsVaccinated,
                             PetTrackingId = track.PetTrackingId
@@ -499,7 +498,7 @@ namespace PetRescue.Data.Domains
                     result.PetProfile = new PetProfileModel
                     {
                         CenterId = petProfile.CenterId,
-                        InsertedAt = petProfile.InsertedAt,
+                        InsertedAt = petProfile.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                         InsertedBy = petProfile.InsertedBy,
                         PetAge = petProfile.PetAge,
                         PetBreedId = petProfile.PetBreedId,

@@ -74,13 +74,13 @@ namespace PetRescue.WebApi.Controllers
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
         [Route("api/get-adoption-by-centerid")]
-        public IActionResult GetAdoptionByCenterId()
+        public IActionResult GetAdoptionByCenterId([FromQuery] int page = 0, [FromQuery] int limit = -1)
         {
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _domain = _uow.GetService<AdoptionDomain>();
-                var result = _domain.GetListAdoptionByCenterId(Guid.Parse(currentCenterId));
+                var result = _domain.GetListAdoptionByCenterId(Guid.Parse(currentCenterId), page, limit);
                 return Success(result);
             }
             catch (Exception ex)
