@@ -24,13 +24,13 @@ namespace PetRescue.WebApi.Controllers
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
         [Route("api/get-list-pet-document")]
-        public IActionResult GetListRescueDocumentByCenterId()
+        public IActionResult GetListRescueDocumentByCenterId([FromQuery] int page = 0, [FromQuery] int limit = -1)
         {
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _domain = _uow.GetService<RescueDocumentDomain>();
-                var result = _domain.GetListRescueDocumentByCenterId(Guid.Parse(currentCenterId));
+                var result = _domain.GetListRescueDocumentByCenterId(Guid.Parse(currentCenterId),page, limit);
                 return Success(result);
             }
             catch (Exception e)
@@ -98,7 +98,12 @@ namespace PetRescue.WebApi.Controllers
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var _domain = _uow.GetService<RescueDocumentDomain>();
                 var result = _domain.Edit(model, Guid.Parse(currentUserId));
-                return Success(result);
+                if (result)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+                
             }
             catch (Exception e)
             {

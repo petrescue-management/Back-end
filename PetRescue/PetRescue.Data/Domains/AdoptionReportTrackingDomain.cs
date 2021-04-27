@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.Repositories;
+﻿using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 using System;
@@ -42,7 +43,7 @@ namespace PetRescue.Data.Domains
             {
                 var userCreated = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoptionReport.InsertedBy));
                 result.AdoptionReportTrackingId = adoptionReport.AdoptionReportTrackingId;
-                result.InsertedAt = adoptionReport.InsertedAt;
+                result.InsertedAt = adoptionReport.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM);
                 result.InsertedBy = adoptionReport.InsertedBy;
                 result.Description = adoptionReport.Description;
                 result.AdoptionReportTrackingImgUrl = adoptionReport.AdoptionReportTrackingImgUrl;
@@ -63,7 +64,7 @@ namespace PetRescue.Data.Domains
                 {
 
                     AdoptionReportTrackingId = report.AdoptionReportTrackingId,
-                    InsertedAt = report.InsertedAt,
+                    InsertedAt = report.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     InsertedBy = report.InsertedBy,
                     Description = report.Description,
                     AdoptionReportTrackingImgUrl = report.AdoptionReportTrackingImgUrl,

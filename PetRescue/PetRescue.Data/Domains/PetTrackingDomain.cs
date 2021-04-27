@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.Repositories;
+﻿using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 using System;
@@ -29,7 +30,7 @@ namespace PetRescue.Data.Domains
                     IsSterilized = result.IsSterilized,
                     IsVaccinated = result.IsVaccinated,
                     Weight = result.Weight,
-                    InsertAt = result.InsertedAt,
+                    InsertAt = result.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                     PetTrackingId = result.PetTrackingId,
                     Author = user.UserProfile.LastName + " " + user.UserProfile.FirstName
                 };
@@ -43,7 +44,7 @@ namespace PetRescue.Data.Domains
             {
                 Description = s.Description,
                 ImageUrl = s.PetTrackingImgUrl,
-                InsertAt = s.InsertedAt,
+                InsertAt = s.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                 IsSterilized = s.IsSterilized,
                 IsVaccinated = s.IsVaccinated,
                 PetTrackingId = s.PetTrackingId,
@@ -61,7 +62,7 @@ namespace PetRescue.Data.Domains
             {
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petTracking.InsertedBy));
                 result.Description = petTracking.Description;
-                result.InsertAt = petTracking.InsertedAt;
+                result.InsertAt = petTracking.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM);
                 result.IsSterilized = petTracking.IsSterilized;
                 result.IsVaccinated = petTracking.IsVaccinated;
                 result.ImageUrl = petTracking.PetTrackingImgUrl;

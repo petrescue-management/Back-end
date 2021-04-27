@@ -9,11 +9,10 @@ namespace PetRescue.Data.Extensions
 {
     public static partial class PetProfileExtensions
     {
-        public static object GetData(this IQueryable<PetProfile> query, PetProfileFilter filter, int page, int limit, int total, string[] fields)
+        public static object GetData(this IQueryable<PetProfile> query, PetProfileFilter filter, int page, int limit, string[] fields)
         {
             query = query.Filter(filter);
-            query = query.Pagination(page, limit);
-            var result = query.SelectedField(fields, total);
+            var result = query.SelectedField(fields, page, limit);
             return result;
         }
         private static IQueryable<PetProfile> Filter(this IQueryable<PetProfile> query, PetProfileFilter filter)
@@ -42,20 +41,22 @@ namespace PetRescue.Data.Extensions
             {
                 query = query.Where(s => s.PetBreed.PetType.PetTypeName.Equals(filter.PetTypeName));
             }
-            return query;
+            return query.OrderByDescending(s => s.InsertedAt);
         }
-        private static IQueryable<PetProfile> Pagination(this IQueryable<PetProfile> query, int page, int limit)
+        private static object SelectedField(this IQueryable<PetProfile> query, string[] fields, int page, int limit)
         {
+            var total = 0;
+            if (limit > -1)
+            {
+                total = query.Count() / limit;
+            }
             if (limit > -1 && page >= 0)
             {
                 query = query.Skip(page * limit).Take(limit);
             }
-            return query;
-        }
-        private static object SelectedField(this IQueryable<PetProfile> query, string[] fields, int total)
-        {
             var models = query.ToList();
             var listResult = new List<Dictionary<string, object>>();
+            
             foreach (var model in models)
             {
                 var obj = new Dictionary<string, object>();

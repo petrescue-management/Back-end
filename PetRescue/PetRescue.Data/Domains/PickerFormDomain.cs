@@ -34,7 +34,7 @@ namespace PetRescue.Data.Domains
                     PickerDescription = p.PickerDescription,
                     PickerImageUrl = p.PickerImageUrl,
                     InsertedBy = p.InsertedBy,
-                    InsertedAt = p.InsertedAt
+                    InsertedAt = p.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM)
                 }).ToList();
             return new SearchReturnModel
             {
