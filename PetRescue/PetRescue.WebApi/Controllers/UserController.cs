@@ -57,6 +57,26 @@ namespace PetRescue.WebApi.Controllers
             }
             
         }
+        [Authorize(Roles = RoleConstant.ADMIN)]
+        [HttpGet("get-list-of-member-profiles")]
+        public IActionResult GetListOfMemberProfile([FromQuery] int page = 0, [FromQuery] int limit = -1)
+        {
+            try
+            {
+                var _domain = _uow.GetService<UserDomain>();
+                var result = _domain.GetListProfileMember(page, limit);
+                if(result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+
+        }
         [HttpGet("get-profile-by-userid")]
         public IActionResult GetProfileByUserId (Guid userId)
         {

@@ -27,11 +27,11 @@ namespace PetRescue.Data.Domains
             var user = userRepo.Get().FirstOrDefault(u => u.UserEmail == email);
             var workingHistory = uow.GetService<IWorkingHistoryRepository>().Get().FirstOrDefault(s => s.UserId.Equals(user.UserId) && s.IsActive == true);
             var centerId = Guid.Empty;
-            if(workingHistory != null)
+            if (workingHistory != null)
             {
                 centerId = workingHistory.CenterId;
             }
-            if(user == null)
+            if (user == null)
             {
                 return new
                 {
@@ -39,16 +39,16 @@ namespace PetRescue.Data.Domains
                 };
             }
             var userProfile = userProfileRepo.FindById(user.UserId);
-            if(userProfile != null)
+            if (userProfile != null)
             {
                 var returnResult = new UserDetailModel
                 {
                     Email = user.UserEmail,
                     Id = user.UserId.ToString(),
-                    Roles = user.UserRole.Where(r=>r.IsActive).Select(r => r.Role.RoleName).ToArray(),
+                    Roles = user.UserRole.Where(r => r.IsActive).Select(r => r.Role.RoleName).ToArray(),
                     CenterId = centerId,
                     Phone = userProfile.Phone,
-                    DoB  = userProfile.Dob,
+                    DoB = userProfile.Dob,
                     FirstName = userProfile.FirstName,
                     Gender = userProfile.Gender,
                     LastName = userProfile.LastName,
@@ -58,10 +58,10 @@ namespace PetRescue.Data.Domains
                 if ((bool)user.IsBelongToCenter)
                 {
                     var center = centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId));
-                    returnResult.Center = new CenterProfileViewModel 
+                    returnResult.Center = new CenterProfileViewModel
                     {
-                    CenterAddrress = center.Address,
-                    CenterName = center.CenterName
+                        CenterAddrress = center.Address,
+                        CenterName = center.CenterName
                     };
                 }
                 return returnResult;
@@ -77,16 +77,16 @@ namespace PetRescue.Data.Domains
                 };
                 return returnResult;
             }
-            
+
         }
         public int UpdateUserProfile(UserProfileUpdateModel model)
         {
             var profileRepo = uow.GetService<IUserProfileRepository>();
             var userProfile = profileRepo.FindById(model.UserId);
-            var result = userProfile == null ? profileRepo.Create(model) 
+            var result = userProfile == null ? profileRepo.Create(model)
                 : profileRepo.Edit(userProfile, model);
             uow.saveChanges();
-            if(result != null)
+            if (result != null)
             {
                 return 1;
             }
@@ -97,15 +97,15 @@ namespace PetRescue.Data.Domains
         }
         public string AddRoleManagerToUser(UserRoleUpdateModel model, Guid insertBy)
         {
-                var userRoleDomain = uow.GetService<UserRoleDomain>();
-                var newRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName, insertBy);
-                if(newRole != null)
-                {
-                    return model.UserId.ToString();
-                }
+            var userRoleDomain = uow.GetService<UserRoleDomain>();
+            var newRole = userRoleDomain.RegistationRole(model.UserId, model.RoleName, insertBy);
+            if (newRole != null)
+            {
+                return model.UserId.ToString();
+            }
             return null;
         }
-        public List<NotificationToken> GetListDeviceTokenByRoleAndApplication(string roleName, string applicationName) 
+        public List<NotificationToken> GetListDeviceTokenByRoleAndApplication(string roleName, string applicationName)
         {
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
             var roleRepo = uow.GetService<IRoleRepository>();
@@ -116,7 +116,7 @@ namespace PetRescue.Data.Domains
             foreach (var userRole in listUserRole)
             {
                 var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(userRole.UserId) && s.ApplicationName.Equals(applicationName));
-                if(notificationToken != null)
+                if (notificationToken != null)
                 {
                     listNotificationToken.Add(notificationToken);
                 }
@@ -135,9 +135,9 @@ namespace PetRescue.Data.Domains
         {
             var userRepo = uow.GetService<IUserRepository>();
             var userRoleDomain = uow.GetService<UserRoleDomain>();
-            var currentUser = userRepo.Get().FirstOrDefault(s=> s.UserEmail.Equals(model.Email));
+            var currentUser = userRepo.Get().FirstOrDefault(s => s.UserEmail.Equals(model.Email));
             var result = "";
-            if(currentUser != null)
+            if (currentUser != null)
             {
                 //find role of User
                 var userRole = userRoleDomain.CheckRoleOfUser(new UserRoleUpdateModel
@@ -162,12 +162,12 @@ namespace PetRescue.Data.Domains
                             IsBelongToCenter = true
                         });
                         userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
-                        result =  currentUser.UserId.ToString();
+                        result = currentUser.UserId.ToString();
                     }
                 }
                 else
                 {
-                    if ((bool) !currentUser.IsBelongToCenter)
+                    if ((bool)!currentUser.IsBelongToCenter)
                     {
                         if (!userRole.IsActive)
                         {
@@ -236,7 +236,7 @@ namespace PetRescue.Data.Domains
                     catch
                     {
                         transaction.Rollback();
-                        result="This cannot create";
+                        result = "This cannot create";
                     }
                 }
             }
@@ -245,7 +245,7 @@ namespace PetRescue.Data.Domains
         public string[] GetRoleOfUser(Guid userId)
         {
             var userRepo = uow.GetService<IUserRepository>();
-            var user = userRepo.Get().FirstOrDefault(s=>s.UserId.Equals(userId));
+            var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(userId));
             if (user != null)
             {
                 return user.UserRole.Where(s => s.IsActive).Select(r => r.Role.RoleName).ToArray();
@@ -269,7 +269,7 @@ namespace PetRescue.Data.Domains
             {
                 using (var transaction = context.Database.BeginTransaction())
                 {
-                    try 
+                    try
                     {
                         var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(model.UserId));
                         userRoleDomain.Edit(userRole, new UserRoleUpdateEntityModel
@@ -278,10 +278,10 @@ namespace PetRescue.Data.Domains
                             UpdateBy = model.InsertBy
                         });
                         var workingHistory = workingHistoryRepo.Get().FirstOrDefault(s => s.UserId.Equals(currentUser.UserId) && s.RoleName.Equals(RoleConstant.VOLUNTEER) && s.IsActive == true);
-                        workingHistoryRepo.Edit(new WorkingHistoryUpdateModel 
+                        workingHistoryRepo.Edit(new WorkingHistoryUpdateModel
                         {
                             Description = model.Description,
-                            IsActive  = false,
+                            IsActive = false,
                             WorkingHistoryId = workingHistory.WorkingHistoryId
                         });
                         var notificationToken = notificationTokenDomain.DeleteNotificationByUserIdAndApplicationName(currentUser.UserId, ApplicationNameHelper.VOLUNTEER_APP);
@@ -296,24 +296,24 @@ namespace PetRescue.Data.Domains
                         transaction.Commit();
                         result = "";
                     }
-                    catch 
+                    catch
                     {
                         transaction.Rollback();
                         result = "Error";
                     }
-                } 
+                }
             }
             //uow.saveChanges();
             return result;
         }
-        public List<UserProfileViewModel> GetListProfileOfVolunter(Guid centerId) 
+        public List<UserProfileViewModel> GetListProfileOfVolunter(Guid centerId)
         {
             var userRepository = uow.GetService<IUserRepository>();
             var workingHistoryRepo = uow.GetService<IWorkingHistoryRepository>();
             var userRoleRepository = uow.GetService<IUserRoleRepository>();
             var workings = workingHistoryRepo.Get().Where(s => s.CenterId.Equals(centerId) && s.RoleName.Equals(RoleConstant.VOLUNTEER) && s.IsActive).ToList();
             var result = new List<UserProfileViewModel>();
-            foreach(var working in workings)
+            foreach (var working in workings)
             {
                 var user = userRepository.Get().FirstOrDefault(s => s.UserId.Equals(working.UserId));
                 result.Add(new UserProfileViewModel
@@ -330,6 +330,49 @@ namespace PetRescue.Data.Domains
 
             }
             return result;
+        }
+
+        public object GetListProfileMember(int page, int limit)
+        {
+            var userRepo = uow.GetService<IUserRepository>();
+            var users = userRepo.Get().Where(s => s.UserProfile != null);
+            if(users != null)
+            {
+                var total = 0;
+                if (limit == 0)
+                {
+                    limit = 1;
+                }
+                if (limit > -1)
+                {
+                    total = users.Count() / limit;
+                }
+                users = users.OrderBy(s => s.UserProfile.FirstName);
+                if (limit > -1 && page >= 0)
+                {
+                    users = users.Skip(page * limit).Take(limit);
+                }
+                var listUsers = new List<UserProfileViewModel>();
+                foreach(var user in users)
+                {
+                    listUsers.Add(new UserProfileViewModel 
+                    {
+                        Email = user.UserEmail,
+                        DoB = user.UserProfile.Dob,
+                        FirstName = user.UserProfile.FirstName,
+                        Gender = user.UserProfile.Gender,
+                        ImgUrl = user.UserProfile.ImageUrl,
+                        LastName = user.UserProfile.LastName,
+                        Phone = user.UserProfile.Phone,
+                        UserId = user.UserId
+                    });
+                }
+                var result = new Dictionary<string, object>();
+                result["totalPages"] = total;
+                result["result"] = listUsers;
+                return result;
+            }
+            return null;
         }
         public UserProfileViewModel GetProfileByUserId(Guid userId)
         {

@@ -18,4 +18,13 @@ namespace PetRescue.Data.ViewModels
         public string Description { get; set; }
         public bool IsActive { get; set; }
     }
+    public class WorkingHistoryViewModel
+    {
+        public Guid UserId { get; set; }
+        public Guid CenterId { get; set; }
+        public string Description { get; set; }
+        public string RoleName { get; set; }
+
+        public bool IsActice { get; set; }
+    }
 }
