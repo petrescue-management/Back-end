@@ -90,14 +90,6 @@ namespace PetRescue.Data.Domains
                 if(model.Status == FinderFormStatusConst.RESCUING)
                 {
                     var centerId = uow.GetService<IWorkingHistoryRepository>().Get().FirstOrDefault(s=>s.UserId.Equals(updatedBy) && s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).CenterId;
-                    await uow.GetService<NotificationTokenDomain>().NotificationForManager(path,(Guid) centerId, new Message 
-                    {
-                        Notification = new Notification
-                        {
-                            Title = NotificationTitleHelper.VOLUNTEER_APPROVE_PICKER_TITLE,
-                            Body = NotificationBodyHelper.VOLUNTEER_APPROVE_PICKER_BODY
-                        }
-                    });
                     await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
                     {
                         Notification = new Notification

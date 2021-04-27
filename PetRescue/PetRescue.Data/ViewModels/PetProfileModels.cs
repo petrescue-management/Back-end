@@ -130,4 +130,23 @@ namespace PetRescue.Data.ViewModels
 
 
     }
+
+    public class PetProfileMobile
+    {
+        public Guid PetProfileId { get; set; }
+        public Guid? PetDocumentId { get; set; }
+        public string PetName { get; set; }
+        public int PetGender { get; set; }
+        public int? PetAge { get; set; }
+        public Guid PetBreedId { get; set; }
+        public string PetBreedName { get; set; }
+        public Guid PetFurColorId { get; set; }
+        public string PetFurColorName { get; set; }
+        public string PetImgUrl { get; set; }
+        public int PetStatus { get; set; }
+        public string PetProfileDescription { get; set; }
+        public Guid CenterId { get; set; }
+        public Guid InsertedBy { get; set; }
+        public DateTime InsertedAt { get; set; }
+    }
 }
