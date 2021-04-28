@@ -131,10 +131,20 @@ namespace PetRescue.Data.Domains
             var notificationToken = notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(working.UserId) && s.ApplicationName.Equals(ApplicationNameHelper.MANAGE_CENTER_APP));
             return notificationToken;
         }
+        public string AddVolunteerToCenter(AddNewRoleModel model)
+        {
+            var result = AddUserToCenter(model);
+            if (!result.Contains("This")) {
+                uow.saveChanges();
+                return result;
+            }
+            return "";
+        }
         public string AddUserToCenter(AddNewRoleModel model)
         {
             var userRepo = uow.GetService<IUserRepository>();
             var userRoleDomain = uow.GetService<UserRoleDomain>();
+            var workingHistoryRepo = uow.GetService<WorkingHistoryRepository>();
             var currentUser = userRepo.Get().FirstOrDefault(s => s.UserEmail.Equals(model.Email));
             var result = "";
             if (currentUser != null)
@@ -240,6 +250,7 @@ namespace PetRescue.Data.Domains
                     }
                 }
             }
+            uow.saveChanges();
             return result;
         }
         public string[] GetRoleOfUser(Guid userId)
