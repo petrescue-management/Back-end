@@ -45,7 +45,8 @@ namespace PetRescue.Data.Domains
                     CenterImageUrl = c.CenterImgUrl,
                     InsertedAt = c.InsertedAt,
                     UpdatedAt = c.UpdatedAt,
-                    CountOfVolunteer = countOfVolunteer.Get().Where(h => h.CenterId.Equals(c.CenterId) && h.IsActive == true).Count(),
+                    CountOfVolunteer = countOfVolunteer.Get().Where(h => h.CenterId.Equals(c.CenterId) 
+                    && h.IsActive == true && h.RoleName.Equals(RoleConstant.VOLUNTEER)).Count(),
                     LastedDocuments = documentDomain.GetLastedRescueDocument(c.CenterId),
                 }).ToList();
             return new SearchReturnModel
