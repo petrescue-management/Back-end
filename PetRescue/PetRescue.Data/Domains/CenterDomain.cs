@@ -21,6 +21,10 @@ namespace PetRescue.Data.Domains
         {
             var records = uow.GetService<ICenterRepository>().Get().AsQueryable();
 
+            var countOfVolunteer = uow.GetService<IWorkingHistoryRepository>().Get().Count();
+
+            var documentDomain = uow.GetService<RescueDocumentDomain>();
+
             if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
                 records = records.Where(c => c.CenterName.Contains(model.Keyword));
             if (model.Status != 0)
@@ -41,7 +45,8 @@ namespace PetRescue.Data.Domains
                     CenterImageUrl = c.CenterImgUrl,
                     InsertedAt = c.InsertedAt,
                     UpdatedAt = c.UpdatedAt,
-                    
+                    CountOfVolunteer = countOfVolunteer,
+                    LastedDocuments = documentDomain.GetLastedRescueDocument(c.CenterId)
                 }).ToList();
             return new SearchReturnModel
             {

@@ -17,9 +17,9 @@ namespace PetRescue.Data.Domains
         public RescueDocumentDomain(IUnitOfWork uow) : base(uow)
         {
         }
-        public object GetListRescueDocumentByCenterId(Guid centerId,int page, int limit)
+        public object GetListRescueDocumentByCenterId(Guid centerId, int page, int limit)
         {
-            
+
             var rescueDocumentRepo = uow.GetService<IRescueDocumentRepository>();
             var userRepo = uow.GetService<IUserRepository>();
             var rescueDocuments = rescueDocumentRepo.Get().Where(s => s.CenterId.Equals(centerId));
@@ -38,7 +38,7 @@ namespace PetRescue.Data.Domains
                 rescueDocuments = rescueDocuments.Skip(page * limit).Take(limit);
             }
             var listRescueDocuments = new List<RescueDocumentModel>();
-            foreach(var rescueDocument in rescueDocuments)
+            foreach (var rescueDocument in rescueDocuments)
             {
                 var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.FinderForm.InsertedBy));
                 var finderForm = new FinderFormViewModel
@@ -84,7 +84,7 @@ namespace PetRescue.Data.Domains
                     try
                     {
                         rescueDocument = rescueDocumentRepo.Edit(rescueDocument, model);
-                        if(model.Pets != null)
+                        if (model.Pets != null)
                         {
                             foreach (var pet in model.Pets)
                             {
@@ -92,24 +92,24 @@ namespace PetRescue.Data.Domains
                             }
                         }
                         transaction.Commit();
-                    }catch(Exception ex)
+                    } catch (Exception ex)
                     {
                         transaction.Rollback();
                         throw ex;
                     }
-                }  
+                }
                 uow.saveChanges();
                 return true;
             }
             return false;
         }
-        public RescueDocumentModel GetRescueDocumentByRescueDocumentId (Guid rescueDocumentId)
+        public RescueDocumentModel GetRescueDocumentByRescueDocumentId(Guid rescueDocumentId)
         {
             var rescueDocumentRepo = uow.GetService<IRescueDocumentRepository>();
             var userRepo = uow.GetService<IUserRepository>();
             var rescueDocument = rescueDocumentRepo.Get().FirstOrDefault(s => s.RescueDocumentId.Equals(rescueDocumentId));
             var result = new RescueDocumentModel();
-            if(rescueDocument != null)
+            if (rescueDocument != null)
             {
                 var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.FinderForm.InsertedBy));
                 var finderForm = new FinderFormViewModel
@@ -136,36 +136,50 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public List<PetProfileModel> GetListPetProfileByRescueDocumentId (Guid rescueDocumentId)
+        public List<PetProfileModel> GetListPetProfileByRescueDocumentId(Guid rescueDocumentId)
         {
             var petProfileRepo = uow.GetService<IPetProfileRepository>();
             var result = new List<PetProfileModel>();
             var pets = petProfileRepo.Get().Where(s => s.RescueDocumentId.Equals(rescueDocumentId));
-            foreach(var pet in pets)
+            foreach (var pet in pets)
             {
                 result.Add(new PetProfileModel {
-                PetProfileId = pet.PetProfileId,
-                PetBreedName = pet.PetBreed.PetBreedName,
-                PetFurColorName = pet.PetFurColor.PetFurColorName,
-                PetAge = pet.PetAge,
-                PetGender = pet.PetGender,
-                PetStatus = pet.PetStatus,
-                PetImgUrl = pet.PetImgUrl,
-                PetName = pet.PetName
+                    PetProfileId = pet.PetProfileId,
+                    PetBreedName = pet.PetBreed.PetBreedName,
+                    PetFurColorName = pet.PetFurColor.PetFurColorName,
+                    PetAge = pet.PetAge,
+                    PetGender = pet.PetGender,
+                    PetStatus = pet.PetStatus,
+                    PetImgUrl = pet.PetImgUrl,
+                    PetName = pet.PetName
                 });
             }
             return result;
         }
-        public bool CreateRescueDocument(RescueDocumentCreateModel model, Guid centerId) 
+        public bool CreateRescueDocument(RescueDocumentCreateModel model, Guid centerId)
         {
             var rescueDocumentRepo = uow.GetService<IRescueDocumentRepository>();
             var result = rescueDocumentRepo.Create(model, centerId);
-            if(result != null)
+            if (result != null)
             {
                 uow.saveChanges();
                 return true;
             }
             return false;
+        }
+
+        public object GetLastedRescueDocument(Guid centerId)
+        {
+            var listDoc = uow.GetService<IRescueDocumentRepository>().Get()
+                .Where(s => s.CenterId.Equals(centerId)).Skip(0)
+                .Take(5)
+                .OrderByDescending(s => s.PickerForm.InsertedAt)
+                .Select(s => new
+                {
+                    time = s.PickerForm.InsertedAt
+                });
+
+            return listDoc;
         }
     }
 }
