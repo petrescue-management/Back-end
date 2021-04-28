@@ -139,7 +139,5 @@ namespace PetRescue.Data.ViewModels
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? Dob { get; set; }
-        public string CenterName { get; set; }
-        public string CenterAdress { get; set; }
     }
 }

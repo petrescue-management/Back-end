@@ -148,5 +148,7 @@ namespace PetRescue.Data.ViewModels
         public Guid CenterId { get; set; }
         public Guid InsertedBy { get; set; }
         public DateTime InsertedAt { get; set; }
+        public string CenterAddress { get; set; }
+        public string CenterName { get; set; }
     }
 }

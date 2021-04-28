@@ -92,7 +92,9 @@ namespace PetRescue.Data.Domains
                 PetImgUrl = form.PetProfile.PetImgUrl,
                 PetName = form.PetProfile.PetName,
                 PetProfileDescription = form.PetProfile.PetProfileDescription,
-                PetStatus = form.PetProfile.PetStatus
+                PetStatus = form.PetProfile.PetStatus,
+                CenterAddress = form.PetProfile.Center.Address,
+                CenterName = form.PetProfile.Center.CenterName
             };
             var result = new AdoptionRegistrationFormModelMobile
             {
@@ -116,8 +118,6 @@ namespace PetRescue.Data.Domains
                 UpdatedBy = form.UpdatedBy,
                 UpdatedAt = form.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                 Dob = form.Dob,
-                CenterAdress = form.PetProfile.Center.Address,
-                CenterName = form.PetProfile.Center.CenterName
             };
             return result;
         }
@@ -167,15 +167,15 @@ namespace PetRescue.Data.Domains
                         petProfileService.UpdatePetProfile(updatePetModel, updateBy);
                         uow.saveChanges();
                         ///Send mail
-                        var centerModel = new CenterViewModel
-                        {
-                            Address = form.PetProfile.Center.Address,
-                            CenterName = form.PetProfile.Center.CenterName,
-                            Email = form.PetProfile.Center.CenterNavigation.Phone,
-                            Phone = form.PetProfile.Center.Phone
-                        };
-                        MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveAdoption(centerModel, form.PetProfile.PetName, form.UserName), MailConstant.APPROVE_ADOPTION);
-                        MailExtensions.SendBySendGrid(mailArguments, null, null);
+                        //var centerModel = new CenterViewModel
+                        //{
+                        //    Address = form.PetProfile.Center.Address,
+                        //    CenterName = form.PetProfile.Center.CenterName,
+                        //    Email = form.PetProfile.Center.CenterNavigation.Phone,
+                        //    Phone = form.PetProfile.Center.Phone
+                        //};
+                        //MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveAdoption(centerModel, form.PetProfile.PetName, form.UserName), MailConstant.APPROVE_ADOPTION);
+                        //MailExtensions.SendBySendGrid(mailArguments, null, null);
                         result.Approve = new AdoptionFormModel
                         {
                             AdoptionFormId = temp.AdoptionRegistrationId,

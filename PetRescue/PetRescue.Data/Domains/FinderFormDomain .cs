@@ -136,6 +136,7 @@ namespace PetRescue.Data.Domains
             }
             else if (model.Status == FinderFormStatusConst.ARRIVED)
             {
+                var centerId = uow.GetService<IWorkingHistoryRepository>().Get().FirstOrDefault(s => s.UserId.Equals(updatedBy) && s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).CenterId;
                 await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
                 {
                     Notification = new Notification
@@ -144,10 +145,19 @@ namespace PetRescue.Data.Domains
                         Body = NotificationBodyHelper.ARRIVED_RESCUE_PET_BODY
                     }
                 });
+                await uow.GetService<NotificationTokenDomain>().NotificationForManager(path, centerId,
+                new Message
+                {
+                    Notification = new Notification
+                    {
+                        Title = NotificationTitleHelper.VOLUNTEER_ARRVING_TITLE,
+                        Body = NotificationBodyHelper.VOLUNTEER_ARRVING_BODY
+                    }
+                });
             }
             else if(model.Status == FinderFormStatusConst.DONE)
             {
-                var centerId = uow.GetService<IWorkingHistoryRepository>().Get().FirstOrDefault(s => s.UserId.Equals(updatedBy) && s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).CenterId;
+                
                 await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP,
                 new Message
                 {
@@ -155,15 +165,6 @@ namespace PetRescue.Data.Domains
                     {
                         Title = NotificationTitleHelper.DONE_RESCUE_PET_TITLE,
                         Body = NotificationBodyHelper.DONE_RESCUE_PET_BODY
-                    }
-                });
-                await uow.GetService<NotificationTokenDomain>().NotificationForManager(path, centerId,
-                new Message
-                {
-                    Notification = new Notification
-                    {
-                        Title = NotificationTitleHelper.VOLUNTEER_DONE_RESCUE_PET_TITLE,
-                        Body = NotificationBodyHelper.VOLUNTEER_DONE_RESCUE_PET_BODY
                     }
                 });
             }
