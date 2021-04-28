@@ -133,12 +133,20 @@ namespace PetRescue.Data.Domains
         }
         public string AddVolunteerToCenter(AddNewRoleModel model)
         {
+            var workingHistoryRepo = uow.GetService<WorkingHistoryRepository>();
             var result = AddUserToCenter(model);
             if (!result.Contains("This")) {
+                workingHistoryRepo.Create(new WorkingHistoryCreateModel
+                {
+                    CenterId = model.CenterId,
+                    Description = "",
+                    RoleName = RoleConstant.VOLUNTEER,
+                    UserId = Guid.Parse(result)
+                });
                 uow.saveChanges();
                 return result;
             }
-            return "";
+            return result;
         }
         public string AddUserToCenter(AddNewRoleModel model)
         {

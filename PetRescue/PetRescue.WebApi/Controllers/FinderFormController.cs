@@ -73,7 +73,7 @@ namespace PetRescue.WebApi.Controllers
                 {
                     return Success(result);
                 }
-                return BadRequest();
+                return BadRequest(result);
             }
             catch (Exception ex)
             {
