@@ -364,6 +364,7 @@ namespace PetRescue.Data.Domains
                     PetAttribute = finderForm.PetAttribute,
                     Phone = finderForm.Phone,
                     FinderFormVidUrl = finderForm.FinderFormVidUrl,
+                    CanceledReason = finderForm.CanceledReason,
                     InsertedBy = finderForm.InsertedBy
                 });
             }
