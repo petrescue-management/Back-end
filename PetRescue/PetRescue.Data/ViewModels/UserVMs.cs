@@ -135,7 +135,7 @@ namespace PetRescue.Data.ViewModels
         public string Email { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
-        public DateTime DoB { get; set; }
+        public DateTime Dob { get; set; }
         public byte Gender { get; set; }
         public string Phone { get; set; }
     }

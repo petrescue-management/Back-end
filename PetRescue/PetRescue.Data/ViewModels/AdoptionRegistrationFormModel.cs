@@ -117,5 +117,27 @@ namespace PetRescue.Data.ViewModels
         public Guid CenterId { get; set; }
         public Guid AdoptionRegistrationFormId { get; set; }
     }
-
+    public class AdoptionRegistrationFormModelMobile
+    {
+        public Guid AdoptionRegistrationId { get; set; }
+        public PetProfileMobile PetProfile { get; set; }
+        public string UserName { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public string Job { get; set; }
+        public string Address { get; set; }
+        public int HouseType { get; set; }
+        public int FrequencyAtHome { get; set; }
+        public bool HaveChildren { get; set; }
+        public int? ChildAge { get; set; }
+        public bool BeViolentTendencies { get; set; }
+        public bool HaveAgreement { get; set; }
+        public int HavePet { get; set; }
+        public int AdoptionRegistrationStatus { get; set; }
+        public Guid InsertedBy { get; set; }
+        public DateTime InsertedAt { get; set; }
+        public Guid? UpdatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? Dob { get; set; }
+    }
 }

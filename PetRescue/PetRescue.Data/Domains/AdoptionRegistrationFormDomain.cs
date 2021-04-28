@@ -73,14 +73,33 @@ namespace PetRescue.Data.Domains
         }
         #endregion
         #region GET BY ID
-        public AdoptionRegistrationFormModel GetAdoptionRegistrationFormById(Guid id)
+        public object GetAdoptionRegistrationFormById(Guid id)
         {
             var form = uow.GetService<IAdoptionRegistrationFormRepository>().GetAdoptionRegistrationFormById(id);
-            var petProfileService = uow.GetService<IPetProfileRepository>();
-            var result = new AdoptionRegistrationFormModel
+            var petProfile = new PetProfileMobile
+            {
+                CenterId = form.PetProfile.CenterId,
+                PetProfileId = form.PetProfileId,
+                InsertedAt = form.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                InsertedBy = form.InsertedBy,
+                PetAge = form.PetProfile.PetAge,
+                PetBreedId = form.PetProfile.PetBreedId,
+                PetBreedName = form.PetProfile.PetBreed.PetBreedName,
+                PetDocumentId = form.PetProfile.RescueDocumentId,
+                PetFurColorId = form.PetProfile.PetFurColorId,
+                PetFurColorName = form.PetProfile.PetFurColor.PetFurColorName,
+                PetGender = form.PetProfile.PetGender,
+                PetImgUrl = form.PetProfile.PetImgUrl,
+                PetName = form.PetProfile.PetName,
+                PetProfileDescription = form.PetProfile.PetProfileDescription,
+                PetStatus = form.PetProfile.PetStatus,
+                CenterAddress = form.PetProfile.Center.Address,
+                CenterName = form.PetProfile.Center.CenterName
+            };
+            var result = new AdoptionRegistrationFormModelMobile
             {
                 AdoptionRegistrationId = form.AdoptionRegistrationId,
-                PetProfile = petProfileService.GetPetProfileById(form.PetProfileId),
+                PetProfile = petProfile,
                 UserName = form.UserName,
                 Phone = form.Phone,
                 Email = form.Email,
@@ -95,10 +114,10 @@ namespace PetRescue.Data.Domains
                 HavePet = form.HavePet,
                 AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
                 InsertedBy = form.InsertedBy,
-                InsertedAt = form.InsertedAt,
+                InsertedAt = form.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
                 UpdatedBy = form.UpdatedBy,
-                UpdatedAt = form.UpdatedAt,
-                Dob = form.Dob
+                UpdatedAt = form.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                Dob = form.Dob,
             };
             return result;
         }
@@ -148,15 +167,15 @@ namespace PetRescue.Data.Domains
                         petProfileService.UpdatePetProfile(updatePetModel, updateBy);
                         uow.saveChanges();
                         ///Send mail
-                        var centerModel = new CenterViewModel
-                        {
-                            Address = form.PetProfile.Center.Address,
-                            CenterName = form.PetProfile.Center.CenterName,
-                            Email = form.PetProfile.Center.CenterNavigation.Phone,
-                            Phone = form.PetProfile.Center.Phone
-                        };
-                        MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveAdoption(centerModel, form.PetProfile.PetName, form.UserName), MailConstant.APPROVE_ADOPTION);
-                        MailExtensions.SendBySendGrid(mailArguments, null, null);
+                        //var centerModel = new CenterViewModel
+                        //{
+                        //    Address = form.PetProfile.Center.Address,
+                        //    CenterName = form.PetProfile.Center.CenterName,
+                        //    Email = form.PetProfile.Center.CenterNavigation.Phone,
+                        //    Phone = form.PetProfile.Center.Phone
+                        //};
+                        //MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveAdoption(centerModel, form.PetProfile.PetName, form.UserName), MailConstant.APPROVE_ADOPTION);
+                        //MailExtensions.SendBySendGrid(mailArguments, null, null);
                         result.Approve = new AdoptionFormModel
                         {
                             AdoptionFormId = temp.AdoptionRegistrationId,

@@ -49,7 +49,9 @@ namespace PetRescue.Data.Repositories
                     InsertedBy = f.InsertedBy,
                     InsertedAt = f.InsertedAt,
                     UpdatedBy = f.UpdatedBy,
-                    UpdatedAt = f.UpdatedAt
+                    UpdatedAt = f.UpdatedAt,
+                    PetProfile = f.PetProfile,
+                    Dob = f.Dob
                 }).FirstOrDefault();
             return form;   
         }

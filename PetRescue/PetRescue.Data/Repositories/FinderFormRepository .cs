@@ -15,7 +15,7 @@ namespace PetRescue.Data.Repositories
 
         FinderFormModel GetFinderFormById(Guid id);
 
-        FinderFormModel UpdateFinderFormStatus(UpdateStatusModel model, Guid updateBy);
+        FinderForm UpdateFinderFormStatus(UpdateStatusModel model, Guid updateBy);
         FinderForm CancelFinderForm(CancelViewModel model, Guid updatedBy);
 
         FinderFormModel CreateFinderForm(CreateFinderFormModel model, Guid insertedBy);
@@ -103,52 +103,16 @@ namespace PetRescue.Data.Repositories
         #region UPDATE STATUS
         private FinderForm PrepareUpdate(UpdateStatusModel model, Guid updatedBy)
         {
-            var finderForm = Get()
-                    .Where(f => f.FinderFormId.Equals(model.Id))
-                    .Select(f => new FinderForm
-                    {
-                        FinderFormId = model.Id,
-                        Lat = f.Lat,
-                        Lng = f.Lng,
-                        FinderFormImgUrl = f.FinderFormImgUrl,
-                        PetAttribute = f.PetAttribute,
-                        FinderDescription = f.FinderDescription,
-                        FinderFormVidUrl  = f.FinderFormVidUrl,
-                        CanceledReason = f.CanceledReason,
-                        FinderFormStatus = model.Status,
-                        Phone = f.Phone,
-                        InsertedBy = f.InsertedBy,
-                        InsertedAt = f.InsertedAt,
-                        UpdatedBy = updatedBy,
-                        UpdatedAt = DateTime.UtcNow
-                    }).FirstOrDefault();
+            var finderForm = Get().FirstOrDefault(f => f.FinderFormId.Equals(model.Id));
+            finderForm.UpdatedBy = updatedBy;
+            finderForm.UpdatedAt = DateTime.UtcNow;
+            finderForm.FinderFormStatus = model.Status;
             return finderForm;
         }
-       public FinderFormModel UpdateFinderFormStatus(UpdateStatusModel model, Guid updatedBy)
+       public FinderForm UpdateFinderFormStatus(UpdateStatusModel model, Guid updatedBy)
        {
             var finderForm = PrepareUpdate(model, updatedBy);
-
-            Update(finderForm);
-
-            var result = Get()
-                    .Where(f => f.FinderFormId.Equals(model.Id))
-                    .Select(f => new FinderFormModel
-                    {
-                        FinderFormId = f.FinderFormId,
-                        Lat = f.Lat,
-                        Lng = f.Lng,
-                        FinderFormImgUrl = f.FinderFormImgUrl,
-                        PetAttribute = f.PetAttribute,
-                        FinderDescription = f.FinderDescription,
-                        FinderFormStatus = model.Status,
-                        Phone = f.Phone,
-                        InsertedBy = f.InsertedBy,
-                        InsertedAt = f.InsertedAt,
-                        UpdatedAt = f.UpdatedAt,
-                        UpdatedBy = f.UpdatedBy
-                    }).FirstOrDefault();
-            
-            return result;
+            return Update(finderForm).Entity;
        }
 
         public FinderForm CancelFinderForm(CancelViewModel model, Guid updatedBy)

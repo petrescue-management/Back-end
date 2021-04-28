@@ -39,8 +39,7 @@ namespace PetRescue.Data.Domains
                 if (currentUser == null)
                 {
                     var form =volunteerRegistrationFormRepo.Create(model);
-                    var tokens = notificationTokenDomain.FindDeviceTokenByApplicationNameAndRoleNameAndCenterId(ApplicationNameHelper.MANAGE_CENTER_APP, RoleConstant.MANAGER, model.CenterId);
-                    await notificationTokenDomain.NofiticationForDeviceToken(path, tokens, message);
+                    await notificationTokenDomain.NotificationForManager(path,model.CenterId, message);
                     uow.saveChanges();
                     result = form.VolunteerRegistrationFormId.ToString();
                 }
@@ -51,8 +50,7 @@ namespace PetRescue.Data.Domains
                         if (!userRoleDomain.IsAdmin(model.Email))
                         {
                             var form = volunteerRegistrationFormRepo.Create(model);
-                            var tokens = notificationTokenDomain.FindDeviceTokenByApplicationNameAndRoleNameAndCenterId(ApplicationNameHelper.MANAGE_CENTER_APP, RoleConstant.MANAGER, model.CenterId);
-                            await notificationTokenDomain.NofiticationForDeviceToken(path, tokens, message);
+                            await notificationTokenDomain.NotificationForManager(path, model.CenterId, message);
                             uow.saveChanges();
                             result = form.VolunteerRegistrationFormId.ToString();
                         }
