@@ -69,7 +69,11 @@ namespace PetRescue.WebApi.Controllers
                 var path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = await _uow.GetService<FinderFormDomain>().UpdateFinderFormStatusAsync(model, Guid.Parse(currentUserId), path);
-                return Success(result);
+                if(result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
             }
             catch (Exception ex)
             {

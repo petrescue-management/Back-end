@@ -134,20 +134,20 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPost("create-role-volunteer-for-user")]
-        public IActionResult CreateRoleForUser([FromQuery] CreateVolunteerModel model)
+        public IActionResult CreateRoleForUser([FromBody] CreateVolunteerModel model)
         {
             try
             {
                 var _domain = _uow.GetService<UserDomain>();
                 var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _domain.AddUserToCenter(new AddNewRoleModel
+                var result = _domain.AddVolunteerToCenter(new AddNewRoleModel
                 {
                     Email = model.Email,
                     CenterId = Guid.Parse(_currentCenterId),
                     RoleName = RoleConstant.VOLUNTEER,
                     InsertBy = Guid.Parse(_currentUserId),
-                    DoB = model.DoB,
+                    DoB = model.Dob,
                     FirstName = model.FirstName,
                     Gender = model.Gender,
                     LastName = model.LastName,
