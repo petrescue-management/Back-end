@@ -14,10 +14,10 @@ using System.Threading.Tasks;
 namespace PetRescue.WebApi.Controllers
 {
     [ApiController]
-    public class PetDocumentController : BaseController
+    public class RescueDocumentController : BaseController
     {
         private readonly IHostingEnvironment _env;
-        public PetDocumentController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        public RescueDocumentController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
         {
             this._env = environment;
         }

@@ -76,7 +76,9 @@ namespace PetRescue.Data.Domains
                 PetAttribute = finderForm.PetAttribute,
                 Phone = finderForm.Phone,
                 FinderFormVidUrl = finderForm.FinderFormVideoUrl,
-                InsertedBy = finderForm.InsertedBy
+                InsertedBy = finderForm.InsertedBy,
+                CanceledReason = finderForm.CanceledReason
+                
             };
             return result;
         }
@@ -85,91 +87,91 @@ namespace PetRescue.Data.Domains
         #region UPDATE STATUS
         public async Task<object> UpdateFinderFormStatusAsync(UpdateStatusModel model, Guid updatedBy, string path)
         {
-                if (IsTaken(model, updatedBy))
+            if (IsTaken(model, updatedBy))
+            {
+
+                TransactionOptions topt = new TransactionOptions();
+                topt.IsolationLevel = System.Transactions.IsolationLevel.RepeatableRead;
+                var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(model, updatedBy);
+                using (var tran = new TransactionScope(TransactionScopeOption.Required, topt))
                 {
-
-                    TransactionOptions topt = new TransactionOptions();
-                    topt.IsolationLevel = System.Transactions.IsolationLevel.Serializable;
-                    var finderForm = uow.GetService<IFinderFormRepository>().UpdateFinderFormStatus(model, updatedBy);
                     
-                    using (var tran = new TransactionScope(TransactionScopeOption.Required, topt))
+                    uow.saveChanges();
+                    tran.Complete();
+                }
+                
+                if (model.Status == FinderFormStatusConst.RESCUING || model.Status == FinderFormStatusConst.CANCELED)
+                {
+                    if (model.Status == FinderFormStatusConst.RESCUING)
                     {
-                    
-                    //do stuff
-                    if (model.Status == FinderFormStatusConst.RESCUING || model.Status == FinderFormStatusConst.CANCELED)
+                        
+                        await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
                         {
-                        if (model.Status == FinderFormStatusConst.RESCUING)
-                        {
-                            var centerId = uow.GetService<IWorkingHistoryRepository>().Get().FirstOrDefault(s => s.UserId.Equals(updatedBy) && s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).CenterId;
-                            await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                            Notification = new Notification
                             {
-                                Notification = new Notification
-                                {
-                                    Title = NotificationTitleHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_TITLE,
-                                    Body = NotificationBodyHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY
-                                }
-                            });
-                        }
-                        string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
+                                Title = NotificationTitleHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_TITLE,
+                                Body = NotificationBodyHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY
+                            }
+                        });
+                    }
+                    string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
+                    string fileJson = File.ReadAllText(FILEPATH);
+                    if (fileJson != null)
+                    {
 
-                        string fileJson = File.ReadAllText(FILEPATH);
-                        if (fileJson != null)
+                        var objJson = JObject.Parse(fileJson);
+
+                        var notiArrary = objJson.GetValue("Notifications") as JArray;
+                        if (notiArrary.Count != 0)
                         {
-
-                            var objJson = JObject.Parse(fileJson);
-
-                            var notiArrary = objJson.GetValue("Notifications") as JArray;
-                            if (notiArrary.Count != 0)
+                            foreach (var noti in notiArrary.Children().ToList())
                             {
-                                foreach (var noti in notiArrary.Children().ToList())
+
+                                if (Guid.Parse(noti["FinderFormId"].Value<string>()).Equals(model.Id))
                                 {
+                                    notiArrary.Remove(noti);
 
-                                    if (Guid.Parse(noti["FinderFormId"].Value<string>()).Equals(model.Id))
-                                    {
-                                        notiArrary.Remove(noti);
+                                    if (notiArrary.Count == 0)
+                                        notiArrary = new JArray();
 
-                                        if (notiArrary.Count == 0)
-                                            notiArrary = new JArray();
-
-                                        string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
-                                        File.WriteAllText(FILEPATH, output);
-                                    }
-
+                                    string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
+                                    File.WriteAllText(FILEPATH, output);
                                 }
+
                             }
                         }
-
-                        if (model.Status == FinderFormStatusConst.CANCELED)
-                        {
-                            await uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, finderForm.InsertedBy,
-                           ApplicationNameHelper.USER_APP);
-                        }
                     }
-                    else if (model.Status == FinderFormStatusConst.ARRIVED)
-                        {
-                            var centerId = uow.GetService<IWorkingHistoryRepository>().Get().FirstOrDefault(s => s.UserId.Equals(updatedBy) && s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).CenterId;
-                            await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
-                            {
-                                Notification = new Notification
-                                {
-                                    Title = NotificationTitleHelper.ARRIVED_RESCUE_PET_TITLE,
-                                    Body = NotificationBodyHelper.ARRIVED_RESCUE_PET_BODY
-                                }
-                            });
-                            await uow.GetService<NotificationTokenDomain>().NotificationForManager(path, centerId,
-                            new Message
-                            {
-                                Notification = new Notification
-                                {
-                                    Title = NotificationTitleHelper.VOLUNTEER_ARRVING_TITLE,
-                                    Body = NotificationBodyHelper.VOLUNTEER_ARRVING_BODY
-                                }
-                            });
-                        }
-                        else if (model.Status == FinderFormStatusConst.DONE)
-                        {
 
-                            await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP,
+                    if (model.Status == FinderFormStatusConst.CANCELED)
+                    {
+                        await uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, finderForm.InsertedBy,
+                       ApplicationNameHelper.USER_APP);
+                    }
+                }
+                else if (model.Status == FinderFormStatusConst.ARRIVED)
+                {
+                    var centerId = uow.GetService<IWorkingHistoryRepository>().Get().FirstOrDefault(s => s.UserId.Equals(updatedBy) && s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).CenterId;
+                    await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                    {
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.ARRIVED_RESCUE_PET_TITLE,
+                            Body = NotificationBodyHelper.ARRIVED_RESCUE_PET_BODY
+                        }
+                    });
+                    await uow.GetService<NotificationTokenDomain>().NotificationForManager(path, centerId,
+                    new Message
+                    {
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.VOLUNTEER_ARRVING_TITLE,
+                            Body = NotificationBodyHelper.VOLUNTEER_ARRVING_BODY
+                        }
+                    });
+                }
+                else if (model.Status == FinderFormStatusConst.DONE)
+                {
+                    await uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP,
                             new Message
                             {
                                 Notification = new Notification
@@ -178,35 +180,29 @@ namespace PetRescue.Data.Domains
                                     Body = NotificationBodyHelper.DONE_RESCUE_PET_BODY
                                 }
                             });
-                        }
-                    //tran.Complete();
-                    tran.Dispose();
-                    uow.saveChanges();
-                    return new FinderFormModel
-                        {
-                            FinderFormId = finderForm.FinderFormId,
-                            Lat = finderForm.Lat,
-                            Lng = finderForm.Lng,
-                            FinderFormImgUrl = finderForm.FinderFormImgUrl,
-                            FinderFormVideoUrl = finderForm.FinderFormVidUrl,
-                            CanceledReason = finderForm.CanceledReason,
-                            PetAttribute = finderForm.PetAttribute,
-                            FinderDescription = finderForm.FinderDescription,
-                            FinderFormStatus = finderForm.FinderFormStatus,
-                            Phone = finderForm.Phone,
-                            InsertedBy = finderForm.InsertedBy,
-                            InsertedAt = finderForm.InsertedAt,
-                            UpdatedAt = finderForm.UpdatedAt,
-                            UpdatedBy = finderForm.UpdatedBy,
-                        };
-                   
                 }
-                    
-                }
-                else
+                return new FinderFormModel
                 {
-                    return null;
-                }
+                    FinderFormId = finderForm.FinderFormId,
+                    Lat = finderForm.Lat,
+                    Lng = finderForm.Lng,
+                    FinderFormImgUrl = finderForm.FinderFormImgUrl,
+                    FinderFormVideoUrl = finderForm.FinderFormVidUrl,
+                    CanceledReason = finderForm.CanceledReason,
+                    PetAttribute = finderForm.PetAttribute,
+                    FinderDescription = finderForm.FinderDescription,
+                    FinderFormStatus = finderForm.FinderFormStatus,
+                    Phone = finderForm.Phone,
+                    InsertedBy = finderForm.InsertedBy,
+                    InsertedAt = finderForm.InsertedAt,
+                    UpdatedAt = finderForm.UpdatedAt,
+                    UpdatedBy = finderForm.UpdatedBy,
+                };
+            }
+            else
+            {
+                return null;
+            }
         }
         public async Task<object> CancelFinderForm(CancelViewModel model, Guid updatedBy, List<string> roleName, string path)
         {
@@ -221,8 +217,8 @@ namespace PetRescue.Data.Domains
                         {
                             Notification = new Notification
                             {
-                                Title = NotificationTitleHelper.VOLUNTEER_REJECT_FINDER_FOM_TITLE,
-                                Body = NotificationBodyHelper.VOLUNTEER_REJECT_FINDER_FOM_BODY
+                                Title = NotificationTitleHelper.VOLUNTEER_REJECT_FINDER_FORM_TITLE,
+                                Body = NotificationBodyHelper.VOLUNTEER_REJECT_FINDER_FORM_BODY
                             }
                         });
                     }
@@ -344,7 +340,8 @@ namespace PetRescue.Data.Domains
                     PetAttribute = finderForm.PetAttribute,
                     Phone = finderForm.Phone,
                     FinderFormVidUrl = finderForm.FinderFormVidUrl,
-                    InsertedBy = finderForm.InsertedBy
+                    InsertedBy = finderForm.InsertedBy,
+                    CanceledReason = finderForm.CanceledReason
                 });
             }
             return result;
@@ -371,7 +368,8 @@ namespace PetRescue.Data.Domains
                     PetAttribute = finderForm.PetAttribute,
                     Phone = finderForm.Phone,
                     FinderFormVidUrl = finderForm.FinderFormVidUrl,
-                    InsertedBy = finderForm.InsertedBy
+                    InsertedBy = finderForm.InsertedBy,
+                    CanceledReason = finderForm.CanceledReason
                 });
             }
             return result;
@@ -398,7 +396,8 @@ namespace PetRescue.Data.Domains
                     PetAttribute = finderForm.PetAttribute,
                     Phone = finderForm.Phone,
                     FinderFormVidUrl = finderForm.FinderFormVidUrl,
-                    InsertedBy = finderForm.InsertedBy
+                    InsertedBy = finderForm.InsertedBy,
+                    CanceledReason = finderForm.CanceledReason
                 });
             }
             return result;
@@ -424,7 +423,7 @@ namespace PetRescue.Data.Domains
                     PickerFormDescription = finder.RescueDocument.PickerForm.PickerDescription,
                     PickerFormId = finder.RescueDocument.PickerForm.PickerFormId,
                     PickerFormImg = finder.RescueDocument.PickerForm.PickerImageUrl,
-
+                    CanceledReason = finder.CanceledReason
                 };
                 var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finder.InsertedBy));
                 temp.FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;

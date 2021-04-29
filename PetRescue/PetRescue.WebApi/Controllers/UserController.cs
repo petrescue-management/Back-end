@@ -153,7 +153,7 @@ namespace PetRescue.WebApi.Controllers
                     LastName = model.LastName,
                     Phone = model.Phone,
                 });
-                if (!result.Equals("") || !result.Contains("This"))
+                if (!result.Contains("This"))
                 {
                     return Success(result);
                 }

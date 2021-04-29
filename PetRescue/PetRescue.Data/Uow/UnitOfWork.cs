@@ -11,6 +11,7 @@ namespace PetRescue.Data.Uow
     {
         T GetService<T>();
         int saveChanges();
+        Task<int> saveChangesAsync();
     }
 
     public partial class UnitOfWork : IUnitOfWork

@@ -49,6 +49,7 @@ namespace PetRescue.Data.Domains
                     FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
                     Lat = rescueDocument.FinderForm.Lat,
                     Lng = rescueDocument.FinderForm.Lng,
+                    FinderFormVidUrl = rescueDocument.FinderForm.FinderFormVidUrl
                 };
                 currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
                 var pickerForm = new PickerFormViewModel
@@ -160,14 +161,23 @@ namespace PetRescue.Data.Domains
         {
             var rescueDocumentRepo = uow.GetService<IRescueDocumentRepository>();
             var result = rescueDocumentRepo.Create(model, centerId);
-            if (result != null)
+            if (IsValid(model.FinderFormId, model.PickerFormId))
             {
-                uow.saveChanges();
-                return true;
+                if (result != null)
+                {
+                    uow.saveChanges();
+                    return true;
+                }
             }
             return false;
         }
-
+        private bool IsValid(Guid finderFormId, Guid pickerFormId)
+        {
+            var rescueDocumentRepo = uow.GetService<IRescueDocumentRepository>();
+            var result = rescueDocumentRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(finderFormId) || s.PickerFormId.Equals(pickerFormId));
+            if (result != null) return false;
+            return true;
+        }
         public object GetLastedRescueDocument(Guid centerId)
         {
             var listDoc = uow.GetService<IRescueDocumentRepository>().Get()
