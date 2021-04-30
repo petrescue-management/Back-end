@@ -49,7 +49,6 @@ namespace PetRescue.Data.ViewModels
 
         public string CanceledReason { get; set; }
         public Guid InsertedBy { get; set; }
-        public string CanceledReason { get; set; }
     }
     public class FinderFormViewModel2
     {
