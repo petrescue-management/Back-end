@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -195,7 +196,9 @@ namespace PetRescue.Data.Repositories
                    PetImgUrl = p.PetImgUrl,
                    PetProfileId = p.PetProfileId,
                    CenterAddress = p.Center.Address,
-                   CenterName = p.Center.CenterName
+                   CenterName = p.Center.CenterName,
+                   InsertedAt = p.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                   InsertedBy = p.InsertedBy,
                }).FirstOrDefault();
             return result;
         }

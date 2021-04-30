@@ -121,6 +121,7 @@ namespace PetRescue.Data.Domains
                     FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
                     Lat = rescueDocument.FinderForm.Lat,
                     Lng = rescueDocument.FinderForm.Lng,
+                    FinderFormVidUrl = rescueDocument.FinderForm.FinderFormVidUrl
                 };
                 currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
                 var pickerForm = new PickerFormViewModel

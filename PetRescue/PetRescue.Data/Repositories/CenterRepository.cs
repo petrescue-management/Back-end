@@ -86,27 +86,11 @@ namespace PetRescue.Data.Repositories
 
         private Center PrepareUpdate(UpdateCenterModel model, Guid updateBy)
         {
-            var old_center = Get()
-              .Where(c => c.CenterId.Equals(model.CenterId))
-               .Select(c => new Center
-               {
-                   InsertedAt = c.InsertedAt
-               }).FirstOrDefault();
-
-            var update_center = new Center
-            {
-                CenterId = model.CenterId,
-                CenterName = model.CenterName,
-                Address = model.Address,
-                CenterStatus = model.CenterStatus,
-                Phone = model.Phone,
-                InsertedAt = old_center.InsertedAt,
-                UpdatedBy = updateBy,
-                UpdatedAt = DateTime.Now,
-                CenterImgUrl = old_center.CenterImgUrl
-            };
-
-            return update_center;
+            var old_center = Get().FirstOrDefault(c => c.CenterId.Equals(model.CenterId));
+            old_center.CenterStatus = model.CenterStatus;
+            old_center.UpdatedAt = DateTime.UtcNow;
+            old_center.UpdatedBy = updateBy;
+            return old_center;
         }
 
         public CenterModel UpdateCenter(UpdateCenterModel model, Guid updateBy)
