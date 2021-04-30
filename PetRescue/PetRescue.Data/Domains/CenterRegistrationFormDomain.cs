@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
@@ -116,6 +117,7 @@ namespace PetRescue.Data.Domains
             var center_registration_form_service = uow.GetService<ICenterRegistrationFormRepository>();
             var center_service = uow.GetService<ICenterRepository>();
             var userDomain = uow.GetService<UserDomain>();
+            var userRoleDomain = uow.GetService<UserRoleDomain>();
             var userRepo = uow.GetService<IUserRepository>();
             var workingHistoryRepo = uow.GetService<IWorkingHistoryRepository>();
             var form = center_registration_form_service.GetCenterRegistrationFormById(model.Id);
@@ -127,7 +129,7 @@ namespace PetRescue.Data.Domains
                 //Status == Approved
                 if (model.Status == CenterRegistrationFormStatusConst.APPROVED)
                 {
-                    var context = uow.GetService<PetRescueContext>();
+                    var context = uow.GetService<DbContext>();
                     // Make a transaction
                     using (var transaction = context.Database.BeginTransaction())
                     {
@@ -162,11 +164,19 @@ namespace PetRescue.Data.Domains
                                     UserId = newUser.UserId,
                                 };
                                 userDomain.AddRoleManagerToUser(newUserRoleUpdateModel, insertBy);
+                                userRoleDomain.RegistationRole(newUser.UserId, RoleConstant.VOLUNTEER, insertBy);
                                 workingHistoryRepo.Create(new WorkingHistoryCreateModel
                                 {
                                     CenterId = newCenter.CenterId,
                                     Description = "",
                                     RoleName = RoleConstant.MANAGER,
+                                    UserId = newUser.UserId
+                                });
+                                workingHistoryRepo.Create(new WorkingHistoryCreateModel
+                                {
+                                    CenterId = newCenter.CenterId,
+                                    Description = "",
+                                    RoleName = RoleConstant.VOLUNTEER,
                                     UserId = newUser.UserId
                                 });
                                 transaction.Commit();
@@ -191,11 +201,31 @@ namespace PetRescue.Data.Domains
                                         UserId = currentUser.UserId,
                                     };
                                     userDomain.AddRoleManagerToUser(userRoleUpdateModel, insertBy);
+                                    var userRole = userRoleDomain.CheckRoleOfUser(new UserRoleUpdateModel
+                                    {
+                                        RoleName = RoleConstant.VOLUNTEER,
+                                        UserId = currentUser.UserId
+                                    });
+                                    if(userRole != null)
+                                    {
+                                        userRoleDomain.Edit(userRole, new UserRoleUpdateEntityModel { IsActive = true, UpdateBy = insertBy });
+                                    }
+                                    else
+                                    {
+                                        userRoleDomain.RegistationRole(currentUser.UserId, RoleConstant.VOLUNTEER, insertBy);
+                                    }
                                     workingHistoryRepo.Create(new WorkingHistoryCreateModel
                                     {
                                         CenterId = newCenter.CenterId,
                                         Description = "",
                                         RoleName = RoleConstant.MANAGER,
+                                        UserId = currentUser.UserId
+                                    });
+                                    workingHistoryRepo.Create(new WorkingHistoryCreateModel
+                                    {
+                                        CenterId = newCenter.CenterId,
+                                        Description = "",
+                                        RoleName = RoleConstant.VOLUNTEER,
                                         UserId = currentUser.UserId
                                     });
                                     transaction.Commit();

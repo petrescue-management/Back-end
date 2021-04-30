@@ -431,6 +431,7 @@ namespace PetRescue.Data.Domains
                     FinderName = fullName,
                     Lat = rescueDocument.FinderForm.Lat,
                     Lng = rescueDocument.FinderForm.Lng,
+                    FinderFormVidUrl = rescueDocument.FinderForm.FinderFormVidUrl
                 };
                 var tracks = petProfile.PetTracking.ToList();
                 var list = new List<PetTrackingViewModel>();

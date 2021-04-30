@@ -61,6 +61,18 @@ namespace PetRescue.Data.ViewModels
         public string Phone { get; set; }
         public string ImgUrl { get; set; }
     }
+    public class UserProfileViewModel2
+    {
+        public string Email { get; set; }
+        public Guid UserId { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public DateTime DoB { get; set; }
+        public int Gender { get; set; }
+        public string Phone { get; set; }
+        public string ImgUrl { get; set; }
+        public DateTime DateStarted { get; set; }
+    }
     public class UserUpdateCenterModel
     {
         [JsonProperty("userId")]
