@@ -46,10 +46,10 @@ namespace PetRescue.Data.ViewModels
         public double Lng { get; set; }
         [JsonProperty("finderFormVidUrl")]
         public string FinderFormVidUrl { get; set; }
-
+        [JsonProperty("canceledReason")]
         public string CanceledReason { get; set; }
+        [JsonProperty("insertedBy")]
         public Guid InsertedBy { get; set; }
-        public string CanceledReason { get; set; }
     }
     public class FinderFormViewModel2
     {
