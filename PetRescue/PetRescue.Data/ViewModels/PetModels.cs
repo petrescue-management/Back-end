@@ -11,35 +11,30 @@ namespace PetRescue.Data.ViewModels
         public string PetName { get; set; }
         public int PetGender { get; set; }
         public int? PetAge { get; set; }
-        public double Weight { get; set; }
         public string Description { get; set; }
         public Guid PetBreedId { get; set; }
         public string PetBreedName { get; set; }
         public Guid PetFurColorId { get; set; }
         public string PetFurColorName { get; set; }
-        public bool IsVaccinated { get; set; }
-        public bool IsSterilized { get; set; }
+
         public int PetStatus { get; set; }
         public Guid CenterId { get; set; }
+        public string ImgUrl { get; set; }
     }
     public class PetFilter
     {
-        [JsonProperty("pet-id")]
+        [JsonProperty("petId")]
         public Guid PetId { get; set; }
-        [JsonProperty("center-id")]
+        [JsonProperty("centerId")]
         public Guid CenterId { get; set; }
-        [JsonProperty("pet-status")]
+        [JsonProperty("petStatus")]
         public int PetStatus { get; set; }
-        [JsonProperty("pet-type-name")]
+        [JsonProperty("petTypeName")]
         public string PetTypeName { get; set; }
-        [JsonProperty("pet-breed-name")]
+        [JsonProperty("petBreedName")]
         public string PetBreedName { get; set; }
-        [JsonProperty("pet-fur-color-name")]
+        [JsonProperty("petFurColorName")]
         public string PetFurColorName { get; set; }
-        //[JsonProperty("is-vaccinated")]
-        //public bool IsVaccinated { get; set; }
-        //[JsonProperty("is-sterilized")]
-        //public bool IsSterilized { get; set; }
     }
     public class PetFieldConst
     {
@@ -48,84 +43,94 @@ namespace PetRescue.Data.ViewModels
     }
     public class PetCreateModel
     {
-        [JsonProperty("pet-status")]
-        public int PetStatus { get; set; }
-        [JsonProperty("center-id")]
-        public Guid CenterId { get; set; }
-        [JsonProperty("pet-name")]
+        [JsonProperty("petStatus")]
+        public byte PetStatus { get; set; }
+        [JsonProperty("petName")]
         public string PetName { get; set; }
-        [JsonProperty("pet-gender")]
-        public int PetGender { get; set; }
-        [JsonProperty("pet-age")]
-        public int? PetAge { get; set; }
-        [JsonProperty("weight")]
-        public double Weight { get; set; }
+        [JsonProperty("petGender")]
+        public byte PetGender { get; set; }
+        [JsonProperty("petAge")]
+        public byte? PetAge { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
-        [JsonProperty("pet-breed-id")]
+        [JsonProperty("petBreedId")]
         public Guid PetBreedId { get; set; }
-        [JsonProperty("pet-fur-color-id")]
+        [JsonProperty("petFurColorId")]
         public Guid PetFurColorId { get; set; }
-        [JsonProperty("is-vaccinated")]
-        public bool IsVaccinated { get; set; }
-        [JsonProperty("is-sterilized")]
-        public bool IsSterilized { get; set; }
+        [JsonProperty("imageUrl")]
+        public string ImageUrl { get; set; }
     }
-
     public class PetDetailModel
     {
-        [JsonProperty("pet-id")]
+        [JsonProperty("petId")]
         public Guid PetId { get; set; }
-        [JsonProperty("pet-name")]
+        [JsonProperty("petName")]
         public string PetName { get; set; }
-        [JsonProperty("pet-gender")]
-        public int PetGender { get; set; }
-        [JsonProperty("pet-age")]
-        public int? PetAge { get; set; }
-        [JsonProperty("weight")]
-        public double Weight { get; set; }
+        [JsonProperty("petGender")]
+        public byte PetGender { get; set; }
+        [JsonProperty("petAge")]
+        public byte? PetAge { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
-        [JsonProperty("pet-breed-id")]
+        [JsonProperty("petBreedId")]
         public Guid PetBreedId { get; set; }
-        [JsonProperty("pet-fur-color-id")]
+        [JsonProperty("petFurColorId")]
         public Guid PetFurColorId { get; set; }
-        [JsonProperty("is-vaccinated")]
-        public bool IsVaccinated { get; set; }
-        [JsonProperty("is-sterilized")]
-        public bool IsSterilized { get; set; }
+        [JsonProperty("imageUrl")]
+        public string ImageUrl { get; set; }
     }
     public class PetBreedCreateModel
     {
-        [JsonProperty("pet-breed-name")]
+        [JsonProperty("petBreedName")]
         public string PetBreedName { get; set; }
-        [JsonProperty("pet-type-id")]
+        [JsonProperty("petTypeId")]
         public Guid PetTypeId { get; set; }
     }
     public class PetBreedUpdateModel
     {
-        [JsonProperty("pet-breed-id")]
+        [JsonProperty("petBreedId")]
         public Guid PetBreedId { get; set; }
-        [JsonProperty("pet-breed-name")]
+        [JsonProperty("petBreedName")]
         public string PetBreedName { get; set; }
-        [JsonProperty("pet-type-id")]
+        [JsonProperty("petTypeId")]
         public Guid PetTypeId { get; set; }
     }
     public class PetFurColorCreateModel
     {
-        [JsonProperty("pet-fur-color-name")]
+        [JsonProperty("petFurColorName")]
         public string PetFurColorName { get; set; }
-        [JsonProperty("pet-type-id")]
-        public Guid PetTypeId { get; set; }
     }
     public class PetFurColorUpdateModel
     {
-        [JsonProperty("pet-fur-color-id")]
+        [JsonProperty("petFurColorId")]
         public Guid PetFurColorId { get; set; }
-        [JsonProperty("pet-fur-color-name")]
+        [JsonProperty("petFurColorName")]
         public string PetFurColorName { get; set; }
-        [JsonProperty("pet-type-id")]
-        public Guid PetTypeId { get; set; }
+
+    }
+    public class PetAdoptionRegisterFormModel
+    {
+        [JsonProperty("petId")]
+        public Guid PetId { get; set; }
+        [JsonProperty("count")]
+        public int Count { get; set; }
+        [JsonProperty("petName")]
+        public string PetName { get; set; }
+        [JsonProperty("gender")]
+        public int Gender { get; set; }
+        [JsonProperty("age")]
+        public int Age { get; set; }
+        [JsonProperty("breedName")]
+        public string BreedName { get; set; }
+        [JsonProperty("imgUrl")]
+        public string ImageUrl { get; set; }
+        [JsonProperty("updatedAt")]
+        public DateTime? UpdatedAt { get; set; }
+    }
+    public class PetMobileViewModel
+    {
+        public string TypeName { get; set; }
+        public List<PetModel> ListPet { get; set; }
     }
 }
 

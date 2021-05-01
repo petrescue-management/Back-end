@@ -1,4 +1,7 @@
-﻿using PetRescue.Data.ConstantHelper;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
@@ -19,22 +22,27 @@ namespace PetRescue.Data.Domains
         #region SEARCH
         public SearchReturnModel SearchCenterRegistrationForm(SearchModel model)
         {
-            var records = uow.GetService<ICenterRegistrationFormRepository>().Get()
-                .Where(f => f.CenterRegistrationStatus == CenterRegistrationFormStatusConst.PROCESSING);
+            var records = uow.GetService<ICenterRegistrationFormRepository>().Get().AsQueryable();
+            if (model.Status != 0)
+                records = records.Where(f => f.CenterRegistrationStatus.Equals(model.Status));
 
             List<CenterRegistrationFormModel> result = records
-                .Skip((model.PageIndex - 1) * 10)
-                .Take(10)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
                 .Select(f => new CenterRegistrationFormModel
                 {
                     CenterRegistrationId = f.CenterRegistrationId,
                     CenterName = f.CenterName,
                     Email = f.Email,
                     Phone = f.Phone,
+                    Lat = f.Lat,
+                    Lng = f.Lng,
                     CenterAddress = f.CenterAddress,
                     Description = f.Description,
                     CenterRegistrationStatus = f.CenterRegistrationStatus,
-                    UpdatedAt = f.UpdatedAt
+                    UpdatedAt = f.UpdatedAt,
+                    ImageUrl = f.ImageUrl,
+                    InsertedAt = f.InsertedAt
                 }).ToList();
             return new SearchReturnModel
             {
@@ -67,7 +75,7 @@ namespace PetRescue.Data.Domains
 
             //check Duplicate email
             var check_dup_email = user_service.Get()
-               .Where(u => u.UserEmail.Equals(model.Email));
+               .Where(u => u.IsBelongToCenter == true && u.UserEmail.Contains(model.Email));
 
             //check Duplicate address
             var check_dup_address = center_service.Get()
@@ -98,79 +106,181 @@ namespace PetRescue.Data.Domains
                 return "This address is already registered !";
 
             var form = uow.GetService<ICenterRegistrationFormRepository>().CreateCenterRegistrationForm(model);
+            uow.saveChanges();
             return form.CenterRegistrationId.ToString();
         }
         #endregion
 
         #region PROCESS FORM
-        public CenterRegistrationFormModel ProcressCenterRegistrationForm(UpdateStatusModel model)
+        public string ProcressCenterRegistrationForm(UpdateRegistrationCenter model, Guid insertBy)
         {
             var center_registration_form_service = uow.GetService<ICenterRegistrationFormRepository>();
             var center_service = uow.GetService<ICenterRepository>();
             var userDomain = uow.GetService<UserDomain>();
+            var userRoleDomain = uow.GetService<UserRoleDomain>();
             var userRepo = uow.GetService<IUserRepository>();
-            var form = center_registration_form_service.GetCenterRegistrationFormById(model.Id);
-            if(form != null)
+            var workingHistoryRepo = uow.GetService<IWorkingHistoryRepository>();
+            var form = center_registration_form_service.Get().FirstOrDefault(s => s.CenterRegistrationId.Equals(model.Id));
+            var result = "";
+            //Find user
+            var currentUser = userRepo.FindById(form.Email);
+            if (form != null)
             {
                 //Status == Approved
                 if (model.Status == CenterRegistrationFormStatusConst.APPROVED)
                 {
-                    var context = uow.GetService<PetRescueContext>();
+                    var context = uow.GetService<DbContext>();
+                    // Make a transaction
                     using (var transaction = context.Database.BeginTransaction())
-                    {             
+                    {
                         try
                         {
                             //update Status
-                            form = center_registration_form_service.UpdateCenterRegistrationStatus(model);
-
+                            form = center_registration_form_service.UpdateCenterRegistrationStatus(form, model, insertBy);
                             //create Center
                             var newCenter = center_service.CreateCenter(new CreateCenterModel
                             {
                                 Address = form.CenterAddress,
                                 CenterName = form.CenterName,
                                 Phone = form.Phone,
-                            });
-
-                            //Create Model for create new User
-                            var newCreateUserModel = new UserCreateModel
+                                Lng = form.Lng,
+                                Lat = form.Lat,
+                                ImageUrl = form.ImageUrl,
+                                CenterId = form.CenterRegistrationId
+                            }, insertBy);
+                            if (currentUser == null) //not found user
                             {
-                                Email = form.Email,
-                                CenterId = newCenter.CenterId,
-                                isBelongToCenter = UserConst.BELONG,
-                            };
-                            // create new Account
-                            var newUser = userRepo.CreateUserByModel(newCreateUserModel);
-
-
-                            //Create Model for add Role to User
-                            var newUserRoleUpdateModel = new UserRoleUpdateModel
+                                //Create Model for create new User
+                                var newCreateUserModel = new UserCreateModel
+                                {
+                                    Email = form.Email,
+                                    IsBelongToCenter = UserConst.BELONG,
+                                };
+                                // create new Role for newUser
+                                var newUser = userRepo.CreateUserByModel(newCreateUserModel);
+                                var newUserRoleUpdateModel = new UserRoleUpdateModel
+                                {
+                                    CenterId = newCenter.CenterId,
+                                    RoleName = RoleConstant.MANAGER,
+                                    UserId = newUser.UserId,
+                                };
+                                userDomain.AddRoleManagerToUser(newUserRoleUpdateModel, insertBy);
+                                userRoleDomain.RegistationRole(newUser.UserId, RoleConstant.VOLUNTEER, insertBy);
+                                workingHistoryRepo.Create(new WorkingHistoryCreateModel
+                                {
+                                    CenterId = newCenter.CenterId,
+                                    Description = "",
+                                    RoleName = RoleConstant.MANAGER,
+                                    UserId = newUser.UserId
+                                });
+                                workingHistoryRepo.Create(new WorkingHistoryCreateModel
+                                {
+                                    CenterId = newCenter.CenterId,
+                                    Description = "",
+                                    RoleName = RoleConstant.VOLUNTEER,
+                                    UserId = newUser.UserId
+                                });
+                                transaction.Commit();
+                                result = newCenter.CenterId.ToString();
+                            }
+                            else // found user
                             {
-                                CenterId = newCenter.CenterId,
-                                RoleName = RoleConstant.Manager,
-                                UserId = newUser.UserId,
+                                if ((bool)!currentUser.IsBelongToCenter)
+                                {
+                                    //Create Model for update user
+                                    var userUpdateModel = new UserUpdateModel
+                                    {
+                                        IsBelongToCenter = UserConst.BELONG,
+                                        //CenterId = newCenter.CenterId
+                                    };
+                                    currentUser = userRepo.UpdateUserModel(currentUser, userUpdateModel);
+                                    //Create new Role for currentUser
+                                    var userRoleUpdateModel = new UserRoleUpdateModel
+                                    {
+                                        CenterId = newCenter.CenterId,
+                                        RoleName = RoleConstant.MANAGER,
+                                        UserId = currentUser.UserId,
+                                    };
+                                    userDomain.AddRoleManagerToUser(userRoleUpdateModel, insertBy);
+                                    var userRole = userRoleDomain.CheckRoleOfUser(new UserRoleUpdateModel
+                                    {
+                                        RoleName = RoleConstant.VOLUNTEER,
+                                        UserId = currentUser.UserId
+                                    });
+                                    if(userRole != null)
+                                    {
+                                        userRoleDomain.Edit(userRole, new UserRoleUpdateEntityModel { IsActive = true, UpdateBy = insertBy });
+                                    }
+                                    else
+                                    {
+                                        userRoleDomain.RegistationRole(currentUser.UserId, RoleConstant.VOLUNTEER, insertBy);
+                                    }
+                                    workingHistoryRepo.Create(new WorkingHistoryCreateModel
+                                    {
+                                        CenterId = newCenter.CenterId,
+                                        Description = "",
+                                        RoleName = RoleConstant.MANAGER,
+                                        UserId = currentUser.UserId
+                                    });
+                                    workingHistoryRepo.Create(new WorkingHistoryCreateModel
+                                    {
+                                        CenterId = newCenter.CenterId,
+                                        Description = "",
+                                        RoleName = RoleConstant.VOLUNTEER,
+                                        UserId = currentUser.UserId
+                                    });
+                                    transaction.Commit();
+                                }
+                                else
+                                {
+                                    result = "this email is belong another center";
+                                    return result;
+                                }
+                            }
+                            var viewModel = new CenterRegistrationFormViewModel
+                            {
+                                CenterName = form.CenterName,
+                                Email = form.Email
                             };
-                            userDomain.AddRoleManagerToUser(newUserRoleUpdateModel);
-                            transaction.Commit();
-                            return form;
+                            uow.saveChanges();
+                            MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationCenter(viewModel), MailConstant.APPROVE_REGISTRATION_FORM);
+                            MailExtensions.SendBySendGrid(mailArguments, null, null);
+                            result = newCenter.CenterId.ToString();
                         }
                         catch (Exception e)
                         {
                             transaction.Rollback();
                             throw (e);
                         }
-
                     }
-                  
                 }
-
                 //Status = Rejected
                 else if (model.Status == CenterRegistrationFormStatusConst.REJECTED)
                 {
-                    form = center_registration_form_service.UpdateCenterRegistrationStatus(model);
-                    return form;
+                    form = center_registration_form_service.UpdateCenterRegistrationStatus(form, model, insertBy);
+                    uow.saveChanges();
+                    var error = "";
+                    if (model.IsAddress)
+                        error += ErrorConst.ErrorAddress;
+                    if (model.IsImage)
+                        error += ErrorConst.ErrorImage;
+                    if (model.IsMail)
+                        error += ErrorConst.ErrorEmail;
+                    if (model.IsPhone)
+                        error += ErrorConst.ErrorPhone;
+                    if (model.AnotherReason != null)
+                        error += "<li><p>" + model.AnotherReason + "</p></li>";
+                    var viewModel = new CenterRegistrationFormViewModel
+                    {
+                        CenterName = form.CenterName,
+                        Email = form.Email
+                    };
+                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationCenter(viewModel, error), MailConstant.REJECT_REGISTRATION_FORM);
+                    MailExtensions.SendBySendGrid(mailArguments, null, null);
+                    result = form.CenterRegistrationId.ToString();
                 }
             }
-            return null;
+            return result;
         }
         #endregion
     }

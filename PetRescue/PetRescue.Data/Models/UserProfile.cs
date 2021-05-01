@@ -9,9 +9,11 @@ namespace PetRescue.Data.Models
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public DateTime Dob { get; set; }
-        public string Address { get; set; }
         public string Phone { get; set; }
-        public bool Gender { get; set; }
+        public int Gender { get; set; }
+        public string ImageUrl { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? InsertedAt { get; set; }
 
         public virtual User User { get; set; }
     }

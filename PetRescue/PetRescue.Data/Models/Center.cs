@@ -7,19 +7,26 @@ namespace PetRescue.Data.Models
     {
         public Center()
         {
-            Pet = new HashSet<Pet>();
+            PetProfile = new HashSet<PetProfile>();
+            VolunteerRegistrationForm = new HashSet<VolunteerRegistrationForm>();
+            WorkingHistory = new HashSet<WorkingHistory>();
         }
 
         public Guid CenterId { get; set; }
         public string CenterName { get; set; }
+        public double? Lat { get; set; }
+        public double? Lng { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
+        public string CenterImgUrl { get; set; }
         public int CenterStatus { get; set; }
-        public Guid InsertBy { get; set; }
-        public DateTime InsertAt { get; set; }
-        public Guid? UpdateBy { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public DateTime InsertedAt { get; set; }
+        public Guid? UpdatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
-        public virtual ICollection<Pet> Pet { get; set; }
+        public virtual CenterRegistrationForm CenterNavigation { get; set; }
+        public virtual ICollection<PetProfile> PetProfile { get; set; }
+        public virtual ICollection<VolunteerRegistrationForm> VolunteerRegistrationForm { get; set; }
+        public virtual ICollection<WorkingHistory> WorkingHistory { get; set; }
     }
 }

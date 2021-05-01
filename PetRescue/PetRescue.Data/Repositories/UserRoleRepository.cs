@@ -12,57 +12,40 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IUserRoleRepository: IBaseRepository<UserRole, string>
     {
-        UserRole CreateRoleForUser(Guid userId, Guid roleId);
-        UserRole PrepareCreateRole(Guid userId, Guid roleId);
-
-        UserRole FindUserRoleByUserRoleUpdateModel(UserRoleUpdateModel model);
-
-        UserRole Edit(UserRole userRole);
+        UserRole CreateRoleForUser(Guid userId, Guid roleId, Guid insertBy);
+        UserRole PrepareCreateRole(Guid userId, Guid roleId, Guid insertBy);
+        UserRole Edit(UserRole entity, UserRoleUpdateEntityModel model);
     }
     public partial class UserRoleRepository : BaseRepository<UserRole,string>, IUserRoleRepository
     {
         public UserRoleRepository(DbContext context) : base(context)
         {
         }
-        public UserRole CreateRoleForUser(Guid userId, Guid roleId)
+        public UserRole CreateRoleForUser(Guid userId, Guid roleId, Guid insertBy)
         {
-            var userRole = PrepareCreateRole(userId, roleId);
+            var userRole = PrepareCreateRole(userId, roleId, insertBy);
             Create(userRole);
             return userRole;
         }
 
-        public UserRole Edit(UserRole userRole)
+        public UserRole Edit(UserRole entity,  UserRoleUpdateEntityModel model)
         {
-            //userRole.UpdateAt = DateTime.Now;
-            //userRole.UpdateBy = userRole.UpdateBy;
-            //userRole.IsActived = userRole.IsActived == true ? false : true;
-            return userRole;
+            entity.IsActive = model.IsActive;
+            return Update(entity).Entity;
         }
-
-        public UserRole FindUserRoleByUserRoleUpdateModel(UserRoleUpdateModel model)
+        public UserRole PrepareCreateRole(Guid userId, Guid roleId, Guid insertBy)
         {
-            if(model.CenterId != null && model.RoleName != null && model.UserId != null)
+
+            UserRole userRole = new UserRole
             {
-                return Get().FirstOrDefault(u => u.Role.RoleName == model.RoleName && u.UserId == model.UserId && u.User.CenterId == model.CenterId);
-            }
-            return null;
-            
-        }
+                UserId = userId,
+                RoleId = roleId,
+                InsertedAt = DateTime.Now,
+                UpdatedAt = null,
 
-        public UserRole PrepareCreateRole(Guid userId, Guid roleId)
-        {
-            
-                UserRole userRole = new UserRole
-                {
-                    UserId = userId,
-                    RoleId = roleId,
-                    InsertedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
-                    InsertedAt = DateTime.Now,
-                    UpdateAt = null,
-                    UpdateBy = null
-                };
-                return userRole;
-            
+                IsActive = true
+            };
+            return userRole; 
         }
        
     }

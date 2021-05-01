@@ -12,14 +12,19 @@ namespace PetRescue.Data.ViewModels
     }
     public class PetTypeCreateModel
     {
-        [JsonProperty("pet-type-name")]
+        [JsonProperty("petTypeName")]
         public string PetTypeName { get; set; }
     }
     public class PetTypeUpdateModel
     {
-        [JsonProperty("pet-type-id")]
+        [JsonProperty("petTypeId")]
         public Guid PetTypeId { get; set; }
-        [JsonProperty("pet-type-name")]
+        [JsonProperty("petTypeName")]
         public string PetTypeName { get; set; }
+    }
+    public class PetTypeDetailModel
+    {
+        public PetTypeModel TypeModel { get; set; }
+        public List<PetBreedDetailModel> ListPetBreed { get; set; }
     }
 }

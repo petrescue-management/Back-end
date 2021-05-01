@@ -1,4 +1,5 @@
-﻿using PetRescue.Data.Models;
+﻿using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
@@ -14,36 +15,42 @@ namespace PetRescue.Data.Domains
         public UserRoleDomain(IUnitOfWork uow) : base(uow)
         {
         }
-        public UserRole RegistationRole(Guid userId, string roleName)
+        public UserRole RegistationRole(Guid userId, string roleName, Guid insertBy)
         {
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
             var roleRepo = uow.GetService<IRoleRepository>();
             var role = roleRepo.FindRoleByName(roleName);
             if(role != null) 
-                return userRoleRepo.CreateRoleForUser(userId, role.RoleId);
+                return userRoleRepo.CreateRoleForUser(userId, role.RoleId, insertBy);
             return null;
         }
-        public UserRole EnableRole(UserRoleUpdateModel model)
-        {
-            var userRoleRepo = uow.GetService<IUserRoleRepository>();
-            var userRole = userRoleRepo.FindUserRoleByUserRoleUpdateModel(model);
-            if(userRole != null)
-            {
-                var newUserRole = userRoleRepo.Edit(userRole);
-                return userRoleRepo.Update(newUserRole).Entity;
-            }
-            return null;
-        }
-        public UserRole IsExisted(UserRoleUpdateModel model)
+        public UserRole CheckRoleOfUser(UserRoleUpdateModel model) 
         {
             var userRoleRepo = uow.GetService<IUserRoleRepository>();
             var roleRepo = uow.GetService<IRoleRepository>();
             var role = roleRepo.FindRoleByName(model.RoleName);
-            if (role != null)
+            if(role != null)
             {
-                return userRoleRepo.FindUserRoleByUserRoleUpdateModel(model);
+                return userRoleRepo.Get().FirstOrDefault(s => s.RoleId.Equals(role.RoleId) && s.UserId.Equals(model.UserId));
             }
             return null;
+
+        }
+        public UserRole Edit(UserRole entity,UserRoleUpdateEntityModel model)
+        {
+            var userRoleRepo = uow.GetService<IUserRoleRepository>();
+            return userRoleRepo.Edit(entity, model);
+        }
+        public bool IsAdmin (string email)
+        {
+            var userRoleRepo = uow.GetService<IUserRoleRepository>();
+            var currentUser = userRoleRepo.Get().FirstOrDefault(s => s.User.UserEmail.Equals(email) && s.Role.RoleName.Equals(RoleConstant.ADMIN));
+            if(currentUser != null)
+            {
+                return true;
+            }
+            return false;
+
         }
  
     }

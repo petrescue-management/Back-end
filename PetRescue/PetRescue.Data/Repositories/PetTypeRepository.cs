@@ -27,17 +27,13 @@ namespace PetRescue.Data.Repositories
         public PetType Create(PetTypeCreateModel model)
         {
             var newPetType = PrepareCreate(model);
-            Create(newPetType);
-            return newPetType;
+            return Create(newPetType).Entity;
         }
 
         public PetType Edit(PetType entity, PetTypeUpdateModel model)
         {
-           if(model.PetTypeName != null)
-            {
-                entity.PetTypeName = model.PetTypeName;
-            }
-            return entity;
+            entity.PetTypeName = model.PetTypeName;
+            return Update(entity).Entity;
         }
 
         public List<PetTypeModel> GetAllPetTypes()

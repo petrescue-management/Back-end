@@ -16,7 +16,7 @@ namespace PetRescue.Data.Repositories
 
         CenterRegistrationFormModel CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model);
 
-        CenterRegistrationFormModel UpdateCenterRegistrationStatus(UpdateStatusModel model);
+        CenterRegistrationForm UpdateCenterRegistrationStatus(CenterRegistrationForm form,UpdateRegistrationCenter model, Guid insertBy);
         
     }
     public partial class CenterRegistrationFormRepository : BaseRepository<CenterRegistrationForm, string>, ICenterRegistrationFormRepository
@@ -36,10 +36,14 @@ namespace PetRescue.Data.Repositories
                     CenterName = f.CenterName,
                     Email = f.Email,
                     Phone = f.Phone,
+                    Lat = f.Lat,
+                    Lng = f.Lng,
                     CenterAddress = f.CenterAddress,
                     Description = f.Description,
                     CenterRegistrationStatus = f.CenterRegistrationStatus,
-                    UpdatedAt = f.UpdatedAt
+                    UpdatedAt = f.UpdatedAt,
+                    ImageUrl = f.ImageUrl,
+                    InsertedAt = f.InsertedAt
                 }).FirstOrDefault();
             return result;
         }
@@ -54,13 +58,14 @@ namespace PetRescue.Data.Repositories
                 CenterName = model.CenterName,
                 Email = model.Email,
                 Phone = model.Phone,
+                Lat = model.Lat,
+                Lng = model.Lng,
                 CenterAddress = model.CenterAddress,
                 Description = model.Description,
                 CenterRegistrationStatus = 1,
-                UpdatedBy = null,
-                UpdatedAt = null
+                UpdatedAt = null,
+                ImageUrl = model.ImageUrl
             };
-
             return form;
         }
 
@@ -68,44 +73,23 @@ namespace PetRescue.Data.Repositories
         {
             var form = PrepareCreate(model);
             Create(form);
-
             var result = GetResult(form);
-
             return result;
         }
         #endregion
 
         #region UPDATE STATUS
-        private CenterRegistrationForm PrepareUpdate(UpdateStatusModel model)
+        private CenterRegistrationForm PrepareUpdate(CenterRegistrationForm form,UpdateRegistrationCenter model, Guid updateBy)
         {
-            var form = Get()
-                  .Where(r => r.CenterRegistrationId.Equals(model.Id))
-                  .Select(r => new CenterRegistrationForm
-                  {
-                      CenterRegistrationId = model.Id,
-                      CenterName = r.CenterName,
-                      Email = r.Email,
-                      Phone = r.Phone,
-                      CenterAddress = r.CenterAddress,
-                      Description = r.Description,
-                      CenterRegistrationStatus = model.Status,
-                      UpdatedBy = null,
-                      UpdatedAt = null
-                  }).FirstOrDefault();
-
+            form.CenterRegistrationStatus = model.Status;
+            form.UpdatedAt = DateTime.UtcNow;
             return form;
         }
 
-        public CenterRegistrationFormModel UpdateCenterRegistrationStatus(UpdateStatusModel model)
+        public CenterRegistrationForm UpdateCenterRegistrationStatus(CenterRegistrationForm form, UpdateRegistrationCenter model, Guid updateBy)
         {
-
-            var form = PrepareUpdate(model);
-
-            Update(form);
-
-            var result = GetResult(form);
-
-            return result;
+            form = PrepareUpdate(form,model, updateBy);
+            return Update(form).Entity;
         }
         #endregion
 
@@ -118,10 +102,13 @@ namespace PetRescue.Data.Repositories
                 CenterName = form.CenterName,
                 Email = form.Email,
                 Phone = form.Phone,
+                Lat = form.Lat,
+                Lng = form.Lng,
                 CenterAddress = form.CenterAddress,
                 Description = form.Description,
                 CenterRegistrationStatus = form.CenterRegistrationStatus,
-                UpdatedAt = form.UpdatedAt
+                UpdatedAt = form.UpdatedAt,
+                ImageUrl = form.ImageUrl   
             };
             return result;
         }

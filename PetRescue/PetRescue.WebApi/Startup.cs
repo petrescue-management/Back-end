@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PetRescue.Data.DI;
 using PetRescue.Data.Models;
+using PetRescue.Data.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,9 +27,7 @@ namespace PetRescue.WebApi
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -89,6 +88,20 @@ namespace PetRescue.WebApi
                 });
             });
             services.AddSwaggerGenNewtonsoftSupport();
+
+            services.AddScoped<IMyScopedService, MyScopedService>();
+
+            services.AddCronJob<MyCronJob1>(c =>
+            {
+                c.TimeZoneInfo = TimeZoneInfo.Local;
+                c.CronExpression = @"* * * * *";
+            });
+
+            services.AddCronJob<MyCronJob2>(c =>
+            {
+                c.TimeZoneInfo = TimeZoneInfo.Local;
+                c.CronExpression = @"* * * * *";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -98,7 +111,6 @@ namespace PetRescue.WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
-         
             app.UseSwagger();
             app.UseSwaggerUI(s => 
             {

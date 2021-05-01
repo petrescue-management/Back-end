@@ -14,12 +14,12 @@ namespace PetRescue.Data.Repositories
 
         CenterModel GetCenterById(Guid id);
 
-        CenterModel DeleteCenter(Guid id);
+        CenterModel DeleteCenter(Guid id, Guid updatedBy);
 
 
-        CenterModel UpdateCenter(UpdateCenterModel model);
+        CenterModel UpdateCenter(UpdateCenterModel model, Guid updatedBy);
 
-        CenterModel CreateCenter(CreateCenterModel model);
+        CenterModel CreateCenter(CreateCenterModel model, Guid insertedBy);
     }
 
     public partial class CenterRepository : BaseRepository<Center, string>, ICenterRepository
@@ -38,10 +38,13 @@ namespace PetRescue.Data.Repositories
                     CenterId = c.CenterId,
                     CenterName = c.CenterName,
                     Address = c.Address,
+                    Lat = c.Lat,
+                    Long = c.Lng,
                     CenterStatus = c.CenterStatus,
                     Phone = c.Phone,
-                    InsertAt = c.InsertAt,
-                    UpdateAt = c.UpdateAt
+                    InsertedAt = c.InsertedAt,
+                    UpdatedAt = c.UpdatedAt,
+                    CenterImageUrl = c.CenterImgUrl
                 }).FirstOrDefault();
 
             return result;
@@ -49,7 +52,7 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region DELETE
-        private Center PrepareDelete(Guid id)
+        private Center PrepareDelete(Guid id, Guid updatedBy)
         {
             var center = Get()
                 .Where(c => c.CenterId.Equals(id))
@@ -59,21 +62,21 @@ namespace PetRescue.Data.Repositories
                     CenterName = c.CenterName,
                     Address = c.Address,
                     CenterStatus = CenterStatusConst.CLOSED,
+                    Lat = c.Lat,
+                    Lng = c.Lng,
                     Phone = c.Phone,
-                    InsertBy = c.InsertBy,
-                    InsertAt = c.InsertAt,
-                    UpdateBy = c.UpdateBy,
-                    UpdateAt = DateTime.Now
+                    InsertedAt = c.InsertedAt,
+                    UpdatedBy = updatedBy,
+                    UpdatedAt = DateTime.Now,
+                    CenterImgUrl = c.CenterImgUrl
                 }).FirstOrDefault();
 
             return center;
         }
-        public CenterModel DeleteCenter(Guid id)
+        public CenterModel DeleteCenter(Guid id, Guid updateBy)
         {
-            var center = PrepareDelete(id);
+            var center = PrepareDelete(id, updateBy);
             Update(center);
-
-
             var result = GetResult(center);
             return result;
         }
@@ -81,38 +84,35 @@ namespace PetRescue.Data.Repositories
 
         #region UPDATE
 
-        private Center PrepareUpdate(UpdateCenterModel model)
+        private Center PrepareUpdate(UpdateCenterModel model, Guid updateBy)
         {
-            var old_center = Get()
-              .Where(c => c.CenterId.Equals(model.CenterId))
-               .Select(c => new Center
-               {
-                   InsertBy = c.InsertBy,
-                   InsertAt = c.InsertAt
-               }).FirstOrDefault();
-
-            var update_center = new Center
+            var old_center = Get().FirstOrDefault(c => c.CenterId.Equals(model.CenterId));
+            old_center.UpdatedAt = DateTime.UtcNow;
+            old_center.UpdatedBy = updateBy;
+            if(model.CenterAddress != null)
             {
-                CenterId = model.CenterId,
-                CenterName = model.CenterName,
-                Address = model.Address,
-                CenterStatus = model.CenterStatus,
-                Phone = model.Phone,
-                InsertBy = old_center.InsertBy,
-                InsertAt = old_center.InsertAt,
-                UpdateBy = null,
-                UpdateAt = DateTime.Now
-            };
-
-            return update_center;
+                old_center.Address = model.CenterAddress;
+            }
+            if(model.CenterName != null)
+            {
+                old_center.CenterName = model.CenterName;
+            }
+            if(model.Lat != 0)
+            {
+                old_center.Lat = model.Lat;
+            }
+            if (model.Lng != 0)
+            {
+                old_center.Lng = model.Lng;
+            }
+            return old_center;
         }
 
-        public CenterModel UpdateCenter(UpdateCenterModel model)
+        public CenterModel UpdateCenter(UpdateCenterModel model, Guid updateBy)
         {
 
-            var center = PrepareUpdate(model);
+            var center = PrepareUpdate(model, updateBy);
             Update(center);
-
             var result = GetResult(center);
             return result;
         }
@@ -120,26 +120,28 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region CREATE
-        private Center PrepareCreate(CreateCenterModel model)
+        private Center PrepareCreate(CreateCenterModel model, Guid insertedBy)
         {
             var center = new Center
             {
-                CenterId = Guid.NewGuid(),
+                CenterId = model.CenterId,
                 Address = model.Address,
                 Phone = model.Phone,
                 CenterName = model.CenterName,
                 CenterStatus = CenterStatusConst.OPENNING,
-                InsertAt = DateTime.Now,
-                InsertBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
-                UpdateBy = null,
-                UpdateAt = null
+                Lat = model.Lat,
+                Lng = model.Lng,
+                InsertedAt = DateTime.Now,
+                UpdatedBy = null,
+                UpdatedAt = null,
+                CenterImgUrl = model.ImageUrl
             };
             return center;
         }
 
-        public CenterModel CreateCenter(CreateCenterModel model)
+        public CenterModel CreateCenter(CreateCenterModel model, Guid insertBy)
         {
-            var center = PrepareCreate(model);
+            var center = PrepareCreate(model, insertBy);
             Create(center);
 
             var result = GetResult(center);
@@ -156,10 +158,12 @@ namespace PetRescue.Data.Repositories
                 CenterId = center.CenterId,
                 CenterName = center.CenterName,
                 Address = center.Address,
+                Lat = center.Lat,
+                Long = center.Lng,
                 CenterStatus = center.CenterStatus,
                 Phone = center.Phone,
-                InsertAt = center.InsertAt,
-                UpdateAt = center.UpdateAt
+                InsertedAt = center.InsertedAt,
+                UpdatedAt = center.UpdatedAt
             };
             return result;
         }
