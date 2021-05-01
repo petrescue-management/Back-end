@@ -110,7 +110,8 @@ namespace PetRescue.Data.Domains
                 .Where(p => p.CenterId.Equals(centerId))
                 .Where(p => p.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
 
-            var volunteers = uow.GetService<IWorkingHistoryRepository>().Get().Where(u => u.CenterId.Equals(centerId)).Count();
+            var volunteers = uow.GetService<IWorkingHistoryRepository>().Get()
+                .Where(u => u.CenterId.Equals(centerId) && u.IsActive == true && u.RoleName.Equals(RoleConstant.VOLUNTEER)).Count();
 
             return new
             {
