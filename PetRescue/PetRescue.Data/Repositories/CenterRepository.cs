@@ -90,6 +90,22 @@ namespace PetRescue.Data.Repositories
             old_center.CenterStatus = model.CenterStatus;
             old_center.UpdatedAt = DateTime.UtcNow;
             old_center.UpdatedBy = updateBy;
+            if(model.CenterAddress != null)
+            {
+                old_center.Address = model.CenterAddress;
+            }
+            if(model.CenterName != null)
+            {
+                old_center.CenterName = model.CenterName;
+            }
+            if(model.Lat != 0)
+            {
+                old_center.Lat = model.Lat;
+            }
+            if (model.Lng != 0)
+            {
+                old_center.Lng = model.Lng;
+            }
             return old_center;
         }
 
@@ -109,7 +125,7 @@ namespace PetRescue.Data.Repositories
         {
             var center = new Center
             {
-                CenterId = Guid.NewGuid(),
+                CenterId = model.CenterId,
                 Address = model.Address,
                 Phone = model.Phone,
                 CenterName = model.CenterName,
