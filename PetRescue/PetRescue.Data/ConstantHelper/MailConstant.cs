@@ -18,8 +18,8 @@ namespace PetRescue.Data.ConstantHelper
         public const string REJECT_REGISTRATION_VOLUNTEER = "THƯ THÔNG BÁO TỪ CHỐI TRỞ THÀNH TÌNH NGUYỆN VIÊN";
         public const string APPROVE_ADOPTION = "THƯ THÔNG BÁO ĐÃ ĐƯỢC DUYỆT ĐƠN ĐĂNG KÝ NHẬN NUÔI";
         public const string ORG_NAME = "RescueMe";
-        public const string APP_VOLUNTEER_NAME = "VolunteerApp";
-        public const string WEBSITE_NAME = "petrescue.com";
+        public const string APP_VOLUNTEER_NAME = "RescueMeVolunteer";
+        public const string WEBSITE_NAME = "https://pet-rescue-system.netlify.app/";
         public const string TIME_WORK = "Từ 8h đến 20h các ngày trong tuần.";
         public const string DEFAULT_DATE = "7 ngày";
         public static string ApproveRegistrationCenter(CenterRegistrationFormViewModel model)
@@ -44,9 +44,9 @@ namespace PetRescue.Data.ConstantHelper
                 WEBSITE_NAME +
                 " </a>.</p><p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi.</p><p> Thân ái </p>" +
                 "<p> --------------------------------------------------</p>" +
-                "<p style = 'line-height: 0.1;'><sub> Hệ Thống Cứu Hộ " +
+                "<p><sub> Hệ Thống Cứu Hộ " +
                 ORG_NAME +
-                "</sub></p><p style = 'line-height: 0.2;'><sub> Góp ý cho hệ thống qua mail: " +
+                "</sub></p><p><sub> Góp ý cho hệ thống qua mail: " +
                 MAIL +
                 " </sub></p></body></html>";
         }
@@ -68,9 +68,9 @@ namespace PetRescue.Data.ConstantHelper
                 "</ul>" +
                 "<p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi.</p><p> Thân ái </p>" +
                 "<p> --------------------------------------------------</p>" +
-                "<p style = 'line-height: 0.1;'><sub> Hệ Thống Cứu Hộ " +
+                "<p><sub> Hệ Thống Cứu Hộ " +
                 ORG_NAME +
-                "</sub></p><p style = 'line-height: 0.2;'><sub> Góp ý cho hệ thống qua mail: " +
+                "</sub></p><p><sub> Góp ý cho hệ thống qua mail: " +
                 MAIL +
                 " </sub></p></body></html>";
         }
@@ -92,18 +92,18 @@ namespace PetRescue.Data.ConstantHelper
                 "<p> --------------------------------------------------</p>" +
                 "<p style  = 'line-height: 1;'><span style = 'font-size: 14px;'>" +
                 " Mọi thông tin chi tiết xin liên hệ :</span></p>" +
-                "<p style = 'line-height: 0.5;' ><span style = 'font-size: 14px;'> " +
+                "<p><span style = 'font-size: 14px;'> " +
                 model.CenterName +
-                "</span></p><p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> SDT: " +
+                "</span></p><p><span style = 'font-size: 14px;'> SDT: " +
                 model.Phone +
-                " </span></p><p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> Địa chỉ: " +
+                " </span></p><p><span style = 'font-size: 14px;'> Địa chỉ: " +
                 model.Address +
-                 " </span></p><p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> Email: " +
+                 " </span></p><p><span style = 'font-size: 14px;'> Email: " +
                 model.Email +
                 "</span></p><p> --------------------------------------------------</p><p>" +
-                "<p style='line-height: 0.1;'><sub>Hệ Thống Cứu Hộ " +
+                "<p><sub>Hệ Thống Cứu Hộ " +
                 ORG_NAME +
-                "</sub></p><p style = 'line-height: 0.2;'><sub> Góp ý cho hệ thống qua mail: " +
+                "</sub></p><p><sub> Góp ý cho hệ thống qua mail: " +
                 MAIL +" </sub></p></body></html>";
         }
         public static string RejectRegistrationVolunteer(VolunteerRegistrationFormViewModel volunteerModel, string error, CenterViewModel model)
@@ -123,19 +123,19 @@ namespace PetRescue.Data.ConstantHelper
                 "</ul><p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi.</p><p> Thân ái </p>" +
                 "<p> --------------------------------------------------</p>" +
                 "<p style = 'line-height: 1;'><span style = 'font-size: 14px;'> Mọi thông tin chi tiết xin liên hệ :</span>" +
-                "</p><p style = 'line-height: 0.5;' ><span style = 'font-size: 14px;'><strong> " +
+                "</p><p><span style = 'font-size: 14px;'><strong> " +
                 model.CenterName +
                 "</strong></span></p><p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> SĐT: " +
                 model.Phone +
                 "</span></p>" +
-                "<p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> Địa chỉ: " +
+                "<p><span style = 'font-size: 14px;'> Địa chỉ: " +
                 model.Address +
-                "<p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> Email: " +
+                "<p><span style = 'font-size: 14px;'> Email: " +
                 model.Email +
                 "</span></p><p> --------------------------------------------------</p>" +
-                "<p style = 'line-height: 0.1;' ><sub> Hệ Thống Cứu Hộ " +
+                "<p><sub> Hệ Thống Cứu Hộ " +
                 ORG_NAME +
-                "</sub></p><p style = 'line-height: 0.2;'><sub> Góp ý cho hệ thống qua mail: " +
+                "</sub></p><p><sub> Góp ý cho hệ thống qua mail: " +
                 MAIL + 
                 "</body></html> ";
         }
@@ -169,18 +169,18 @@ namespace PetRescue.Data.ConstantHelper
                 "<p> Thân ái </p>" +
                 "<p> --------------------------------------------------</p>" +
                 "<p style = 'line-height: 1;' ><span style = 'font-size: 14px;'> Mọi thông tin chi tiết xin liên hệ :</span></p>" +
-                "<p style='line-height: 0.5;'><span style='font-size: 14px;'> " +
+                "<p><span style='font-size: 14px;'> " +
                 model.CenterName +
                 "</span></p>" +
-                "<p style = 'line-height: 0.5;' ><span style = 'font-size: 14px;'> SDT: " +
+                "<p><span style = 'font-size: 14px;'> SDT: " +
                 model.Phone +
                 " </span></p>" +
-                "<p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> Địa chỉ: " +
+                "<p><span style = 'font-size: 14px;'> Địa chỉ: " +
                 model.Address +
                 "</span></p>" +
                 "<p> --------------------------------------------------</p><p style='line-height: 0.1;'><sub> Hệ Thống Cứu Hộ " +
                 ORG_NAME +
-                "</sub></p><p style = 'line-height: 0.2;'><sub> Góp ý cho hệ thống qua mail: " +
+                "</sub></p><p><sub> Góp ý cho hệ thống qua mail: " +
                 MAIL +
                 " </sub></p></body></html>";
         }

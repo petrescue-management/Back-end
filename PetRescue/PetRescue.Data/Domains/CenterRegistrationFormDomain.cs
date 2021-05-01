@@ -120,7 +120,7 @@ namespace PetRescue.Data.Domains
             var userRoleDomain = uow.GetService<UserRoleDomain>();
             var userRepo = uow.GetService<IUserRepository>();
             var workingHistoryRepo = uow.GetService<IWorkingHistoryRepository>();
-            var form = center_registration_form_service.GetCenterRegistrationFormById(model.Id);
+            var form = center_registration_form_service.Get().FirstOrDefault(s => s.CenterRegistrationId.Equals(model.Id));
             var result = "";
             //Find user
             var currentUser = userRepo.FindById(form.Email);
@@ -136,7 +136,7 @@ namespace PetRescue.Data.Domains
                         try
                         {
                             //update Status
-                            form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
+                            form = center_registration_form_service.UpdateCenterRegistrationStatus(form, model, insertBy);
                             //create Center
                             var newCenter = center_service.CreateCenter(new CreateCenterModel
                             {
@@ -145,7 +145,8 @@ namespace PetRescue.Data.Domains
                                 Phone = form.Phone,
                                 Lng = form.Lng,
                                 Lat = form.Lat,
-                                ImageUrl = form.ImageUrl
+                                ImageUrl = form.ImageUrl,
+                                CenterId = form.CenterRegistrationId
                             }, insertBy);
                             if (currentUser == null) //not found user
                             {
@@ -256,7 +257,7 @@ namespace PetRescue.Data.Domains
                 //Status = Rejected
                 else if (model.Status == CenterRegistrationFormStatusConst.REJECTED)
                 {
-                    form = center_registration_form_service.UpdateCenterRegistrationStatus(model, insertBy);
+                    form = center_registration_form_service.UpdateCenterRegistrationStatus(form, model, insertBy);
                     uow.saveChanges();
                     var error = "";
                     if (model.IsAddress)

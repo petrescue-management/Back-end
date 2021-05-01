@@ -16,7 +16,7 @@ namespace PetRescue.Data.Repositories
 
         CenterRegistrationFormModel CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model);
 
-        CenterRegistrationFormModel UpdateCenterRegistrationStatus(UpdateRegistrationCenter model, Guid insertBy);
+        CenterRegistrationForm UpdateCenterRegistrationStatus(CenterRegistrationForm form,UpdateRegistrationCenter model, Guid insertBy);
         
     }
     public partial class CenterRegistrationFormRepository : BaseRepository<CenterRegistrationForm, string>, ICenterRegistrationFormRepository
@@ -79,33 +79,17 @@ namespace PetRescue.Data.Repositories
         #endregion
 
         #region UPDATE STATUS
-        private CenterRegistrationForm PrepareUpdate(UpdateRegistrationCenter model, Guid updateBy)
+        private CenterRegistrationForm PrepareUpdate(CenterRegistrationForm form,UpdateRegistrationCenter model, Guid updateBy)
         {
-            var form = Get()
-                  .Where(r => r.CenterRegistrationId.Equals(model.Id))
-                  .Select(r => new CenterRegistrationForm
-                  {
-                      CenterRegistrationId = model.Id,
-                      CenterName = r.CenterName,
-                      Email = r.Email,
-                      Phone = r.Phone,
-                      Lat = r.Lat,
-                      Lng = r.Lng,
-                      CenterAddress = r.CenterAddress,
-                      Description = r.Description,
-                      CenterRegistrationStatus = model.Status,
-                      UpdatedAt = null,
-                      ImageUrl = r.ImageUrl
-                  }).FirstOrDefault();
+            form.CenterRegistrationStatus = model.Status;
+            form.UpdatedAt = DateTime.UtcNow;
             return form;
         }
 
-        public CenterRegistrationFormModel UpdateCenterRegistrationStatus(UpdateRegistrationCenter model, Guid updateBy)
+        public CenterRegistrationForm UpdateCenterRegistrationStatus(CenterRegistrationForm form, UpdateRegistrationCenter model, Guid updateBy)
         {
-            var form = PrepareUpdate(model, updateBy);
-            Update(form);
-            var result = GetResult(form);
-            return result;
+            form = PrepareUpdate(form,model, updateBy);
+            return Update(form).Entity;
         }
         #endregion
 
