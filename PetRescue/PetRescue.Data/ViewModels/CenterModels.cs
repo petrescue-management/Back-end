@@ -41,7 +41,6 @@ namespace PetRescue.Data.ViewModels
     {
         [Required]
         public Guid CenterId { get; set; }
-        public byte CenterStatus { get; set; }
         public double Lng { get; set; }
         public double Lat { get; set; }
         public string CenterName { get; set; }

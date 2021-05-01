@@ -87,7 +87,6 @@ namespace PetRescue.Data.Repositories
         private Center PrepareUpdate(UpdateCenterModel model, Guid updateBy)
         {
             var old_center = Get().FirstOrDefault(c => c.CenterId.Equals(model.CenterId));
-            old_center.CenterStatus = model.CenterStatus;
             old_center.UpdatedAt = DateTime.UtcNow;
             old_center.UpdatedBy = updateBy;
             if(model.CenterAddress != null)
