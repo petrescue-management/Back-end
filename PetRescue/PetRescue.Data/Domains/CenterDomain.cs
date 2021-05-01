@@ -176,6 +176,7 @@ namespace PetRescue.Data.Domains
             var result = centerRepo.Update(center).Entity;
             if(result != null)
             {
+                uow.saveChanges();
                 return 1;
             }
             return 0;
