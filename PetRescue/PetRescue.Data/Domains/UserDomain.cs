@@ -331,12 +331,12 @@ namespace PetRescue.Data.Domains
             //uow.saveChanges();
             return result;
         }
-        public object GetListProfileOfVolunter(Guid centerId)
+        public object GetListProfileOfVolunter(Guid centerId, bool isActive)
         {
             var userRepository = uow.GetService<IUserRepository>();
             var workingHistoryRepo = uow.GetService<IWorkingHistoryRepository>();
             var userRoleRepository = uow.GetService<IUserRoleRepository>();
-            var workings = workingHistoryRepo.Get().Where(s => s.CenterId.Equals(centerId) && s.RoleName.Equals(RoleConstant.VOLUNTEER) && s.IsActive).ToList();
+            var workings = workingHistoryRepo.Get().Where(s => s.CenterId.Equals(centerId) && s.RoleName.Equals(RoleConstant.VOLUNTEER) && s.IsActive == isActive).ToList();
             var result = new List<UserProfileViewModel2>();
             foreach (var working in workings)
             {
@@ -351,7 +351,8 @@ namespace PetRescue.Data.Domains
                     LastName = user.UserProfile.LastName,
                     Phone = user.UserProfile.Phone,
                     UserId = user.UserId,
-                    DateStarted = user.WorkingHistory.FirstOrDefault(s => s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).DateStarted
+                    DateStarted = working.DateStarted,
+                    DateEnded = working.DateEnded
                 });
 
             }
