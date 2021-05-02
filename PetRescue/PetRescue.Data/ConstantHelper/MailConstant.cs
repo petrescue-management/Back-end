@@ -8,7 +8,8 @@ namespace PetRescue.Data.ConstantHelper
     public class MailConstant
     {
         public const string MAIL = "petrescue2021@gmail.com";
-        public const string PASSWORD = "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";
+        //public const string PASSWORD = "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";
+        public const string PASSWORD = "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";
         public const int PORT = 587;
         public const string HOST = "smtp.sendgrid.net";
         public const string NAME = "PetResuce";

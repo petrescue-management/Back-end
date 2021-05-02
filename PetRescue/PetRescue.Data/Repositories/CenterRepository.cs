@@ -105,6 +105,10 @@ namespace PetRescue.Data.Repositories
             {
                 old_center.Lng = model.Lng;
             }
+            if(model.Phone != null)
+            {
+                old_center.Phone = model.Phone;
+            }
             return old_center;
         }
 

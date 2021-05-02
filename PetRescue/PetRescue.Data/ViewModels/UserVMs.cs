@@ -72,6 +72,7 @@ namespace PetRescue.Data.ViewModels
         public string Phone { get; set; }
         public string ImgUrl { get; set; }
         public DateTime DateStarted { get; set; }
+        public DateTime? DateEnded { get; set; }
     }
     public class UserUpdateCenterModel
     {

@@ -45,6 +45,7 @@ namespace PetRescue.Data.ViewModels
         public double Lat { get; set; }
         public string CenterName { get; set; }
         public string CenterAddress { get; set; }
+        public string Phone { get; set; }
 
     }
 

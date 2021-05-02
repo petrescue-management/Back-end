@@ -42,13 +42,13 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize(Roles =RoleConstant.MANAGER)]
         [HttpGet("get-list-volunteer-profile-of-center")]
-        public IActionResult GetListVolunteerProfileOfCenter()
+        public IActionResult GetListVolunteerProfileOfCenter([FromQuery]bool IsActive)
         {
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _domain = _uow.GetService<UserDomain>();
-                var result = _domain.GetListProfileOfVolunter(Guid.Parse(currentCenterId));
+                var result = _domain.GetListProfileOfVolunter(Guid.Parse(currentCenterId), IsActive);
                 return Success(result);
             }
             catch(Exception ex)
@@ -70,22 +70,6 @@ namespace PetRescue.WebApi.Controllers
                     return Success(result);
                 }
                 return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                return Error(ex.Message);
-            }
-
-        }
-        [Authorize(Roles = RoleConstant.ADMIN)]
-        [HttpGet("get-working-history-by-userId")]
-        public IActionResult GetListOfMemberProfile([FromQuery]Guid userId)
-        {
-            try
-            {
-                var _domain = _uow.GetService<WorkingHistoryDomain>();
-                var result = _domain.GetListWorkingHistoryById(userId);
-                return Success(result);
             }
             catch (Exception ex)
             {
