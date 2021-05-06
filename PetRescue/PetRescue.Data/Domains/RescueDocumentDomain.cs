@@ -1,4 +1,5 @@
 ﻿using FirebaseAdmin.Messaging;
+using Microsoft.EntityFrameworkCore;
 using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
@@ -14,15 +15,21 @@ namespace PetRescue.Data.Domains
 {
     public class RescueDocumentDomain : BaseDomain
     {
-        public RescueDocumentDomain(IUnitOfWork uow) : base(uow)
+        private readonly IRescueDocumentRepository _rescueDocumentRepo;
+        private readonly IUserRepository _userRepo;
+        private readonly IPetProfileRepository _petProfileRepo;
+        private readonly DbContext _context;
+        public RescueDocumentDomain(IUnitOfWork uow, IRescueDocumentRepository rescueDocumentRepo, IUserRepository userRepo, IPetProfileRepository petProfileRepo, DbContext context) : base(uow)
         {
+            this._rescueDocumentRepo = rescueDocumentRepo;
+            this._userRepo = userRepo;
+            this._petProfileRepo = petProfileRepo;
+            this._context = context;
         }
         public object GetListRescueDocumentByCenterId(Guid centerId, int page, int limit)
         {
 
-            var rescueDocumentRepo = uow.GetService<IRescueDocumentRepository>();
-            var userRepo = uow.GetService<IUserRepository>();
-            var rescueDocuments = rescueDocumentRepo.Get().Where(s => s.CenterId.Equals(centerId));
+            var rescueDocuments = _rescueDocumentRepo.Get().Where(s => s.CenterId.Equals(centerId));
             var total = 0;
             if (limit == 0)
             {
@@ -40,7 +47,7 @@ namespace PetRescue.Data.Domains
             var listRescueDocuments = new List<RescueDocumentModel>();
             foreach (var rescueDocument in rescueDocuments)
             {
-                var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.FinderForm.InsertedBy));
+                var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.FinderForm.InsertedBy));
                 var finderForm = new FinderFormViewModel
                 {
                     FinderDate = rescueDocument.FinderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
@@ -51,7 +58,7 @@ namespace PetRescue.Data.Domains
                     Lng = rescueDocument.FinderForm.Lng,
                     FinderFormVidUrl = rescueDocument.FinderForm.FinderFormVidUrl
                 };
-                currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
+                currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
                 var pickerForm = new PickerFormViewModel
                 {
                     PickerDate = rescueDocument.PickerForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
@@ -74,22 +81,19 @@ namespace PetRescue.Data.Domains
         }
         public bool Edit(RescueDocumentUpdateModel model, Guid insertedBy)
         {
-            var rescueDocumentRepo = uow.GetService<IRescueDocumentRepository>();
-            var petProfileRepo = uow.GetService<IPetProfileRepository>();
-            var rescueDocument = rescueDocumentRepo.Get().FirstOrDefault(s => s.RescueDocumentId.Equals(model.PetDocumentId));
-            var context = uow.GetService<PetRescueContext>();
+            var rescueDocument = _rescueDocumentRepo.Get().FirstOrDefault(s => s.RescueDocumentId.Equals(model.PetDocumentId));
             if (rescueDocument != null)
             {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
-                        rescueDocument = rescueDocumentRepo.Edit(rescueDocument, model);
+                        rescueDocument = _rescueDocumentRepo.Edit(rescueDocument, model);
                         if (model.Pets != null)
                         {
                             foreach (var pet in model.Pets)
                             {
-                                petProfileRepo.CreatePetProfile(pet, insertedBy, rescueDocument.CenterId);
+                                _petProfileRepo.CreatePetProfile(pet, insertedBy, rescueDocument.CenterId);
                             }
                         }
                         transaction.Commit();
@@ -99,20 +103,18 @@ namespace PetRescue.Data.Domains
                         throw ex;
                     }
                 }
-                uow.saveChanges();
+                _uow.saveChanges();
                 return true;
             }
             return false;
         }
         public RescueDocumentModel GetRescueDocumentByRescueDocumentId(Guid rescueDocumentId)
         {
-            var rescueDocumentRepo = uow.GetService<IRescueDocumentRepository>();
-            var userRepo = uow.GetService<IUserRepository>();
-            var rescueDocument = rescueDocumentRepo.Get().FirstOrDefault(s => s.RescueDocumentId.Equals(rescueDocumentId));
+            var rescueDocument = _rescueDocumentRepo.Get().FirstOrDefault(s => s.RescueDocumentId.Equals(rescueDocumentId));
             var result = new RescueDocumentModel();
             if (rescueDocument != null)
             {
-                var currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.FinderForm.InsertedBy));
+                var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.FinderForm.InsertedBy));
                 var finderForm = new FinderFormViewModel
                 {
                     FinderDate = rescueDocument.FinderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
@@ -123,7 +125,7 @@ namespace PetRescue.Data.Domains
                     Lng = rescueDocument.FinderForm.Lng,
                     FinderFormVidUrl = rescueDocument.FinderForm.FinderFormVidUrl
                 };
-                currentUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
+                currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
                 var pickerForm = new PickerFormViewModel
                 {
                     PickerDate = rescueDocument.PickerForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
@@ -140,9 +142,8 @@ namespace PetRescue.Data.Domains
         }
         public List<PetProfileModel> GetListPetProfileByRescueDocumentId(Guid rescueDocumentId)
         {
-            var petProfileRepo = uow.GetService<IPetProfileRepository>();
             var result = new List<PetProfileModel>();
-            var pets = petProfileRepo.Get().Where(s => s.RescueDocumentId.Equals(rescueDocumentId));
+            var pets = _petProfileRepo.Get().Where(s => s.RescueDocumentId.Equals(rescueDocumentId));
             foreach (var pet in pets)
             {
                 result.Add(new PetProfileModel {
@@ -160,13 +161,12 @@ namespace PetRescue.Data.Domains
         }
         public bool CreateRescueDocument(RescueDocumentCreateModel model, Guid centerId)
         {
-            var rescueDocumentRepo = uow.GetService<IRescueDocumentRepository>();
-            var result = rescueDocumentRepo.Create(model, centerId);
+            var result = _rescueDocumentRepo.Create(model, centerId);
             if (IsValid(model.FinderFormId, model.PickerFormId))
             {
                 if (result != null)
                 {
-                    uow.saveChanges();
+                    _uow.saveChanges();
                     return true;
                 }
             }
@@ -174,14 +174,13 @@ namespace PetRescue.Data.Domains
         }
         private bool IsValid(Guid finderFormId, Guid pickerFormId)
         {
-            var rescueDocumentRepo = uow.GetService<IRescueDocumentRepository>();
-            var result = rescueDocumentRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(finderFormId) || s.PickerFormId.Equals(pickerFormId));
+            var result = _rescueDocumentRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(finderFormId) || s.PickerFormId.Equals(pickerFormId));
             if (result != null) return false;
             return true;
         }
         public object GetLastedRescueDocument(Guid centerId)
         {
-            var listDoc = uow.GetService<IRescueDocumentRepository>().Get()
+            var listDoc = _rescueDocumentRepo.Get()
                 .Where(s => s.CenterId.Equals(centerId)).Skip(0)
                 .Take(5)
                 .OrderByDescending(s => s.PickerForm.InsertedAt)

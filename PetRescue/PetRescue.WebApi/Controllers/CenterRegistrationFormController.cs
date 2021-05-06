@@ -22,12 +22,17 @@ using System.Threading.Tasks;
 namespace PetRescue.WebApi.Controllers
 {
     [ApiController]
+    [Route("/api/center-registration-forms/")]
     public class CenterRegistrationFormController : BaseController
     {
         private readonly IHostingEnvironment _env;
-        public CenterRegistrationFormController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        private readonly CenterRegistrationFormDomain _centerRegistrationFormDomain;
+        private readonly NotificationTokenDomain _notificationTokenDomain;
+        public CenterRegistrationFormController(IUnitOfWork uow, IHostingEnvironment environment, CenterRegistrationFormDomain centerRegistrationFormDomain, NotificationTokenDomain notificationTokenDomain) : base(uow)
         {
             _env = environment;
+            this._centerRegistrationFormDomain = centerRegistrationFormDomain;
+            this._notificationTokenDomain = notificationTokenDomain;
         }
         #region SEARCH
         [HttpGet]
@@ -50,12 +55,12 @@ namespace PetRescue.WebApi.Controllers
 
         #region GET BY ID
         [HttpGet]
-        [Route("api/get-center-registration-form-by-id/{id}")]
+        [Route("get-center-registration-form-by-id/{id}")]
         public IActionResult GetCenterRegistrationFormById(Guid id)
         {
             try
             {
-                var result = _uow.GetService<CenterRegistrationFormDomain>().GetCenterRegistrationFormById(id);
+                var result = _centerRegistrationFormDomain.GetCenterRegistrationFormById(id);
                 return Success(result);
             }
             catch (Exception ex)
@@ -64,17 +69,16 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         #endregion
-
         #region CREATE
         [HttpPost]
-        [Route("api/create-center-registration-form")]
+        [Route("create-center-registration-form")]
         public async Task<IActionResult> CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model)
         {
             try
             {
                 string path = _env.ContentRootPath;
-                string result = _uow.GetService<CenterRegistrationFormDomain>().CreateCenterRegistrationForm(model);
-                await _uow.GetService<NotificationTokenDomain>().NotificationForAdminWhenHaveNewCenterRegisterForm(path);
+                string result = _centerRegistrationFormDomain.CreateCenterRegistrationForm(model);
+                await _notificationTokenDomain.NotificationForAdminWhenHaveNewCenterRegisterForm(path);
                 if (result.Contains("is already"))
                     return BadRequest(result);
                 return Success(result);
@@ -89,13 +93,13 @@ namespace PetRescue.WebApi.Controllers
         #region PROCESS FORM
         [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpPost]
-        [Route("api/procress-center-registration-form")]
+        [Route("procress-center-registration-form")]
         public IActionResult ProcressCenterRegistrationForm(UpdateRegistrationCenter model)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _uow.GetService<CenterRegistrationFormDomain>().ProcressCenterRegistrationForm(model, Guid.Parse(currentUserId));
+                var result = _centerRegistrationFormDomain.ProcressCenterRegistrationForm(model, Guid.Parse(currentUserId));
                 if (!result.Equals("") && !result.Contains("This"))
                 {
                     return Success(result);

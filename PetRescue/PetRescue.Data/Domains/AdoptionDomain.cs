@@ -87,10 +87,10 @@ namespace PetRescue.Data.Domains
         #region CREATE
         public ReturnAdoptionViewModel CreateAdoption(Guid adoptionRegistrationFormId, Guid insertedBy, string path)
         {
-            var petProfileRepo = uow.GetService<IPetProfileRepository>();
-            var adoptionFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
-            var result = uow.GetService<IAdoptionRepository>().CreateAdoption(adoptionRegistrationFormId, insertedBy);
-            var form = uow.GetService<IAdoptionRegistrationFormRepository>().GetAdoptionRegistrationFormById(adoptionRegistrationFormId);
+            var petProfileRepo = _uow.GetService<IPetProfileRepository>();
+            var adoptionFormRepo = _uow.GetService<IAdoptionRegistrationFormRepository>();
+            var result = _uow.GetService<IAdoptionRepository>().CreateAdoption(adoptionRegistrationFormId, insertedBy);
+            var form = _uow.GetService<IAdoptionRegistrationFormRepository>().GetAdoptionRegistrationFormById(adoptionRegistrationFormId);
             var model = new ReturnAdoptionViewModel();
             if (result != null)
             {
@@ -121,7 +121,7 @@ namespace PetRescue.Data.Domains
                         Reason = ErrorConst.CancelReasonAdoptionForm
                     },insertedBy);
                 }
-                uow.saveChanges();
+                _uow.saveChanges();
                 var newJson
                             = new NotificationRemindReportAfterAdopt
                             {
@@ -156,7 +156,7 @@ namespace PetRescue.Data.Domains
         }
         public void Remind(Guid ownerId, string path)
         {
-            uow.GetService<NotificationTokenDomain>().NotificationForUserAlertAfterAdoption(path, ownerId,
+            _uow.GetService<NotificationTokenDomain>().NotificationForUserAlertAfterAdoption(path, ownerId,
                    ApplicationNameHelper.USER_APP);
         }
         #endregion
@@ -164,8 +164,8 @@ namespace PetRescue.Data.Domains
         #region UPDATE STATUS
         public async Task<bool> UpdateAdoptionStatusAsync(CancelModel model, Guid updatedBy, string path)
         {
-            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
-            var result = uow.GetService<IAdoptionRepository>().UpdateAdoptionStatus(model, updatedBy);
+            var notificationTokenDomain = _uow.GetService<NotificationTokenDomain>();
+            var result = _uow.GetService<IAdoptionRepository>().UpdateAdoptionStatus(model, updatedBy);
             if (result != null)
             {
                 if(model.Status == AdoptionStatusConst.RETURNED)
@@ -180,7 +180,7 @@ namespace PetRescue.Data.Domains
                     };
                     await notificationTokenDomain.NotificationForManager(path, result.AdoptionRegistration.PetProfile.CenterId, message);
                 }
-                uow.saveChanges();
+                _uow.saveChanges();
                 return true;
             }
             return false;
@@ -307,8 +307,8 @@ namespace PetRescue.Data.Domains
                 #endregion*/
         public object GetListAdoptionByCenterId(Guid centerId, int page, int limit)
         {
-            var adoptionRepo = uow.GetService<IAdoptionRepository>();
-            var userRepo = uow.GetService<IUserRepository>();
+            var adoptionRepo = _uow.GetService<IAdoptionRepository>();
+            var userRepo = _uow.GetService<IUserRepository>();
             var adoptions = adoptionRepo.Get().Where(s => s.AdoptionRegistration.PetProfile.CenterId.Equals(centerId));
             var total = 0;
             if (limit == 0)
@@ -363,8 +363,8 @@ namespace PetRescue.Data.Domains
         }
         public List<AdoptionViewModelMobile> GetListAdoptionByUserId(Guid userId)
         {
-            var adoptionRepo = uow.GetService<IAdoptionRepository>();
-            var userRepo = uow.GetService<IUserRepository>();
+            var adoptionRepo = _uow.GetService<IAdoptionRepository>();
+            var userRepo = _uow.GetService<IUserRepository>();
             var adoptions = adoptionRepo.Get().Where(s => s.AdoptionRegistration.InsertedBy.Equals(userId)).ToList();
             var result = new List<AdoptionViewModelMobile>();
             foreach (var adoption in adoptions)
@@ -407,9 +407,9 @@ namespace PetRescue.Data.Domains
         }
         public AdoptionViewModel GetAdoptionByPetId(Guid petProfileId)
         {
-            var adoptionRepo = uow.GetService<IAdoptionRepository>();
-            var userRepo = uow.GetService<IUserRepository>();
-            var petTrackingRepo = uow.GetService<IPetTrackingRepository>();
+            var adoptionRepo = _uow.GetService<IAdoptionRepository>();
+            var userRepo = _uow.GetService<IUserRepository>();
+            var petTrackingRepo = _uow.GetService<IPetTrackingRepository>();
             var adoption = adoptionRepo.Get().FirstOrDefault(s => s.AdoptionRegistration.PetProfile.PetProfileId.Equals(petProfileId));
             var result = new AdoptionViewModel();
             if (adoption != null)
@@ -463,10 +463,10 @@ namespace PetRescue.Data.Domains
         }
         public AdoptionViewModelWeb GetAdoptionByAdoptionId(Guid adoptionId)
         {
-            var adoptionRepo = uow.GetService<IAdoptionRepository>();
-            var userRepo = uow.GetService<IUserRepository>();
-            var petTrackingRepo = uow.GetService<IPetTrackingRepository>();
-            var adoptionReportTrackingRepo = uow.GetService<IAdoptionReportTrackingRepository>();
+            var adoptionRepo = _uow.GetService<IAdoptionRepository>();
+            var userRepo = _uow.GetService<IUserRepository>();
+            var petTrackingRepo = _uow.GetService<IPetTrackingRepository>();
+            var adoptionReportTrackingRepo = _uow.GetService<IAdoptionReportTrackingRepository>();
             var adoption = adoptionRepo.Get().FirstOrDefault(s => s.AdoptionRegistrationId.Equals(adoptionId));
             var result = new AdoptionViewModelWeb();
             if (adoption != null)

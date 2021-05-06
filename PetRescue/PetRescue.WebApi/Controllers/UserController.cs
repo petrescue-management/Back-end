@@ -19,9 +19,11 @@ namespace PetRescue.WebApi.Controllers
     public class UserController : BaseController
     {
         private readonly IHostingEnvironment _env;
-        public UserController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        private readonly UserDomain _userDomain;
+        public UserController(IUnitOfWork uow, IHostingEnvironment environment, UserDomain userDomain) : base(uow)
         {
             this._env = environment;
+            this._userDomain = userDomain;
         }
         #region GET
         [Authorize]
@@ -31,8 +33,7 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var token = Request.Headers["Authorization"];
-                var _domain = _uow.GetService<UserDomain>();
-                var result = _domain.GetUserDetail(token.ToString().Split(" ")[1]);
+                var result = _userDomain.GetUserDetail(token.ToString().Split(" ")[1]);
                 return Success(result);
             }
             catch (Exception e)
@@ -47,8 +48,7 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var _domain = _uow.GetService<UserDomain>();
-                var result = _domain.GetListProfileOfVolunter(Guid.Parse(currentCenterId), IsActive);
+                var result = _userDomain.GetListProfileOfVolunter(Guid.Parse(currentCenterId), IsActive);
                 return Success(result);
             }
             catch(Exception ex)
@@ -63,8 +63,7 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var _domain = _uow.GetService<UserDomain>();
-                var result = _domain.GetListProfileMember(page, limit);
+                var result = _userDomain.GetListProfileMember(page, limit);
                 if(result != null)
                 {
                     return Success(result);
@@ -82,8 +81,7 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var _domain = _uow.GetService<UserDomain>();
-                var result = _domain.GetProfileByUserId(userId);
+                var result = _userDomain.GetProfileByUserId(userId);
                 if (result != null)
                 {
                     return Success(result);
@@ -104,9 +102,8 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var _domain = _uow.GetService<UserDomain>();
-                var newUserProfile = _domain.UpdateUserProfile(model);
-                if (newUserProfile == 1)
+                var newUserProfile = _userDomain.UpdateUserProfile(model);
+                if (newUserProfile)
                 {
                     return Success(newUserProfile);
                 }
@@ -122,10 +119,9 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var _domain = _uow.GetService<UserDomain>();
                 var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _domain.AddVolunteerToCenter(new AddNewRoleModel
+                var result = _userDomain.AddVolunteerToCenter(new AddNewRoleModel
                 {
                     Email = model.Email,
                     CenterId = Guid.Parse(_currentCenterId),
@@ -153,20 +149,20 @@ namespace PetRescue.WebApi.Controllers
         #region DELETE
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpDelete("remove-role-volunteer-for-user")]
-        public IActionResult RemoveRoleForUser ([FromQuery] RemoveRoleVolunteerModel model)
+        public async Task<IActionResult> RemoveRoleForUser ([FromQuery] RemoveRoleVolunteerModel model)
         {
             try
             {
-                var _domain = _uow.GetService<UserDomain>();
                 var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _domain.RemoveVolunteerOfCenter(new RemoveVolunteerRoleModel
+                var path = _env.ContentRootPath;
+                var result = await _userDomain.RemoveVolunteerOfCenter(new RemoveVolunteerRoleModel
                 {
                     CenterId = Guid.Parse(_currentCenterId),
                     InsertBy = Guid.Parse(_currentUserId),
                     UserId = model.UserId,
                     Description = model.Description
-                });
+                }, path);
                 if (result.Equals(""))
                 {
                     return Success("");

@@ -14,23 +14,25 @@ using System.Threading.Tasks;
 namespace PetRescue.WebApi.Controllers
 {
     [ApiController]
+    [Route("/api/rescue-documents/")]
     public class RescueDocumentController : BaseController
     {
         private readonly IHostingEnvironment _env;
-        public RescueDocumentController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        private readonly RescueDocumentDomain _rescueDocumentDomain;
+        public RescueDocumentController(IUnitOfWork uow, IHostingEnvironment environment, RescueDocumentDomain rescueDocumentDomain) : base(uow)
         {
             this._env = environment;
+            this._rescueDocumentDomain = rescueDocumentDomain;
         }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
-        [Route("api/get-list-pet-document")]
+        [Route("get-list-pet-document")]
         public IActionResult GetListRescueDocumentByCenterId([FromQuery] int page = 0, [FromQuery] int limit = -1)
         {
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var _domain = _uow.GetService<RescueDocumentDomain>();
-                var result = _domain.GetListRescueDocumentByCenterId(Guid.Parse(currentCenterId),page, limit);
+                var result = _rescueDocumentDomain.GetListRescueDocumentByCenterId(Guid.Parse(currentCenterId),page, limit);
                 return Success(result);
             }
             catch (Exception e)
@@ -39,13 +41,12 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [HttpGet]
-        [Route("api/get-list-petprofile-by-petdocumentid")]
+        [Route("get-list-petprofile-by-petdocumentid")]
         public IActionResult GetListPetProfileByRescueDocumentId([FromQuery] Guid petDocumentId)
         {
             try
             {
-                var _domain = _uow.GetService<RescueDocumentDomain>();
-                var result = _domain.GetListPetProfileByRescueDocumentId(petDocumentId);
+                var result = _rescueDocumentDomain.GetListPetProfileByRescueDocumentId(petDocumentId);
                 return Success(result);
             }
             catch (Exception e)
@@ -54,13 +55,12 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [HttpGet]
-        [Route("api/get-pet-document-by-id")]
+        [Route("get-pet-document-by-id")]
         public IActionResult GetRescueDocumentById([FromQuery]Guid petDocumentId)
         {
             try
             {
-                var _domain = _uow.GetService<RescueDocumentDomain>();
-                var result = _domain.GetRescueDocumentByRescueDocumentId(petDocumentId);
+                var result = _rescueDocumentDomain.GetRescueDocumentByRescueDocumentId(petDocumentId);
                 return Success(result);
             }
             catch (Exception e)
@@ -69,14 +69,13 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [HttpPost]
-        [Route("api/create-pet-document")]
+        [Route("create-pet-document")]
         public IActionResult CreateRescueDocument([FromBody] RescueDocumentCreateModel model)
         {
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var _domain = _uow.GetService<RescueDocumentDomain>();
-                var result = _domain.CreateRescueDocument(model, Guid.Parse(currentCenterId));
+                var result = _rescueDocumentDomain.CreateRescueDocument(model, Guid.Parse(currentCenterId));
                 if (result)
                 {
                     return Success(result);
@@ -90,20 +89,18 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
-        [Route("api/update-pet-document")]
+        [Route("update-pet-document")]
         public IActionResult UpdateRescueDocument([FromBody] RescueDocumentUpdateModel model)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var _domain = _uow.GetService<RescueDocumentDomain>();
-                var result = _domain.Edit(model, Guid.Parse(currentUserId));
+                var result = _rescueDocumentDomain.Edit(model, Guid.Parse(currentUserId));
                 if (result)
                 {
                     return Success(result);
                 }
-                return BadRequest();
-                
+                return BadRequest();   
             }
             catch (Exception e)
             {

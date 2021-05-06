@@ -11,13 +11,14 @@ namespace PetRescue.Data.Domains
 {
     public class WorkingHistoryDomain : BaseDomain
     {
-        public WorkingHistoryDomain(IUnitOfWork uow) : base(uow)
+        private readonly IWorkingHistoryRepository _workingHistoryRepo;
+        public WorkingHistoryDomain(IUnitOfWork uow, IWorkingHistoryRepository workingHistoryRepo) : base(uow)
         {
+            this._workingHistoryRepo = workingHistoryRepo;
         }
         public object GetListWorkingHistoryById(Guid userId)
         {
-            var workingHistoryRepo = uow.GetService<IWorkingHistoryRepository>();
-            var workingHistorys = workingHistoryRepo.Get().Where(s => s.UserId.Equals(userId));
+            var workingHistorys = _workingHistoryRepo.Get().Where(s => s.UserId.Equals(userId));
             var result = new List<WorkingHistoryViewModel>();
             if(workingHistorys != null)
             {

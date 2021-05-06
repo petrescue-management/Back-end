@@ -16,19 +16,20 @@ namespace PetRescue.WebApi.Controllers
     public class JwtController : BaseController
     {
         private readonly IHostingEnvironment _env;
-        public JwtController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        private readonly JWTDomain _jwtDomain;
+        public JwtController(IUnitOfWork uow, IHostingEnvironment environment, JWTDomain jwtDomain) : base(uow)
         {
             _env = environment;
+            this._jwtDomain = jwtDomain;
         }
         [HttpGet]
         public  IActionResult GetToken([FromQuery]UserLoginModel model)
         {
             try
             {
-                var _domain = _uow.GetService<JWTDomain>();
                 if (ValidationExtensions.IsNotNullOrEmptyOrWhiteSpace(model.Token))
                 {
-                    var result = _domain.DecodeJwt(model);
+                    var result = _jwtDomain.DecodeJwt(model);
                     if (result != null)
                     {
                         return Success(result.Jwt);
@@ -45,8 +46,7 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var jwtDomain = _uow.GetService<JWTDomain>();
-                var result = jwtDomain.LoginBySysAdmin(model);
+                var result = _jwtDomain.LoginBySysAdmin(model);
                 if(result != null)
                 {
                     return Success(result);
@@ -64,7 +64,7 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 string path = _env.ContentRootPath;
-                var result = await _uow.GetService<JWTDomain>().LoginByVolunteer(model,path);
+                var result = await _jwtDomain.LoginByVolunteer(model,path);
                 if(result != null)
                 {
                     return Success(result);

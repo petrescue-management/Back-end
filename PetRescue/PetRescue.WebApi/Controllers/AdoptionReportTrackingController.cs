@@ -13,22 +13,23 @@ using System.Threading.Tasks;
 namespace PetRescue.WebApi.Controllers
 {
     [ApiController]
+    [Route("/api/adoption-report-trackings/")]
     public class AdoptionReportTrackingController : BaseController
     {
         private readonly IHostingEnvironment _env;
-        public AdoptionReportTrackingController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        private readonly AdoptionReportTrackingDomain _adoptionReportTrackingDomain;
+        public AdoptionReportTrackingController(IUnitOfWork uow, IHostingEnvironment environment, AdoptionReportTrackingDomain adoptionReportTrackingDomain) : base(uow)
         {
             this._env = environment;
+            this._adoptionReportTrackingDomain = adoptionReportTrackingDomain;
         }
         [HttpGet]
-        [Route("api/get-by-adoption-report-tracking-id")]
+        [Route("get-by-adoption-report-tracking-id")]
         public IActionResult GetByAdoptionReportTrackingId([FromQuery]Guid adoptionReportTrackingId)
         {
             try
             {
-
-                var _domain = _uow.GetService<AdoptionReportTrackingDomain>();
-                var result = _domain.GetByAdoptionReportTrackingId(adoptionReportTrackingId);
+                var result = _adoptionReportTrackingDomain.GetByAdoptionReportTrackingId(adoptionReportTrackingId);
                 return Success(result);
             }catch(Exception ex)
             {
@@ -37,16 +38,15 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize]
         [HttpGet]
-        [Route("api/get-list-adoption-report-tracking-by-userid")]
+        [Route("get-list-adoption-report-tracking-by-userid")]
         public IActionResult GetListAdoptionReportTrackingByUserId([FromQuery] Guid petProfileId)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var _domain = _uow.GetService<AdoptionReportTrackingDomain>();
                 if(petProfileId.Equals(Guid.Empty) || petProfileId != null)
                 {
-                    var result = _domain.GetListAdoptionReportTrackingByUserId(Guid.Parse(currentUserId), petProfileId);
+                    var result = _adoptionReportTrackingDomain.GetListAdoptionReportTrackingByUserId(Guid.Parse(currentUserId), petProfileId);
                     return Success(result);
                 }
                 return BadRequest();
@@ -56,16 +56,16 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
+        [Authorize]
         [HttpPost]
-        [Route("api/create-adoption-report-tracking")]
+        [Route("create-adoption-report-tracking")]
         public IActionResult CreateAdoptionReportTracking ([FromBody]AdoptionReportTrackingCreateModel model)
         {
             try
             {
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var _domain = _uow.GetService<AdoptionReportTrackingDomain>();
-                var result = _domain.Create(model, Guid.Parse(currentUserId), path);
+                var result = _adoptionReportTrackingDomain.Create(model, Guid.Parse(currentUserId), path);
                 if (result)
                 {
                     return Success(result);
@@ -77,16 +77,16 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
+        [Authorize]
         [HttpPut]
-        [Route("api/update-adoption-report-tracking")]
+        [Route("update-adoption-report-tracking")]
         public IActionResult UpdateAdoptionReportTracking([FromBody] AdoptionReportTrackingUpdateModel model)
         {
             try
             {
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var _domain = _uow.GetService<AdoptionReportTrackingDomain>();
-                var result = _domain.Edit(model, Guid.Parse(currentUserId));
+                var result = _adoptionReportTrackingDomain.Edit(model, Guid.Parse(currentUserId));
                 if (result)
                 {
                     return Success(result);
