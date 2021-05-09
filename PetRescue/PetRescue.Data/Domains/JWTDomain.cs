@@ -20,24 +20,24 @@ namespace PetRescue.Data.Domains
 {
     public class JWTDomain : BaseDomain
     {
-        private readonly NotificationTokenDomain _notificationTokenDomain;
         private readonly IUserProfileRepository _userProfileRepo;
         private readonly IUserRepository _userRepo;
         private readonly IWorkingHistoryRepository _workingHistoryRepo;
-        private readonly UserDomain _userDomain;
-        public JWTDomain(IUnitOfWork uow, NotificationTokenDomain notificationTokenDomain, IUserProfileRepository userProfileRepo, IUserRepository userRepo, IWorkingHistoryRepository workingHistoryRepo, UserDomain userDomain) : base(uow)
+        public JWTDomain(IUnitOfWork uow, 
+            IUserProfileRepository userProfileRepo, 
+            IUserRepository userRepo, 
+            IWorkingHistoryRepository workingHistoryRepo) : base(uow)
         {
-            this._notificationTokenDomain = notificationTokenDomain;
             this._userProfileRepo = userProfileRepo;
             this._userRepo = userRepo;
             this._workingHistoryRepo = workingHistoryRepo;
-            this._userDomain = userDomain;
         }
         public JWTReturnModel DecodeJwt(UserLoginModel model)
         {
             var temp = new NotificationToken();
             var handler = new JwtSecurityTokenHandler();
             var result = handler.ReadJwtToken(model.Token) as JwtSecurityToken;
+            var _notificationTokenDomain = _uow.GetService<NotificationTokenDomain>();
             var currentClaims = result.Claims.ToList();
             string email = currentClaims.FirstOrDefault(c => c.Type == "email").Value;
             string urlImg = currentClaims.FirstOrDefault(c => c.Type == "picture").Value;
@@ -95,7 +95,7 @@ namespace PetRescue.Data.Domains
                     };
                     _userProfileRepo.Create(newUpdateProfileModel);
                 }
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 returnResult.Jwt = handler.WriteToken(newToken);
                 returnResult.NotificationToken = temp;
                 return returnResult;
@@ -130,7 +130,7 @@ namespace PetRescue.Data.Domains
                     });
                     var tokenDescriptor = GeneratedTokenDecriptor(user, currentClaims);
                     var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
-                    _uow.saveChanges();
+                    _uow.SaveChanges();
                     returnResult.Jwt = handler.WriteToken(newToken);
                     returnResult.NotificationToken = temp;
                     return returnResult;
@@ -200,6 +200,7 @@ namespace PetRescue.Data.Domains
         {
             string hashedPassword = GenarateHash(model.Password);
             var currentUser = _userRepo.FindById(model.Email);
+            var _notificationTokenDomain = _uow.GetService<NotificationTokenDomain>();
             if (currentUser != null)
             {
                 if (currentUser.Password.Equals(hashedPassword))
@@ -231,7 +232,7 @@ namespace PetRescue.Data.Domains
                     currentClaims.Add(new Claim(ClaimTypes.Email, currentUser.UserEmail));
                     var tokenDescriptor = GeneratedTokenDecriptor(currentUser, currentClaims);
                     var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
-                    _uow.saveChanges();
+                    _uow.SaveChanges();
                     return handler.WriteToken(newToken);
                 }
                 return null;
@@ -250,7 +251,7 @@ namespace PetRescue.Data.Domains
             // check this user
             if(user != null)
             {
-                string[] roles = _userDomain.GetRoleOfUser(user.UserId);
+                string[] roles = _uow.GetService<UserDomain>().GetRoleOfUser(user.UserId);
                 bool check = false;
                 for (int index = 0; index < roles.Length; index++)
                 {
@@ -285,7 +286,7 @@ namespace PetRescue.Data.Domains
                     var firebaseExtensions = new FireBaseExtentions();
                     var app = firebaseExtensions.GetFirebaseApp(path);
                     var fcm = FirebaseMessaging.GetMessaging(app);
-                    var notificationToken = _notificationTokenDomain.FindByApplicationNameAndUserId(model.ApplicationName, user.UserId);
+                    var notificationToken = _uow.GetService<NotificationTokenDomain>().FindByApplicationNameAndUserId(model.ApplicationName, user.UserId);
                     var centerId = _workingHistoryRepo.Get().FirstOrDefault(s => s.UserId.Equals(user.UserId) && s.RoleName.Equals(RoleConstant.VOLUNTEER) && s.IsActive == true).CenterId;
                     var listToken = new List<string>();
                     //if notification Token is existed,  will update deviceToken
@@ -295,7 +296,7 @@ namespace PetRescue.Data.Domains
                         {
                             listToken.Add(notificationToken.DeviceToken);
                             await fcm.UnsubscribeFromTopicAsync(listToken, centerId.ToString());
-                            temp = _notificationTokenDomain.UpdateNotificationToken(new NotificationTokenUpdateModel
+                            temp = _uow.GetService<NotificationTokenDomain>().UpdateNotificationToken(new NotificationTokenUpdateModel
                             {
                                 Id = notificationToken.Id,
                                 DeviceToken = model.DeviceToken
@@ -312,7 +313,7 @@ namespace PetRescue.Data.Domains
                     // else create new notificationToken.
                     else
                     {
-                        temp = _notificationTokenDomain.CreateNotificationToken(new NotificationTokenCreateModel
+                        temp = _uow.GetService<NotificationTokenDomain>().CreateNotificationToken(new NotificationTokenCreateModel
                         {
                             ApplicationName = model.ApplicationName,
                             DeviceToken = model.DeviceToken,
@@ -322,7 +323,7 @@ namespace PetRescue.Data.Domains
                         await fcm.SubscribeToTopicAsync(listToken, centerId.ToString());
                     }
                     app.Delete();
-                    _uow.saveChanges();
+                    _uow.SaveChanges();
                     return handler.WriteToken(newToken);
                 }
             }

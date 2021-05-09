@@ -22,17 +22,15 @@ namespace PetRescue.Data.Domains
     {
         private readonly IFinderFormRepository _finderFormRepo;
         private readonly IUserRepository _userRepo;
-        private readonly NotificationTokenDomain _notificationTokenDomain;
         private readonly IWorkingHistoryRepository _workingHistoryRepo;
-        private readonly CenterDomain _centerDomain;
-
-        public FinderFormDomain(IUnitOfWork uow, IFinderFormRepository finderFormRepo, IUserRepository userRepo, NotificationTokenDomain notificationTokenDomain, IWorkingHistoryRepository workingHistoryRepo, CenterDomain centerDomain) : base(uow)
+        public FinderFormDomain(IUnitOfWork uow,
+            IFinderFormRepository finderFormRepo,
+            IUserRepository userRepo, 
+            IWorkingHistoryRepository workingHistoryRepo) : base(uow)
         {
             this._finderFormRepo = finderFormRepo;
             this._userRepo = userRepo;
-            this._notificationTokenDomain = notificationTokenDomain;
             this._workingHistoryRepo = workingHistoryRepo;
-            this._centerDomain = centerDomain;
         }
 
         #region SEARCH
@@ -99,13 +97,15 @@ namespace PetRescue.Data.Domains
             if (IsTaken(model, updatedBy))
             {
 
-                TransactionOptions topt = new TransactionOptions();
-                topt.IsolationLevel = IsolationLevel.RepeatableRead;
+                TransactionOptions topt = new TransactionOptions()
+                {
+                    IsolationLevel = IsolationLevel.RepeatableRead
+                };
                 var finderForm = _finderFormRepo.UpdateFinderFormStatus(model, updatedBy);
                 using (var tran = new TransactionScope(TransactionScopeOption.Required, topt))
                 {
                     
-                    _uow.saveChanges();
+                    _uow.SaveChanges();
                     tran.Complete();
                 }
                 
@@ -114,7 +114,7 @@ namespace PetRescue.Data.Domains
                     if (model.Status == FinderFormStatusConst.RESCUING)
                     {
                         
-                        await _notificationTokenDomain.NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
                         {
                             Notification = new Notification
                             {
@@ -153,14 +153,14 @@ namespace PetRescue.Data.Domains
 
                     if (model.Status == FinderFormStatusConst.CANCELED)
                     {
-                        await _notificationTokenDomain.NotificationForUserWhenFinderFormDelete(path, finderForm.InsertedBy,
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, finderForm.InsertedBy,
                        ApplicationNameHelper.USER_APP);
                     }
                 }
                 else if (model.Status == FinderFormStatusConst.ARRIVED)
                 {
                     var centerId = _workingHistoryRepo.Get().FirstOrDefault(s => s.UserId.Equals(updatedBy) && s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).CenterId;
-                    await _notificationTokenDomain.NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                    await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
                     {
                         Notification = new Notification
                         {
@@ -168,7 +168,7 @@ namespace PetRescue.Data.Domains
                             Body = NotificationBodyHelper.ARRIVED_RESCUE_PET_BODY
                         }
                     });
-                    await _notificationTokenDomain.NotificationForManager(path, centerId,
+                    await _uow.GetService<NotificationTokenDomain>().NotificationForManager(path, centerId,
                     new Message
                     {
                         Notification = new Notification
@@ -180,7 +180,7 @@ namespace PetRescue.Data.Domains
                 }
                 else if (model.Status == FinderFormStatusConst.DONE)
                 {
-                    await _notificationTokenDomain.NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP,
+                    await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP,
                             new Message
                             {
                                 Notification = new Notification
@@ -222,7 +222,7 @@ namespace PetRescue.Data.Domains
                 {
                     if (roleName.Contains(RoleConstant.VOLUNTEER))
                     {
-                        await _notificationTokenDomain.NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
                         {
                             Notification = new Notification
                             {
@@ -232,7 +232,7 @@ namespace PetRescue.Data.Domains
                         });
                     }
                 }
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return finderForm;
             }
             return null;
@@ -245,7 +245,7 @@ namespace PetRescue.Data.Domains
 
 
             var finderForm = _finderFormRepo.CreateFinderForm(model, insertedBy);
-            _uow.saveChanges();
+            _uow.SaveChanges();
 
             //tạo object lưu xuống json
             var newJson
@@ -277,7 +277,7 @@ namespace PetRescue.Data.Domains
             string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
 
             File.WriteAllText(FILEPATH, output);
-            var centers = _centerDomain.GetListCenterLocation();
+            var centers = _uow.GetService<CenterDomain>().GetListCenterLocation();
             var googleMapExtension = new GoogleMapExtensions();
             var location = model.Lat + ", " + model.Lng;
             var records = googleMapExtension.FindListShortestCenter(location, centers);
@@ -295,8 +295,8 @@ namespace PetRescue.Data.Domains
                     listCenterId.Add(records[0].CenterId);
                 }
             }
-            await _notificationTokenDomain.NotificationForListVolunteerOfCenter(path, listCenterId);
-            _uow.saveChanges();
+            await _uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listCenterId);
+            _uow.SaveChanges();
             return finderForm;
         }
 
@@ -304,8 +304,8 @@ namespace PetRescue.Data.Domains
         {
             if (_finderFormRepo.GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
             {
-                var records = _centerDomain.GetListCenter().Select(c => c.CenterId.ToString()).ToList();
-                await _notificationTokenDomain.NotificationForListVolunteerOfCenter(path, records);
+                var records = _uow.GetService<CenterDomain>().GetListCenter().Select(c => c.CenterId.ToString()).ToList();
+                await _uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, records);
             }
         }
 
@@ -313,12 +313,12 @@ namespace PetRescue.Data.Domains
         {
             if (_finderFormRepo.GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
             {
-                var finderForm = await UpdateFinderFormStatusAsync(new UpdateStatusModel
+                await UpdateFinderFormStatusAsync(new UpdateStatusModel
                 {
                     Id = finderFormId,
                     Status = FinderFormStatusConst.CANCELED
                 }, Guid.Empty, path);
-                _uow.saveChanges();
+                _uow.SaveChanges();
             }
         }
 

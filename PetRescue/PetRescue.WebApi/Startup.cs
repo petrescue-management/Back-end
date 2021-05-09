@@ -88,9 +88,7 @@ namespace PetRescue.WebApi
                 });
             });
             services.AddSwaggerGenNewtonsoftSupport();
-
-            services.AddScoped<IMyScopedService, MyScopedService>();
-
+            //services.AddScoped<IMyScopedService, MyScopedService>();
             services.AddCronJob<MyCronJob1>(c =>
             {
                 c.TimeZoneInfo = TimeZoneInfo.Local;

@@ -17,19 +17,18 @@ namespace PetRescue.Data.Domains
     {
         private readonly IVolunteerRegistrationFormRepository _volunteerRegistrationFormRepo;
         private readonly IUserRepository _userRepo;
-        private readonly UserRoleDomain _userRoleDomain;
-        private readonly NotificationTokenDomain _notificationTokenDomain;
-        private readonly UserDomain _userDomain;
         private readonly IWorkingHistoryRepository _workingHistoryRepo;
         private readonly ICenterRepository _centerRepo;
-        public VolunteerRegistrationFormDomain(IUnitOfWork uow, IVolunteerRegistrationFormRepository volunteerRegistrationFormRepo, IUserRepository userRepo, NotificationTokenDomain notificationTokenDomain, UserRoleDomain userRoleDomain, UserDomain userDomain, IWorkingHistoryRepository workingHistoryRepo) : base(uow)
+        public VolunteerRegistrationFormDomain(IUnitOfWork uow, 
+            IVolunteerRegistrationFormRepository volunteerRegistrationFormRepo, 
+            IUserRepository userRepo, 
+            IWorkingHistoryRepository workingHistoryRepo,
+            ICenterRepository centerRepo) : base(uow)
         {
             this._volunteerRegistrationFormRepo = volunteerRegistrationFormRepo;
             this._userRepo = userRepo;
-            this._userRoleDomain = userRoleDomain;
-            this._notificationTokenDomain = notificationTokenDomain;
-            this._userDomain = userDomain;
             this._workingHistoryRepo = workingHistoryRepo;
+            this._centerRepo = centerRepo;
         }
         public async Task<string> Create(VolunteerRegistrationFormCreateModel model, string path)
         {
@@ -48,19 +47,19 @@ namespace PetRescue.Data.Domains
                 if (currentUser == null)
                 {
                     var form = _volunteerRegistrationFormRepo.Create(model);
-                    await _notificationTokenDomain.NotificationForManager(path,model.CenterId, message);
-                    _uow.saveChanges();
+                    await _uow.GetService<NotificationTokenDomain>().NotificationForManager(path,model.CenterId, message);
+                    _uow.SaveChanges();
                     result = form.VolunteerRegistrationFormId.ToString();
                 }
                 else
                 {
                     if ((bool)!currentUser.IsBelongToCenter)
                     {
-                        if (!_userRoleDomain.IsAdmin(model.Email))
+                        if (!_uow.GetService<UserRoleDomain>().IsAdmin(model.Email))
                         {
                             var form = _volunteerRegistrationFormRepo.Create(model);
-                            await _notificationTokenDomain.NotificationForManager(path, model.CenterId, message);
-                            _uow.saveChanges();
+                            await _uow.GetService<NotificationTokenDomain>().NotificationForManager(path, model.CenterId, message);
+                            _uow.SaveChanges();
                             result = form.VolunteerRegistrationFormId.ToString();
                         }
                         else
@@ -82,6 +81,7 @@ namespace PetRescue.Data.Domains
         }
         public string Edit(VolunteerRegistrationFormUpdateModel model, Guid insertBy)
         {
+            var _userDomain = _uow.GetService<UserDomain>();
             var form = _volunteerRegistrationFormRepo.Get().FirstOrDefault(s => s.VolunteerRegistrationFormId.Equals(model.VolunteerRegistrationFormId));
             var formData = _volunteerRegistrationFormRepo.Edit(form, model);
             var result = "";
@@ -140,7 +140,7 @@ namespace PetRescue.Data.Domains
                     };
                     MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationVolunteer(volunteerFormModel, centerModel), MailConstant.APPROVE_REGISTRATION_VOLUNTEER);
                     MailExtensions.SendBySendGrid(mailArguments, null, null);
-                    _uow.saveChanges();
+                    _uow.SaveChanges();
                 }
                 return result;
             }
@@ -169,7 +169,7 @@ namespace PetRescue.Data.Domains
                     FirstName = formData.FirstName,
                     LastName = formData.LastName,
                 };
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationVolunteer(volunteerFormModel, reason, centerModel), MailConstant.REJECT_REGISTRATION_FORM);
                 MailExtensions.SendBySendGrid(mailArguments, null, null);
             }
@@ -178,7 +178,7 @@ namespace PetRescue.Data.Domains
         public VolunteerViewModel GetListVolunteerRegistrationForm(Guid centerId)
         {
             var listForm = _volunteerRegistrationFormRepo.Get().Where(s => s.CenterId.Equals(centerId) && s.VolunteerRegistrationFormStatus == VolunteerRegistrationFormConst.PROCESSING).ToList();
-            var result = new VolunteerViewModel();
+            var result = new VolunteerViewModel() { };
             result.Count = listForm.Count();
             result.List = new List<VolunteerRegistrationFormViewModel>();
             foreach(var form in listForm)

@@ -14,7 +14,9 @@ namespace PetRescue.Data.Domains
         private readonly IPetTrackingRepository _petTrackingRepo;
         private readonly IUserRepository _userRepo;
 
-        public PetTrackingDomain(IUnitOfWork uow, IPetTrackingRepository petTrackingRepo, IUserRepository userRepo) : base(uow)
+        public PetTrackingDomain(IUnitOfWork uow, 
+            IPetTrackingRepository petTrackingRepo, 
+            IUserRepository userRepo) : base(uow)
         {
             this._petTrackingRepo = petTrackingRepo;
             this._userRepo = userRepo;
@@ -22,7 +24,7 @@ namespace PetRescue.Data.Domains
         public PetTrackingViewModel Create(PetTrackingCreateModel model, Guid insertBy)
         {
             var result = _petTrackingRepo.Create(model, insertBy);
-            _uow.saveChanges();
+            _uow.SaveChanges();
             if(result != null)
             {
                 var user = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(result.InsertedBy));
@@ -78,7 +80,7 @@ namespace PetRescue.Data.Domains
             var result = _petTrackingRepo.CreatePetTrackingByUser(model, insertedBy);
             if (result != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;

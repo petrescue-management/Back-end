@@ -18,13 +18,14 @@ namespace PetRescue.Data.Domains
     {
         private readonly IAdoptionRegistrationFormRepository _adotionRegistrationFormRepo;
         private readonly IPetProfileRepository _petProfileRepo;
-        private readonly NotificationTokenDomain _notificationTokenDomain;
         private readonly DbContext _context;
-        public AdoptionRegistrationFormDomain(IUnitOfWork uow, IAdoptionRegistrationFormRepository adoptionRegistrationFromRepo, IPetProfileRepository petProfileRepo, NotificationTokenDomain notificationTokenDomain, DbContext context) : base(uow)
+        public AdoptionRegistrationFormDomain(IUnitOfWork uow, 
+            IAdoptionRegistrationFormRepository adoptionRegistrationFromRepo, 
+            IPetProfileRepository petProfileRepo, 
+            DbContext context) : base(uow)
         {
             this._adotionRegistrationFormRepo = adoptionRegistrationFromRepo;
             this._petProfileRepo = petProfileRepo;
-            this._notificationTokenDomain = notificationTokenDomain;
             this._context = context;
         }
 
@@ -162,14 +163,14 @@ namespace PetRescue.Data.Domains
                     if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED)
                     {
                         var result = new ReturnAdoptionViewModel();
-                        await _notificationTokenDomain.NotificationForUserWhenAdoptionFormToBeApprove(path, form.InsertedBy);
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUserWhenAdoptionFormToBeApprove(path, form.InsertedBy);
                         var updatePetModel = new UpdatePetProfileModel
                         {
                             PetProfileId = form.PetProfileId,
                             PetStatus = PetStatusConst.WAITING
                         };
                         _petProfileRepo.UpdatePetProfile(updatePetModel, updateBy);
-                        _uow.saveChanges();
+                        _uow.SaveChanges();
                         ///Send mail
                         //var centerModel = new CenterViewModel
                         //{
@@ -198,7 +199,7 @@ namespace PetRescue.Data.Domains
                                 Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
                             }
                         };
-                        await _notificationTokenDomain.NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
                         var result = new RejectAdoptionViewModel
                         {
                             Reason = model.Reason,
@@ -209,7 +210,7 @@ namespace PetRescue.Data.Domains
                             }
                         };
                         transaction.Commit();
-                        _uow.saveChanges();
+                        _uow.SaveChanges();
                         return result;
                     }
                     return null;
@@ -232,7 +233,7 @@ namespace PetRescue.Data.Domains
                 AdoptionRegistrationFormId = form.AdoptionRegistrationId,
                 CenterId = petProfile.CenterId
             };
-            _uow.saveChanges();
+            _uow.SaveChanges();
             if(result != null)
             {
                 return result;
@@ -295,7 +296,7 @@ namespace PetRescue.Data.Domains
                 {
                     if (roleName.Contains(RoleConstant.MANAGER))
                     {
-                        await _notificationTokenDomain.NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, new Message
                         {
                             Notification = new Notification
                             {
@@ -305,7 +306,7 @@ namespace PetRescue.Data.Domains
                         });
                     }
                 }
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;
@@ -324,7 +325,7 @@ namespace PetRescue.Data.Domains
                         Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
                     }
                 };
-                await _notificationTokenDomain.NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
+                await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
                 _petProfileRepo.UpdatePetProfile(new UpdatePetProfileModel 
                 {
                     PetProfileId = form.PetProfileId,
@@ -339,7 +340,7 @@ namespace PetRescue.Data.Domains
                         UserId = form.InsertedBy
                     }
                 };
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return result;
             }
             return null;

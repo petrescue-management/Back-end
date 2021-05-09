@@ -13,17 +13,19 @@ namespace PetRescue.Data.Domains
     {
         private readonly IAdoptionReportTrackingRepository _adoptionReportTrackingRepo;
         private readonly IUserRepository _userRepo;
-        public AdoptionReportTrackingDomain(IUnitOfWork uow, IAdoptionReportTrackingRepository adoptionReportTrackingRepo, IUserRepository userRepo) : base(uow)
+        public AdoptionReportTrackingDomain(IUnitOfWork uow, 
+            IAdoptionReportTrackingRepository adoptionReportTrackingRepo, 
+            IUserRepository userRepo) : base(uow)
         {
             this._adoptionReportTrackingRepo = adoptionReportTrackingRepo;
             this._userRepo = userRepo;
         }
-        public bool Create(AdoptionReportTrackingCreateModel model, Guid insertedBy, string path)
+        public bool Create(AdoptionReportTrackingCreateModel model, Guid insertedBy)
         {
             var adoptionReport = _adoptionReportTrackingRepo.Create(model, insertedBy);
             if (adoptionReport != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;
@@ -33,7 +35,7 @@ namespace PetRescue.Data.Domains
             var adoptionReport = _adoptionReportTrackingRepo.Edit(model, insertedBy);
             if (adoptionReport != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;

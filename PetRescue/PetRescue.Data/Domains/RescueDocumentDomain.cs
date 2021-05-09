@@ -19,7 +19,11 @@ namespace PetRescue.Data.Domains
         private readonly IUserRepository _userRepo;
         private readonly IPetProfileRepository _petProfileRepo;
         private readonly DbContext _context;
-        public RescueDocumentDomain(IUnitOfWork uow, IRescueDocumentRepository rescueDocumentRepo, IUserRepository userRepo, IPetProfileRepository petProfileRepo, DbContext context) : base(uow)
+        public RescueDocumentDomain(IUnitOfWork uow, 
+            IRescueDocumentRepository rescueDocumentRepo, 
+            IUserRepository userRepo, 
+            IPetProfileRepository petProfileRepo, 
+            DbContext context) : base(uow)
         {
             this._rescueDocumentRepo = rescueDocumentRepo;
             this._userRepo = userRepo;
@@ -74,9 +78,11 @@ namespace PetRescue.Data.Domains
                     PetDocumentStatus = rescueDocument.RescueDocumentStatus
                 });
             }
-            var result = new Dictionary<string, object>();
-            result["totalPages"] = total;
-            result["result"] = listRescueDocuments;
+            var result = new Dictionary<string, object>()
+            {
+                ["totalPages"] = total,
+                ["result"] = listRescueDocuments
+            };
             return result;
         }
         public bool Edit(RescueDocumentUpdateModel model, Guid insertedBy)
@@ -103,7 +109,7 @@ namespace PetRescue.Data.Domains
                         throw ex;
                     }
                 }
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;
@@ -166,7 +172,7 @@ namespace PetRescue.Data.Domains
             {
                 if (result != null)
                 {
-                    _uow.saveChanges();
+                    _uow.SaveChanges();
                     return true;
                 }
             }

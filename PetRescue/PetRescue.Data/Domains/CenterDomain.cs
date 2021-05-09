@@ -15,14 +15,16 @@ namespace PetRescue.Data.Domains
     {
         private readonly ICenterRepository _centerRepo;
         private readonly IWorkingHistoryRepository _workingHistoryRepo;
-        private readonly RescueDocumentDomain _rescueDocumentDomain;
         private readonly IRescueDocumentRepository _rescueDocumentRepo;
         private readonly IPetProfileRepository _petProfileRepo;
-        public CenterDomain(IUnitOfWork uow, ICenterRepository centerRepo, IWorkingHistoryRepository workingHistoryRepo, RescueDocumentDomain rescueDocumentDomain, IRescueDocumentRepository rescueDocumentRepo, IPetProfileRepository petProfileRepo) : base(uow)
+        public CenterDomain(IUnitOfWork uow, 
+            ICenterRepository centerRepo, 
+            IWorkingHistoryRepository workingHistoryRepo, 
+            IRescueDocumentRepository rescueDocumentRepo, 
+            IPetProfileRepository petProfileRepo) : base(uow)
         {
             this._centerRepo = centerRepo;
             this._workingHistoryRepo = workingHistoryRepo;
-            this._rescueDocumentDomain = rescueDocumentDomain;
             this._rescueDocumentRepo = rescueDocumentRepo;
             this._petProfileRepo = petProfileRepo;
         }
@@ -54,7 +56,7 @@ namespace PetRescue.Data.Domains
                     UpdatedAt = c.UpdatedAt,
                     CountOfVolunteer = _workingHistoryRepo.Get().Where(h => h.CenterId.Equals(c.CenterId) 
                     && h.IsActive == true && h.RoleName.Equals(RoleConstant.VOLUNTEER)).Count(),
-                    LastedDocuments = _rescueDocumentDomain.GetLastedRescueDocument(c.CenterId),
+                    LastedDocuments = _uow.GetService<RescueDocumentDomain>().GetLastedRescueDocument(c.CenterId),
                 }).ToList();
             return new SearchReturnModel
             {
@@ -76,7 +78,7 @@ namespace PetRescue.Data.Domains
         public CenterModel DeleteCenter(Guid id, Guid updateBy)
         {
             var center = _centerRepo.DeleteCenter(id, updateBy);
-            _uow.saveChanges();
+            _uow.SaveChanges();
             return center;
         }
         #endregion
@@ -94,7 +96,7 @@ namespace PetRescue.Data.Domains
         {
             //call CenterService
             var center = _centerRepo.UpdateCenter(model, updatedBy);
-            _uow.saveChanges();
+            _uow.SaveChanges();
             return center.CenterId.ToString();
         }
         #endregion
@@ -103,18 +105,18 @@ namespace PetRescue.Data.Domains
         public object GetCountForCenterHomePage(Guid centerId)
         {
             var records = _centerRepo.Get().AsQueryable();
-            var rescues = _rescueDocumentRepo.Get()
+            int rescues = _rescueDocumentRepo.Get()
                 .Where(d => d.CenterId.Equals(centerId)).Count();
 
-            var pets_adopted = _petProfileRepo.Get()
+            int pets_adopted = _petProfileRepo.Get()
                 .Where(p => p.CenterId.Equals(centerId))
                 .Where(p => p.PetStatus == PetStatusConst.ADOPTED).Count();
 
-            var pets_finding_owner = _petProfileRepo.Get()
+            int pets_finding_owner = _petProfileRepo.Get()
                 .Where(p => p.CenterId.Equals(centerId))
                 .Where(p => p.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
 
-            var volunteers = _workingHistoryRepo.Get()
+            int volunteers = _workingHistoryRepo.Get()
                 .Where(u => u.CenterId.Equals(centerId) && u.IsActive == true && u.RoleName.Equals(RoleConstant.VOLUNTEER)).Count();
             return new
             {
@@ -175,7 +177,7 @@ namespace PetRescue.Data.Domains
             var result = _centerRepo.Update(center).Entity;
             if(result != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;

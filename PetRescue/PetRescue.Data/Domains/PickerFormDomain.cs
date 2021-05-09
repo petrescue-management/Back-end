@@ -17,7 +17,8 @@ namespace PetRescue.Data.Domains
     public class PickerFormDomain : BaseDomain
     {
         private readonly IPickerFormRepository _pickerFormRepo;
-        public PickerFormDomain(IUnitOfWork uow, IPickerFormRepository pickerFormRepo) : base(uow)
+        public PickerFormDomain(IUnitOfWork uow, 
+            IPickerFormRepository pickerFormRepo) : base(uow)
         {
             this._pickerFormRepo = pickerFormRepo;
         }
@@ -56,7 +57,7 @@ namespace PetRescue.Data.Domains
             var pickerForm = _pickerFormRepo.UpdatePickerFormStatus(model, updatedBy);
             if(pickerForm != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return pickerForm;
             }
             return null;
@@ -69,7 +70,7 @@ namespace PetRescue.Data.Domains
             var pickerForm = _pickerFormRepo.CreatePickerForm(model, insertedBy);
             if(pickerForm != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return pickerForm;
             }
             return null;

@@ -12,7 +12,8 @@ namespace PetRescue.Data.Domains
     public class WorkingHistoryDomain : BaseDomain
     {
         private readonly IWorkingHistoryRepository _workingHistoryRepo;
-        public WorkingHistoryDomain(IUnitOfWork uow, IWorkingHistoryRepository workingHistoryRepo) : base(uow)
+        public WorkingHistoryDomain(IUnitOfWork uow, 
+            IWorkingHistoryRepository workingHistoryRepo) : base(uow)
         {
             this._workingHistoryRepo = workingHistoryRepo;
         }

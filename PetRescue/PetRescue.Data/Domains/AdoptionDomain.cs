@@ -79,7 +79,7 @@ namespace PetRescue.Data.Domains
                 AdoptedAt = adoption.InsertedAt,
                 ReturnedAt = adoption.UpdatedAt
             };
-            uow.saveChanges();
+            uow.SaveChanges();
             return result;
         }
         #endregion*/
@@ -121,7 +121,7 @@ namespace PetRescue.Data.Domains
                         Reason = ErrorConst.CancelReasonAdoptionForm
                     },insertedBy);
                 }
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 var newJson
                             = new NotificationRemindReportAfterAdopt
                             {
@@ -154,9 +154,9 @@ namespace PetRescue.Data.Domains
             }
             return model;
         }
-        public void Remind(Guid ownerId, string path)
+        public async void Remind(Guid ownerId, string path)
         {
-            _uow.GetService<NotificationTokenDomain>().NotificationForUserAlertAfterAdoption(path, ownerId,
+            await _uow.GetService<NotificationTokenDomain>().NotificationForUserAlertAfterAdoption(path, ownerId,
                    ApplicationNameHelper.USER_APP);
         }
         #endregion
@@ -180,7 +180,7 @@ namespace PetRescue.Data.Domains
                     };
                     await notificationTokenDomain.NotificationForManager(path, result.AdoptionRegistration.PetProfile.CenterId, message);
                 }
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;
@@ -260,7 +260,7 @@ namespace PetRescue.Data.Domains
                         string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
                         File.WriteAllText(FILEPATH, output);
 
-                        uow.saveChanges();
+                        uow.SaveChanges();
                         return result;
                     }
                     else if(model.Status == AdoptionStatusConst.DONTGET)
@@ -293,7 +293,7 @@ namespace PetRescue.Data.Domains
                             AdoptionFormId = adoption.AdoptionRegistrationId,
                             UserId = adoption.AdoptionRegistration.InsertedBy
                         };
-                        uow.saveChanges();
+                        uow.SaveChanges();
                         return result;
                     }
                     return null;
@@ -325,7 +325,7 @@ namespace PetRescue.Data.Domains
                 adoptions = adoptions.Skip(page * limit).Take(limit);
             }
             var listAdoption = new List<AdoptionViewModel>();
-            foreach(var adoption in adoptions)
+            foreach (var adoption in adoptions)
             {
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
                 listAdoption.Add(new AdoptionViewModel {
@@ -356,9 +356,11 @@ namespace PetRescue.Data.Domains
                     Username = adoption.AdoptionRegistration.UserName
                 });
             }
-            var result = new Dictionary<string, object>();
-            result["totalPages"] = total;
-            result["result"] = listAdoption;
+            var result = new Dictionary<string, object>()
+            {
+                ["totalPages"] = total,
+                ["result"] = listAdoption
+            };
             return result;
         }
         public List<AdoptionViewModelMobile> GetListAdoptionByUserId(Guid userId)

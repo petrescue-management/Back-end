@@ -20,24 +20,28 @@ namespace PetRescue.Data.Domains
         private readonly IUserRepository _userRepo;
         private readonly ICenterRepository _centerRepo;
         private readonly IWorkingHistoryRepository _workingHistoryRepo;
-        private readonly UserRoleDomain _userRoleDomain;
         private readonly IRoleRepository _roleRepo;
         private readonly IUserRoleRepository _userRoleRepo;
         private readonly INotificationTokenRepository _notificationTokenRepo;
         private readonly DbContext _context;
-        private readonly NotificationTokenDomain _notificationTokenDomain;
-        public UserDomain(IUnitOfWork uow, IUserProfileRepository userProfileRepo, IUserRepository userRepo, ICenterRepository centerRepo, IWorkingHistoryRepository workingHistoryRepo, UserRoleDomain userRoleDomain, IRoleRepository roleRepo, IUserRoleRepository userRoleRepo, INotificationTokenRepository notificationTokenRepo, DbContext context, NotificationTokenDomain notificationTokenDomain) : base(uow)
+        public UserDomain(IUnitOfWork uow, 
+            IUserProfileRepository userProfileRepo, 
+            IUserRepository userRepo, 
+            ICenterRepository centerRepo, 
+            IWorkingHistoryRepository workingHistoryRepo, 
+            IRoleRepository roleRepo, 
+            IUserRoleRepository userRoleRepo, 
+            INotificationTokenRepository notificationTokenRepo, 
+            DbContext context) : base(uow)
         {
             this._userProfileRepo = userProfileRepo;
             this._userRepo = userRepo;
             this._centerRepo = centerRepo;
             this._workingHistoryRepo = workingHistoryRepo;
-            this._userRoleDomain = userRoleDomain;
             this._roleRepo = roleRepo;
             this._userRoleRepo = userRoleRepo;
             this._notificationTokenRepo = notificationTokenRepo;
             this._context = context;
-            this._notificationTokenDomain = notificationTokenDomain;
         }
         public object GetUserDetail(string token)
         {
@@ -107,14 +111,14 @@ namespace PetRescue.Data.Domains
                 : _userProfileRepo.Edit(userProfile, model);
             if (result != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;
         }
         public string AddRoleManagerToUser(UserRoleUpdateModel model, Guid insertBy)
         {
-            var newRole = _userRoleDomain.RegistationRole(model.UserId, model.RoleName, insertBy);
+            var newRole = _uow.GetService<UserRoleDomain>().RegistationRole(model.UserId, model.RoleName, insertBy);
             if (newRole != null)
             {
                 return model.UserId.ToString();
@@ -153,7 +157,7 @@ namespace PetRescue.Data.Domains
                     RoleName = RoleConstant.VOLUNTEER,
                     UserId = Guid.Parse(result)
                 });
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return result;
             }
             return result;
@@ -161,6 +165,7 @@ namespace PetRescue.Data.Domains
         public string AddUserToCenter(AddNewRoleModel model)
         {
             var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserEmail.Equals(model.Email));
+            var _userRoleDomain = _uow.GetService<UserRoleDomain>();
             var result = "This is not found";
             if (currentUser != null)
             {
@@ -284,7 +289,8 @@ namespace PetRescue.Data.Domains
         }
         public async Task<string> RemoveVolunteerOfCenter(RemoveVolunteerRoleModel model, string path)
         {
-            
+            var _userRoleDomain = _uow.GetService<UserRoleDomain>();
+            var _notificationTokenDomain = _uow.GetService<NotificationTokenDomain>();
             var userRole = _userRoleDomain.CheckRoleOfUser(new UserRoleUpdateModel
             {
                 RoleName = RoleConstant.VOLUNTEER,
@@ -324,11 +330,13 @@ namespace PetRescue.Data.Domains
                         var notificationToken = _notificationTokenDomain.FindByApplicationNameAndUserId(ApplicationNameHelper.VOLUNTEER_APP, currentUser.UserId);
                         if(notificationToken != null)
                         {
-                            var listToken = new List<string>();
-                            listToken.Add(notificationToken.DeviceToken);
+                            var listToken = new List<string>() 
+                            {
+                                notificationToken.DeviceToken
+                            };
                             await fcm.UnsubscribeFromTopicAsync(listToken, model.CenterId.ToString());
                         }
-                        _uow.saveChanges();
+                        _uow.SaveChanges();
                         transaction.Commit();
                         result = "";
                     }
@@ -399,9 +407,11 @@ namespace PetRescue.Data.Domains
                         UserId = user.UserId
                     });
                 }
-                var result = new Dictionary<string, object>();
-                result["totalPages"] = total;
-                result["result"] = listUsers;
+                var result = new Dictionary<string, object>()
+                {
+                    ["totalPages"] = total,
+                    ["result"] = listUsers
+                };
                 return result;
             }
             return null;

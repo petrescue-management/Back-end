@@ -22,7 +22,14 @@ namespace PetRescue.Data.Domains
         private readonly IAdoptionRegistrationFormRepository _adoptionRegistrationFormRepo;
         private readonly IRescueDocumentRepository _rescueDocumentRepo;
         private readonly IUserRepository _userRepo;
-        public PetProfileDomain(IUnitOfWork uow, IPetTypeRepository petTypeRepo, IPetProfileRepository petProfileRepo, IPetFurColorRepository petFurColorRepo, IPetBreedRepository petBreedRepo, IAdoptionRegistrationFormRepository adoptionRegistrationFormRepo, IRescueDocumentRepository rescueDocumentRepo, IUserRepository userRepo) : base(uow)
+        public PetProfileDomain(IUnitOfWork uow, 
+            IPetTypeRepository petTypeRepo, 
+            IPetProfileRepository petProfileRepo, 
+            IPetFurColorRepository petFurColorRepo, 
+            IPetBreedRepository petBreedRepo, 
+            IAdoptionRegistrationFormRepository adoptionRegistrationFormRepo, 
+            IRescueDocumentRepository rescueDocumentRepo, 
+            IUserRepository userRepo) : base(uow)
         {
             this._petBreedRepo = petBreedRepo;
             this._petFurColorRepo = petFurColorRepo;
@@ -109,7 +116,7 @@ namespace PetRescue.Data.Domains
             var petProfile = _petProfileRepo.CreatePetProfile(model, insertBy, centerId);
             if(petProfile != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return petProfile;
             }
             return null;
@@ -121,7 +128,7 @@ namespace PetRescue.Data.Domains
             var petProfile = _petProfileRepo.UpdatePetProfile(model, updatedBy);
             if(petProfile != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return petProfile;
             }
             return null;
@@ -139,7 +146,7 @@ namespace PetRescue.Data.Domains
             var newPetFurColor = _petFurColorRepo.Create(model);
             if (newPetFurColor != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;
@@ -150,7 +157,7 @@ namespace PetRescue.Data.Domains
             if (petFurColor != null)
             {
                 petFurColor = _petFurColorRepo.Edit(model, petFurColor);
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;
@@ -160,7 +167,7 @@ namespace PetRescue.Data.Domains
             var newPetBreed = _petBreedRepo.Create(model);
             if (newPetBreed != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;
@@ -171,7 +178,7 @@ namespace PetRescue.Data.Domains
             if (petBreed != null)
             {
                 petBreed = _petBreedRepo.Edit(model, petBreed);
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;
@@ -181,7 +188,7 @@ namespace PetRescue.Data.Domains
             var newPetType = _petTypeRepo.Create(model);
             if (newPetType != null)
             {
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;
@@ -192,7 +199,7 @@ namespace PetRescue.Data.Domains
             if (petType != null)
             {
                 petType = _petTypeRepo.Edit(petType, model);
-                _uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;

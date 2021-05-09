@@ -17,16 +17,15 @@ namespace PetRescue.Data.Domains
     {
         private readonly INotificationTokenRepository _notificationTokenRepo;
         private readonly IUserRoleRepository _userRoleRepo;
-        private readonly IUserRepository _userRepo;
         private readonly IWorkingHistoryRepository _workingHistoryRepo;
-        private readonly UserDomain _userDomain;
-        public NotificationTokenDomain(IUnitOfWork uow, INotificationTokenRepository notificationTokenRepo, IUserRoleRepository userRoleRepo, IUserRepository userRepo, IWorkingHistoryRepository workingHistoryRepo, UserDomain userDomain) : base(uow)
+        public NotificationTokenDomain(IUnitOfWork uow, 
+            INotificationTokenRepository notificationTokenRepo, 
+            IUserRoleRepository userRoleRepo,  
+            IWorkingHistoryRepository workingHistoryRepo) : base(uow)
         {
             this._notificationTokenRepo = notificationTokenRepo;
             this._userRoleRepo = userRoleRepo;
-            this._userRepo = userRepo;
             this._workingHistoryRepo = workingHistoryRepo;
-            this._userDomain = userDomain;
         }
         public NotificationToken CreateNotificationToken(NotificationTokenCreateModel model)
         {
@@ -91,7 +90,7 @@ namespace PetRescue.Data.Domains
         {
             try
             {
-                var listToken = _userDomain.GetListDeviceTokenByRoleAndApplication(RoleConstant.ADMIN, ApplicationNameHelper.SYSTEM_ADMIN_APP);
+                var listToken = _uow.GetService<UserDomain>().GetListDeviceTokenByRoleAndApplication(RoleConstant.ADMIN, ApplicationNameHelper.SYSTEM_ADMIN_APP);
                 //send notification to sysadmin
                 if (listToken.Count > 0)
                 {
@@ -128,7 +127,7 @@ namespace PetRescue.Data.Domains
             try
             {
                 var firebaseExtensions = new FireBaseExtentions();
-                var notificationToken = _userDomain.GetManagerDeviceTokenByCenterId(centerId);
+                var notificationToken = _uow.GetService<UserDomain>().GetManagerDeviceTokenByCenterId(centerId);
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
                 Message message = new Message()
@@ -284,7 +283,7 @@ namespace PetRescue.Data.Domains
             try
             {
                 var firebaseExtensions = new FireBaseExtentions();
-                var notificationToken = _userDomain.GetManagerDeviceTokenByCenterId(centerId);
+                var notificationToken = _uow.GetService<UserDomain>().GetManagerDeviceTokenByCenterId(centerId);
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
                 if (notificationToken != null)
@@ -311,13 +310,15 @@ namespace PetRescue.Data.Domains
                 var deviceToken = FindByApplicationNameAndUserId(applicationName, userId);
                 if (deviceToken != null)
                 {
-                    var message = new Message();
-                    message.Notification = new Notification
+                    var message = new Message() 
                     {
-                        Title = NotificationTitleHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_TITLE,
-                        Body = NotificationBodyHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY,
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_TITLE,
+                            Body = NotificationBodyHelper.RESCUE_HAVE_VOLUNTEER_APPROVE_PICKED_BODY,
+                        },
+                        Token = deviceToken.DeviceToken
                     };
-                    message.Token = deviceToken.DeviceToken;
                     await fcm.SendAsync(message);
                 }
                 app.Delete();
@@ -339,13 +340,15 @@ namespace PetRescue.Data.Domains
                 var deviceToken = FindByApplicationNameAndUserId(applicationName, userId);
                 if (deviceToken != null)
                 {
-                    var message = new Message();
-                    message.Notification = new Notification
+                    var message = new Message()
                     {
-                        Title = NotificationTitleHelper.FINDER_FORM_OUT_DATE_TITLE,
-                        Body = NotificationBodyHelper.FINDER_FORM_OUT_DATE_BODY,
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.FINDER_FORM_OUT_DATE_TITLE,
+                            Body = NotificationBodyHelper.FINDER_FORM_OUT_DATE_BODY,
+                        },
+                        Token = deviceToken.DeviceToken
                     };
-                    message.Token = deviceToken.DeviceToken;
                     await fcm.SendAsync(message);
                 }
                 app.Delete();
@@ -367,13 +370,15 @@ namespace PetRescue.Data.Domains
                 var deviceToken = FindByApplicationNameAndUserId(applicationName, userId);
                 if (deviceToken != null)
                 {
-                    var message = new Message();
-                    message.Notification = new Notification
+                    var message = new Message()
                     {
-                        Title = NotificationTitleHelper.ALERT_AFTER_ADOPTION_TITLE,
-                        Body = NotificationBodyHelper.ALERT_AFTER_ADOPTION_BODY,
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.ALERT_AFTER_ADOPTION_TITLE,
+                            Body = NotificationBodyHelper.ALERT_AFTER_ADOPTION_BODY,
+                        },
+                        Token = deviceToken.DeviceToken
                     };
-                    message.Token = deviceToken.DeviceToken;
                     await fcm.SendAsync(message);
                 }
                 app.Delete();

@@ -15,7 +15,9 @@ namespace PetRescue.Data.Domains
         private readonly IUserRoleRepository _userRoleRepo;
         private readonly IRoleRepository _roleRepo;
 
-        public UserRoleDomain(IUnitOfWork uow, IUserRoleRepository userRoleRepo, IRoleRepository roleRepo) : base(uow)
+        public UserRoleDomain(IUnitOfWork uow, 
+            IUserRoleRepository userRoleRepo, 
+            IRoleRepository roleRepo) : base(uow)
         {
             this._userRoleRepo = userRoleRepo;
             this._roleRepo = roleRepo;
