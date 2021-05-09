@@ -124,7 +124,6 @@ namespace PetRescue.WebApi.Controllers
                 var result = _userDomain.AddVolunteerToCenter(new AddNewRoleModel
                 {
                     Email = model.Email,
-                    CenterId = Guid.Parse(_currentCenterId),
                     RoleName = RoleConstant.VOLUNTEER,
                     InsertBy = Guid.Parse(_currentUserId),
                     DoB = model.Dob,

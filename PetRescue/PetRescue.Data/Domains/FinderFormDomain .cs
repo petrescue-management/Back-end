@@ -22,17 +22,13 @@ namespace PetRescue.Data.Domains
     {
         private readonly IFinderFormRepository _finderFormRepo;
         private readonly IUserRepository _userRepo;
-        private readonly IWorkingHistoryRepository _workingHistoryRepo;
         public FinderFormDomain(IUnitOfWork uow,
             IFinderFormRepository finderFormRepo,
-            IUserRepository userRepo, 
-            IWorkingHistoryRepository workingHistoryRepo) : base(uow)
+            IUserRepository userRepo) : base(uow)
         {
             this._finderFormRepo = finderFormRepo;
             this._userRepo = userRepo;
-            this._workingHistoryRepo = workingHistoryRepo;
         }
-
         #region SEARCH
         public SearchReturnModel SearchFinderForm(SearchModel model)
         {
@@ -50,7 +46,7 @@ namespace PetRescue.Data.Domains
                     Lng = f.Lng,
                     FinderFormImgUrl = f.FinderFormImgUrl,
                     PetAttribute = f.PetAttribute,
-                    FinderDescription = f.FinderDescription,
+                    Description = f.Description,
                     FinderFormStatus = f.FinderFormStatus,
                     Phone = f.Phone,
                     InsertedBy = f.InsertedBy,
@@ -69,11 +65,11 @@ namespace PetRescue.Data.Domains
         {
 
             var finderForm = _finderFormRepo.GetFinderFormById(id);
-            var user = _userRepo.GetUserById(finderForm.InsertedBy);
+            var user = _userRepo.GetUserById((Guid)finderForm.InsertedBy);
             var result = new FinderFormDetailModel
             {
                 FinderDate = finderForm.InsertedAt,
-                FinderDescription = finderForm.FinderDescription,
+                Description = finderForm.Description,
                 FinderFormId = finderForm.FinderFormId,
                 FinderFormStatus = finderForm.FinderFormStatus,
                 FinderImageUrl = finderForm.FinderFormImgUrl,
@@ -114,7 +110,7 @@ namespace PetRescue.Data.Domains
                     if (model.Status == FinderFormStatusConst.RESCUING)
                     {
                         
-                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, (Guid)finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
                         {
                             Notification = new Notification
                             {
@@ -153,34 +149,34 @@ namespace PetRescue.Data.Domains
 
                     if (model.Status == FinderFormStatusConst.CANCELED)
                     {
-                        await _uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, finderForm.InsertedBy,
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, (Guid)finderForm.InsertedBy,
                        ApplicationNameHelper.USER_APP);
                     }
                 }
-                else if (model.Status == FinderFormStatusConst.ARRIVED)
-                {
-                    var centerId = _workingHistoryRepo.Get().FirstOrDefault(s => s.UserId.Equals(updatedBy) && s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).CenterId;
-                    await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
-                    {
-                        Notification = new Notification
-                        {
-                            Title = NotificationTitleHelper.ARRIVED_RESCUE_PET_TITLE,
-                            Body = NotificationBodyHelper.ARRIVED_RESCUE_PET_BODY
-                        }
-                    });
-                    await _uow.GetService<NotificationTokenDomain>().NotificationForManager(path, centerId,
-                    new Message
-                    {
-                        Notification = new Notification
-                        {
-                            Title = NotificationTitleHelper.VOLUNTEER_ARRVING_TITLE,
-                            Body = NotificationBodyHelper.VOLUNTEER_ARRVING_BODY
-                        }
-                    });
-                }
+                //else if (model.Status == FinderFormStatusConst.ARRIVED)
+                //{
+                    
+                //    await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, (Guid)finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                //    {
+                //        Notification = new Notification
+                //        {
+                //            Title = NotificationTitleHelper.ARRIVED_RESCUE_PET_TITLE,
+                //            Body = NotificationBodyHelper.ARRIVED_RESCUE_PET_BODY
+                //        }
+                //    });
+                //    await _uow.GetService<NotificationTokenDomain>().NotificationForManager(path, centerId,
+                //    new Message
+                //    {
+                //        Notification = new Notification
+                //        {
+                //            Title = NotificationTitleHelper.VOLUNTEER_ARRVING_TITLE,
+                //            Body = NotificationBodyHelper.VOLUNTEER_ARRVING_BODY
+                //        }
+                //    });
+                //}
                 else if (model.Status == FinderFormStatusConst.DONE)
                 {
-                    await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP,
+                    await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, (Guid)finderForm.InsertedBy, ApplicationNameHelper.USER_APP,
                             new Message
                             {
                                 Notification = new Notification
@@ -197,9 +193,9 @@ namespace PetRescue.Data.Domains
                     Lng = finderForm.Lng,
                     FinderFormImgUrl = finderForm.FinderFormImgUrl,
                     FinderFormVideoUrl = finderForm.FinderFormVidUrl,
-                    CanceledReason = finderForm.CanceledReason,
+                    CanceledReason = finderForm.DroppedReason,
                     PetAttribute = finderForm.PetAttribute,
-                    FinderDescription = finderForm.FinderDescription,
+                    Description = finderForm.Description,
                     FinderFormStatus = finderForm.FinderFormStatus,
                     Phone = finderForm.Phone,
                     InsertedBy = finderForm.InsertedBy,
@@ -222,7 +218,7 @@ namespace PetRescue.Data.Domains
                 {
                     if (roleName.Contains(RoleConstant.VOLUNTEER))
                     {
-                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, (Guid)finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
                         {
                             Notification = new Notification
                             {
@@ -333,19 +329,19 @@ namespace PetRescue.Data.Domains
                 var finderUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
                 result.Add(new FinderFormDetailModel
                 {
-                    FinderDate = finderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
-                    FinderDescription = finderForm.FinderDescription,
+                    FinderDate = finderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    Description = finderForm.Description,
                     FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
                     FinderImageUrl = finderForm.FinderFormImgUrl,
-                    FinderName = finderUser.UserProfile.LastName + " " + finderUser.UserProfile.FirstName,
+                    FinderName = finderUser.UserNavigation.LastName + " " + finderUser.UserNavigation.FirstName,
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,
                     Phone = finderForm.Phone,
                     FinderFormVidUrl = finderForm.FinderFormVidUrl,
                     InsertedBy = finderForm.InsertedBy,
-                    CanceledReason = finderForm.CanceledReason
+                    CanceledReason = finderForm.DroppedReason
                 });
             }
             return result;
@@ -359,18 +355,18 @@ namespace PetRescue.Data.Domains
                 var user = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(userId));
                 result.Add(new FinderFormDetailModel
                 {
-                    FinderDate = finderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
-                    FinderDescription = finderForm.FinderDescription,
+                    FinderDate = finderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    Description = finderForm.Description,
                     FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
                     FinderImageUrl = finderForm.FinderFormImgUrl,
-                    FinderName = user.UserProfile.LastName + " " + user.UserProfile.FirstName,
+                    FinderName = user.UserNavigation.LastName + " " + user.UserNavigation.FirstName,
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,
                     Phone = finderForm.Phone,
                     FinderFormVidUrl = finderForm.FinderFormVidUrl,
-                    CanceledReason = finderForm.CanceledReason,
+                    CanceledReason = finderForm.DroppedReason,
                     InsertedBy = finderForm.InsertedBy
 
                 });
@@ -386,19 +382,19 @@ namespace PetRescue.Data.Domains
                 var user = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
                 result.Add(new FinderFormDetailModel
                 {
-                    FinderDate = finderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
-                    FinderDescription = finderForm.FinderDescription,
+                    FinderDate = finderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    Description = finderForm.Description,
                     FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
                     FinderImageUrl = finderForm.FinderFormImgUrl,
-                    FinderName = user.UserProfile.LastName + " " + user.UserProfile.FirstName,
+                    FinderName = user.UserNavigation.LastName + " " + user.UserNavigation.FirstName,
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,
                     Phone = finderForm.Phone,
                     FinderFormVidUrl = finderForm.FinderFormVidUrl,
                     InsertedBy = finderForm.InsertedBy,
-                    CanceledReason = finderForm.CanceledReason
+                    CanceledReason = finderForm.DroppedReason
                 });
             }
             return result;
@@ -411,23 +407,23 @@ namespace PetRescue.Data.Domains
             {
                 var temp = new FinderFormViewModel2
                 {
-                    FinderDate = finder.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                    FinderDate = finder.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     FinderFormStatus = finder.FinderFormStatus,
-                    FinderDescription = finder.FinderDescription,
+                    FinderDescription = finder.Description,
                     FinderFormId = finder.FinderFormId,
                     FinderImageUrl = finder.FinderFormImgUrl,
                     FinderFormVidUrl = finder.FinderFormVidUrl,
                     PetAttribute = finder.PetAttribute,
-                    PickerDate = finder.RescueDocument.PickerForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
-                    PickerFormDescription = finder.RescueDocument.PickerForm.PickerDescription,
+                    PickerDate = finder.RescueDocument.PickerForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    PickerFormDescription = finder.RescueDocument.PickerForm.Description,
                     PickerFormId = finder.RescueDocument.PickerForm.PickerFormId,
-                    PickerFormImg = finder.RescueDocument.PickerForm.PickerImageUrl,
-                    CanceledReason = finder.CanceledReason
+                    PickerFormImg = finder.RescueDocument.PickerForm.PickerFormImgUrl,
+                    CanceledReason = finder.DroppedReason
                 };
                 var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finder.InsertedBy));
-                temp.FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
+                temp.FinderName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName;
                 currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finder.UpdatedBy));
-                temp.PickerName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
+                temp.PickerName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName;
                 result.Add(temp);
             }
             return result;

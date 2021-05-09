@@ -14,17 +14,14 @@ namespace PetRescue.Data.Domains
     public class CenterDomain : BaseDomain
     {
         private readonly ICenterRepository _centerRepo;
-        private readonly IWorkingHistoryRepository _workingHistoryRepo;
         private readonly IRescueDocumentRepository _rescueDocumentRepo;
         private readonly IPetProfileRepository _petProfileRepo;
         public CenterDomain(IUnitOfWork uow, 
             ICenterRepository centerRepo, 
-            IWorkingHistoryRepository workingHistoryRepo, 
             IRescueDocumentRepository rescueDocumentRepo, 
             IPetProfileRepository petProfileRepo) : base(uow)
         {
-            this._centerRepo = centerRepo;
-            this._workingHistoryRepo = workingHistoryRepo;
+            this._centerRepo = centerRepo;            
             this._rescueDocumentRepo = rescueDocumentRepo;
             this._petProfileRepo = petProfileRepo;
         }
@@ -54,8 +51,6 @@ namespace PetRescue.Data.Domains
                     CenterImageUrl = c.CenterImgUrl,
                     InsertedAt = c.InsertedAt,
                     UpdatedAt = c.UpdatedAt,
-                    CountOfVolunteer = _workingHistoryRepo.Get().Where(h => h.CenterId.Equals(c.CenterId) 
-                    && h.IsActive == true && h.RoleName.Equals(RoleConstant.VOLUNTEER)).Count(),
                     LastedDocuments = _uow.GetService<RescueDocumentDomain>().GetLastedRescueDocument(c.CenterId),
                 }).ToList();
             return new SearchReturnModel
@@ -115,32 +110,21 @@ namespace PetRescue.Data.Domains
             int pets_finding_owner = _petProfileRepo.Get()
                 .Where(p => p.CenterId.Equals(centerId))
                 .Where(p => p.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
-
-            int volunteers = _workingHistoryRepo.Get()
-                .Where(u => u.CenterId.Equals(centerId) && u.IsActive == true && u.RoleName.Equals(RoleConstant.VOLUNTEER)).Count();
             return new
             {
                 rescues = rescues,
                 petsAdopted = pets_adopted,
                 petsFindingOwner = pets_finding_owner,
-                volunteers = volunteers
             };
         }
         #endregion
         public List<CenterLocationModel> GetListCenterLocation()
         {
-            var works = _workingHistoryRepo.Get().Where(s => s.IsActive && s.RoleName.Equals(RoleConstant.VOLUNTEER)).ToList();
             var setCenterId = new HashSet<Guid>();
-            foreach (var work in works)
-            {
-                setCenterId.Add((Guid)work.CenterId);
-            }
             var result = new List<CenterLocationModel>();
-            if (setCenterId.Count != 0)
-            {
                 foreach (var centerId in setCenterId.ToList())
                 {
-                    var temp = _centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId));
+                    var temp = _centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId) && s.CenterStatus == CenterStatusConst.OPENNING);
                     result.Add(new CenterLocationModel
                     {
                         CenterId = temp.CenterId.ToString(),
@@ -148,7 +132,6 @@ namespace PetRescue.Data.Domains
                         Lng = (double)temp.Lng
                     });
                 }
-            }
             return result;
         }
         public List<CenterViewModel> GetListCenter()

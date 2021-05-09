@@ -25,15 +25,14 @@ namespace PetRescue.Data.ViewModels
             this._env = environment;
             this._volunteerRegistrationFormDomain = volunteerRegistrationFormDomain;
         }
-        [Authorize(Roles = RoleConstant.MANAGER)]
+        [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpGet]
         [Route("get-list-volunteer-registration-form")]
         public IActionResult GetListVolunteerRegistrationForm()
         {
             try
             {
-                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var result = _volunteerRegistrationFormDomain.GetListVolunteerRegistrationForm(Guid.Parse(currentCenterId));
+                var result = _volunteerRegistrationFormDomain.GetListVolunteerRegistrationForm();
                 return Success(result);
             }catch(Exception ex)
             {

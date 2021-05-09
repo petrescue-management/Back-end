@@ -42,7 +42,7 @@ namespace PetRescue.Data.Repositories
                     PetFurColorId = model.PetFurColorId,
                     PetImgUrl = model.PetImgUrl,
                     PetStatus = model.PetStatus,
-                    PetProfileDescription = model.PetProfileDescription,
+                    Description = model.Description,
                     CenterId = centerId,
                     InsertedBy = insertedBy,
                     InsertedAt = DateTime.UtcNow,
@@ -61,7 +61,7 @@ namespace PetRescue.Data.Repositories
                     PetFurColorId = model.PetFurColorId,
                     PetImgUrl = model.PetImgUrl,
                     PetStatus = model.PetStatus,
-                    PetProfileDescription = model.PetProfileDescription,
+                    Description = model.Description,
                     CenterId = centerId,
                     InsertedBy = insertedBy,
                     InsertedAt = DateTime.UtcNow,
@@ -86,7 +86,7 @@ namespace PetRescue.Data.Repositories
                 PetFurColorId = petProfile.PetFurColorId,
                 PetImgUrl = petProfile.PetImgUrl,
                 PetStatus = petProfile.PetStatus,
-                PetProfileDescription = petProfile.PetProfileDescription,
+                Description = petProfile.Description,
                 CenterId = petProfile.CenterId,
                 InsertedBy = petProfile.InsertedBy,
                 InsertedAt = petProfile.InsertedAt
@@ -100,8 +100,8 @@ namespace PetRescue.Data.Repositories
         private PetProfile PrepareUpdate(UpdatePetProfileModel model, Guid updatedBy)
         {
             var petProfile = Get().FirstOrDefault(s => s.PetProfileId.Equals(model.PetProfileId));
-            if (model.PetProfileDescription != null)
-                petProfile.PetProfileDescription = model.PetProfileDescription;
+            if (model.Description != null)
+                petProfile.Description = model.Description;
             if (model.PetName != null)
                 petProfile.PetName = model.PetName;
             if (model.PetStatus != 0)
@@ -138,7 +138,7 @@ namespace PetRescue.Data.Repositories
                 PetFurColorId = petProfile.PetFurColorId,
                 PetImgUrl = petProfile.PetImgUrl,
                 PetStatus = petProfile.PetStatus,
-                PetProfileDescription = petProfile.PetProfileDescription,
+                Description = petProfile.Description,
                 CenterId = petProfile.CenterId,
                 InsertedBy = petProfile.InsertedBy,
                 InsertedAt = petProfile.InsertedAt,
@@ -159,7 +159,7 @@ namespace PetRescue.Data.Repositories
                {
                    PetDocumentId = p.RescueDocumentId,
                    CenterId = p.CenterId,
-                   PetProfileDescription = p.PetProfileDescription,
+                   Description = p.Description,
                    PetAge = p.PetAge,
                    PetBreedId = p.PetBreedId,
                    PetBreedName = p.PetBreed.PetBreedName,
@@ -184,7 +184,7 @@ namespace PetRescue.Data.Repositories
                {
                    PetDocumentId = p.RescueDocumentId,
                    CenterId = p.CenterId,
-                   PetProfileDescription = p.PetProfileDescription,
+                   Description = p.Description,
                    PetAge = p.PetAge,
                    PetBreedId = p.PetBreedId,
                    PetBreedName = p.PetBreed.PetBreedName,
@@ -197,7 +197,7 @@ namespace PetRescue.Data.Repositories
                    PetProfileId = p.PetProfileId,
                    CenterAddress = p.Center.Address,
                    CenterName = p.Center.CenterName,
-                   InsertedAt = p.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                   InsertedAt = p.InsertedAt,
                    InsertedBy = p.InsertedBy,
                }).FirstOrDefault();
             return result;

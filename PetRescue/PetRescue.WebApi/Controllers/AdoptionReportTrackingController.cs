@@ -65,7 +65,7 @@ namespace PetRescue.WebApi.Controllers
             {
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _adoptionReportTrackingDomain.Create(model, Guid.Parse(currentUserId), path);
+                var result = _adoptionReportTrackingDomain.Create(model, Guid.Parse(currentUserId));
                 if (result)
                 {
                     return Success(result);

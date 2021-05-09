@@ -48,7 +48,6 @@ namespace PetRescue.Data.Repositories
             User user = new User
             {
                 UserEmail = model.Email,
-                IsBelongToCenter = false,
             };
             return user;  
         }
@@ -57,7 +56,6 @@ namespace PetRescue.Data.Repositories
             var newUser = new User
             {
                 UserId = Guid.NewGuid(),
-                IsBelongToCenter = model.IsBelongToCenter,
                 UserEmail = model.Email
             };
             return Create(newUser).Entity;
@@ -65,22 +63,22 @@ namespace PetRescue.Data.Repositories
         public User UpdateUserModel(User entity, UserUpdateModel model)
         {
             //entity.CenterId = model.CenterId;
-            entity.IsBelongToCenter = model.IsBelongToCenter;
+            entity.UserStatus = model.UserStatus;
             return Update(entity).Entity;
         }
         public UserModel GetUserById(Guid id)
         {
             return Get().Where(u => u.UserId.Equals(id))
-                .Include(u => u.UserProfile)
+                .Include(u => u.UserNavigation)
                 .Select(u => new UserModel { 
                 UserId = u.UserId,
                 UserEmail = u.UserEmail,
-                FirstName = u.UserProfile.FirstName,
-                LastName = u.UserProfile.LastName,
-                Dob = u.UserProfile.Dob,
-                Gender = u.UserProfile.Gender,
-                Phone = u.UserProfile.Phone,
-                ImageUrl = u.UserProfile.ImageUrl
+                FirstName = u.UserNavigation.FirstName,
+                LastName = u.UserNavigation.LastName,
+                Dob = u.UserNavigation.Dob,
+                Gender = u.UserNavigation.Gender,
+                Phone = u.UserNavigation.Phone,
+                ImageUrl = u.UserNavigation.UserImgUrl
                 }).FirstOrDefault();
         }
     }

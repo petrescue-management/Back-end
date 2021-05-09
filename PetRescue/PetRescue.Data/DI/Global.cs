@@ -55,8 +55,6 @@ namespace PetRescue.Data.DI
                 .AddScoped<RescueDocumentDomain>()
                 .AddScoped<IAdoptionReportTrackingRepository, AdoptionReportTrackingRepository>()
                 .AddScoped<AdoptionReportTrackingDomain>()
-                .AddScoped<IWorkingHistoryRepository, WorkingHistoryRepository>()
-                .AddScoped<WorkingHistoryDomain>()
                 .AddSingleton<IMyScopedService, MyScopedService>()
                 .AddScoped<ConfigDomain>();
 

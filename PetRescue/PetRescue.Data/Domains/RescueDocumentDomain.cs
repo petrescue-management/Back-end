@@ -54,10 +54,10 @@ namespace PetRescue.Data.Domains
                 var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.FinderForm.InsertedBy));
                 var finderForm = new FinderFormViewModel
                 {
-                    FinderDate = rescueDocument.FinderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
-                    FinderDescription = rescueDocument.FinderForm.FinderDescription,
+                    FinderDate = rescueDocument.FinderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    FinderDescription = rescueDocument.FinderForm.Description,
                     FinderImageUrl = rescueDocument.FinderForm.FinderFormImgUrl,
-                    FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
+                    FinderName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName,
                     Lat = rescueDocument.FinderForm.Lat,
                     Lng = rescueDocument.FinderForm.Lng,
                     FinderFormVidUrl = rescueDocument.FinderForm.FinderFormVidUrl
@@ -65,10 +65,10 @@ namespace PetRescue.Data.Domains
                 currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
                 var pickerForm = new PickerFormViewModel
                 {
-                    PickerDate = rescueDocument.PickerForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
-                    PickerDescription = rescueDocument.PickerForm.PickerDescription,
-                    PickerImageUrl = rescueDocument.PickerForm.PickerImageUrl,
-                    PickerName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
+                    PickerDate = rescueDocument.PickerForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    PickerDescription = rescueDocument.PickerForm.Description,
+                    PickerImageUrl = rescueDocument.PickerForm.Description,
+                    PickerName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName,
                 };
                 listRescueDocuments.Add(new RescueDocumentModel
                 {
@@ -99,7 +99,7 @@ namespace PetRescue.Data.Domains
                         {
                             foreach (var pet in model.Pets)
                             {
-                                _petProfileRepo.CreatePetProfile(pet, insertedBy, rescueDocument.CenterId);
+                                _petProfileRepo.CreatePetProfile(pet, insertedBy, (Guid)rescueDocument.CenterId);
                             }
                         }
                         transaction.Commit();
@@ -123,10 +123,10 @@ namespace PetRescue.Data.Domains
                 var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.FinderForm.InsertedBy));
                 var finderForm = new FinderFormViewModel
                 {
-                    FinderDate = rescueDocument.FinderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
-                    FinderDescription = rescueDocument.FinderForm.FinderDescription,
+                    FinderDate = rescueDocument.FinderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    FinderDescription = rescueDocument.FinderForm.Description,
                     FinderImageUrl = rescueDocument.FinderForm.FinderFormImgUrl,
-                    FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
+                    FinderName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName,
                     Lat = rescueDocument.FinderForm.Lat,
                     Lng = rescueDocument.FinderForm.Lng,
                     FinderFormVidUrl = rescueDocument.FinderForm.FinderFormVidUrl
@@ -134,10 +134,10 @@ namespace PetRescue.Data.Domains
                 currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
                 var pickerForm = new PickerFormViewModel
                 {
-                    PickerDate = rescueDocument.PickerForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
-                    PickerDescription = rescueDocument.PickerForm.PickerDescription,
-                    PickerImageUrl = rescueDocument.PickerForm.PickerImageUrl,
-                    PickerName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
+                    PickerDate = rescueDocument.PickerForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    PickerDescription = rescueDocument.PickerForm.Description,
+                    PickerImageUrl = rescueDocument.PickerForm.PickerFormImgUrl,
+                    PickerName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName,
                 };
                 result.FinderForm = finderForm;
                 result.PickerForm = pickerForm;

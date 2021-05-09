@@ -17,15 +17,12 @@ namespace PetRescue.Data.Domains
     {
         private readonly INotificationTokenRepository _notificationTokenRepo;
         private readonly IUserRoleRepository _userRoleRepo;
-        private readonly IWorkingHistoryRepository _workingHistoryRepo;
         public NotificationTokenDomain(IUnitOfWork uow, 
             INotificationTokenRepository notificationTokenRepo, 
-            IUserRoleRepository userRoleRepo,  
-            IWorkingHistoryRepository workingHistoryRepo) : base(uow)
+            IUserRoleRepository userRoleRepo) : base(uow)
         {
             this._notificationTokenRepo = notificationTokenRepo;
             this._userRoleRepo = userRoleRepo;
-            this._workingHistoryRepo = workingHistoryRepo;
         }
         public NotificationToken CreateNotificationToken(NotificationTokenCreateModel model)
         {
@@ -60,31 +57,8 @@ namespace PetRescue.Data.Domains
         }
         public NotificationToken FindByApplicationNameAndUserId(string applicationName,Guid userId)
         {
-            var notificationToken = _notificationTokenRepo.Get().FirstOrDefault(s => s.UserId == userId && s.ApplicationName.Equals(applicationName) && s.IsActive);
+            var notificationToken = _notificationTokenRepo.Get().FirstOrDefault(s => s.UserId == userId && s.ApplicationName.Equals(applicationName) && (bool)s.IsActived);
             return notificationToken;
-        }
-        public List<string> FindDeviceTokenByApplicationNameAndRoleNameAndCenterId(string applicationName,string roleName, Guid centerId)
-        {
-            var users = _workingHistoryRepo.Get().Where(s => s.CenterId.Equals(centerId) && s.IsActive && (bool)s.User.IsBelongToCenter);
-            var listId = new List<Guid>();
-            var result = new List<string>();
-            foreach(var user in users)
-            {
-                var userRole = _userRoleRepo.Get().FirstOrDefault(s => s.UserId.Equals(user) && s.IsActive && s.Role.RoleName.Equals(roleName));
-                if(userRole != null)
-                {
-                    listId.Add(userRole.UserId);
-                }
-            };
-            foreach(var id in listId)
-            {
-                var temp = _notificationTokenRepo.Get().FirstOrDefault(s => s.ApplicationName.Equals(applicationName) && s.UserId.Equals(id) && s.IsActive);
-                if (temp != null)
-                {
-                    result.Add(temp.DeviceToken);
-                }    
-            }
-            return result;
         }
         public async Task<bool> NotificationForAdminWhenHaveNewCenterRegisterForm(string path)
         {

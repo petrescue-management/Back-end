@@ -50,8 +50,8 @@ namespace PetRescue.Data.ViewModels
         public string PetImgUrl { get; set; }
         public string PetBreedName { get; set; }
         public string PetFurColorName { get; set; }
-        public int Gender { get; set; }
-        public int Age { get; set; }
+        public int? Gender { get; set; }
+        public int? Age { get; set; }
         public string CenterName { get; set; }
         public string CenterAddress { get; set; }
         public Guid PetProfileId { get; set; }

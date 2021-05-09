@@ -32,10 +32,10 @@ namespace PetRescue.Data.Domains
                 .Select(p => new PickerFormModel
                 {
                     PickerFormId = p.PickerFormId,
-                    PickerDescription = p.PickerDescription,
-                    PickerImageUrl = p.PickerImageUrl,
+                    Description = p.Description,
+                    PickerImageUrl = p.PickerFormImgUrl,
                     InsertedBy = p.InsertedBy,
-                    InsertedAt = p.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM)
+                    InsertedAt = p.InsertedAt
                 }).ToList();
             return new SearchReturnModel
             {

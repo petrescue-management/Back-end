@@ -92,7 +92,7 @@ namespace PetRescue.Data.Domains
                {
                    PetDocumentId = (Guid)p.RescueDocumentId,
                    CenterId = p.CenterId,
-                   PetProfileDescription = p.PetProfileDescription,
+                   Description = p.Description,
                    PetAge = p.PetAge,
                    PetBreedId = p.PetBreedId,
                    PetBreedName = p.PetBreed.PetBreedName,
@@ -213,7 +213,7 @@ namespace PetRescue.Data.Domains
             {
                 if(filter.PetStatus == PetStatusConst.FINDINGADOPTER)
                 {
-                    var count = _adoptionRegistrationFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
+                    var count = _adoptionRegistrationFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
                     if (count > 0)
                     {
                         result.Add(new PetAdoptionRegisterFormModel
@@ -231,7 +231,7 @@ namespace PetRescue.Data.Domains
                 }
                 else if(filter.PetStatus == PetStatusConst.WAITING)
                 {
-                    var count = _adoptionRegistrationFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED).Count();
+                    var count = _adoptionRegistrationFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED).Count();
                     if (count > 0)
                     {
                         result.Add(new PetAdoptionRegisterFormModel
@@ -260,7 +260,7 @@ namespace PetRescue.Data.Domains
                 Pet = new PetModel
                 {
                     CenterId = currentPet.CenterId,
-                    Description = currentPet.PetProfileDescription,
+                    Description = currentPet.Description,
                     ImgUrl = currentPet.PetImgUrl,
                     PetAge = currentPet.PetAge,
                     PetBreedId = currentPet.PetBreedId,
@@ -276,14 +276,14 @@ namespace PetRescue.Data.Domains
             };
             if(currentPet.PetStatus == PetStatusConst.FINDINGADOPTER)
             {
-                forms = forms.Where(s => s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+                forms = forms.Where(s => s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
                 foreach (var form in forms)
                 {
                     result.AdoptionRegisterforms.Add(new AdoptionRegistrationFormViewModel
                     {
                         Address = form.Address,
-                        AdoptionRegistrationId = form.AdoptionRegistrationId,
-                        AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
+                        AdoptionRegistrationId = form.AdoptionRegistrationFormId,
+                        AdoptionRegistrationStatus = form.AdoptionRegistrationFormStatus,
                         BeViolentTendencies = form.BeViolentTendencies,
                         ChildAge = form.ChildAge,
                         Email = form.Email,
@@ -292,7 +292,7 @@ namespace PetRescue.Data.Domains
                         HaveChildren = form.HaveChildren,
                         HavePet = form.HavePet,
                         HouseType = form.HouseType,
-                        InsertedAt = form.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                        InsertedAt = form.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                         InsertedBy = form.InsertedBy,
                         Job = form.Job,
                         UpdatedAt = form.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
@@ -303,14 +303,14 @@ namespace PetRescue.Data.Domains
                 }
             }else if(currentPet.PetStatus == PetStatusConst.WAITING)
             {
-                forms = forms.Where(s => s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED);
+                forms = forms.Where(s => s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED);
                 foreach (var form in forms)
                 {
                     result.AdoptionRegisterforms.Add(new AdoptionRegistrationFormViewModel
                     {
                         Address = form.Address,
-                        AdoptionRegistrationId = form.AdoptionRegistrationId,
-                        AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
+                        AdoptionRegistrationId = form.AdoptionRegistrationFormId,
+                        AdoptionRegistrationStatus = form.AdoptionRegistrationFormStatus,
                         BeViolentTendencies = form.BeViolentTendencies,
                         ChildAge = form.ChildAge,
                         Email = form.Email,
@@ -319,7 +319,7 @@ namespace PetRescue.Data.Domains
                         HaveChildren = form.HaveChildren,
                         HavePet = form.HavePet,
                         HouseType = form.HouseType,
-                        InsertedAt = form.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                        InsertedAt = form.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                         InsertedBy = form.InsertedBy,
                         Job = form.Job,
                         UpdatedAt = form.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
@@ -376,10 +376,10 @@ namespace PetRescue.Data.Domains
                         PetFurColorName = petProfile.PetFurColor.PetFurColorName,
                         PetImgUrl = petProfile.PetImgUrl,
                         PetStatus = petProfile.PetStatus,
-                        PetProfileDescription = petProfile.PetProfileDescription,
+                        Description = petProfile.Description,
                         CenterId = petProfile.CenterId,
                         InsertedBy = petProfile.InsertedBy,
-                        InsertedAt = petProfile.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                        InsertedAt = petProfile.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                         CenterName = center.CenterName,
                         CenterAddress = center.Address
                     });
@@ -405,20 +405,20 @@ namespace PetRescue.Data.Domains
             if (rescueDocument != null)
             {
                 var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
-                var fullName = currentUser.UserProfile.LastName + " "+currentUser.UserProfile.FirstName;
+                var fullName = currentUser.UserNavigation.LastName + " "+currentUser.UserNavigation.FirstName;
                 var pickerForm = new PickerFormViewModel
                 {
-                    PickerDate = rescueDocument.PickerForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
-                    PickerDescription = rescueDocument.PickerForm.PickerDescription,
-                    PickerImageUrl = rescueDocument.PickerForm.PickerImageUrl,
+                    PickerDate = rescueDocument.PickerForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    PickerDescription = rescueDocument.PickerForm.Description,
+                    PickerImageUrl = rescueDocument.PickerForm.PickerFormImgUrl,
                     PickerName = fullName,
                 };
                 currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.FinderForm.InsertedBy));
-                fullName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
+                fullName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName;
                 var finderForm = new FinderFormViewModel
                 {
-                    FinderDate = rescueDocument.FinderForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
-                    FinderDescription = rescueDocument.FinderForm.FinderDescription,
+                    FinderDate = rescueDocument.FinderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    FinderDescription = rescueDocument.FinderForm.Description,
                     FinderImageUrl = rescueDocument.FinderForm.FinderFormImgUrl,
                     FinderName = fullName,
                     Lat = rescueDocument.FinderForm.Lat,
@@ -434,7 +434,7 @@ namespace PetRescue.Data.Domains
                         Weight = track.Weight,
                         Description = track.Description,
                         ImageUrl = track.PetTrackingImgUrl,
-                        InsertAt = track.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                        InsertAt = track.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                         IsSterilized = track.IsSterilized,
                         IsVaccinated = track.IsVaccinated,
                         PetTrackingId = track.PetTrackingId
@@ -446,7 +446,7 @@ namespace PetRescue.Data.Domains
                 result.PetProfile = new PetProfileModel
                 {
                     CenterId = petProfile.CenterId,
-                    InsertedAt = petProfile.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                    InsertedAt = petProfile.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     InsertedBy = petProfile.InsertedBy,
                     PetAge = petProfile.PetAge,
                     PetBreedId = petProfile.PetBreedId,
@@ -457,7 +457,7 @@ namespace PetRescue.Data.Domains
                     PetGender = petProfile.PetGender,
                     PetImgUrl = petProfile.PetImgUrl,
                     PetName = petProfile.PetName,
-                    PetProfileDescription = petProfile.PetProfileDescription,
+                    Description = petProfile.Description,
                     PetStatus = petProfile.PetStatus,
                     PetProfileId = petProfile.PetProfileId,
                     PetType = new PetTypeUpdateModel
@@ -481,7 +481,7 @@ namespace PetRescue.Data.Domains
                             Weight = track.Weight,
                             Description = track.Description,
                             ImageUrl = track.PetTrackingImgUrl,
-                            InsertAt = track.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                            InsertAt = track.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                             IsSterilized = track.IsSterilized,
                             IsVaccinated = track.IsVaccinated,
                             PetTrackingId = track.PetTrackingId
@@ -491,7 +491,7 @@ namespace PetRescue.Data.Domains
                     result.PetProfile = new PetProfileModel
                     {
                         CenterId = petProfile.CenterId,
-                        InsertedAt = petProfile.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                        InsertedAt = petProfile.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                         InsertedBy = petProfile.InsertedBy,
                         PetAge = petProfile.PetAge,
                         PetBreedId = petProfile.PetBreedId,
@@ -502,7 +502,7 @@ namespace PetRescue.Data.Domains
                         PetGender = petProfile.PetGender,
                         PetImgUrl = petProfile.PetImgUrl,
                         PetName = petProfile.PetName,
-                        PetProfileDescription = petProfile.PetProfileDescription,
+                        Description = petProfile.Description,
                         PetStatus = petProfile.PetStatus,
                         PetProfileId = petProfile.PetProfileId,
                          PetType = new PetTypeUpdateModel

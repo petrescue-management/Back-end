@@ -10,7 +10,7 @@ namespace PetRescue.Data.ViewModels
     {
         public PickerFormViewModel PickerForm { get; set; } 
         public FinderFormViewModel FinderForm { get; set; }
-        public int PetAttribute { get; set; }
+        public int? PetAttribute { get; set; }
         public PetProfileModel PetProfile { get; set; }
         public List<PetTrackingViewModel> ListTracking { get; set; }
     }

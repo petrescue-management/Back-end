@@ -28,10 +28,10 @@ namespace PetRescue.Data.Repositories
         #region GET BY ID
         public AdoptionRegistrationForm GetAdoptionRegistrationFormById(Guid id)
         {
-            var form = Get().Where(f => f.AdoptionRegistrationId.Equals(id))
+            var form = Get().Where(f => f.AdoptionRegistrationFormId.Equals(id))
                 .Select(f => new AdoptionRegistrationForm
                 {
-                    AdoptionRegistrationId = f.AdoptionRegistrationId,
+                    AdoptionRegistrationFormId = f.AdoptionRegistrationFormId,
                     PetProfileId = f.PetProfileId,
                     UserName = f.UserName,
                     Phone = f.Phone,
@@ -45,7 +45,7 @@ namespace PetRescue.Data.Repositories
                     BeViolentTendencies = f.BeViolentTendencies,
                     HaveAgreement = f.HaveAgreement,
                     HavePet = f.HavePet,
-                    AdoptionRegistrationStatus = f.AdoptionRegistrationStatus,
+                    AdoptionRegistrationFormStatus = f.AdoptionRegistrationFormStatus,
                     InsertedBy = f.InsertedBy,
                     InsertedAt = f.InsertedAt,
                     UpdatedBy = f.UpdatedBy,
@@ -61,10 +61,10 @@ namespace PetRescue.Data.Repositories
         private AdoptionRegistrationForm PrepareUpdate(UpdateViewModel model, Guid updateBy)
         {
             var form = Get()
-                  .Where(f=> f.AdoptionRegistrationId.Equals(model.Id))
+                  .Where(f=> f.AdoptionRegistrationFormId.Equals(model.Id))
                   .Select(f => new AdoptionRegistrationForm
                   {
-                      AdoptionRegistrationId = f.AdoptionRegistrationId,
+                      AdoptionRegistrationFormId = f.AdoptionRegistrationFormId,
                       PetProfileId = f.PetProfileId,
                       UserName = f.UserName,
                       Phone = f.Phone,
@@ -78,13 +78,13 @@ namespace PetRescue.Data.Repositories
                       BeViolentTendencies = f.BeViolentTendencies,
                       HaveAgreement = f.HaveAgreement,
                       HavePet = f.HavePet,
-                      AdoptionRegistrationStatus = model.Status,
+                      AdoptionRegistrationFormStatus = model.Status,
                       InsertedBy = f.InsertedBy,
                       InsertedAt = f.InsertedAt,
                       UpdatedBy = updateBy,
                       UpdatedAt = DateTime.UtcNow,
                       Dob = f.Dob,
-                      CanceledRejectedReason = model.Reason
+                      RejectedReason = model.Reason
                   }).FirstOrDefault();
             return form;
         }
@@ -105,7 +105,7 @@ namespace PetRescue.Data.Repositories
 
             var form = new AdoptionRegistrationForm
             {
-                AdoptionRegistrationId = Guid.NewGuid(),
+                AdoptionRegistrationFormId = Guid.NewGuid(),
                 PetProfileId = model.PetProfileId,
                 UserName = model.UserName,
                 Phone = model.Phone,
@@ -119,7 +119,7 @@ namespace PetRescue.Data.Repositories
                 BeViolentTendencies = model.BeViolentTendencies,
                 HaveAgreement = model.HaveAgreement,
                 HavePet = model.HavePet,
-                AdoptionRegistrationStatus = AdoptionRegistrationFormStatusConst.PROCESSING,
+                AdoptionRegistrationFormStatus = AdoptionRegistrationFormStatusConst.PROCESSING,
                 InsertedBy = insertBy,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedBy = null,

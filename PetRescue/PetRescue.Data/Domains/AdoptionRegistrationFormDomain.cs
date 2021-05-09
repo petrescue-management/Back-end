@@ -34,7 +34,7 @@ namespace PetRescue.Data.Domains
         {
             var records = _adotionRegistrationFormRepo.Get().AsQueryable();
             if (model.Status != 0)
-                records = records.Where(f => f.AdoptionRegistrationStatus.Equals(model.Status));
+                records = records.Where(f => f.AdoptionRegistrationFormStatus.Equals(model.Status));
 
             List<AdoptionRegistrationFormModel> result = new List<AdoptionRegistrationFormModel>();
             foreach (var record in records.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize)
@@ -43,8 +43,8 @@ namespace PetRescue.Data.Domains
                 
                 result.Add(new AdoptionRegistrationFormModel
                 {
-                    AdoptionRegistrationId = record.AdoptionRegistrationId,
-                    PetProfile = _petProfileRepo.GetPetProfileById(record.PetProfileId),
+                    AdoptionRegistrationFormId = record.AdoptionRegistrationFormId,
+                    PetProfile = _petProfileRepo.GetPetProfileById((Guid)record.PetProfileId),
                     UserName = record.UserName,
                     Phone = record.Phone,
                     Email = record.Email,
@@ -57,7 +57,7 @@ namespace PetRescue.Data.Domains
                     BeViolentTendencies = record.BeViolentTendencies,
                     HaveAgreement = record.HaveAgreement,
                     HavePet = record.HavePet,
-                    AdoptionRegistrationStatus = record.AdoptionRegistrationStatus,
+                    AdoptionRegistrationFormStatus = record.AdoptionRegistrationFormStatus,
                     InsertedBy = record.InsertedBy,
                     InsertedAt = record.InsertedAt,
                     UpdatedBy = record.UpdatedBy,
@@ -88,7 +88,7 @@ namespace PetRescue.Data.Domains
             {
                 CenterId = form.PetProfile.CenterId,
                 PetProfileId = form.PetProfileId,
-                InsertedAt = form.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                InsertedAt = form.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                 InsertedBy = form.InsertedBy,
                 PetAge = form.PetProfile.PetAge,
                 PetBreedId = form.PetProfile.PetBreedId,
@@ -99,14 +99,14 @@ namespace PetRescue.Data.Domains
                 PetGender = form.PetProfile.PetGender,
                 PetImgUrl = form.PetProfile.PetImgUrl,
                 PetName = form.PetProfile.PetName,
-                PetProfileDescription = form.PetProfile.PetProfileDescription,
+                PetProfileDescription = form.PetProfile.Description,
                 PetStatus = form.PetProfile.PetStatus,
                 CenterAddress = form.PetProfile.Center.Address,
                 CenterName = form.PetProfile.Center.CenterName
             };
             var result = new AdoptionRegistrationFormModelMobile
             {
-                AdoptionRegistrationId = form.AdoptionRegistrationId,
+                AdoptionRegistrationFormId = form.AdoptionRegistrationFormId,
                 PetProfile = petProfile,
                 UserName = form.UserName,
                 Phone = form.Phone,
@@ -120,9 +120,9 @@ namespace PetRescue.Data.Domains
                 BeViolentTendencies = form.BeViolentTendencies,
                 HaveAgreement = form.HaveAgreement,
                 HavePet = form.HavePet,
-                AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
+                AdoptionRegistrationFormStatus = form.AdoptionRegistrationFormStatus,
                 InsertedBy = form.InsertedBy,
-                InsertedAt = form.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                InsertedAt = form.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                 UpdatedBy = form.UpdatedBy,
                 UpdatedAt = form.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                 Dob = form.Dob,
@@ -136,8 +136,8 @@ namespace PetRescue.Data.Domains
             var form = _adotionRegistrationFormRepo.UpdateAdoptionRegistrationFormStatus(model, updateBy);
             var temp = new AdoptionRegistrationFormModel
             {
-                AdoptionRegistrationId = form.AdoptionRegistrationId,
-                PetProfile = _petProfileRepo.GetPetProfileById(form.PetProfileId),
+                AdoptionRegistrationFormId = form.AdoptionRegistrationFormId,
+                PetProfile = _petProfileRepo.GetPetProfileById((Guid)form.PetProfileId),
                 UserName = form.UserName,
                 Phone = form.Phone,
                 Email = form.Email,
@@ -150,9 +150,9 @@ namespace PetRescue.Data.Domains
                 BeViolentTendencies = form.BeViolentTendencies,
                 HaveAgreement = form.HaveAgreement,
                 HavePet = form.HavePet,
-                AdoptionRegistrationStatus = form.AdoptionRegistrationStatus,
+                AdoptionRegistrationFormStatus = form.AdoptionRegistrationFormStatus,
                 InsertedBy = form.InsertedBy,
-                InsertedAt = form.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                InsertedAt = form.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                 UpdatedBy = form.UpdatedBy,
                 UpdatedAt = form.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM)
             };
@@ -160,10 +160,10 @@ namespace PetRescue.Data.Domains
             {
                 try
                 {
-                    if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.APPROVED)
+                    if (form.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED)
                     {
                         var result = new ReturnAdoptionViewModel();
-                        await _uow.GetService<NotificationTokenDomain>().NotificationForUserWhenAdoptionFormToBeApprove(path, form.InsertedBy);
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUserWhenAdoptionFormToBeApprove(path,(Guid)form.InsertedBy);
                         var updatePetModel = new UpdatePetProfileModel
                         {
                             PetProfileId = form.PetProfileId,
@@ -183,13 +183,13 @@ namespace PetRescue.Data.Domains
                         //MailExtensions.SendBySendGrid(mailArguments, null, null);
                         result.Approve = new AdoptionFormModel
                         {
-                            AdoptionFormId = temp.AdoptionRegistrationId,
+                            AdoptionFormId = temp.AdoptionRegistrationFormId,
                             UserId = temp.InsertedBy
                         };
                         transaction.Commit();
                         return result;
                     }
-                    else if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.REJECTED)
+                    else if (form.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.REJECTED)
                     {
                         Message message = new Message
                         {
@@ -199,13 +199,13 @@ namespace PetRescue.Data.Domains
                                 Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
                             }
                         };
-                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path,(Guid)form.InsertedBy, ApplicationNameHelper.USER_APP, message);
                         var result = new RejectAdoptionViewModel
                         {
                             Reason = model.Reason,
                             Reject = new AdoptionFormModel
                             {
-                                AdoptionFormId = temp.AdoptionRegistrationId,
+                                AdoptionFormId = temp.AdoptionRegistrationFormId,
                                 UserId = temp.InsertedBy
                             }
                         };
@@ -230,7 +230,7 @@ namespace PetRescue.Data.Domains
             var petProfile = _petProfileRepo.Get().FirstOrDefault(s => s.PetProfileId.Equals(form.PetProfileId));
             var result = new AdoptionCreateViewModel
             {
-                AdoptionRegistrationFormId = form.AdoptionRegistrationId,
+                AdoptionRegistrationFormId = form.AdoptionRegistrationFormId,
                 CenterId = petProfile.CenterId
             };
             _uow.SaveChanges();
@@ -254,8 +254,8 @@ namespace PetRescue.Data.Domains
             {
                 result.Add(new AdoptionRegistrationFormModelWithCenter
                 {
-                    AdoptionRegistrationId = adoptionForm.AdoptionRegistrationId,
-                    PetProfile = _petProfileRepo.GetPetProfileById2(adoptionForm.PetProfileId),
+                    AdoptionRegistrationFormId = adoptionForm.AdoptionRegistrationFormId,
+                    PetProfile = _petProfileRepo.GetPetProfileById2((Guid)adoptionForm.PetProfileId),
                     UserName = adoptionForm.UserName,
                     Phone = adoptionForm.Phone,
                     Email = adoptionForm.Email,
@@ -268,9 +268,9 @@ namespace PetRescue.Data.Domains
                     BeViolentTendencies = adoptionForm.BeViolentTendencies,
                     HaveAgreement = adoptionForm.HaveAgreement,
                     HavePet = adoptionForm.HavePet,
-                    AdoptionRegistrationStatus = adoptionForm.AdoptionRegistrationStatus,
+                    AdoptionRegistrationFormStatus = adoptionForm.AdoptionRegistrationFormStatus,
                     InsertedBy = adoptionForm.InsertedBy,
-                    InsertedAt = adoptionForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                    InsertedAt = adoptionForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     UpdatedBy = adoptionForm.UpdatedBy,
                     UpdatedAt = adoptionForm.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     Dob  = adoptionForm.Dob,
@@ -280,7 +280,7 @@ namespace PetRescue.Data.Domains
         }
         private bool IsExistedForm(Guid insertedBy, Guid petProfileId)
         {
-            var result = _adotionRegistrationFormRepo.Get().FirstOrDefault(s => s.InsertedBy.Equals(insertedBy) && s.PetProfileId.Equals(petProfileId) && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
+            var result = _adotionRegistrationFormRepo.Get().FirstOrDefault(s => s.InsertedBy.Equals(insertedBy) && s.PetProfileId.Equals(petProfileId) && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
             if(result != null)
             {
                 return true;
@@ -290,13 +290,13 @@ namespace PetRescue.Data.Domains
         public async Task<bool> CancelAdoptionRegistrationForm(UpdateViewModel model, Guid updatedBy,List<string> roleName, string path)
         {
             var form = _adotionRegistrationFormRepo.UpdateAdoptionRegistrationFormStatus(model, updatedBy);
-            if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.CANCEL)
+            if (form.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.CANCEL)
             {
                 if (roleName != null)
                 {
                     if (roleName.Contains(RoleConstant.MANAGER))
                     {
-                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, (Guid)form.InsertedBy, ApplicationNameHelper.USER_APP, new Message
                         {
                             Notification = new Notification
                             {
@@ -315,7 +315,7 @@ namespace PetRescue.Data.Domains
         public async Task<object> RejectAdoptionFormAfterAccepted(UpdateViewModel model, Guid updatedBy, string path)
         {
             var form = _adotionRegistrationFormRepo.UpdateAdoptionRegistrationFormStatus(model, updatedBy);
-            if (form.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.REJECTED)
+            if (form.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.REJECTED)
             {
                 Message message = new Message
                 {
@@ -325,7 +325,7 @@ namespace PetRescue.Data.Domains
                         Title = NotificationTitleHelper.REJECT_ADOPTION_FORM_TITLE
                     }
                 };
-                await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, form.InsertedBy, ApplicationNameHelper.USER_APP, message);
+                await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, (Guid)form.InsertedBy, ApplicationNameHelper.USER_APP, message);
                 _petProfileRepo.UpdatePetProfile(new UpdatePetProfileModel 
                 {
                     PetProfileId = form.PetProfileId,
@@ -336,7 +336,7 @@ namespace PetRescue.Data.Domains
                     Reason = model.Reason,
                     Reject = new AdoptionFormModel
                     {
-                        AdoptionFormId = form.AdoptionRegistrationId,
+                        AdoptionFormId = form.AdoptionRegistrationFormId,
                         UserId = form.InsertedBy
                     }
                 };

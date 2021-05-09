@@ -30,28 +30,28 @@ namespace PetRescue.Data.Repositories
 
         public NotificationToken Delete(NotificationToken entity)
         {
-            entity.IsActive = false;
+            entity.IsActived = false;
             return Update(entity).Entity;
         }
 
         public NotificationToken Edit(NotificationToken entity, NotificationTokenUpdateModel model)
         {
             entity.DeviceToken = model.DeviceToken;
-            entity.IsActive = true;
+            entity.IsActived = true;
             return Update(entity).Entity;
         }
 
         public NotificationToken GetNotificationTokenById(Guid notificationTokenId)
         {
-            return Get().FirstOrDefault(s => s.Id.Equals(notificationTokenId));
+            return Get().FirstOrDefault(s => s.NotificationTokenId.Equals(notificationTokenId));
         }
 
         public NotificationToken PrepareCreate(NotificationTokenCreateModel model)
         {
             var newNotificationToken = new NotificationToken
             {
-                Id = Guid.NewGuid(),
-                IsActive = true,
+                NotificationTokenId = Guid.NewGuid(),
+                IsActived = true,
                 DeviceToken = model.DeviceToken,
                 ApplicationName = model.ApplicationName,
                 UserId = model.UserId

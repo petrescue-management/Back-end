@@ -5,7 +5,7 @@ namespace PetRescue.Data.Models
 {
     public partial class CenterRegistrationForm
     {
-        public Guid CenterRegistrationId { get; set; }
+        public Guid CenterRegistrationFormId { get; set; }
         public string CenterName { get; set; }
         public double? Lat { get; set; }
         public double? Lng { get; set; }
@@ -13,10 +13,10 @@ namespace PetRescue.Data.Models
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Description { get; set; }
-        public int CenterRegistrationStatus { get; set; }
-        public string ImageUrl { get; set; }
+        public int? CenterRegistrationFormStatus { get; set; }
+        public string CenterImgUrl { get; set; }
         public string RejectedReason { get; set; }
-        public DateTime InsertedAt { get; set; }
+        public DateTime? InsertedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
         public virtual Center Center { get; set; }

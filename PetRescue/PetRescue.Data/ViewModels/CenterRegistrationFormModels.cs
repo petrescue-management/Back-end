@@ -8,7 +8,7 @@ namespace PetRescue.Data.ViewModels
 
     public class CenterRegistrationFormModel
     {
-        public Guid CenterRegistrationId { get; set; }
+        public Guid CenterRegistrationFormId { get; set; }
         public string CenterName { get; set; }
         public string CenterAddress { get; set; }
         public double? Lat { get; set; }
@@ -16,10 +16,10 @@ namespace PetRescue.Data.ViewModels
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Description { get; set; }
-        public int CenterRegistrationStatus { get; set; }
+        public int? CenterRegistrationFormStatus { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string ImageUrl { get; set; }
-        public DateTime InsertedAt { get; set; }
+        public DateTime? InsertedAt { get; set; }
     }
     public class CreateCenterRegistrationFormModel
     {

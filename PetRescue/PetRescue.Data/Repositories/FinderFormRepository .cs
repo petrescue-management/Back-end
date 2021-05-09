@@ -37,7 +37,7 @@ namespace PetRescue.Data.Repositories
                 Lng = model.Lng,
                 FinderFormImgUrl = model.FinderFormImgUrl,
                 PetAttribute = model.PetAttribute,             
-                FinderDescription = model.FinderDescription,
+                Description = model.Description,
                 FinderFormStatus = 1,
                 Phone = model.Phone,
                 InsertedBy = insertedBy,
@@ -64,7 +64,7 @@ namespace PetRescue.Data.Repositories
                 Lng = finderForm.Lng,
                 FinderFormImgUrl = finderForm.FinderFormImgUrl,
                 PetAttribute = finderForm.PetAttribute,
-                FinderDescription = finderForm.FinderDescription,
+                Description = finderForm.Description,
                 FinderFormStatus = finderForm.FinderFormStatus,
                 Phone = finderForm.Phone,
                 InsertedBy = finderForm.InsertedBy,
@@ -88,9 +88,9 @@ namespace PetRescue.Data.Repositories
                     Lng = f.Lng,
                     FinderFormImgUrl = f.FinderFormImgUrl,
                     FinderFormVideoUrl = f.FinderFormVidUrl,
-                    CanceledReason = f.CanceledReason,
+                    CanceledReason = f.DroppedReason,
                     PetAttribute = f.PetAttribute,
-                    FinderDescription = f.FinderDescription,
+                    Description = f.Description,
                     FinderFormStatus = f.FinderFormStatus,
                     Phone = f.Phone,
                     InsertedBy = f.InsertedBy,
@@ -120,7 +120,7 @@ namespace PetRescue.Data.Repositories
             var finderForm = Get().FirstOrDefault(s=>s.FinderFormId.Equals(model.Id));
             if(finderForm != null)
             {
-                finderForm.CanceledReason = model.Reason;
+                finderForm.DroppedReason = model.Reason;
                 finderForm.FinderFormStatus = FinderFormStatusConst.CANCELED;
                 finderForm.UpdatedBy = updatedBy;
                 finderForm.UpdatedAt = DateTime.UtcNow;

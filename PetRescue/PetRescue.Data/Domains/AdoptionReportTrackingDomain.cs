@@ -48,12 +48,12 @@ namespace PetRescue.Data.Domains
             {
                 var userCreated = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoptionReport.InsertedBy));
                 result.AdoptionReportTrackingId = adoptionReport.AdoptionReportTrackingId;
-                result.InsertedAt = adoptionReport.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM);
+                result.InsertedAt = adoptionReport.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM);
                 result.InsertedBy = adoptionReport.InsertedBy;
                 result.Description = adoptionReport.Description;
                 result.AdoptionReportTrackingImgUrl = adoptionReport.AdoptionReportTrackingImgUrl;
                 result.PetProfileId = adoptionReport.PetProfileId;
-                result.Author = userCreated.UserProfile.LastName +" " + userCreated.UserProfile.FirstName;
+                result.Author = userCreated.UserNavigation.LastName +" " + userCreated.UserNavigation.FirstName;
             }
             return result;
         }
@@ -67,7 +67,7 @@ namespace PetRescue.Data.Domains
                 result.Add(new AdoptionReportTrackingViewMobileModel
                 {
                     AdoptionReportTrackingId = report.AdoptionReportTrackingId,
-                    InsertedAt = report.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                    InsertedAt = report.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     InsertedBy = report.InsertedBy,
                     Description = report.Description,
                     AdoptionReportTrackingImgUrl = report.AdoptionReportTrackingImgUrl,
