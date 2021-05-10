@@ -107,13 +107,6 @@ namespace PetRescue.Data.Domains
                         item.VolunteerRegistrationFormStatus = VolunteerRegistrationFormConst.REJECT;
                         _volunteerRegistrationFormRepo.Update(item);
                     }
-                    //_workingHistoryRepo.Create(new WorkingHistoryCreateModel
-                    //{
-                    //    CenterId = formData.CenterId,
-                    //    Description = "",
-                    //    RoleName = RoleConstant.VOLUNTEER,
-                    //    UserId = _userDomain.GetUserIdByEmail(form.Email)
-                    //});
                     var volunteerFormModel = new VolunteerRegistrationFormViewModel
                     {
                         FirstName = formData.FirstName,

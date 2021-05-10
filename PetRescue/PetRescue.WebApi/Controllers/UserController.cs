@@ -48,7 +48,7 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var result = _userDomain.GetListProfileOfVolunter(Guid.Parse(currentCenterId), IsActive);
+                var result = _userDomain.GetListProfileOfVolunter();
                 return Success(result);
             }
             catch(Exception ex)

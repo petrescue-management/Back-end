@@ -56,14 +56,15 @@ namespace PetRescue.Data.Repositories
             var newUser = new User
             {
                 UserId = Guid.NewGuid(),
-                UserEmail = model.Email
+                UserEmail = model.Email,
+                CenterId = model.CenterId
             };
             return Create(newUser).Entity;
         }
         public User UpdateUserModel(User entity, UserUpdateModel model)
         {
-            //entity.CenterId = model.CenterId;
-            entity.UserStatus = model.UserStatus;
+            entity.CenterId = model.CenterId;
+            //entity.UserStatus = model.UserStatus;
             return Update(entity).Entity;
         }
         public UserModel GetUserById(Guid id)

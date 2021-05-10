@@ -72,7 +72,7 @@ namespace PetRescue.Data.ViewModels
         public string Phone { get; set; }
         public string ImgUrl { get; set; }
         public DateTime? DateStarted { get; set; }
-        public DateTime? DateEnded { get; set; }
+
     }
     public class UserUpdateCenterModel
     {
@@ -87,6 +87,8 @@ namespace PetRescue.Data.ViewModels
         public string Email { get; set; }
         [JsonProperty("isBelongToCenter")]
         public bool IsBelongToCenter { get; set; }
+        [JsonProperty("centerId")]
+        public Guid? CenterId { get; set; }
     }
     public class UserCreateByAppModel
     {
@@ -106,10 +108,10 @@ namespace PetRescue.Data.ViewModels
     }
     public class UserUpdateModel
     {
-        //[JsonProperty("centerId")]
-        //public Guid CenterId { get; set; }
-        [JsonProperty("userStatus")]
-        public int? UserStatus { get; set; }
+        [JsonProperty("centerId")]
+        public Guid CenterId { get; set; }
+        //[JsonProperty("userStatus")]
+        //public int? UserStatus { get; set; }
     }
     public class RemoveRoleVolunteerModel
     {

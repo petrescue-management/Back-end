@@ -163,13 +163,10 @@ namespace PetRescue.Data.Domains
             }
             currentClaims.Add(new Claim(ClaimTypes.Actor, currentUser.UserId.ToString()));
             // add centerId if current user is manager
-            //if(working != null)
-            //{
-            //    if (ValidationExtensions.IsNotNull(working.CenterId))
-            //    {
-            //        currentClaims.Add(new Claim("centerId", working.CenterId.ToString()));
-            //    }
-            //}
+            if (ValidationExtensions.IsNotNull(currentUser.CenterId))
+            {
+                currentClaims.Add(new Claim("centerId", currentUser.CenterId.ToString()));
+            }
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(currentClaims);
             var key = Encoding.ASCII.GetBytes("Sercret_Key_PetRescue");
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -276,14 +273,13 @@ namespace PetRescue.Data.Domains
                         }
                     }
                     //End :Get Information from FirebaseToken
-                    var temp = new NotificationToken();
                     var tokenDescriptor = GeneratedTokenDecriptor(user, currentClaims);
                     var newToken = handler.CreateToken((SecurityTokenDescriptor)tokenDescriptor);
                     var notificationToken = _uow.GetService<NotificationTokenDomain>().FindByApplicationNameAndUserId(model.ApplicationName, user.UserId);
                     //if notification Token is existed,  will update deviceToken
                     if (notificationToken != null)
                     {
-                        temp = _uow.GetService<NotificationTokenDomain>().UpdateNotificationToken(new NotificationTokenUpdateModel
+                        var temp = _uow.GetService<NotificationTokenDomain>().UpdateNotificationToken(new NotificationTokenUpdateModel
                         {
                             Id = notificationToken.NotificationTokenId,
                             DeviceToken = model.DeviceToken
@@ -292,7 +288,7 @@ namespace PetRescue.Data.Domains
                     // else create new notificationToken.
                     else
                     {
-                        temp = _uow.GetService<NotificationTokenDomain>().CreateNotificationToken(new NotificationTokenCreateModel
+                        var temp = _uow.GetService<NotificationTokenDomain>().CreateNotificationToken(new NotificationTokenCreateModel
                         {
                             ApplicationName = model.ApplicationName,
                             DeviceToken = model.DeviceToken,

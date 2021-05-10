@@ -47,7 +47,6 @@ namespace PetRescue.Data.Domains
             var currentClaims = result.Claims.ToList();
             string email = currentClaims.FirstOrDefault(t => t.Type == "email").Value;
             var user = _userRepo.Get().FirstOrDefault(u => u.UserEmail == email);
-            var centerId = Guid.Empty;
             if (user == null)
             {
                 return new
@@ -63,7 +62,7 @@ namespace PetRescue.Data.Domains
                     Email = user.UserEmail,
                     Id = user.UserId.ToString(),
                     Roles = user.UserRole.Where(r => (bool)r.IsActived).Select(r => r.Role.RoleName).ToArray(),
-                    CenterId = centerId,
+                    CenterId = user.CenterId,
                     Phone = userProfile.Phone,
                     DoB = userProfile.Dob,
                     FirstName = userProfile.FirstName,
@@ -81,7 +80,7 @@ namespace PetRescue.Data.Domains
                     Email = user.UserEmail,
                     Id = user.UserId.ToString(),
                     Roles = user.UserRole.Select(r => r.Role.RoleName).ToArray(),
-                    CenterId = centerId,
+                    CenterId = user.CenterId,
                 };
                 return returnResult;
             }
@@ -125,7 +124,8 @@ namespace PetRescue.Data.Domains
         }
         public NotificationToken GetManagerDeviceTokenByCenterId(Guid centerId)
         {
-            var notificationToken = _notificationTokenRepo.Get().FirstOrDefault(s => s.ApplicationName.Equals(ApplicationNameHelper.MANAGE_CENTER_APP));
+            var currentUser = _userRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId));
+            var notificationToken = _notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(currentUser.UserId) && s.ApplicationName.Equals(ApplicationNameHelper.MANAGE_CENTER_APP));
             return notificationToken;
         }
         public string AddVolunteerToCenter(AddNewRoleModel model)
@@ -305,10 +305,26 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public object GetListProfileOfVolunter(Guid centerId, bool isActive)
+        public object GetListProfileOfVolunter()
         {
             var result = new List<UserProfileViewModel2>();
-            //get list
+            var role = _roleRepo.Get().FirstOrDefault(s => s.RoleName.Equals(RoleConstant.VOLUNTEER));
+            var userRoles = _userRoleRepo.Get().Where(s => s.RoleId.Equals(role.RoleId) && (bool)s.IsActived);
+            foreach(var userRole in userRoles)
+            {
+                result.Add(new UserProfileViewModel2 
+                {
+                    DateStarted = userRole.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    DoB = userRole.User.UserNavigation.Dob,
+                    Email = userRole.User.UserEmail,
+                    FirstName = userRole.User.UserNavigation.FirstName,
+                    LastName = userRole.User.UserNavigation.LastName,
+                    Gender = userRole.User.UserNavigation.Gender,
+                    ImgUrl = userRole.User.UserNavigation.UserImgUrl,
+                    Phone = userRole.User.UserNavigation.Phone,
+                    UserId = userRole.UserId
+                });
+            }
             return result;
         }
         public object GetListProfileMember(int page, int limit)

@@ -119,6 +119,7 @@ namespace PetRescue.Data.Domains
         public string ProcressCenterRegistrationForm(UpdateRegistrationCenter model, Guid insertBy)
         {
             var form = _centerRegistrationRepo.Get().FirstOrDefault(s => s.CenterRegistrationFormId.Equals(model.Id));
+            var _userRoleDomain = _uow.GetService<UserRoleDomain>();
             var result = "";
             //Find user
             var currentUser = _userRepo.FindById(form.Email);
@@ -153,73 +154,62 @@ namespace PetRescue.Data.Domains
                                 {
                                     Email = form.Email,
                                     IsBelongToCenter = UserConst.BELONG,
+                                    CenterId = newCenter.CenterId
                                 };
                                 // create new Role for newUser
                                 var newUser = _userRepo.CreateUserByModel(newCreateUserModel);
                                 var newUserRoleUpdateModel = new UserRoleUpdateModel
                                 {
-                                    CenterId = newCenter.CenterId,
                                     RoleName = RoleConstant.MANAGER,
                                     UserId = newUser.UserId,
                                 };
                                 _uow.GetService<UserDomain>().AddRoleManagerToUser(newUserRoleUpdateModel, insertBy);
-                                _uow.GetService<UserRoleDomain>().RegistationRole(newUser.UserId, RoleConstant.VOLUNTEER, insertBy);
                                 transaction.Commit();
                                 result = newCenter.CenterId.ToString();
                             }
                             else // found user
                             {
-                                //if ((bool)!currentUser.IsBelongToCenter)
-                                //{
-                                //    //Create Model for update user
-                                //    var userUpdateModel = new UserUpdateModel
-                                //    {
-                                //        IsBelongToCenter = UserConst.BELONG,
-                                //        //CenterId = newCenter.CenterId
-                                //    };
-                                //    currentUser = _userRepo.UpdateUserModel(currentUser, userUpdateModel);
-                                //    //Create new Role for currentUser
-                                //    var userRoleUpdateModel = new UserRoleUpdateModel
-                                //    {
-                                //        CenterId = newCenter.CenterId,
-                                //        RoleName = RoleConstant.MANAGER,
-                                //        UserId = currentUser.UserId,
-                                //    };
-                                //    _uow.GetService<UserDomain>().AddRoleManagerToUser(userRoleUpdateModel, insertBy);
-                                //    var userRole = _uow.GetService<UserRoleDomain>().CheckRoleOfUser(new UserRoleUpdateModel
-                                //    {
-                                //        RoleName = RoleConstant.VOLUNTEER,
-                                //        UserId = currentUser.UserId
-                                //    });
-                                //    if(userRole != null)
-                                //    {
-                                //        _uow.GetService<UserRoleDomain>().Edit(userRole, new UserRoleUpdateEntityModel { IsActive = true, UpdateBy = insertBy });
-                                //    }
-                                //    else
-                                //    {
-                                //        _uow.GetService<UserRoleDomain>().RegistationRole(currentUser.UserId, RoleConstant.VOLUNTEER, insertBy);
-                                //    }
-                                //    _workingHistoryRepo.Create(new WorkingHistoryCreateModel
-                                //    {
-                                //        CenterId = newCenter.CenterId,
-                                //        Description = "",
-                                //        RoleName = RoleConstant.MANAGER,
-                                //        UserId = currentUser.UserId
-                                //    });
-                                //    _workingHistoryRepo.Create(new WorkingHistoryCreateModel
-                                //    {
-                                //        CenterId = newCenter.CenterId,
-                                //        Description = "",
-                                //        RoleName = RoleConstant.VOLUNTEER,
-                                //        UserId = currentUser.UserId
-                                //    });
-                                //    transaction.Commit();
-                                //}
-                                //else
-                                //{
-                                //    result = "this email is belong another center";
-                                //    return result;
-                                //}
+                                if (currentUser.CenterId == null)
+                                {
+                                    //Create Model for update user
+                                    var userUpdateModel = new UserUpdateModel
+                                    {
+                                        CenterId = newCenter.CenterId
+                                        //CenterId = newCenter.CenterId
+                                    };
+                                    currentUser = _userRepo.UpdateUserModel(currentUser, userUpdateModel);
+                                    //Create new Role for currentUser
+                                    var userRole = _userRoleDomain.CheckRoleOfUser(new UserRoleUpdateModel 
+                                    {
+                                        RoleName = RoleConstant.MANAGER,
+                                        UserId = currentUser.UserId
+                                    });
+                                    if (userRole != null)
+                                    {
+                                        userRole = _userRoleDomain.Edit(userRole, new UserRoleUpdateEntityModel 
+                                        {
+                                            IsActived = true,
+                                            UpdateBy = insertBy
+                                        });
+                                    }
+                                    else
+                                    {
+                                        var userRoleUpdateModel = new UserRoleUpdateModel
+                                        {
+                                            RoleName = RoleConstant.MANAGER,
+                                            UserId = currentUser.UserId,
+                                        };
+                                        _userRoleDomain.RegistationRole(currentUser.UserId, RoleConstant.MANAGER, insertBy);
+                                    }
+                                    
+                                    
+                                    transaction.Commit();
+                                }
+                                else
+                                {
+                                    result = "this email is belong another center";
+                                    return result;
+                                }
                             }
                             var viewModel = new CenterRegistrationFormViewModel
                             {
