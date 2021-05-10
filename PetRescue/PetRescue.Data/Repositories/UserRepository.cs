@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -48,6 +49,9 @@ namespace PetRescue.Data.Repositories
             User user = new User
             {
                 UserEmail = model.Email,
+                Password = model.Password,
+                UserId = Guid.NewGuid(),
+                UserStatus = UserStatus.DEFAULT,
             };
             return user;  
         }
@@ -70,16 +74,16 @@ namespace PetRescue.Data.Repositories
         public UserModel GetUserById(Guid id)
         {
             return Get().Where(u => u.UserId.Equals(id))
-                .Include(u => u.UserNavigation)
+                .Include(u => u.UserProfile)
                 .Select(u => new UserModel { 
                 UserId = u.UserId,
                 UserEmail = u.UserEmail,
-                FirstName = u.UserNavigation.FirstName,
-                LastName = u.UserNavigation.LastName,
-                Dob = u.UserNavigation.Dob,
-                Gender = u.UserNavigation.Gender,
-                Phone = u.UserNavigation.Phone,
-                ImageUrl = u.UserNavigation.UserImgUrl
+                FirstName = u.UserProfile.FirstName,
+                LastName = u.UserProfile.LastName,
+                Dob = u.UserProfile.Dob,
+                Gender = u.UserProfile.Gender,
+                Phone = u.UserProfile.Phone,
+                ImageUrl = u.UserProfile.UserImgUrl
                 }).FirstOrDefault();
         }
     }

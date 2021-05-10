@@ -550,17 +550,12 @@ namespace PetRescue.Data.Models
                     .WithMany(p => p.User)
                     .HasForeignKey(d => d.CenterId)
                     .HasConstraintName("FK_User_Center");
-
-                entity.HasOne(d => d.UserNavigation)
-                    .WithOne(p => p.User)
-                    .HasForeignKey<User>(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_User_UserProfile");
             });
 
             modelBuilder.Entity<UserProfile>(entity =>
             {
-                entity.HasKey(e => e.UserId);
+                entity.HasKey(e => e.UserId)
+                    .HasName("PK_UserProfile_1");
 
                 entity.Property(e => e.UserId)
                     .HasColumnName("user_id")
@@ -596,6 +591,12 @@ namespace PetRescue.Data.Models
                 entity.Property(e => e.UserImgUrl)
                     .HasColumnName("user_img_url")
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.User)
+                    .WithOne(p => p.UserProfile)
+                    .HasForeignKey<UserProfile>(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserProfile_User");
             });
 
             modelBuilder.Entity<UserRole>(entity =>
