@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
@@ -7,6 +9,7 @@ using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using static PetRescue.Data.ViewModels.PetProfileModel;
@@ -22,13 +25,13 @@ namespace PetRescue.Data.Domains
         private readonly IAdoptionRegistrationFormRepository _adoptionRegistrationFormRepo;
         private readonly IRescueDocumentRepository _rescueDocumentRepo;
         private readonly IUserRepository _userRepo;
-        public PetProfileDomain(IUnitOfWork uow, 
-            IPetTypeRepository petTypeRepo, 
-            IPetProfileRepository petProfileRepo, 
-            IPetFurColorRepository petFurColorRepo, 
-            IPetBreedRepository petBreedRepo, 
-            IAdoptionRegistrationFormRepository adoptionRegistrationFormRepo, 
-            IRescueDocumentRepository rescueDocumentRepo, 
+        public PetProfileDomain(IUnitOfWork uow,
+            IPetTypeRepository petTypeRepo,
+            IPetProfileRepository petProfileRepo,
+            IPetFurColorRepository petFurColorRepo,
+            IPetBreedRepository petBreedRepo,
+            IAdoptionRegistrationFormRepository adoptionRegistrationFormRepo,
+            IRescueDocumentRepository rescueDocumentRepo,
             IUserRepository userRepo) : base(uow)
         {
             this._petBreedRepo = petBreedRepo;
@@ -114,7 +117,7 @@ namespace PetRescue.Data.Domains
         public PetProfileModel CreatePetProfile(CreatePetProfileModel model, Guid insertBy, Guid centerId)
         {
             var petProfile = _petProfileRepo.CreatePetProfile(model, insertBy, centerId);
-            if(petProfile != null)
+            if (petProfile != null)
             {
                 _uow.SaveChanges();
                 return petProfile;
@@ -123,15 +126,55 @@ namespace PetRescue.Data.Domains
         }
         #endregion
         #region UPDATE PET PROFILE
-        public PetProfileModel UpdatePetProfile(UpdatePetProfileModel model, Guid updatedBy)
+        public PetProfileModel UpdatePetProfile(UpdatePetProfileModel model, Guid updatedBy, string path)
         {
             var petProfile = _petProfileRepo.UpdatePetProfile(model, updatedBy);
-            if(petProfile != null)
+            if (petProfile != null)
             {
                 _uow.SaveChanges();
                 return petProfile;
             }
+
+            if (model.PetStatus == PetStatusConst.ADOPTED)
+            {
+                var newJson = _adoptionRegistrationFormRepo.Get()
+                    .Where(a => a.PetProfileId.Equals(petProfile.PetProfileId)
+                && a.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED)
+                    .Select(a => new NotificationRemindReportAfterAdopt
+                    {
+                        AdoptedAt = petProfile.UpdatedAt,
+                        OwnerId = (Guid)a.InsertedBy,
+                        Path = path
+                    })
+                    .FirstOrDefault();
+
+                var serialObject = JsonConvert.SerializeObject(newJson);
+
+                string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "RemindReportAfterAdopt.json");
+
+                string fileJson = File.ReadAllText(FILEPATH);
+
+                var objJson = JObject.Parse(fileJson);
+
+                var remindArrary = objJson.GetValue("Reminders") as JArray;
+
+                var newNoti = JObject.Parse(serialObject);
+
+                if (remindArrary.Count == 0)
+                    remindArrary = new JArray();
+
+                remindArrary.Add(newNoti);
+
+                objJson["Reminders"] = remindArrary;
+                string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
+                File.WriteAllText(FILEPATH, output);
+            }
             return null;
+        }
+        public async void Remind(Guid ownerId, string path)
+        {
+            await _uow.GetService<NotificationTokenDomain>().NotificationForUserAlertAfterAdoption(path, ownerId,
+                   ApplicationNameHelper.USER_APP);
         }
         #endregion
 
@@ -211,7 +254,7 @@ namespace PetRescue.Data.Domains
             var result = new List<PetAdoptionRegisterFormModel>();
             foreach (var petProfile in petProfiles)
             {
-                if(filter.PetStatus == PetStatusConst.FINDINGADOPTER)
+                if (filter.PetStatus == PetStatusConst.FINDINGADOPTER)
                 {
                     var count = _adoptionRegistrationFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
                     if (count > 0)
@@ -229,7 +272,7 @@ namespace PetRescue.Data.Domains
                         });
                     }
                 }
-                else if(filter.PetStatus == PetStatusConst.WAITING)
+                else if (filter.PetStatus == PetStatusConst.WAITING)
                 {
                     var count = _adoptionRegistrationFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED).Count();
                     if (count > 0)
@@ -247,7 +290,7 @@ namespace PetRescue.Data.Domains
                         });
                     }
                 }
-                
+
             }
             return result;
         }
@@ -274,7 +317,7 @@ namespace PetRescue.Data.Domains
                 },
                 AdoptionRegisterforms = new List<AdoptionRegistrationFormViewModel>()
             };
-            if(currentPet.PetStatus == PetStatusConst.FINDINGADOPTER)
+            if (currentPet.PetStatus == PetStatusConst.FINDINGADOPTER)
             {
                 forms = forms.Where(s => s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
                 foreach (var form in forms)
@@ -301,7 +344,8 @@ namespace PetRescue.Data.Domains
                         Phone = form.Phone,
                     });
                 }
-            }else if(currentPet.PetStatus == PetStatusConst.WAITING)
+            }
+            else if (currentPet.PetStatus == PetStatusConst.WAITING)
             {
                 forms = forms.Where(s => s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED);
                 foreach (var form in forms)
@@ -397,7 +441,7 @@ namespace PetRescue.Data.Domains
         #endregion
         public RescueDocumentViewModel GetRescueDocumentByPetId(Guid petProfileId)
         {
-            
+
 
             var result = new RescueDocumentViewModel();
             var petProfile = _petProfileRepo.Get().FirstOrDefault(s => s.PetProfileId.Equals(petProfileId));
@@ -405,7 +449,7 @@ namespace PetRescue.Data.Domains
             if (rescueDocument != null)
             {
                 var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
-                var fullName = currentUser.UserNavigation.LastName + " "+currentUser.UserNavigation.FirstName;
+                var fullName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName;
                 var pickerForm = new PickerFormViewModel
                 {
                     PickerDate = rescueDocument.PickerForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
@@ -505,11 +549,11 @@ namespace PetRescue.Data.Domains
                         Description = petProfile.Description,
                         PetStatus = petProfile.PetStatus,
                         PetProfileId = petProfile.PetProfileId,
-                         PetType = new PetTypeUpdateModel
-                         {
-                             PetTypeId = petProfile.PetBreed.PetType.PetTypeId,
-                             PetTypeName = petProfile.PetBreed.PetType.PetTypeName
-                         }
+                        PetType = new PetTypeUpdateModel
+                        {
+                            PetTypeId = petProfile.PetBreed.PetType.PetTypeId,
+                            PetTypeName = petProfile.PetBreed.PetType.PetTypeName
+                        }
                     };
                 }
             }
@@ -518,9 +562,9 @@ namespace PetRescue.Data.Domains
         public object GetAllPetBreeds()
         {
             var result = new List<PetBreedDetailModel>();
-            foreach(var petBreed in _petBreedRepo.Get().ToList())
+            foreach (var petBreed in _petBreedRepo.Get().ToList())
             {
-                result.Add(new PetBreedDetailModel 
+                result.Add(new PetBreedDetailModel
                 {
                     PetBreedId = petBreed.PetBreedId,
                     PetBreedName = petBreed.PetBreedName,

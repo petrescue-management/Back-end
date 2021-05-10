@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PetRescue.Data.ConstantHelper;
@@ -24,9 +25,11 @@ namespace PetRescue.WebApi.Controllers
     public class PetProfileController : BaseController
     {
         private readonly PetProfileDomain _petProfileDomain;
-        public PetProfileController(IUnitOfWork uow, PetProfileDomain petProfileDomain) : base(uow)
+        private readonly IHostingEnvironment _env;
+        public PetProfileController(IUnitOfWork uow, PetProfileDomain petProfileDomain, IHostingEnvironment environment) : base(uow)
         {
             this._petProfileDomain = petProfileDomain;
+            _env = environment;
         }
         #region GET
         [HttpGet]
@@ -380,8 +383,9 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+                var path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _petProfileDomain.UpdatePetProfile(model, Guid.Parse(currentUserId));
+                var result = _petProfileDomain.UpdatePetProfile(model, Guid.Parse(currentUserId), path);
                 if (result != null)
                 {
                     return Success(result);

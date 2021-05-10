@@ -107,57 +107,23 @@ namespace PetRescue.Data.Domains
                 model.Rejects = adoptionFormRepo.Get()
                     .Where(s => s.PetProfileId.Equals(form.PetProfileId)
                     && !s.AdoptionRegistrationFormId.Equals(form.AdoptionRegistrationFormId)
-                    && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Select(s=>new AdoptionFormModel 
+                    && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Select(s => new AdoptionFormModel
                     {
                         AdoptionFormId = s.AdoptionRegistrationFormId,
                         UserId = s.InsertedBy
                     }).ToList();
-                foreach(var reject in model.Rejects)
+                foreach (var reject in model.Rejects)
                 {
-                    adoptionFormRepo.UpdateAdoptionRegistrationFormStatus(new UpdateViewModel 
+                    adoptionFormRepo.UpdateAdoptionRegistrationFormStatus(new UpdateViewModel
                     {
                         Id = reject.AdoptionFormId,
-                        Status  = AdoptionRegistrationFormStatusConst.REJECTED,
+                        Status = AdoptionRegistrationFormStatusConst.REJECTED,
                         Reason = ErrorConst.CancelReasonAdoptionForm
-                    },insertedBy);
+                    }, insertedBy);
                 }
                 _uow.SaveChanges();
-                var newJson
-                            = new NotificationRemindReportAfterAdopt
-                            {
-                                AdoptionId = result.AdoptionRegistrationId,
-                                AdoptedAt = result.InsertedAt,
-                                OwnerId = (Guid)form.InsertedBy,
-                                Path = path
-                            };
-
-                var serialObject = JsonConvert.SerializeObject(newJson);
-
-                string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "RemindReportAfterAdopt.json");
-
-                string fileJson = File.ReadAllText(FILEPATH);
-
-                var objJson = JObject.Parse(fileJson);
-
-                var remindArrary = objJson.GetValue("Reminders") as JArray;
-
-                var newNoti = JObject.Parse(serialObject);
-
-                if (remindArrary.Count == 0)
-                    remindArrary = new JArray();
-
-                remindArrary.Add(newNoti);
-
-                objJson["Reminders"] = remindArrary;
-                string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
-                File.WriteAllText(FILEPATH, output);
             }
             return model;
-        }
-        public async void Remind(Guid ownerId, string path)
-        {
-            await _uow.GetService<NotificationTokenDomain>().NotificationForUserAlertAfterAdoption(path, ownerId,
-                   ApplicationNameHelper.USER_APP);
         }
         #endregion
 

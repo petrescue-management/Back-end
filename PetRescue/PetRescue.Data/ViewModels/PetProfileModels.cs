@@ -22,6 +22,8 @@ namespace PetRescue.Data.ViewModels
         public Guid? CenterId { get; set; }
         public Guid? InsertedBy { get; set; }
         public DateTime? InsertedAt { get; set; }
+        public Guid? UpdatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public CenterProfileViewModel CenterProfile { get; set; }
         public PetTypeUpdateModel PetType { get; set; }
     }
@@ -108,6 +110,8 @@ namespace PetRescue.Data.ViewModels
         public string PetImgUrl { get; set; }
         public int PetStatus { get; set; }
         public string Description { get; set; }
+        public Guid? UpdatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 
     public class GetPetByTypeNameModel

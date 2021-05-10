@@ -16,12 +16,12 @@ namespace PetRescue.Data.Services
     {
         private readonly ILogger<MyCronJob2> _logger;
 
-        private readonly AdoptionDomain _domain;
+        private readonly PetProfileDomain _domain;
 
         public MyCronJob2(IScheduleConfig<MyCronJob2> config, ILogger<MyCronJob2> logger, IServiceProvider serviceProvider)
             : base(config.CronExpression, config.TimeZoneInfo)
         {
-            _domain = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<AdoptionDomain>();
+            _domain = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<PetProfileDomain>();
             _logger = logger;
         }
 
