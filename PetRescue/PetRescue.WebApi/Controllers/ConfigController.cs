@@ -14,21 +14,24 @@ using System.Threading.Tasks;
 namespace PetRescue.WebApi.Controllers
 {
     [ApiController]
+    [Route("/api/config/")]
     public class ConfigController : BaseController
     {
-        public ConfigController(IUnitOfWork uow) : base(uow)
+        private readonly ConfigDomain _configDomain;
+        public ConfigController(IUnitOfWork uow, ConfigDomain configDomain) : base(uow)
         {
+            this._configDomain = configDomain;
         }
 
         #region GET TIME TO NOTIFICATION
         [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpGet]
-        [Route("api/get-time-to-notification")]
+        [Route("get-time-to-notification")]
         public IActionResult GetTimeToNotification()
         {
             try
             {
-                var result = _uow.GetService<ConfigDomain>().GetTimeToNotification();                
+                var result = _configDomain.GetTimeToNotification();                
                 return Success(result);
             }
             catch (Exception ex)
@@ -41,12 +44,12 @@ namespace PetRescue.WebApi.Controllers
         #region CONFIG TIME TO NOTIFICATION
         [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpPost]
-        [Route("api/config-time-to-notification")]
+        [Route("config-time-to-notification")]
         public IActionResult ConfigTimeToNotification([FromQuery] int reNotiTime, int destroyNotiTime, int remindTime)
         {
             try
             {
-                var result = _uow.GetService<ConfigDomain>().ConfigTimeToNotification(reNotiTime, destroyNotiTime, remindTime);
+                var result = _configDomain.ConfigTimeToNotification(reNotiTime, destroyNotiTime, remindTime);
                 if (result == false)
                     return BadRequest("Time for Destroy Notification must be larger than Time for Re-Notification !");
                 return Success(result);

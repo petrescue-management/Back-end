@@ -60,9 +60,11 @@ namespace PetRescue.Data.Extensions
             foreach (var model in models)
             {
                 var obj = new Dictionary<string, object>();
-                var petTypeObj = new Dictionary<string, string>();
-                petTypeObj["petTypeId"] = model.PetBreed.PetType.PetTypeId.ToString();
-                petTypeObj["petTypeName"] = model.PetBreed.PetType.PetTypeName;
+                var petTypeObj = new Dictionary<string, string>()
+                {
+                    ["petTypeId"] = model.PetBreed.PetType.PetTypeId.ToString(),
+                    ["petTypeName"] = model.PetBreed.PetType.PetTypeName
+                };
                 foreach (string field in fields)
                 {
                     switch (field)
@@ -93,9 +95,11 @@ namespace PetRescue.Data.Extensions
                     listResult.Add(obj);
                 }
             }
-            var result = new Dictionary<string, object>();
-            result["totalPages"] = total;
-            result["result"] = listResult;
+            var result = new Dictionary<string, object>()
+            {
+                ["totalPages"] = total,
+                ["result"] = listResult
+            };
             return result;
         }
         public static IQueryable<PetProfile> GetAdoptionRegistrationByPet(this IQueryable<PetProfile> query, PetProfileFilter filter)

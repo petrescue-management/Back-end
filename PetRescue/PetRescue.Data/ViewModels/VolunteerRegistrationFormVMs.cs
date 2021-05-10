@@ -34,13 +34,12 @@ namespace PetRescue.Data.ViewModels
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Phone { get; set; }
-        public DateTime Dob { get; set; }
-        public int Gender { get; set; }
+        public DateTime? Dob { get; set; }
+        public int? Gender { get; set; }
         public string Email { get; set; }
-        public Guid CenterId { get; set; }
-        public int Status { get; set; }
-        public Guid FormId { get; set; }
-        public DateTime InsertAt { get; set; }
+        public int? Status { get; set; }
+        public Guid? FormId { get; set; }
+        public DateTime? InsertAt { get; set; }
         public string ImageUrl { get; set; }
         public Guid VolunteerRegistrationFormId { get; set; }
     }

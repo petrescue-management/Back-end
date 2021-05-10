@@ -13,11 +13,10 @@ namespace PetRescue.Data.ViewModels
         public string Phone { get; set; }
         public double? Lat { get; set; }
         public double? Long { get; set; }
-        public int CenterStatus { get; set; }
-        public DateTime InsertedAt { get; set; }
+        public int? CenterStatus { get; set; }
+        public DateTime? InsertedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string CenterImageUrl { get; set; }
-        public int CountOfVolunteer { get; set; }
 
         public object LastedDocuments { get; set; }
     }
@@ -68,7 +67,7 @@ namespace PetRescue.Data.ViewModels
         public string CenterName { get; set; }
         public string Address { get; set; }
         public string ImageUrl { get; set; }
-        public int CenterStatus { get; set; }
+        public int? CenterStatus { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
     }

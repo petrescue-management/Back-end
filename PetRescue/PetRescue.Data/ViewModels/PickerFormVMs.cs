@@ -20,6 +20,6 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("pickerName")]
         public string PickerName { get; set; }
         [JsonProperty("pickerDate")]
-        public DateTime PickerDate { get; set; }
+        public DateTime? PickerDate { get; set; }
     }
 }

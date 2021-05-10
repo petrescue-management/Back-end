@@ -12,20 +12,22 @@ using System.Threading.Tasks;
 namespace PetRescue.WebApi.Controllers
 {
     [ApiController]
+    [Route("/api/pet-trackings/")]
     public class PetTrackingController : BaseController
     {
-        public PetTrackingController(IUnitOfWork uow) : base(uow)
+        private readonly PetTrackingDomain _petTrackingDomain;
+        public PetTrackingController(IUnitOfWork uow, PetTrackingDomain petTrackingDomain) : base(uow)
         {
+            this._petTrackingDomain = petTrackingDomain;
         }
         [Authorize]
         [HttpGet]
-        [Route("api/get-pet-tracking-by-id")]
+        [Route("get-pet-tracking-by-id")]
         public IActionResult GetPetTrackingById([FromQuery]Guid petTrackingId)
         {
             try
             {
-                var _domain = _uow.GetService<PetTrackingDomain>();
-                var result = _domain.GetPetTrackingById(petTrackingId);
+                var result = _petTrackingDomain.GetPetTrackingById(petTrackingId);
                 return Success(result);
             }
             catch (Exception ex)
@@ -35,13 +37,12 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize]
         [HttpGet]
-        [Route("api/get-pet-tracking-by-petprofileid")]
+        [Route("get-pet-tracking-by-petprofileid")]
         public IActionResult GetListPetTrackingByPetProfileId([FromQuery] Guid petProfileId)
         {
             try
             {
-                var _domain = _uow.GetService<PetTrackingDomain>();
-                var result = _domain.GetListPetTrackingByPetProfileId(petProfileId);
+                var result = _petTrackingDomain.GetListPetTrackingByPetProfileId(petProfileId);
                 return Success(result);
             }
             catch (Exception ex)
@@ -51,14 +52,13 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize]
         [HttpPost]
-        [Route("api/create-pet-tracking")]
+        [Route("create-pet-tracking")]
         public IActionResult CreatePetTracking([FromBody]PetTrackingCreateModel model) 
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var _domain = _uow.GetService<PetTrackingDomain>();
-                var result = _domain.Create(model, Guid.Parse(currentUserId));
+                var result = _petTrackingDomain.Create(model, Guid.Parse(currentUserId));
                 if(result != null)
                 {
                     return Success(result);
@@ -70,17 +70,15 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
-
         [Authorize]
         [HttpPost]
-        [Route("api/create-pet-tracking-by-user")]
+        [Route("create-pet-tracking-by-user")]
         public IActionResult CreatePetTrackingByUser([FromBody] CreatePetTrackingByUserModel model)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var _domain = _uow.GetService<PetTrackingDomain>();
-                var result = _domain.CreatePetTrackingByUser(model, Guid.Parse(currentUserId));
+                var result = _petTrackingDomain.CreatePetTrackingByUser(model, Guid.Parse(currentUserId));
                 if (result)
                 {
                     return Success(result);

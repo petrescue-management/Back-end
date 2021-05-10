@@ -32,8 +32,8 @@ namespace PetRescue.Data.Repositories
             var pickerForm = new PickerForm
             {
                 PickerFormId = Guid.NewGuid(),
-                PickerDescription = model.PickerDescription,
-                PickerImageUrl = model.PickerImageUrl,
+                Description = model.Description,
+                PickerFormImgUrl = model.PickerImageUrl,
                 InsertedBy = insertedBy,
                 InsertedAt = DateTime.UtcNow
             };
@@ -50,10 +50,10 @@ namespace PetRescue.Data.Repositories
             var result = new PickerFormModel
             {
                 PickerFormId = pickerForm.PickerFormId,
-                PickerDescription = pickerForm.PickerDescription,
-                PickerImageUrl = pickerForm.PickerImageUrl,
+                Description = pickerForm.Description,
+                PickerImageUrl = pickerForm.PickerFormImgUrl,
                 InsertedBy = pickerForm.InsertedBy,
-                InsertedAt = pickerForm.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM)
+                InsertedAt = pickerForm.InsertedAt
             };
             return result;
 
@@ -68,10 +68,10 @@ namespace PetRescue.Data.Repositories
                 .Select(p => new PickerFormModel
                 {
                     PickerFormId = p.PickerFormId,
-                    PickerDescription = p.PickerDescription,
-                    PickerImageUrl = p.PickerImageUrl,
+                    Description = p.Description,
+                    PickerImageUrl = p.PickerFormImgUrl,
                     InsertedBy = p.InsertedBy,
-                    InsertedAt = p.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM)
+                    InsertedAt = p.InsertedAt
                 }).FirstOrDefault();
             return result;
         }
@@ -85,8 +85,8 @@ namespace PetRescue.Data.Repositories
                     .Select(p => new PickerForm
                     {
                         PickerFormId = model.Id,
-                        PickerDescription = p.PickerDescription,
-                        PickerImageUrl = p.PickerImageUrl,
+                        Description = p.Description,
+                        PickerFormImgUrl = p.PickerFormImgUrl,
                         InsertedBy = p.InsertedBy,
                         InsertedAt = p.InsertedAt
                     }).FirstOrDefault();
@@ -104,10 +104,10 @@ namespace PetRescue.Data.Repositories
                     .Select(p => new PickerFormModel
                     {
                         PickerFormId = p.PickerFormId,
-                        PickerDescription = p.PickerDescription,
-                        PickerImageUrl = p.PickerImageUrl,
+                        Description = p.Description,
+                        PickerImageUrl = p.PickerFormImgUrl,
                         InsertedBy = p.InsertedBy,
-                        InsertedAt = p.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM)
+                        InsertedAt = p.InsertedAt
                     }).FirstOrDefault();
             
             return result;

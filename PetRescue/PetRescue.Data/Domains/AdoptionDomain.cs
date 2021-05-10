@@ -79,7 +79,7 @@ namespace PetRescue.Data.Domains
                 AdoptedAt = adoption.InsertedAt,
                 ReturnedAt = adoption.UpdatedAt
             };
-            uow.saveChanges();
+            uow.SaveChanges();
             return result;
         }
         #endregion*/
@@ -87,10 +87,10 @@ namespace PetRescue.Data.Domains
         #region CREATE
         public ReturnAdoptionViewModel CreateAdoption(Guid adoptionRegistrationFormId, Guid insertedBy, string path)
         {
-            var petProfileRepo = uow.GetService<IPetProfileRepository>();
-            var adoptionFormRepo = uow.GetService<IAdoptionRegistrationFormRepository>();
-            var result = uow.GetService<IAdoptionRepository>().CreateAdoption(adoptionRegistrationFormId, insertedBy);
-            var form = uow.GetService<IAdoptionRegistrationFormRepository>().GetAdoptionRegistrationFormById(adoptionRegistrationFormId);
+            var petProfileRepo = _uow.GetService<IPetProfileRepository>();
+            var adoptionFormRepo = _uow.GetService<IAdoptionRegistrationFormRepository>();
+            var result = _uow.GetService<IAdoptionRepository>().CreateAdoption(adoptionRegistrationFormId, insertedBy);
+            var form = _uow.GetService<IAdoptionRegistrationFormRepository>().GetAdoptionRegistrationFormById(adoptionRegistrationFormId);
             var model = new ReturnAdoptionViewModel();
             if (result != null)
             {
@@ -101,15 +101,15 @@ namespace PetRescue.Data.Domains
                 }, insertedBy);
                 model.Approve = new AdoptionFormModel
                 {
-                    AdoptionFormId = form.AdoptionRegistrationId,
+                    AdoptionFormId = form.AdoptionRegistrationFormId,
                     UserId = form.InsertedBy
                 };
                 model.Rejects = adoptionFormRepo.Get()
                     .Where(s => s.PetProfileId.Equals(form.PetProfileId)
-                    && !s.AdoptionRegistrationId.Equals(form.AdoptionRegistrationId)
-                    && s.AdoptionRegistrationStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Select(s=>new AdoptionFormModel 
+                    && !s.AdoptionRegistrationFormId.Equals(form.AdoptionRegistrationFormId)
+                    && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Select(s=>new AdoptionFormModel 
                     {
-                        AdoptionFormId = s.AdoptionRegistrationId,
+                        AdoptionFormId = s.AdoptionRegistrationFormId,
                         UserId = s.InsertedBy
                     }).ToList();
                 foreach(var reject in model.Rejects)
@@ -121,13 +121,13 @@ namespace PetRescue.Data.Domains
                         Reason = ErrorConst.CancelReasonAdoptionForm
                     },insertedBy);
                 }
-                uow.saveChanges();
+                _uow.SaveChanges();
                 var newJson
                             = new NotificationRemindReportAfterAdopt
                             {
                                 AdoptionId = result.AdoptionRegistrationId,
                                 AdoptedAt = result.InsertedAt,
-                                OwnerId = form.InsertedBy,
+                                OwnerId = (Guid)form.InsertedBy,
                                 Path = path
                             };
 
@@ -154,9 +154,9 @@ namespace PetRescue.Data.Domains
             }
             return model;
         }
-        public void Remind(Guid ownerId, string path)
+        public async void Remind(Guid ownerId, string path)
         {
-            uow.GetService<NotificationTokenDomain>().NotificationForUserAlertAfterAdoption(path, ownerId,
+            await _uow.GetService<NotificationTokenDomain>().NotificationForUserAlertAfterAdoption(path, ownerId,
                    ApplicationNameHelper.USER_APP);
         }
         #endregion
@@ -164,8 +164,8 @@ namespace PetRescue.Data.Domains
         #region UPDATE STATUS
         public async Task<bool> UpdateAdoptionStatusAsync(CancelModel model, Guid updatedBy, string path)
         {
-            var notificationTokenDomain = uow.GetService<NotificationTokenDomain>();
-            var result = uow.GetService<IAdoptionRepository>().UpdateAdoptionStatus(model, updatedBy);
+            var notificationTokenDomain = _uow.GetService<NotificationTokenDomain>();
+            var result = _uow.GetService<IAdoptionRepository>().UpdateAdoptionStatus(model, updatedBy);
             if (result != null)
             {
                 if(model.Status == AdoptionStatusConst.RETURNED)
@@ -178,9 +178,9 @@ namespace PetRescue.Data.Domains
                             Body = NotificationBodyHelper.RETURNED_ADOPTION_BODY
                         }
                     };
-                    await notificationTokenDomain.NotificationForManager(path, result.AdoptionRegistration.PetProfile.CenterId, message);
+                    await notificationTokenDomain.NotificationForManager(path, (Guid)result.AdoptionRegistration.PetProfile.CenterId, message);
                 }
-                uow.saveChanges();
+                _uow.SaveChanges();
                 return true;
             }
             return false;
@@ -260,7 +260,7 @@ namespace PetRescue.Data.Domains
                         string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
                         File.WriteAllText(FILEPATH, output);
 
-                        uow.saveChanges();
+                        uow.SaveChanges();
                         return result;
                     }
                     else if(model.Status == AdoptionStatusConst.DONTGET)
@@ -293,7 +293,7 @@ namespace PetRescue.Data.Domains
                             AdoptionFormId = adoption.AdoptionRegistrationId,
                             UserId = adoption.AdoptionRegistration.InsertedBy
                         };
-                        uow.saveChanges();
+                        uow.SaveChanges();
                         return result;
                     }
                     return null;
@@ -307,8 +307,8 @@ namespace PetRescue.Data.Domains
                 #endregion*/
         public object GetListAdoptionByCenterId(Guid centerId, int page, int limit)
         {
-            var adoptionRepo = uow.GetService<IAdoptionRepository>();
-            var userRepo = uow.GetService<IUserRepository>();
+            var adoptionRepo = _uow.GetService<IAdoptionRepository>();
+            var userRepo = _uow.GetService<IUserRepository>();
             var adoptions = adoptionRepo.Get().Where(s => s.AdoptionRegistration.PetProfile.CenterId.Equals(centerId));
             var total = 0;
             if (limit == 0)
@@ -325,7 +325,7 @@ namespace PetRescue.Data.Domains
                 adoptions = adoptions.Skip(page * limit).Take(limit);
             }
             var listAdoption = new List<AdoptionViewModel>();
-            foreach(var adoption in adoptions)
+            foreach (var adoption in adoptions)
             {
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
                 listAdoption.Add(new AdoptionViewModel {
@@ -335,12 +335,12 @@ namespace PetRescue.Data.Domains
                     ReturnedAt = adoption.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     Owner = new UserModel
                     {
-                        Dob = user.UserProfile.Dob,
-                        FirstName = user.UserProfile.FirstName,
-                        Gender = user.UserProfile.Gender,
-                        ImageUrl = user.UserProfile.ImageUrl,
-                        LastName = user.UserProfile.LastName,
-                        Phone = user.UserProfile.Phone,
+                        Dob = user.UserNavigation.Dob,
+                        FirstName = user.UserNavigation.FirstName,
+                        Gender = user.UserNavigation.Gender,
+                        ImageUrl = user.UserNavigation.UserImgUrl,
+                        LastName = user.UserNavigation.LastName,
+                        Phone = user.UserNavigation.Phone,
                         UserEmail = user.UserEmail,
                         UserId = user.UserId
                     },
@@ -356,15 +356,17 @@ namespace PetRescue.Data.Domains
                     Username = adoption.AdoptionRegistration.UserName
                 });
             }
-            var result = new Dictionary<string, object>();
-            result["totalPages"] = total;
-            result["result"] = listAdoption;
+            var result = new Dictionary<string, object>()
+            {
+                ["totalPages"] = total,
+                ["result"] = listAdoption
+            };
             return result;
         }
         public List<AdoptionViewModelMobile> GetListAdoptionByUserId(Guid userId)
         {
-            var adoptionRepo = uow.GetService<IAdoptionRepository>();
-            var userRepo = uow.GetService<IUserRepository>();
+            var adoptionRepo = _uow.GetService<IAdoptionRepository>();
+            var userRepo = _uow.GetService<IUserRepository>();
             var adoptions = adoptionRepo.Get().Where(s => s.AdoptionRegistration.InsertedBy.Equals(userId)).ToList();
             var result = new List<AdoptionViewModelMobile>();
             foreach (var adoption in adoptions)
@@ -378,12 +380,12 @@ namespace PetRescue.Data.Domains
                     ReturnedAt = adoption.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     Owner = new UserModel
                     {
-                        Dob = user.UserProfile.Dob,
-                        FirstName = user.UserProfile.FirstName,
-                        Gender = user.UserProfile.Gender,
-                        ImageUrl = user.UserProfile.ImageUrl,
-                        LastName = user.UserProfile.LastName,
-                        Phone = user.UserProfile.Phone,
+                        Dob = user.UserNavigation.Dob,
+                        FirstName = user.UserNavigation.FirstName,
+                        Gender = user.UserNavigation.Gender,
+                        ImageUrl = user.UserNavigation.UserImgUrl,
+                        LastName = user.UserNavigation.LastName,
+                        Phone = user.UserNavigation.Phone,
                         UserEmail = user.UserEmail,
                         UserId = user.UserId
                     },
@@ -407,9 +409,9 @@ namespace PetRescue.Data.Domains
         }
         public AdoptionViewModel GetAdoptionByPetId(Guid petProfileId)
         {
-            var adoptionRepo = uow.GetService<IAdoptionRepository>();
-            var userRepo = uow.GetService<IUserRepository>();
-            var petTrackingRepo = uow.GetService<IPetTrackingRepository>();
+            var adoptionRepo = _uow.GetService<IAdoptionRepository>();
+            var userRepo = _uow.GetService<IUserRepository>();
+            var petTrackingRepo = _uow.GetService<IPetTrackingRepository>();
             var adoption = adoptionRepo.Get().FirstOrDefault(s => s.AdoptionRegistration.PetProfile.PetProfileId.Equals(petProfileId));
             var result = new AdoptionViewModel();
             if (adoption != null)
@@ -428,7 +430,7 @@ namespace PetRescue.Data.Domains
                         IsVaccinated = petTracking.IsVaccinated,
                         PetTrackingId = petTracking.PetTrackingId,
                         Weight = petTracking.Weight,
-                        Author = trackingUser.UserProfile.LastName + " " + trackingUser.UserProfile.FirstName
+                        Author = trackingUser.UserNavigation.LastName + " " + trackingUser.UserNavigation.FirstName
                     });
                 }
                 var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
@@ -438,12 +440,12 @@ namespace PetRescue.Data.Domains
                 result.ReturnedAt = adoption.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM);
                 result.Owner = new UserModel
                 {
-                    Dob = user.UserProfile.Dob,
-                    FirstName = user.UserProfile.FirstName,
-                    Gender = user.UserProfile.Gender,
-                    ImageUrl = user.UserProfile.ImageUrl,
-                    LastName = user.UserProfile.LastName,
-                    Phone = user.UserProfile.Phone,
+                    Dob = user.UserNavigation.Dob,
+                    FirstName = user.UserNavigation.FirstName,
+                    Gender = user.UserNavigation.Gender,
+                    ImageUrl = user.UserNavigation.UserImgUrl,
+                    LastName = user.UserNavigation.LastName,
+                    Phone = user.UserNavigation.Phone,
                     UserEmail = user.UserEmail,
                     UserId = user.UserId
                 };
@@ -463,10 +465,10 @@ namespace PetRescue.Data.Domains
         }
         public AdoptionViewModelWeb GetAdoptionByAdoptionId(Guid adoptionId)
         {
-            var adoptionRepo = uow.GetService<IAdoptionRepository>();
-            var userRepo = uow.GetService<IUserRepository>();
-            var petTrackingRepo = uow.GetService<IPetTrackingRepository>();
-            var adoptionReportTrackingRepo = uow.GetService<IAdoptionReportTrackingRepository>();
+            var adoptionRepo = _uow.GetService<IAdoptionRepository>();
+            var userRepo = _uow.GetService<IUserRepository>();
+            var petTrackingRepo = _uow.GetService<IPetTrackingRepository>();
+            var adoptionReportTrackingRepo = _uow.GetService<IAdoptionReportTrackingRepository>();
             var adoption = adoptionRepo.Get().FirstOrDefault(s => s.AdoptionRegistrationId.Equals(adoptionId));
             var result = new AdoptionViewModelWeb();
             if (adoption != null)
@@ -483,12 +485,12 @@ namespace PetRescue.Data.Domains
                     {
                         Description = petTracking.Description,
                         ImageUrl = petTracking.PetTrackingImgUrl,
-                        InsertAt = petTracking.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM),
+                        InsertAt = petTracking.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                         IsSterilized = petTracking.IsSterilized,
                         IsVaccinated = petTracking.IsVaccinated,
                         PetTrackingId = petTracking.PetTrackingId,
                         Weight = petTracking.Weight,
-                        Author = trackingUser.UserProfile.LastName + " " + trackingUser.UserProfile.FirstName
+                        Author = trackingUser.UserNavigation.LastName + " " + trackingUser.UserNavigation.FirstName
                     });
                 }
                 foreach (var report in reports)
@@ -500,7 +502,7 @@ namespace PetRescue.Data.Domains
                         AdoptionReportTrackingImgUrl = report.AdoptionReportTrackingImgUrl,
                         Description = report.Description,
                         InsertedAt = report.InsertedAt,
-                        Author = userCreate.UserProfile.LastName + " "+ userCreate.UserProfile.FirstName,
+                        Author = userCreate.UserNavigation.LastName + " "+ userCreate.UserNavigation.FirstName,
                         InsertedBy = report.InsertedBy,
                         PetProfileId = report.PetProfileId
                     });
@@ -512,12 +514,12 @@ namespace PetRescue.Data.Domains
                 result.ReturnedAt = adoption.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM);
                 result.Owner = new UserModel
                 {
-                    Dob = user.UserProfile.Dob,
-                    FirstName = user.UserProfile.FirstName,
-                    Gender = user.UserProfile.Gender,
-                    ImageUrl = user.UserProfile.ImageUrl,
-                    LastName = user.UserProfile.LastName,
-                    Phone = user.UserProfile.Phone,
+                    Dob = user.UserNavigation.Dob,
+                    FirstName = user.UserNavigation.FirstName,
+                    Gender = user.UserNavigation.Gender,
+                    ImageUrl = user.UserNavigation.UserImgUrl,
+                    LastName = user.UserNavigation.LastName,
+                    Phone = user.UserNavigation.Phone,
                     UserEmail = user.UserEmail,
                     UserId = user.UserId
                 };

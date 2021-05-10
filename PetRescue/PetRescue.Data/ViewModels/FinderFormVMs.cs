@@ -14,11 +14,11 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("finderName")]
         public string FinderName { get; set; }
         [JsonProperty("finderDate")]
-        public DateTime FinderDate { get; set; }
+        public DateTime? FinderDate { get; set; }
         [JsonProperty("lat")]
-        public double Lat { get; set; }
+        public double? Lat { get; set; }
         [JsonProperty("lng")]
-        public double Lng { get; set; }
+        public double? Lng { get; set; }
         [JsonProperty("finderFormVidUrl")]
         public string FinderFormVidUrl { get; set; }
     }
@@ -26,30 +26,30 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("finderFormId")]
         public Guid FinderFormId { get; set; }
-        [JsonProperty("finderDescription")]
-        public string FinderDescription { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; }
         [JsonProperty("finderImageUrl")]
         public string FinderImageUrl { get; set; }
         [JsonProperty("finderName")]
         public string FinderName { get; set; }
         [JsonProperty("finderDate")]
-        public DateTime FinderDate { get; set; }
+        public DateTime? FinderDate { get; set; }
         [JsonProperty("petAttribute")]
-        public int PetAttribute { get; set;}
+        public int? PetAttribute { get; set;}
         [JsonProperty("finderFormStatus")]
-        public int FinderFormStatus { get; set; }
+        public int? FinderFormStatus { get; set; }
         [JsonProperty("phone")]
         public string Phone { get; set; }
         [JsonProperty("lat")]
-        public double Lat { get; set; }
+        public double? Lat { get; set; }
         [JsonProperty("lng")]
-        public double Lng { get; set; }
+        public double? Lng { get; set; }
         [JsonProperty("finderFormVidUrl")]
         public string FinderFormVidUrl { get; set; }
         [JsonProperty("canceledReason")]
         public string CanceledReason { get; set; }
         [JsonProperty("insertedBy")]
-        public Guid InsertedBy { get; set; }
+        public Guid? InsertedBy { get; set; }
     }
     public class FinderFormViewModel2
     {
@@ -64,11 +64,11 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("finderName")]
         public string FinderName { get; set; }
         [JsonProperty("finderDate")]
-        public DateTime FinderDate { get; set; }
+        public DateTime? FinderDate { get; set; }
         [JsonProperty("petAttribute")]
-        public int PetAttribute { get; set; }
+        public int? PetAttribute { get; set; }
         [JsonProperty("finderFormStatus")]
-        public int FinderFormStatus { get; set; }
+        public int? FinderFormStatus { get; set; }
         [JsonProperty("pickerFormDescription")]
         public string PickerFormDescription { get; set; }
         [JsonProperty("pickerFormImg")]
@@ -76,7 +76,7 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("pickerName")]
         public string PickerName { get; set; }
         [JsonProperty("pickerDate")]
-        public DateTime PickerDate { get; set; }
+        public DateTime? PickerDate { get; set; }
         [JsonProperty("finderFormVidUrl")]
         public string FinderFormVidUrl { get; set; }
         [JsonProperty("canceledReason")]

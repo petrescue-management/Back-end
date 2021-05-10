@@ -15,23 +15,24 @@ using System.Threading.Tasks;
 namespace PetRescue.Data.ViewModels
 {
     [ApiController]
-    public class VolunterRegistrationFormController : BaseController
+    [Route("/api/volunteer-registration-forms/")]
+    public class VolunteerRegistrationFormController : BaseController
     {
         private readonly IHostingEnvironment _env;
-        public VolunterRegistrationFormController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        private readonly VolunteerRegistrationFormDomain _volunteerRegistrationFormDomain;
+        public VolunteerRegistrationFormController(IUnitOfWork uow, IHostingEnvironment environment, VolunteerRegistrationFormDomain volunteerRegistrationFormDomain) : base(uow)
         {
             this._env = environment;
+            this._volunteerRegistrationFormDomain = volunteerRegistrationFormDomain;
         }
-        [Authorize(Roles = RoleConstant.MANAGER)]
+        [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpGet]
-        [Route("api/get-list-volunteer_registration_form")]
+        [Route("get-list-volunteer-registration-form")]
         public IActionResult GetListVolunteerRegistrationForm()
         {
             try
             {
-                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var _domain = _uow.GetService<VolunteerRegistrationFormDomain>();
-                var result = _domain.GetListVolunteerRegistrationForm(Guid.Parse(currentCenterId));
+                var result = _volunteerRegistrationFormDomain.GetListVolunteerRegistrationForm();
                 return Success(result);
             }catch(Exception ex)
             {
@@ -39,7 +40,7 @@ namespace PetRescue.Data.ViewModels
             }
         }
         [HttpPost]
-        [Route("api/create-volunteer-registration-form")]
+        [Route("create-volunteer-registration-form")]
         public async Task<IActionResult> CreateVolunteerRegistrationForm([FromBody]VolunteerRegistrationFormCreateModel model)
         {
             try
@@ -60,14 +61,13 @@ namespace PetRescue.Data.ViewModels
         }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
-        [Route("api/progressing-volunteer-registration-form")]
+        [Route("progressing-volunteer-registration-form")]
         public IActionResult ProgressingVolunteerRegistrationForm([FromBody] VolunteerRegistrationFormUpdateModel model)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var _domain = _uow.GetService<VolunteerRegistrationFormDomain>();
-                var result = _domain.Edit(model, Guid.Parse(currentUserId));
+                var result = _volunteerRegistrationFormDomain.Edit(model, Guid.Parse(currentUserId));
 
                 if (result.Contains("This"))
                 {

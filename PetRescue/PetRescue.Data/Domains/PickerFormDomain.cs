@@ -16,25 +16,26 @@ namespace PetRescue.Data.Domains
 {
     public class PickerFormDomain : BaseDomain
     {
-        public PickerFormDomain(IUnitOfWork uow) : base(uow)
+        private readonly IPickerFormRepository _pickerFormRepo;
+        public PickerFormDomain(IUnitOfWork uow, 
+            IPickerFormRepository pickerFormRepo) : base(uow)
         {
+            this._pickerFormRepo = pickerFormRepo;
         }
         #region SEARCH
         public SearchReturnModel SearchPickerForm(SearchModel model)
         {
-            var records = uow.GetService<IPickerFormRepository>().Get().AsQueryable();
-
-
+            var records = _pickerFormRepo.Get().AsQueryable();
             List<PickerFormModel> result = records
                 .Skip((model.PageIndex - 1) * model.PageSize)
                 .Take(model.PageSize)
                 .Select(p => new PickerFormModel
                 {
                     PickerFormId = p.PickerFormId,
-                    PickerDescription = p.PickerDescription,
-                    PickerImageUrl = p.PickerImageUrl,
+                    Description = p.Description,
+                    PickerImageUrl = p.PickerFormImgUrl,
                     InsertedBy = p.InsertedBy,
-                    InsertedAt = p.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM)
+                    InsertedAt = p.InsertedAt
                 }).ToList();
             return new SearchReturnModel
             {
@@ -47,26 +48,32 @@ namespace PetRescue.Data.Domains
         #region GET BY ID
         public PickerFormModel GetPickerFormById(Guid id)
         {
-            var pickerForm = uow.GetService<IPickerFormRepository>().GetPickerFormById(id);
-            return pickerForm;
+            return _pickerFormRepo.GetPickerFormById(id);
         }
         #endregion
-
         #region UPDATE STATUS
         public PickerFormModel UpdatePickerFormStatus(UpdateStatusModel model, Guid updatedBy)
         {
-            var pickerForm = uow.GetService<IPickerFormRepository>().UpdatePickerFormStatus(model, updatedBy);
-            uow.saveChanges();
-            return pickerForm;
+            var pickerForm = _pickerFormRepo.UpdatePickerFormStatus(model, updatedBy);
+            if(pickerForm != null)
+            {
+                _uow.SaveChanges();
+                return pickerForm;
+            }
+            return null;
         }
         #endregion
 
         #region CREATE
         public PickerFormModel CreatePickerForm(CreatePickerFormModel model, Guid insertedBy)
         {
-            var pickerForm = uow.GetService<IPickerFormRepository>().CreatePickerForm(model, insertedBy);
-            uow.saveChanges();
-            return pickerForm;
+            var pickerForm = _pickerFormRepo.CreatePickerForm(model, insertedBy);
+            if(pickerForm != null)
+            {
+                _uow.SaveChanges();
+                return pickerForm;
+            }
+            return null;
         }
 
         #endregion

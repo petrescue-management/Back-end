@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
+using PetRescue.Data.Uow;
 using PetRescue.Data.ViewModels;
 
 namespace PetRescue.Data.Services
@@ -16,9 +17,7 @@ namespace PetRescue.Data.Services
     public class MyCronJob1 : CronJobService
     {
         private readonly ILogger<MyCronJob1> _logger;
-
         private readonly FinderFormDomain _domain;
-
         public MyCronJob1(IScheduleConfig<MyCronJob1> config, ILogger<MyCronJob1> logger, IServiceProvider serviceProvider)
             : base(config.CronExpression, config.TimeZoneInfo)
         {
