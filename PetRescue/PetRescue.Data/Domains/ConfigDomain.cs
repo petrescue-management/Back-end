@@ -27,7 +27,7 @@ namespace PetRescue.Data.Domains
         {
             
                 string FILEPATH = 
-                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotification.json");
+                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "SystemParameters.json");
 
                 var fileJson = File.ReadAllText(FILEPATH);
 
@@ -36,24 +36,26 @@ namespace PetRescue.Data.Domains
                 return new {
                     reNotiTimeForRescue = int.Parse(time["ReNotiTimeForRescue"].Value<string>()),
                     destroyNotiTimeForRescue = int.Parse(time["DestroyNotiTimeForRescue"].Value<string>()),
-                    remindTimeAfterAdopt = int.Parse(time["RemindTimeAfterAdopt"].Value<string>())
+                    remindTimeAfterAdopt = int.Parse(time["RemindTimeAfterAdopt"].Value<string>()),
+                    imageForRescue = int.Parse(time["ImageForRescue"].Value<string>())
                 };           
         }
         #endregion
 
         #region CONFIG TIME TO NOTIFICATION
-        public bool ConfigTimeToNotification(int reNotiTime, int destroyNotiTime, int remindTime)
+        public bool ConfigTimeToNotification(int reNotiTime, int destroyNotiTime, int remindTime, int img)
         {
             if (reNotiTime < destroyNotiTime)
             {
                 string FILEPATH =
-                    Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotification.json");
+                    Path.Combine(Directory.GetCurrentDirectory(), "JSON", "SystemParameters.json");
 
 
                 string newJson = "{" +
                   "'ReNotiTimeForRescue': '" + reNotiTime + "'," +
                   "'DestroyNotiTimeForRescue': '" + destroyNotiTime + "'," +
-                  "'RemindTimeAfterAdopt': '" + remindTime + "'}";
+                  "'RemindTimeAfterAdopt': '" + remindTime + "'," +
+                  "'ImageForRescue': '" + img + "'}";
 
                 var newConfigTime = JObject.Parse(newJson);
 

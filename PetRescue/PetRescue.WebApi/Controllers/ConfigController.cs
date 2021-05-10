@@ -24,9 +24,8 @@ namespace PetRescue.WebApi.Controllers
         }
 
         #region GET TIME TO NOTIFICATION
-        [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpGet]
-        [Route("get-time-to-notification")]
+        [Route("get-system-parameters")]
         public IActionResult GetTimeToNotification()
         {
             try
@@ -44,12 +43,12 @@ namespace PetRescue.WebApi.Controllers
         #region CONFIG TIME TO NOTIFICATION
         [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpPost]
-        [Route("config-time-to-notification")]
-        public IActionResult ConfigTimeToNotification([FromQuery] int reNotiTime, int destroyNotiTime, int remindTime)
+        [Route("configure-systems-parameters")]
+        public IActionResult ConfigTimeToNotification([FromQuery] int reNotiTime, int destroyNotiTime, int remindTime, int img)
         {
             try
             {
-                var result = _configDomain.ConfigTimeToNotification(reNotiTime, destroyNotiTime, remindTime);
+                var result = _configDomain.ConfigTimeToNotification(reNotiTime, destroyNotiTime, remindTime, img);
                 if (result == false)
                     return BadRequest("Time for Destroy Notification must be larger than Time for Re-Notification !");
                 return Success(result);

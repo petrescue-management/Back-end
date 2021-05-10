@@ -50,7 +50,7 @@ namespace PetRescue.Data.Services
             string FILEPATH_REMIND = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "RemindReportAfterAdopt.json");
 
             string FILEPATH_CONFIG_TIME =
-                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotification.json");
+                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "SystemParameters.json");
 
             var fileJsonNoti = File.ReadAllText(FILEPATH_REMIND);
 

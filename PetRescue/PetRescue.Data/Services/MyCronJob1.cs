@@ -50,7 +50,7 @@ namespace PetRescue.Data.Services
             string FILEPATH_NOTI = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "NotificationToVolunteers.json");
 
             string FILEPATH_CONFIG_TIME = 
-                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "ConfigTimeToNotification.json");
+                Path.Combine(Directory.GetCurrentDirectory(), "JSON", "SystemParameters.json");
 
             var fileJsonNoti = File.ReadAllText(FILEPATH_NOTI);
             
