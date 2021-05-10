@@ -18,7 +18,7 @@ namespace PetRescue.Data.Models
         public Guid? CenterId { get; set; }
 
         public virtual Center Center { get; set; }
-        public virtual UserProfile UserNavigation { get; set; }
+        public virtual UserProfile UserProfile { get; set; }
         public virtual ICollection<NotificationToken> NotificationToken { get; set; }
         public virtual ICollection<UserRole> UserRole { get; set; }
     }

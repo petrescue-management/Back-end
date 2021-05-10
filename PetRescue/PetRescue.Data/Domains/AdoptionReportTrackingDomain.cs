@@ -53,7 +53,7 @@ namespace PetRescue.Data.Domains
                 result.Description = adoptionReport.Description;
                 result.AdoptionReportTrackingImgUrl = adoptionReport.AdoptionReportTrackingImgUrl;
                 result.PetProfileId = adoptionReport.PetProfileId;
-                result.Author = userCreated.UserNavigation.LastName +" " + userCreated.UserNavigation.FirstName;
+                result.Author = userCreated.UserProfile.LastName +" " + userCreated.UserProfile.FirstName;
             }
             return result;
         }

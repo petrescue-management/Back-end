@@ -449,7 +449,7 @@ namespace PetRescue.Data.Domains
             if (rescueDocument != null)
             {
                 var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
-                var fullName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName;
+                var fullName = currentUser.UserNavigation.LastName + " "+currentUser.UserNavigation.FirstName;
                 var pickerForm = new PickerFormViewModel
                 {
                     PickerDate = rescueDocument.PickerForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
@@ -458,7 +458,7 @@ namespace PetRescue.Data.Domains
                     PickerName = fullName,
                 };
                 currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.FinderForm.InsertedBy));
-                fullName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName;
+                fullName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
                 var finderForm = new FinderFormViewModel
                 {
                     FinderDate = rescueDocument.FinderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
