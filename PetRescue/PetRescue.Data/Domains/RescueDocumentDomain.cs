@@ -57,7 +57,7 @@ namespace PetRescue.Data.Domains
                     FinderDate = rescueDocument.FinderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     FinderDescription = rescueDocument.FinderForm.Description,
                     FinderImageUrl = rescueDocument.FinderForm.FinderFormImgUrl,
-                    FinderName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName,
+                    FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
                     Lat = rescueDocument.FinderForm.Lat,
                     Lng = rescueDocument.FinderForm.Lng,
                     FinderFormVidUrl = rescueDocument.FinderForm.FinderFormVidUrl
@@ -68,7 +68,7 @@ namespace PetRescue.Data.Domains
                     PickerDate = rescueDocument.PickerForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     PickerDescription = rescueDocument.PickerForm.Description,
                     PickerImageUrl = rescueDocument.PickerForm.Description,
-                    PickerName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName,
+                    PickerName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
                 };
                 listRescueDocuments.Add(new RescueDocumentModel
                 {
@@ -126,7 +126,7 @@ namespace PetRescue.Data.Domains
                     FinderDate = rescueDocument.FinderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     FinderDescription = rescueDocument.FinderForm.Description,
                     FinderImageUrl = rescueDocument.FinderForm.FinderFormImgUrl,
-                    FinderName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName,
+                    FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
                     Lat = rescueDocument.FinderForm.Lat,
                     Lng = rescueDocument.FinderForm.Lng,
                     FinderFormVidUrl = rescueDocument.FinderForm.FinderFormVidUrl
@@ -137,7 +137,7 @@ namespace PetRescue.Data.Domains
                     PickerDate = rescueDocument.PickerForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     PickerDescription = rescueDocument.PickerForm.Description,
                     PickerImageUrl = rescueDocument.PickerForm.PickerFormImgUrl,
-                    PickerName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName,
+                    PickerName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
                 };
                 result.FinderForm = finderForm;
                 result.PickerForm = pickerForm;

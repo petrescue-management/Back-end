@@ -94,6 +94,8 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("email")]
         public string Email { get; set; }
+        [JsonProperty("password")]
+        public string Password { get; set; }
     }
     public class UserLoginBySysadminModel
     {

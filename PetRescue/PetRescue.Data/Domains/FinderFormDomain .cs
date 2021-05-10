@@ -334,7 +334,7 @@ namespace PetRescue.Data.Domains
                     FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
                     FinderImageUrl = finderForm.FinderFormImgUrl,
-                    FinderName = finderUser.UserNavigation.LastName + " " + finderUser.UserNavigation.FirstName,
+                    FinderName = finderUser.UserProfile.LastName + " " + finderUser.UserProfile.FirstName,
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,
@@ -360,7 +360,7 @@ namespace PetRescue.Data.Domains
                     FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
                     FinderImageUrl = finderForm.FinderFormImgUrl,
-                    FinderName = user.UserNavigation.LastName + " " + user.UserNavigation.FirstName,
+                    FinderName = user.UserProfile.LastName + " " + user.UserProfile.FirstName,
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,
@@ -387,7 +387,7 @@ namespace PetRescue.Data.Domains
                     FinderFormId = finderForm.FinderFormId,
                     FinderFormStatus = finderForm.FinderFormStatus,
                     FinderImageUrl = finderForm.FinderFormImgUrl,
-                    FinderName = user.UserNavigation.LastName + " " + user.UserNavigation.FirstName,
+                    FinderName = user.UserProfile.LastName + " " + user.UserProfile.FirstName,
                     Lat = finderForm.Lat,
                     Lng = finderForm.Lng,
                     PetAttribute = finderForm.PetAttribute,
@@ -421,9 +421,9 @@ namespace PetRescue.Data.Domains
                     CanceledReason = finder.DroppedReason
                 };
                 var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finder.InsertedBy));
-                temp.FinderName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName;
+                temp.FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
                 currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finder.UpdatedBy));
-                temp.PickerName = currentUser.UserNavigation.LastName + " " + currentUser.UserNavigation.FirstName;
+                temp.PickerName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
                 result.Add(temp);
             }
             return result;

@@ -315,13 +315,13 @@ namespace PetRescue.Data.Domains
                 result.Add(new UserProfileViewModel2 
                 {
                     DateStarted = userRole.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
-                    DoB = userRole.User.UserNavigation.Dob,
+                    DoB = userRole.User.UserProfile.Dob,
                     Email = userRole.User.UserEmail,
-                    FirstName = userRole.User.UserNavigation.FirstName,
-                    LastName = userRole.User.UserNavigation.LastName,
-                    Gender = userRole.User.UserNavigation.Gender,
-                    ImgUrl = userRole.User.UserNavigation.UserImgUrl,
-                    Phone = userRole.User.UserNavigation.Phone,
+                    FirstName = userRole.User.UserProfile.FirstName,
+                    LastName = userRole.User.UserProfile.LastName,
+                    Gender = userRole.User.UserProfile.Gender,
+                    ImgUrl = userRole.User.UserProfile.UserImgUrl,
+                    Phone = userRole.User.UserProfile.Phone,
                     UserId = userRole.UserId
                 });
             }
@@ -329,7 +329,7 @@ namespace PetRescue.Data.Domains
         }
         public object GetListProfileMember(int page, int limit)
         {
-            var users = _userRepo.Get().Where(s => s.UserNavigation != null);
+            var users = _userRepo.Get().Where(s => s.UserProfile != null);
             if(users != null)
             {
                 var total = 0;
@@ -341,7 +341,7 @@ namespace PetRescue.Data.Domains
                 {
                     total = users.Count() / limit;
                 }
-                users = users.OrderBy(s => s.UserNavigation.FirstName);
+                users = users.OrderBy(s => s.UserProfile.FirstName);
                 if (limit > -1 && page >= 0)
                 {
                     users = users.Skip(page * limit).Take(limit);
@@ -352,12 +352,12 @@ namespace PetRescue.Data.Domains
                     listUsers.Add(new UserProfileViewModel 
                     {
                         Email = user.UserEmail,
-                        DoB = user.UserNavigation.Dob,
-                        FirstName = user.UserNavigation.FirstName,
-                        Gender = user.UserNavigation.Gender,
-                        ImgUrl = user.UserNavigation.UserImgUrl,
-                        LastName = user.UserNavigation.LastName,
-                        Phone = user.UserNavigation.Phone,
+                        DoB = user.UserProfile.Dob,
+                        FirstName = user.UserProfile.FirstName,
+                        Gender = user.UserProfile.Gender,
+                        ImgUrl = user.UserProfile.UserImgUrl,
+                        LastName = user.UserProfile.LastName,
+                        Phone = user.UserProfile.Phone,
                         UserId = user.UserId
                     });
                 }
@@ -379,12 +379,12 @@ namespace PetRescue.Data.Domains
                 return new UserProfileViewModel
                 {
                     Email = user.UserEmail,
-                    DoB = user.UserNavigation.Dob,
-                    FirstName = user.UserNavigation.FirstName,
-                    Gender = user.UserNavigation.Gender,
-                    ImgUrl = user.UserNavigation.UserImgUrl,
-                    LastName = user.UserNavigation.LastName,
-                    Phone = user.UserNavigation.Phone,
+                    DoB = user.UserProfile.Dob,
+                    FirstName = user.UserProfile.FirstName,
+                    Gender = user.UserProfile.Gender,
+                    ImgUrl = user.UserProfile.UserImgUrl,
+                    LastName = user.UserProfile.LastName,
+                    Phone = user.UserProfile.Phone,
                     UserId = user.UserId
                 };
             }

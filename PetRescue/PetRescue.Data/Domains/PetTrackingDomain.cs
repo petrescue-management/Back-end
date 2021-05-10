@@ -37,7 +37,7 @@ namespace PetRescue.Data.Domains
                     Weight = result.Weight,
                     InsertAt = result.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     PetTrackingId = result.PetTrackingId,
-                    Author = user.UserNavigation.LastName + " " + user.UserNavigation.FirstName
+                    Author = user.UserProfile.LastName + " " + user.UserProfile.FirstName
                 };
             }
             return null;
@@ -74,7 +74,7 @@ namespace PetRescue.Data.Domains
                 result.IsVaccinated = petTracking.IsVaccinated;
                 result.ImageUrl = petTracking.PetTrackingImgUrl;
                 result.Weight = petTracking.Weight;
-                result.Author = user.UserNavigation.LastName + " " + user.UserNavigation.FirstName;
+                result.Author = user.UserProfile.LastName + " " + user.UserProfile.FirstName;
                 result.PetTrackingId = petTracking.PetTrackingId;
             }
             return result;
