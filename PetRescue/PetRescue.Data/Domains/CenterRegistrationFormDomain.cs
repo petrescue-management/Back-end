@@ -138,7 +138,6 @@ namespace PetRescue.Data.Domains
                                 var newCreateUserModel = new UserCreateModel
                                 {
                                     Email = form.Email,
-                                    IsBelongToCenter = UserConst.BELONG,
                                     CenterId = newCenter.CenterId
                                 };
                                 // create new Role for newUser
@@ -186,8 +185,6 @@ namespace PetRescue.Data.Domains
                                         };
                                         _userRoleDomain.RegistationRole(currentUser.UserId, RoleConstant.MANAGER, insertBy);
                                     }
-                                    
-                                    
                                     transaction.Commit();
                                 }
                                 else

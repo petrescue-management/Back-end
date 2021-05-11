@@ -10,7 +10,7 @@ namespace PetRescue.Data.ConstantHelper
         public const int RESCUING = 2;
         public const int ARRIVED = 3;
         public const int DONE = 4;
-        public const int CANCELED = 5;
+        public const int DROPPED = 5;
 
     }
 

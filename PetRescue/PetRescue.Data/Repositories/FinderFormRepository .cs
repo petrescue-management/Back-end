@@ -121,7 +121,7 @@ namespace PetRescue.Data.Repositories
             if(finderForm != null)
             {
                 finderForm.DroppedReason = model.Reason;
-                finderForm.FinderFormStatus = FinderFormStatusConst.CANCELED;
+                finderForm.FinderFormStatus = FinderFormStatusConst.DROPPED;
                 finderForm.UpdatedBy = updatedBy;
                 finderForm.UpdatedAt = DateTime.UtcNow;
                 return Update(finderForm).Entity;

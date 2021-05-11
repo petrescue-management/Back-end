@@ -35,7 +35,7 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("finderDate")]
         public DateTime? FinderDate { get; set; }
         [JsonProperty("petAttribute")]
-        public int? PetAttribute { get; set;}
+        public int? PetAttribute { get; set; }
         [JsonProperty("finderFormStatus")]
         public int? FinderFormStatus { get; set; }
         [JsonProperty("phone")]
@@ -82,5 +82,59 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("canceledReason")]
         public string CanceledReason { get; set; }
     }
-
+    public class FinderFormDetailModel3
+    {
+        [JsonProperty("finderFormId")]
+        public Guid FinderFormId { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; }
+        [JsonProperty("finderImageUrl")]
+        public string FinderImageUrl { get; set; }
+        [JsonProperty("finderName")]
+        public string FinderName { get; set; }
+        [JsonProperty("finderDate")]
+        public DateTime? FinderDate { get; set; }
+        [JsonProperty("petAttribute")]
+        public int? PetAttribute { get; set; }
+        [JsonProperty("finderFormStatus")]
+        public int? FinderFormStatus { get; set; }
+        [JsonProperty("phone")]
+        public string Phone { get; set; }
+        [JsonProperty("lat")]
+        public double? Lat { get; set; }
+        [JsonProperty("lng")]
+        public double? Lng { get; set; }
+        [JsonProperty("finderFormVidUrl")]
+        public string FinderFormVidUrl { get; set; }
+        [JsonProperty("canceledReason")]
+        public string CanceledReason { get; set; }
+        [JsonProperty("insertedBy")]
+        public Guid? InsertedBy { get; set; }
+        [JsonProperty("distance")]
+        public double? Distance { get; set; }
+    }
+    public class FinderFormModelForVoLunteer
+    {
+        public double Lat { get; set; }
+        public double Lng { get; set; }
+    }
+    public class FinderFormLocationModel
+    {
+        public Guid FinderFormId { get; set; }
+        public double? Lat { get; set; }
+        public double? Lng { get; set; }
+    }
+    public class FinderFormDistanceModel : IComparable<FinderFormDistanceModel>
+    {
+        public double Value { get; set; }
+        public Guid FinderFormId { get; set; }
+        public int CompareTo(FinderFormDistanceModel model)
+        {
+            if (model == null) return 1;
+            else
+            {
+                return this.Value.CompareTo(model.Value);
+            }
+        }
+    }
 }

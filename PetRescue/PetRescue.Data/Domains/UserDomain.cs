@@ -136,16 +136,7 @@ namespace PetRescue.Data.Domains
             var notificationToken = _notificationTokenRepo.Get().FirstOrDefault(s => s.UserId.Equals(currentUser.UserId) && s.ApplicationName.Equals(ApplicationNameHelper.MANAGE_CENTER_APP));
             return notificationToken;
         }
-        public string AddVolunteerToCenter(AddNewRoleModel model)
-        {
-            var result = AddUserToCenter(model);
-            if (!result.Contains("This")) {
-                _uow.SaveChanges();
-                return result;
-            }
-            return result;
-        }
-        public string AddUserToCenter(AddNewRoleModel model)
+        public string AddVolunteerRole(AddNewRoleModel model)
         {
             var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserEmail.Equals(model.Email));
             var _userRoleDomain = _uow.GetService<UserRoleDomain>();
@@ -161,69 +152,21 @@ namespace PetRescue.Data.Domains
                 // if user isn't exist
                 if (userRole == null)
                 {
-                    ////if another role is existed
-                    //if ((bool)currentUser.IsBelongToCenter)
-                    //{
-                    //    _userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
-                    //    result = currentUser.UserId.ToString();
-                    //}
-                    //// if another role isn't existed
-                    //else
-                    //{
-                    //    _userRepo.UpdateUserModel(currentUser, new UserUpdateModel
-                    //    {
-                    //        IsBelongToCenter = true
-                    //    });
-                    //    _userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
-                    //    result = currentUser.UserId.ToString();
-                    //}
+                    _userRoleDomain.RegistationRole(currentUser.UserId, model.RoleName, model.InsertBy);
+                    _userRepo.UpdateUserStatus(currentUser, UserStatus.OFFLINE);
+                    result = currentUser.UserId.ToString();
                 }
                 else
                 {
-                    //if ((bool)!currentUser.IsBelongToCenter)
-                    //{
-                    //    if (!userRole.IsActive)
-                    //    {
-                    //        _userRoleDomain.Edit(userRole, new UserRoleUpdateEntityModel
-                    //        {
-                    //            IsActive = true,
-                    //            UpdateBy = model.InsertBy
-                    //        });
-                    //        _userRepo.UpdateUserModel(currentUser, new UserUpdateModel
-                    //        {
-                    //            //CenterId = model.CenterId,
-                    //            IsBelongToCenter = true
-                    //        });
-                    //        result = currentUser.UserId.ToString();
-                    //    }
-                    //    else
-                    //    {
-                    //        result = "This Role is existed";
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    //if (!userRole.IsActive)
-                    //    //{
-                    //    //    _userRoleDomain.Edit(userRole, new UserRoleUpdateEntityModel
-                    //    //    {
-                    //    //        IsActive = true,
-                    //    //        UpdateBy = model.InsertBy
-                    //    //    });
-                    //    //    result = currentUser.UserId.ToString();
-                    //    //}
-                    //    //else
-                    //    //{
-                    //    //    if (currentUser.WorkingHistory.FirstOrDefault(s => s.IsActive).CenterId.Equals(model.CenterId))
-                    //    //    {
-                    //    //        result = "This role is existed";
-                    //    //    }
-                    //    //    else
-                    //    //    {
-                    //    //        result = "This user is belong another center";
-                    //    //    }
-                    //    //}
-                    //}
+                    if (!(bool)userRole.IsActived)
+                    {
+                        _userRoleDomain.Edit(userRole, new UserRoleUpdateEntityModel
+                        {
+                            IsActived = true,
+                            UpdateBy = model.InsertBy
+                        });
+                        result = currentUser.UserId.ToString();
+                    }
                 }
             }
             else
@@ -232,14 +175,13 @@ namespace PetRescue.Data.Domains
                 {
                     try
                     {
-                        var newCreateUserModel = new UserCreateModel
+                        var newUser = _userRepo.CreateUser(new UserCreateByAppModel 
                         {
                             Email = model.Email,
-                            IsBelongToCenter = UserConst.BELONG,
-                        };
-                        var newUser = _userRepo.CreateUserByModel(newCreateUserModel);
+                            Status = UserStatus.OFFLINE
+                        });
                         _userRoleDomain.RegistationRole(newUser.UserId, model.RoleName, model.InsertBy);
-                        var newUserProfileModel = new UserProfileUpdateModel
+                        UpdateUserProfile(new UserProfileUpdateModel
                         {
                             DoB = model.DoB,
                             FirstName = model.FirstName,
@@ -247,8 +189,7 @@ namespace PetRescue.Data.Domains
                             LastName = model.LastName,
                             Phone = model.Phone,
                             UserId = newUser.UserId,
-                        };
-                        UpdateUserProfile(newUserProfileModel);
+                        });
                         transaction.Commit();
                         result = newUser.UserId.ToString();
                     }
@@ -270,7 +211,7 @@ namespace PetRescue.Data.Domains
             }
             return null;
         }
-        public async Task<string> RemoveVolunteerOfCenter(RemoveVolunteerRoleModel model, string path)
+        public string RemoveVolunteerOfCenter(RemoveVolunteerRoleModel model)
         {
             var _userRoleDomain = _uow.GetService<UserRoleDomain>();
             var _notificationTokenDomain = _uow.GetService<NotificationTokenDomain>();
@@ -293,13 +234,7 @@ namespace PetRescue.Data.Domains
                             UpdateBy = model.InsertBy
                         });
                         _notificationTokenDomain.DeleteNotificationByUserIdAndApplicationName(currentUser.UserId, ApplicationNameHelper.VOLUNTEER_APP);
-                        if (GetRoleOfUser(model.UserId).Length == 0)
-                        {
-                            //_userRepo.UpdateUserModel(currentUser, new UserUpdateModel
-                            //{
-                            //    IsBelongToCenter = false
-                            //});
-                        }
+                        _userRepo.UpdateUserStatus(currentUser, null);
                         _uow.SaveChanges();
                         transaction.Commit();
                         result = "";

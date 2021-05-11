@@ -290,7 +290,7 @@ namespace PetRescue.Data.Domains
         public async Task<bool> CancelAdoptionRegistrationForm(UpdateViewModel model, Guid updatedBy,List<string> roleName, string path)
         {
             var form = _adotionRegistrationFormRepo.UpdateAdoptionRegistrationFormStatus(model, updatedBy);
-            if (form.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.CANCEL)
+            if (form.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.DROPPED)
             {
                 if (roleName != null)
                 {

@@ -44,11 +44,11 @@ namespace PetRescue.WebApi.Controllers
         [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpPost]
         [Route("configure-systems-parameters")]
-        public IActionResult ConfigTimeToNotification([FromQuery] int reNotiTime, int destroyNotiTime, int remindTime, int imgFinder, int imgPicker)
+        public IActionResult ConfigTimeToNotification([FromQuery] int reNotiTime, int destroyNotiTime, int remindTime, int imgFinder, int imgPicker, double nearestDistance)
         {
             try
             {
-                var result = _configDomain.ConfigTimeToNotification(reNotiTime, destroyNotiTime, remindTime, imgFinder, imgPicker);
+                var result = _configDomain.ConfigTimeToNotification(reNotiTime, destroyNotiTime, remindTime, imgFinder, imgPicker, nearestDistance);
                 if (result == false)
                     return BadRequest("Time for Destroy Notification must be larger than Time for Re-Notification !");
                 return Success(result);

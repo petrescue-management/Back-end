@@ -38,13 +38,14 @@ namespace PetRescue.Data.Domains
                     destroyNotiTimeForRescue = int.Parse(time["DestroyNotiTimeForRescue"].Value<string>()),
                     remindTimeAfterAdopt = int.Parse(time["RemindTimeAfterAdopt"].Value<string>()),
                     imageForFinder = int.Parse(time["ImageForFinder"].Value<string>()),
-                    imageForPicker = int.Parse(time["ImageForPicker"].Value<string>())
+                    imageForPicker = int.Parse(time["ImageForPicker"].Value<string>()),
+                    nearestDistance = double.Parse(time["NearestDistance"].Value<string>())
                 };           
         }
         #endregion
 
         #region CONFIG TIME TO NOTIFICATION
-        public bool ConfigTimeToNotification(int reNotiTime, int destroyNotiTime, int remindTime, int imgFinder, int imgPicker)
+        public bool ConfigTimeToNotification(int reNotiTime, int destroyNotiTime, int remindTime, int imgFinder, int imgPicker, double nearestDistance)
         {
             if (reNotiTime < destroyNotiTime)
             {
@@ -56,6 +57,7 @@ namespace PetRescue.Data.Domains
                   "'ReNotiTimeForRescue': '" + reNotiTime + "'," +
                   "'DestroyNotiTimeForRescue': '" + destroyNotiTime + "'," +
                   "'RemindTimeAfterAdopt': '" + remindTime + "'," +
+                  "'NearestDistance': '" + nearestDistance + "'," +
                   "'ImageForFinder': '" + imgFinder + "'," +
                   "'ImageForPicker': '" + imgPicker  + "'}";
 

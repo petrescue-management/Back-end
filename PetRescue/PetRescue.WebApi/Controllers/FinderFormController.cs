@@ -125,14 +125,14 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
-        [Authorize(Roles = RoleConstant.VOLUNTEER)]
+        //[Authorize(Roles = RoleConstant.VOLUNTEER)]
         [HttpGet]
         [Route("get-list-finder-form")]
-        public IActionResult GetListFinderForm()
+        public IActionResult GetListFinderForm([FromQuery] FinderFormModelForVoLunteer model)
         {
             try
             {
-                var result = _finderFormDomain.GetAllListFinderForm();
+                var result = _finderFormDomain.GetAllListFinderForm(model);
                 return Success(result);
             }
             catch (Exception ex)

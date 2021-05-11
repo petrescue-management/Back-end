@@ -85,8 +85,6 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("email")]
         public string Email { get; set; }
-        [JsonProperty("isBelongToCenter")]
-        public bool IsBelongToCenter { get; set; }
         [JsonProperty("centerId")]
         public Guid? CenterId { get; set; }
     }
@@ -94,8 +92,9 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("email")]
         public string Email { get; set; }
-        [JsonProperty("password")]
-        public string Password { get; set; }
+        [JsonProperty("status")]
+        public int? Status { get; set; }
+
     }
     public class UserLoginBySysadminModel
     {
@@ -112,8 +111,11 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("centerId")]
         public Guid CenterId { get; set; }
-        //[JsonProperty("userStatus")]
-        //public int? UserStatus { get; set; }
+    }
+    public class UserUpdateVolunteerStatus
+    {
+        [JsonProperty("status")]
+        public int? Status { get; set; }
     }
     public class RemoveRoleVolunteerModel
     {

@@ -17,15 +17,12 @@ namespace PetRescue.Data.Domains
     {
         private readonly IVolunteerRegistrationFormRepository _volunteerRegistrationFormRepo;
         private readonly IUserRepository _userRepo;
-        private readonly ICenterRepository _centerRepo;
         public VolunteerRegistrationFormDomain(IUnitOfWork uow, 
             IVolunteerRegistrationFormRepository volunteerRegistrationFormRepo, 
-            IUserRepository userRepo, 
-            ICenterRepository centerRepo) : base(uow)
+            IUserRepository userRepo) : base(uow)
         {
             this._volunteerRegistrationFormRepo = volunteerRegistrationFormRepo;
             this._userRepo = userRepo;
-            this._centerRepo = centerRepo;
         }
         public async Task<string> Create(VolunteerRegistrationFormCreateModel model, string path)
         {
@@ -88,7 +85,7 @@ namespace PetRescue.Data.Domains
                     Phone = formData.Phone,
                     RoleName = RoleConstant.VOLUNTEER,
                 };
-                result = _userDomain.AddUserToCenter(newModel);
+                result = _userDomain.AddVolunteerRole(newModel);
                 if (!result.Contains("This"))
                 {
                     _userDomain.UpdateUserProfile(new UserProfileUpdateModel
