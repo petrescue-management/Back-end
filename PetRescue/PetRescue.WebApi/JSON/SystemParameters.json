@@ -2,5 +2,6 @@
   "ReNotiTimeForRescue": "5",
   "DestroyNotiTimeForRescue": "6",
   "RemindTimeAfterAdopt": "3",
-  "ImageForRescue": "3"
+  "ImageForFinder": "3",
+  "ImageForPicker": "3"
 }

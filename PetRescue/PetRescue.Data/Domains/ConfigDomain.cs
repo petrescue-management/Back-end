@@ -37,13 +37,14 @@ namespace PetRescue.Data.Domains
                     reNotiTimeForRescue = int.Parse(time["ReNotiTimeForRescue"].Value<string>()),
                     destroyNotiTimeForRescue = int.Parse(time["DestroyNotiTimeForRescue"].Value<string>()),
                     remindTimeAfterAdopt = int.Parse(time["RemindTimeAfterAdopt"].Value<string>()),
-                    imageForRescue = int.Parse(time["ImageForRescue"].Value<string>())
+                    imageForFinder = int.Parse(time["ImageForFinder"].Value<string>()),
+                    imageForPicker = int.Parse(time["ImageForPicker"].Value<string>())
                 };           
         }
         #endregion
 
         #region CONFIG TIME TO NOTIFICATION
-        public bool ConfigTimeToNotification(int reNotiTime, int destroyNotiTime, int remindTime, int img)
+        public bool ConfigTimeToNotification(int reNotiTime, int destroyNotiTime, int remindTime, int imgFinder, int imgPicker)
         {
             if (reNotiTime < destroyNotiTime)
             {
@@ -55,7 +56,8 @@ namespace PetRescue.Data.Domains
                   "'ReNotiTimeForRescue': '" + reNotiTime + "'," +
                   "'DestroyNotiTimeForRescue': '" + destroyNotiTime + "'," +
                   "'RemindTimeAfterAdopt': '" + remindTime + "'," +
-                  "'ImageForRescue': '" + img + "'}";
+                  "'ImageForFinder': '" + imgFinder + "'," +
+                  "'ImageForPicker': '" + imgPicker  + "'}";
 
                 var newConfigTime = JObject.Parse(newJson);
 
