@@ -8,9 +8,6 @@ namespace PetRescue.Data.ViewModels
 {
     public class NotificationRemindReportAfterAdopt
     {
-        [JsonProperty("AdoptionId")]
-        public Guid AdoptionId { get; set; }
-
         [JsonProperty("AdoptedAt")]
         public DateTime? AdoptedAt { get; set; }
 

@@ -430,8 +430,9 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
+                var path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _petProfileDomain.UpdatePetProfile(model, Guid.Parse(currentUserId));
+                var result = _petProfileDomain.UpdatePetProfile(model, Guid.Parse(currentUserId), path);
                 if (result != null)
                 {
                     return Success(result);

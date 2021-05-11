@@ -141,6 +141,9 @@ namespace PetRescue.Data.Repositories
                 CenterId = petProfile.CenterId,
                 InsertedBy = petProfile.InsertedBy,
                 InsertedAt = petProfile.InsertedAt,
+                UpdatedAt = petProfile.UpdatedAt,
+                UpdatedBy = petProfile.UpdatedBy,
+                
             };
 
             return result;
