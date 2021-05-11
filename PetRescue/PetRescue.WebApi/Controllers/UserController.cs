@@ -19,9 +19,11 @@ namespace PetRescue.WebApi.Controllers
     public class UserController : BaseController
     {
         private readonly IHostingEnvironment _env;
-        public UserController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        private readonly UserDomain _userDomain;
+        public UserController(IUnitOfWork uow, IHostingEnvironment environment, UserDomain userDomain) : base(uow)
         {
-            _env = environment;
+            this._env = environment;
+            this._userDomain = userDomain;
         }
         #region GET
         [Authorize]
@@ -31,8 +33,7 @@ namespace PetRescue.WebApi.Controllers
             try
             {
                 var token = Request.Headers["Authorization"];
-                var _domain = _uow.GetService<UserDomain>();
-                var result = _domain.GetUserDetail(token.ToString().Split(" ")[1]);
+                var result = _userDomain.GetUserDetail(token.ToString().Split(" ")[1]);
                 return Success(result);
             }
             catch (Exception e)
@@ -42,18 +43,13 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize(Roles =RoleConstant.MANAGER)]
         [HttpGet("get-list-volunteer-profile-of-center")]
-        public IActionResult GetListVolunteerProfileOfCenter()
+        public IActionResult GetListVolunteerProfileOfCenter([FromQuery]bool IsActive)
         {
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var _domain = _uow.GetService<UserDomain>();
-                var result = _domain.GetListProfileOfVolunter(Guid.Parse(currentCenterId));
-                if (result != null)
-                {
-                    return Success(result);
-                }
-                return BadRequest();
+                var result = _userDomain.GetListProfileOfVolunter();
+                return Success(result);
             }
             catch(Exception ex)
             {
@@ -61,13 +57,31 @@ namespace PetRescue.WebApi.Controllers
             }
             
         }
+        [Authorize(Roles = RoleConstant.ADMIN)]
+        [HttpGet("get-list-of-member-profiles")]
+        public IActionResult GetListOfMemberProfile([FromQuery] int page = 0, [FromQuery] int limit = -1)
+        {
+            try
+            {
+                var result = _userDomain.GetListProfileMember(page, limit);
+                if(result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+
+        }
         [HttpGet("get-profile-by-userid")]
         public IActionResult GetProfileByUserId (Guid userId)
         {
             try
             {
-                var _domain = _uow.GetService<UserDomain>();
-                var result = _domain.GetProfileByUserId(userId);
+                var result = _userDomain.GetProfileByUserId(userId);
                 if (result != null)
                 {
                     return Success(result);
@@ -88,9 +102,8 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var _domain = _uow.GetService<UserDomain>();
-                var newUserProfile = _domain.UpdateUserProfile(model);
-                if (newUserProfile == 1)
+                var newUserProfile = _userDomain.UpdateUserProfile(model);
+                if (newUserProfile)
                 {
                     return Success(newUserProfile);
                 }
@@ -100,56 +113,55 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
-        //[Authorize(Roles = RoleConstant.MANAGER)]
-        //[HttpPost("create-role-volunteer-for-user")]
-        //public IActionResult CreateRoleForUser([FromQuery]CreateVolunteerModel model)
-        //{
-        //    try
-        //    {
-        //        var _domain = _uow.GetService<UserDomain>();
-        //        var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-        //        var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-        //        var result = _domain.AddUserToCenter(new AddNewRoleModel 
-        //        {
-        //            Email = model.Email,
-        //            CenterId = Guid.Parse(_currentCenterId),
-        //            RoleName = RoleConstant.VOLUNTEER,
-        //            InsertBy = Guid.Parse(_currentUserId),
-        //            DoB = model.DoB,
-        //            FirstName = model.FirstName,
-        //            Gender = model.Gender,
-        //            LastName = model.LastName,
-        //            Phone = model.Phone,
-        //        });
-        //        if (!result.Equals(""))
-        //        {
-        //            return Success(result);
-        //        }
-        //        return BadRequest(result);
-                
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return Error(e.Message);
-        //    }
-        //}
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpPost("create-role-volunteer-for-user")]
+        public IActionResult CreateRoleForUser([FromBody] CreateVolunteerModel model)
+        {
+            try
+            {
+                var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _userDomain.AddVolunteerToCenter(new AddNewRoleModel
+                {
+                    Email = model.Email,
+                    RoleName = RoleConstant.VOLUNTEER,
+                    InsertBy = Guid.Parse(_currentUserId),
+                    DoB = model.Dob,
+                    FirstName = model.FirstName,
+                    Gender = model.Gender,
+                    LastName = model.LastName,
+                    Phone = model.Phone,
+                });
+                if (!result.Contains("This"))
+                {
+                    return Success(result);
+                }
+                return BadRequest(result);
+
+            }
+            catch (Exception e)
+            {
+                return Error(e.Message);
+            }
+        }
         #endregion
         #region DELETE
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpDelete("remove-role-volunteer-for-user")]
-        public IActionResult RemoveRoleForUser ([FromQuery]Guid userId)
+        public async Task<IActionResult> RemoveRoleForUser ([FromQuery] RemoveRoleVolunteerModel model)
         {
             try
             {
-                var _domain = _uow.GetService<UserDomain>();
                 var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _domain.RemoveVolunteerOfCenter(new RemoveVolunteerRoleModel
+                var path = _env.ContentRootPath;
+                var result = await _userDomain.RemoveVolunteerOfCenter(new RemoveVolunteerRoleModel
                 {
                     CenterId = Guid.Parse(_currentCenterId),
                     InsertBy = Guid.Parse(_currentUserId),
-                    UserId = userId
-                });
+                    UserId = model.UserId,
+                    Description = model.Description
+                }, path);
                 if (result.Equals(""))
                 {
                     return Success("");

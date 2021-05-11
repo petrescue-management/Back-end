@@ -22,4 +22,9 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("petTypeName")]
         public string PetTypeName { get; set; }
     }
+    public class PetTypeDetailModel
+    {
+        public PetTypeModel TypeModel { get; set; }
+        public List<PetBreedDetailModel> ListPetBreed { get; set; }
+    }
 }

@@ -28,7 +28,6 @@ namespace PetRescue.Data.Repositories
         {
             var form = new VolunteerRegistrationForm
             {
-                CenterId = model.CenterId,
                 Dob = model.Dob,
                 Email = model.Email,
                 FirstName = model.FirstName,
@@ -38,7 +37,7 @@ namespace PetRescue.Data.Repositories
                 VolunteerRegistrationFormStatus = VolunteerRegistrationFormConst.PROCESSING,
                 VolunteerRegistrationFormId = Guid.NewGuid(),
                 InsertedAt = DateTime.UtcNow,
-                VolunteerRegistrationFormImageUrl = model.ImageUrl
+                VolunteerRegistrationFormImgUrl= model.ImageUrl,
             };
             return form;
         }

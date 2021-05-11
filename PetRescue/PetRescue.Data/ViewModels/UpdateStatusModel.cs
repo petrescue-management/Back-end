@@ -17,6 +17,11 @@ namespace PetRescue.Data.ViewModels
         public int Status { get; set; }
         public string Reason { get; set; }
     }
+    public class CancelViewModel
+    {
+        public Guid Id { get; set; }
+        public string Reason { get; set; }
+    }
     public class UpdateRegistrationCenter
     {
         public Guid Id { get; set; }

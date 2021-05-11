@@ -9,11 +9,10 @@ namespace PetRescue.Data.Extensions
 {
     public static partial class PetProfileExtensions
     {
-        public static object GetData(this IQueryable<PetProfile> query, PetProfileFilter filter, int page, int limit, int total, string[] fields)
+        public static object GetData(this IQueryable<PetProfile> query, PetProfileFilter filter, int page, int limit, string[] fields)
         {
             query = query.Filter(filter);
-            query = query.Pagination(page, limit);
-            var result = query.SelectedField(fields, total);
+            var result = query.SelectedField(fields, page, limit);
             return result;
         }
         private static IQueryable<PetProfile> Filter(this IQueryable<PetProfile> query, PetProfileFilter filter)
@@ -24,7 +23,7 @@ namespace PetRescue.Data.Extensions
             }
             if (filter.PetDocumentId != null && !filter.PetDocumentId.Equals(Guid.Empty))
             {
-                query = query.Where(s => s.PetDocumentId.Equals(filter.PetDocumentId));
+                query = query.Where(s => s.RescueDocumentId.Equals(filter.PetDocumentId));
             }
             if (filter.PetStatus != 0)
             {
@@ -42,26 +41,30 @@ namespace PetRescue.Data.Extensions
             {
                 query = query.Where(s => s.PetBreed.PetType.PetTypeName.Equals(filter.PetTypeName));
             }
-            return query;
+            return query.OrderByDescending(s => s.InsertedAt);
         }
-        private static IQueryable<PetProfile> Pagination(this IQueryable<PetProfile> query, int page, int limit)
+        private static object SelectedField(this IQueryable<PetProfile> query, string[] fields, int page, int limit)
         {
+            var total = 0;
+            if (limit > -1)
+            {
+                total = query.Count() / limit;
+            }
             if (limit > -1 && page >= 0)
             {
                 query = query.Skip(page * limit).Take(limit);
             }
-            return query;
-        }
-        private static object SelectedField(this IQueryable<PetProfile> query, string[] fields, int total)
-        {
             var models = query.ToList();
             var listResult = new List<Dictionary<string, object>>();
+            
             foreach (var model in models)
             {
                 var obj = new Dictionary<string, object>();
-                var petTypeObj = new Dictionary<string, string>();
-                petTypeObj["petTypeId"] = model.PetBreed.PetType.PetTypeId.ToString();
-                petTypeObj["petTypeName"] = model.PetBreed.PetType.PetTypeName;
+                var petTypeObj = new Dictionary<string, string>()
+                {
+                    ["petTypeId"] = model.PetBreed.PetType.PetTypeId.ToString(),
+                    ["petTypeName"] = model.PetBreed.PetType.PetTypeName
+                };
                 foreach (string field in fields)
                 {
                     switch (field)
@@ -73,6 +76,7 @@ namespace PetRescue.Data.Extensions
                             obj["petName"] = model.PetName;
                             obj["petType"] = petTypeObj;
                             obj["imageUrl"] = model.PetImgUrl;
+                            obj["insertAt"] = model.InsertedAt;
                             break;
                         case PetFieldConst.DETAIL:
                             obj["petId"] = model.PetProfileId.ToString();
@@ -85,14 +89,17 @@ namespace PetRescue.Data.Extensions
                             obj["petBreedName"] = model.PetBreed.PetBreedName;
                             obj["petFurColorName"] = model.PetFurColor.PetFurColorName;
                             obj["imageUrl"] = model.PetImgUrl;
+                            obj["insertAt"] = model.InsertedAt;
                             break;
                     }
                     listResult.Add(obj);
                 }
             }
-            var result = new Dictionary<string, object>();
-            result["totalPages"] = total;
-            result["result"] = listResult;
+            var result = new Dictionary<string, object>()
+            {
+                ["totalPages"] = total,
+                ["result"] = listResult
+            };
             return result;
         }
         public static IQueryable<PetProfile> GetAdoptionRegistrationByPet(this IQueryable<PetProfile> query, PetProfileFilter filter)

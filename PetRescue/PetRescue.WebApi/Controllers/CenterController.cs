@@ -16,20 +16,24 @@ namespace PetRescue.WebApi.Controllers
 {
 
     [ApiController]
+    [Route("/api/centers/")]
     public class CenterController : BaseController
     {
-        public CenterController(IUnitOfWork uow) : base(uow)
+        private readonly CenterDomain _centerDomain;
+        public CenterController(IUnitOfWork uow, CenterDomain centerDomain) : base(uow)
         {
+            this._centerDomain = centerDomain;
         }
 
         #region SEARCH
+        [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpGet]
-        [Route("api/search-center")]
+        [Route("search-center")]
         public IActionResult SearchCenter([FromQuery] SearchModel model)
         {
             try
             {
-                var result = _uow.GetService<CenterDomain>().SearchCenter(model);
+                var result = _centerDomain.SearchCenter(model);
                 if (result != null)
                     return Success(result);
                 return Success("Not have any centers");
@@ -42,13 +46,14 @@ namespace PetRescue.WebApi.Controllers
         #endregion
 
         #region GET BY ID
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
-        [Route("api/get-center-by-id/{id}")]
+        [Route("get-center-by-id/{id}")]
         public IActionResult GetCenterById(Guid id)
         {
             try
             {
-                var result = _uow.GetService<CenterDomain>().GetCenterById(id);
+                var result = _centerDomain.GetCenterById(id);
                 return Success(result);
             }
             catch (Exception ex)
@@ -60,13 +65,12 @@ namespace PetRescue.WebApi.Controllers
 
         #region DELETE
         [HttpDelete]
-        [Route("api/delete-center")]
+        [Route("delete-center")]
         public IActionResult DeleteCenter(Guid id)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-
                 var result = _uow.GetService<CenterDomain>().DeleteCenter(id, Guid.Parse(currentUserId));
                 return Success(result);
             }
@@ -78,14 +82,15 @@ namespace PetRescue.WebApi.Controllers
         #endregion
 
         #region UPDATE
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
-        [Route("api/update-center")]
+        [Route("update-center")]
         public IActionResult UpdateCenter(UpdateCenterModel model)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _uow.GetService<CenterDomain>().UpdateCenter(model, Guid.Parse(currentUserId));
+                var result = _centerDomain.UpdateCenter(model, Guid.Parse(currentUserId));
                 return Success(result);
             }
             catch (Exception ex)
@@ -94,17 +99,17 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         #endregion
-        //[Authorize(Roles =RoleConstant.ADMIN)]
+
+        #region GET COUNT FOR CENTER HOMEPAGE
+        [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpGet]
-        [Route("api/get-statistic-about-center")]
-        public IActionResult GetStatisticAboutCenter([FromQuery] Guid centerId)
+        [Route("get-count-for-center-home-page")]
+        public IActionResult GetCountForCenterHomePage()
         {
             try
             {
-                var _domain = _uow.GetService<CenterDomain>();
-                //var 
-                //var result = _domain.GetStatisticAboutCenter(centerId);
-                var result = "";
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var result = _centerDomain.GetCountForCenterHomePage(Guid.Parse(currentCenterId));
                 return Success(result);
             }
             catch (Exception ex)
@@ -112,14 +117,14 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
+        #endregion
         [HttpGet]
-        [Route("api/get-list-all-center")]
+        [Route("get-list-all-center")]
         public IActionResult GetListAllCenter()
         {
             try
             {
-                var _domain = _uow.GetService<CenterDomain>();
-                var result = _domain.GetListCenter();
+                var result = _centerDomain.GetListCenter();
                 return Success(result);
             }
             catch (Exception ex)
@@ -129,15 +134,14 @@ namespace PetRescue.WebApi.Controllers
         }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
-        [Route("api/change-status-of-center")]
+        [Route("change-status-of-center")]
         public IActionResult ChangeStatusOfCenter([FromBody]UpdateCenterStatus model)
         {
             try
             {
                 var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var _domain = _uow.GetService<CenterDomain>();
-                var result = _domain.ChangeStateOfCenter(model, Guid.Parse(currentCenterId));
-                if(result == 1)
+                var result = _centerDomain.ChangeStateOfCenter(model, Guid.Parse(currentCenterId));
+                if(result)
                 {
                     return Success(result);
                 }

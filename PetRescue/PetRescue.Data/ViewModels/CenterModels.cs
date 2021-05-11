@@ -13,16 +13,19 @@ namespace PetRescue.Data.ViewModels
         public string Phone { get; set; }
         public double? Lat { get; set; }
         public double? Long { get; set; }
-        public int CenterStatus { get; set; }
-        public DateTime InsertedAt { get; set; }
+        public int? CenterStatus { get; set; }
+        public DateTime? InsertedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public string ImageUrl { get; set; }
+        public string CenterImageUrl { get; set; }
+
+        public object LastedDocuments { get; set; }
     }
 
 
     public class CreateCenterModel
     {
         [Required]
+        public Guid CenterId { get; set; }
         public string CenterName { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
@@ -37,12 +40,12 @@ namespace PetRescue.Data.ViewModels
     {
         [Required]
         public Guid CenterId { get; set; }
-        public string CenterName { get; set; }
-        public string Address { get; set; }
-        public string Phone { get; set; }
-        public byte CenterStatus { get; set; }
-        public double Lat { get; set; }
         public double Lng { get; set; }
+        public double Lat { get; set; }
+        public string CenterName { get; set; }
+        public string CenterAddress { get; set; }
+        public string Phone { get; set; }
+
     }
 
     public class CenterLocationModel
@@ -64,7 +67,7 @@ namespace PetRescue.Data.ViewModels
         public string CenterName { get; set; }
         public string Address { get; set; }
         public string ImageUrl { get; set; }
-        public int CenterStatus { get; set; }
+        public int? CenterStatus { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
     }
@@ -75,6 +78,6 @@ namespace PetRescue.Data.ViewModels
     public class CenterProfileViewModel
     {
         public string CenterName { get; set; }
-        public string CenterAdrress { get; set; }
+        public string CenterAddrress { get; set; }
     }
 }

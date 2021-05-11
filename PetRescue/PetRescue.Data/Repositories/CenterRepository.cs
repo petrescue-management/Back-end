@@ -44,7 +44,7 @@ namespace PetRescue.Data.Repositories
                     Phone = c.Phone,
                     InsertedAt = c.InsertedAt,
                     UpdatedAt = c.UpdatedAt,
-                    ImageUrl = c.CenterImgUrl
+                    CenterImageUrl = c.CenterImgUrl
                 }).FirstOrDefault();
 
             return result;
@@ -86,27 +86,30 @@ namespace PetRescue.Data.Repositories
 
         private Center PrepareUpdate(UpdateCenterModel model, Guid updateBy)
         {
-            var old_center = Get()
-              .Where(c => c.CenterId.Equals(model.CenterId))
-               .Select(c => new Center
-               {
-                   InsertedAt = c.InsertedAt
-               }).FirstOrDefault();
-
-            var update_center = new Center
+            var old_center = Get().FirstOrDefault(c => c.CenterId.Equals(model.CenterId));
+            old_center.UpdatedAt = DateTime.UtcNow;
+            old_center.UpdatedBy = updateBy;
+            if(model.CenterAddress != null)
             {
-                CenterId = model.CenterId,
-                CenterName = model.CenterName,
-                Address = model.Address,
-                CenterStatus = model.CenterStatus,
-                Phone = model.Phone,
-                InsertedAt = old_center.InsertedAt,
-                UpdatedBy = updateBy,
-                UpdatedAt = DateTime.Now,
-                CenterImgUrl = old_center.CenterImgUrl
-            };
-
-            return update_center;
+                old_center.Address = model.CenterAddress;
+            }
+            if(model.CenterName != null)
+            {
+                old_center.CenterName = model.CenterName;
+            }
+            if(model.Lat != 0)
+            {
+                old_center.Lat = model.Lat;
+            }
+            if (model.Lng != 0)
+            {
+                old_center.Lng = model.Lng;
+            }
+            if(model.Phone != null)
+            {
+                old_center.Phone = model.Phone;
+            }
+            return old_center;
         }
 
         public CenterModel UpdateCenter(UpdateCenterModel model, Guid updateBy)
@@ -125,7 +128,7 @@ namespace PetRescue.Data.Repositories
         {
             var center = new Center
             {
-                CenterId = Guid.NewGuid(),
+                CenterId = model.CenterId,
                 Address = model.Address,
                 Phone = model.Phone,
                 CenterName = model.CenterName,

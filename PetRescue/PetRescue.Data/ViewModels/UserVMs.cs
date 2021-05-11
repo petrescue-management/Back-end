@@ -22,13 +22,14 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("firstName")]
         public string FirstName { get; set; }
         [JsonProperty("dob")]
-        public DateTime DoB { get; set; }
+        public DateTime? DoB { get; set; }
         [JsonProperty("gender")]
-        public byte Gender { get; set; }
+        public int? Gender { get; set; }
         [JsonProperty("phone")]
         public string Phone { get; set; }
         [JsonProperty("imgUrl")]
         public string ImgUrl { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public CenterProfileViewModel Center { get; set; }
 
     }
@@ -41,9 +42,9 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("firstName")]
         public string FirstName { get; set; }
         [JsonProperty("dob")]
-        public DateTime DoB { get; set; }
+        public DateTime? DoB { get; set; }
         [JsonProperty("gender")]
-        public byte Gender { get; set; }
+        public int? Gender { get; set; }
         [JsonProperty("phone")]
         public string Phone { get; set; }
         [JsonProperty("imgUrl")]
@@ -51,14 +52,27 @@ namespace PetRescue.Data.ViewModels
     }
     public class UserProfileViewModel
     {
-        public string email { get; set; }
+        public string Email { get; set; }
         public Guid UserId { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
-        public DateTime DoB { get; set; }
-        public byte Gender { get; set; }
+        public DateTime? DoB { get; set; }
+        public int? Gender { get; set; }
         public string Phone { get; set; }
         public string ImgUrl { get; set; }
+    }
+    public class UserProfileViewModel2
+    {
+        public string Email { get; set; }
+        public Guid UserId { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public DateTime? DoB { get; set; }
+        public int? Gender { get; set; }
+        public string Phone { get; set; }
+        public string ImgUrl { get; set; }
+        public DateTime? DateStarted { get; set; }
+
     }
     public class UserUpdateCenterModel
     {
@@ -71,15 +85,17 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("email")]
         public string Email { get; set; }
-        [JsonProperty("centerId")]
-        public Guid CenterId { get; set; }
         [JsonProperty("isBelongToCenter")]
         public bool IsBelongToCenter { get; set; }
+        [JsonProperty("centerId")]
+        public Guid? CenterId { get; set; }
     }
     public class UserCreateByAppModel
     {
         [JsonProperty("email")]
         public string Email { get; set; }
+        [JsonProperty("password")]
+        public string Password { get; set; }
     }
     public class UserLoginBySysadminModel
     {
@@ -96,19 +112,23 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("centerId")]
         public Guid CenterId { get; set; }
-        [JsonProperty("isBelongToCenter")]
-        public bool IsBelongToCenter { get; set; }
+        //[JsonProperty("userStatus")]
+        //public int? UserStatus { get; set; }
     }
-
+    public class RemoveRoleVolunteerModel
+    {
+        public Guid UserId { get; set; }
+        public string Description { get; set; }
+    }
     public class UserModel
     {
         public Guid UserId { get; set; }
         public string UserEmail { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
-        public DateTime Dob { get; set; }
+        public DateTime? Dob { get; set; }
         public string Phone { get; set; }
-        public byte Gender { get; set; }
+        public int? Gender { get; set; }
         public string ImageUrl { get; set; }
 
     }
@@ -132,7 +152,7 @@ namespace PetRescue.Data.ViewModels
         public string Email { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
-        public DateTime DoB { get; set; }
+        public DateTime Dob { get; set; }
         public byte Gender { get; set; }
         public string Phone { get; set; }
     }

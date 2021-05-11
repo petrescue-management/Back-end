@@ -14,9 +14,6 @@ namespace PetRescue.Data.Repositories
     {
         UserRole CreateRoleForUser(Guid userId, Guid roleId, Guid insertBy);
         UserRole PrepareCreateRole(Guid userId, Guid roleId, Guid insertBy);
-
-        UserRole FindUserRoleByUserRoleUpdateModel(UserRoleUpdateModel model);
-
         UserRole Edit(UserRole entity, UserRoleUpdateEntityModel model);
     }
     public partial class UserRoleRepository : BaseRepository<UserRole,string>, IUserRoleRepository
@@ -33,20 +30,9 @@ namespace PetRescue.Data.Repositories
 
         public UserRole Edit(UserRole entity,  UserRoleUpdateEntityModel model)
         {
-            entity.IsActive = model.IsActive;
+            entity.IsActived = model.IsActived;
             return Update(entity).Entity;
         }
-
-        public UserRole FindUserRoleByUserRoleUpdateModel(UserRoleUpdateModel model)
-        {
-            if(model.CenterId != null && model.RoleName != null && model.UserId != null)
-            {
-                return Get().FirstOrDefault(u => u.Role.RoleName == model.RoleName && u.UserId == model.UserId && u.User.CenterId == model.CenterId && u.IsActive);
-            }
-            return null;
-            
-        }
-
         public UserRole PrepareCreateRole(Guid userId, Guid roleId, Guid insertBy)
         {
 
@@ -56,8 +42,7 @@ namespace PetRescue.Data.Repositories
                 RoleId = roleId,
                 InsertedAt = DateTime.Now,
                 UpdatedAt = null,
-
-                IsActive = true
+                IsActived = true
             };
             return userRole; 
         }

@@ -36,27 +36,27 @@ namespace PetRescue.Data.DI
                 .AddScoped<IPetFurColorRepository, PetFurColorRepository>()
                 .AddScoped<IPetTypeRepository, PetTypeRepository>()
                 .AddScoped<IPetProfileRepository, PetProfileRepository>()
-                .AddScoped<IAdoptionRepository, AdoptionRepository>()
-                .AddScoped<AdoptionDomain>()
                 .AddScoped<IAdoptionRegistrationFormRepository, AdoptionRegistrationFormRepository>()
                 .AddScoped<AdoptionRegistrationFormDomain>()
                 .AddScoped<INotificationTokenRepository, NotificationTokenRepository>()
                 .AddScoped<NotificationTokenDomain>()
                 .AddScoped<IFinderFormRepository, FinderFormRepository>()
-                       .AddScoped<FinderFormDomain>()
+                .AddScoped<FinderFormDomain>()
                 .AddScoped<IPickerFormRepository, PickerFormRepository>()
-                       .AddScoped<PickerFormDomain>()
+                .AddScoped<PickerFormDomain>()
                 .AddScoped<IVolunteerRegistrationFormRepository, VolunteerRegistrationFormRepository>()
                 .AddScoped<VolunteerRegistrationFormDomain>()
                 .AddScoped<PetProfileDomain>()
                 .AddScoped<IPetTrackingRepository, PetTrackingRepository>()
                 .AddScoped<PetTrackingDomain>()
-                .AddScoped<IPetDocumentRepository, PetDocumentRepository>()
-                .AddScoped<PetDocumentDomain>()
-                .AddScoped<IMyScopedService, MyScopedService>()
-            .AddScoped<ConfigDomain>();
-            ;
+                .AddScoped<IRescueDocumentRepository, RescueDocumentRepository>()
+                .AddScoped<RescueDocumentDomain>()
+                .AddScoped<IAdoptionReportTrackingRepository, AdoptionReportTrackingRepository>()
+                .AddScoped<AdoptionReportTrackingDomain>()
+                .AddSingleton<IMyScopedService, MyScopedService>()
+                .AddScoped<ConfigDomain>();
+
         }
-       
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -12,11 +13,7 @@ namespace PetRescue.Data.Repositories
     {
         User CreateUser(UserCreateByAppModel model);
         User PrepareCreate(UserCreateByAppModel model);
-
         User FindById(string email = null, string id = null);
-
-        User Edit(User entity, Guid centerId);
-
         User CreateUserByModel(UserCreateModel model);
         User UpdateUserModel(User entity, UserUpdateModel model);
         UserModel GetUserById(Guid id);
@@ -52,33 +49,26 @@ namespace PetRescue.Data.Repositories
             User user = new User
             {
                 UserEmail = model.Email,
-                IsBelongToCenter = false,
+                Password = model.Password,
+                UserId = Guid.NewGuid(),
+                UserStatus = UserStatus.DEFAULT,
             };
             return user;  
         }
-
-        public User Edit(User entity, Guid centerId)
-        {
-            entity.CenterId = centerId;
-            entity.IsBelongToCenter = true;
-            return Update(entity).Entity;
-        }
-
         public User CreateUserByModel(UserCreateModel model)
         {
             var newUser = new User
             {
                 UserId = Guid.NewGuid(),
-                CenterId = model.CenterId,
-                IsBelongToCenter = model.IsBelongToCenter,
-                UserEmail = model.Email
+                UserEmail = model.Email,
+                CenterId = model.CenterId
             };
             return Create(newUser).Entity;
         }
         public User UpdateUserModel(User entity, UserUpdateModel model)
         {
             entity.CenterId = model.CenterId;
-            entity.IsBelongToCenter = model.IsBelongToCenter;
+            //entity.UserStatus = model.UserStatus;
             return Update(entity).Entity;
         }
         public UserModel GetUserById(Guid id)
@@ -93,7 +83,7 @@ namespace PetRescue.Data.Repositories
                 Dob = u.UserProfile.Dob,
                 Gender = u.UserProfile.Gender,
                 Phone = u.UserProfile.Phone,
-                ImageUrl = u.UserProfile.ImageUrl
+                ImageUrl = u.UserProfile.UserImgUrl
                 }).FirstOrDefault();
         }
     }

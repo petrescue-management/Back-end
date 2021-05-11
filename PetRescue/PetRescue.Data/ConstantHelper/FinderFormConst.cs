@@ -4,10 +4,14 @@ using System.Text;
 
 namespace PetRescue.Data.ConstantHelper
 {
-    public class FinderFormStatus
+    public class FinderFormStatusConst
     {
         public const int PROCESSING = 1;
-        public const int PICKING = 2;
+        public const int RESCUING = 2;
+        public const int ARRIVED = 3;
+        public const int DONE = 4;
+        public const int CANCELED = 5;
+
     }
 
     public class PetAttributeConst

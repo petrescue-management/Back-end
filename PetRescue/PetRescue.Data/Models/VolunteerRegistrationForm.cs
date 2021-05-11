@@ -9,12 +9,13 @@ namespace PetRescue.Data.Models
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public string Phone { get; set; }
-        public DateTime Dob { get; set; }
-        public int Gender { get; set; }
+        public DateTime? Dob { get; set; }
+        public int? Gender { get; set; }
         public string Email { get; set; }
-        public string VolunteerRegistrationFormImageUrl { get; set; }
-        public Guid CenterId { get; set; }
-        public int VolunteerRegistrationFormStatus { get; set; }
-        public DateTime InsertedAt { get; set; }
+        public string VolunteerRegistrationFormImgUrl { get; set; }
+        public int? VolunteerRegistrationFormStatus { get; set; }
+        public string RejectedReason { get; set; }
+        public DateTime? InsertedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

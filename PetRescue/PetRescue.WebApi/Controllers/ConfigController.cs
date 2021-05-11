@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Domains;
 using PetRescue.Data.Extensions;
 using PetRescue.Data.Uow;
@@ -12,42 +14,51 @@ using System.Threading.Tasks;
 namespace PetRescue.WebApi.Controllers
 {
     [ApiController]
+    [Route("/api/config/")]
     public class ConfigController : BaseController
     {
-        public ConfigController(IUnitOfWork uow) : base(uow)
+        private readonly ConfigDomain _configDomain;
+        public ConfigController(IUnitOfWork uow, ConfigDomain configDomain) : base(uow)
         {
+            this._configDomain = configDomain;
         }
 
+        #region GET TIME TO NOTIFICATION
         [HttpGet]
-        [Route("api/config-time-to-notification-for-finder-form")]
-        public IActionResult ConfigTimeToNotificationForFinderForm([FromQuery] int ReNotiTime, int DestroyNotiTime)
+        [Route("get-system-parameters")]
+        public IActionResult GetTimeToNotification()
         {
             try
             {
-                var _domain = _uow.GetService<ConfigDomain>().ConfigTimeToNotificationForFinderForm(ReNotiTime, DestroyNotiTime);
-                if (_domain == false)
+                var result = _configDomain.GetTimeToNotification();                
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        #endregion
+
+        #region CONFIG TIME TO NOTIFICATION
+        [Authorize(Roles = RoleConstant.ADMIN)]
+        [HttpPost]
+        [Route("configure-systems-parameters")]
+        public IActionResult ConfigTimeToNotification([FromQuery] int reNotiTime, int destroyNotiTime, int remindTime, int img)
+        {
+            try
+            {
+                var result = _configDomain.ConfigTimeToNotification(reNotiTime, destroyNotiTime, remindTime, img);
+                if (result == false)
                     return BadRequest("Time for Destroy Notification must be larger than Time for Re-Notification !");
-                return Success(_domain);
+                return Success(result);
             }
             catch (Exception ex)
             {
                 return Error(ex.Message);
             }
         }
+        #endregion
 
-        [HttpGet]
-        [Route("api/config-time-to-remind-for-report-after-adopt")]
-        public IActionResult ConfigTimeToRemindForReportAfterAdopt([FromQuery] int RemindTime)
-        {
-            try
-            {
-                var _domain = _uow.GetService<ConfigDomain>().ConfigTimeToRemindForReportAfterAdopt(RemindTime);
-                return Success(_domain);
-            }
-            catch (Exception ex)
-            {
-                return Error(ex.Message);
-            }
-        }
     }
 }

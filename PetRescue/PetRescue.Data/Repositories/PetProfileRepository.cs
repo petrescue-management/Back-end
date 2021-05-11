@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -13,8 +14,8 @@ namespace PetRescue.Data.Repositories
     {
         PetProfileModel CreatePetProfile(CreatePetProfileModel model, Guid insertedBy, Guid centerId);
         PetProfileModel UpdatePetProfile(UpdatePetProfileModel model, Guid updatedBy);
-
         PetProfileModel GetPetProfileById(Guid id);
+        PetProfileModel2 GetPetProfileById2(Guid id);
     }
 
     public partial class PetProfileRepository : BaseRepository<PetProfile, string>, IPetProfileRepository
@@ -32,7 +33,7 @@ namespace PetRescue.Data.Repositories
             {
                 petProfile = new PetProfile
                 {
-                    PetDocumentId = null,
+                    RescueDocumentId = null,
                     PetName = model.PetName,
                     PetGender = model.PetGender,
                     PetAge = model.PetAge,
@@ -40,7 +41,7 @@ namespace PetRescue.Data.Repositories
                     PetFurColorId = model.PetFurColorId,
                     PetImgUrl = model.PetImgUrl,
                     PetStatus = model.PetStatus,
-                    PetProfileDescription = model.PetProfileDescription,
+                    Description = model.Description,
                     CenterId = centerId,
                     InsertedBy = insertedBy,
                     InsertedAt = DateTime.UtcNow,
@@ -51,7 +52,7 @@ namespace PetRescue.Data.Repositories
             {
                 petProfile = new PetProfile
                 {
-                    PetDocumentId = model.PetDocumentId,
+                    RescueDocumentId = model.PetDocumentId,
                     PetName = model.PetName,
                     PetGender = model.PetGender,
                     PetAge = model.PetAge,
@@ -59,7 +60,7 @@ namespace PetRescue.Data.Repositories
                     PetFurColorId = model.PetFurColorId,
                     PetImgUrl = model.PetImgUrl,
                     PetStatus = model.PetStatus,
-                    PetProfileDescription = model.PetProfileDescription,
+                    Description = model.Description,
                     CenterId = centerId,
                     InsertedBy = insertedBy,
                     InsertedAt = DateTime.UtcNow,
@@ -76,7 +77,7 @@ namespace PetRescue.Data.Repositories
 
             var result = new PetProfileModel
             {
-                PetDocumentId = petProfile.PetDocumentId,
+                PetDocumentId = petProfile.RescueDocumentId,
                 PetName = petProfile.PetName,
                 PetGender = petProfile.PetGender,
                 PetAge = petProfile.PetAge,
@@ -84,7 +85,7 @@ namespace PetRescue.Data.Repositories
                 PetFurColorId = petProfile.PetFurColorId,
                 PetImgUrl = petProfile.PetImgUrl,
                 PetStatus = petProfile.PetStatus,
-                PetProfileDescription = petProfile.PetProfileDescription,
+                Description = petProfile.Description,
                 CenterId = petProfile.CenterId,
                 InsertedBy = petProfile.InsertedBy,
                 InsertedAt = petProfile.InsertedAt
@@ -98,8 +99,8 @@ namespace PetRescue.Data.Repositories
         private PetProfile PrepareUpdate(UpdatePetProfileModel model, Guid updatedBy)
         {
             var petProfile = Get().FirstOrDefault(s => s.PetProfileId.Equals(model.PetProfileId));
-            if (model.PetProfileDescription != null)
-                petProfile.PetProfileDescription = model.PetProfileDescription;
+            if (model.Description != null)
+                petProfile.Description = model.Description;
             if (model.PetName != null)
                 petProfile.PetName = model.PetName;
             if (model.PetStatus != 0)
@@ -128,7 +129,7 @@ namespace PetRescue.Data.Repositories
             var result = new PetProfileModel
             {
                 PetProfileId = petProfile.PetProfileId,
-                PetDocumentId = petProfile.PetDocumentId,
+                PetDocumentId = petProfile.RescueDocumentId,
                 PetName = petProfile.PetName,
                 PetGender = petProfile.PetGender,
                 PetAge = petProfile.PetAge,
@@ -136,10 +137,10 @@ namespace PetRescue.Data.Repositories
                 PetFurColorId = petProfile.PetFurColorId,
                 PetImgUrl = petProfile.PetImgUrl,
                 PetStatus = petProfile.PetStatus,
-                PetProfileDescription = petProfile.PetProfileDescription,
+                Description = petProfile.Description,
                 CenterId = petProfile.CenterId,
                 InsertedBy = petProfile.InsertedBy,
-                InsertedAt = petProfile.InsertedAt
+                InsertedAt = petProfile.InsertedAt,
             };
 
             return result;
@@ -155,9 +156,9 @@ namespace PetRescue.Data.Repositories
                .Include(p => p.PetFurColor)
                .Select(p => new PetProfileModel
                {
-                   PetDocumentId = p.PetDocumentId,
+                   PetDocumentId = p.RescueDocumentId,
                    CenterId = p.CenterId,
-                   PetProfileDescription = p.PetProfileDescription,
+                   Description = p.Description,
                    PetAge = p.PetAge,
                    PetBreedId = p.PetBreedId,
                    PetBreedName = p.PetBreed.PetBreedName,
@@ -168,6 +169,35 @@ namespace PetRescue.Data.Repositories
                    PetStatus = p.PetStatus,
                    PetImgUrl = p.PetImgUrl,
                    PetProfileId = p.PetProfileId
+               }).FirstOrDefault();
+            return result;
+        }
+
+        public PetProfileModel2 GetPetProfileById2(Guid id)
+        {
+            var result = Get()
+               .Where(p => p.PetProfileId.Equals(id))
+               .Include(p => p.PetBreed)
+               .Include(p => p.PetFurColor)
+               .Select(p => new PetProfileModel2
+               {
+                   PetDocumentId = p.RescueDocumentId,
+                   CenterId = p.CenterId,
+                   Description = p.Description,
+                   PetAge = p.PetAge,
+                   PetBreedId = p.PetBreedId,
+                   PetBreedName = p.PetBreed.PetBreedName,
+                   PetFurColorId = p.PetFurColorId,
+                   PetFurColorName = p.PetFurColor.PetFurColorName,
+                   PetGender = p.PetGender,
+                   PetName = p.PetName,
+                   PetStatus = p.PetStatus,
+                   PetImgUrl = p.PetImgUrl,
+                   PetProfileId = p.PetProfileId,
+                   CenterAddress = p.Center.Address,
+                   CenterName = p.Center.CenterName,
+                   InsertedAt = p.InsertedAt,
+                   InsertedBy = p.InsertedBy,
                }).FirstOrDefault();
             return result;
         }

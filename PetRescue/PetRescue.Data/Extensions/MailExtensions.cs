@@ -94,12 +94,14 @@ namespace PetRescue.Data.Extensions
         {
             try
             {
-                MailMessage message = new MailMessage();
-                message.IsBodyHtml = true;
-                message.Subject = mailArgs.Subject;
+                MailMessage message = new MailMessage()
+                {
+                    IsBodyHtml = true,
+                    Subject = mailArgs.Subject,
+                    Body = mailArgs.Message,
+                    From = new MailAddress(mailArgs.MailFrom, "Rescue Me"),
+                };
                 message.To.Add(mailArgs.MailTo);
-                message.Body = mailArgs.Message;
-                message.From = new MailAddress(mailArgs.MailFrom, "Rescue Me");
                 if (ValidationExtensions.IsNotNullOrEmpty(headers))
                 {
                     foreach (var header in headers)
@@ -137,7 +139,7 @@ namespace PetRescue.Data.Extensions
                     Timeout = 99999,
                     EnableSsl = false
                 };
-                client.Send(message);
+                client.SendMailAsync(message);
                 return true;
             }
             catch

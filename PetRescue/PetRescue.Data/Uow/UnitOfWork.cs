@@ -10,7 +10,8 @@ namespace PetRescue.Data.Uow
     public partial interface IUnitOfWork
     {
         T GetService<T>();
-        int saveChanges();
+        int SaveChanges();
+        Task<int> SaveChangesAsync();
     }
 
     public partial class UnitOfWork : IUnitOfWork
@@ -28,11 +29,11 @@ namespace PetRescue.Data.Uow
             return scope.GetService<T>();
         }
 
-        public int saveChanges()
+        public int SaveChanges()
         {
             return this.context.SaveChanges();
         }
-        public Task<int> saveChangesAsync()
+        public Task<int> SaveChangesAsync()
         {
             return this.context.SaveChangesAsync();
         }

@@ -15,22 +15,25 @@ using System.Threading.Tasks;
 namespace PetRescue.WebApi.Controllers
 {
     [ApiController]
+    [Route("/api/picker-forms/")]
     public class PickerFormController : BaseController
     {
         private readonly IHostingEnvironment _env;
-        public PickerFormController(IUnitOfWork uow, IHostingEnvironment environment) : base(uow)
+        private readonly PickerFormDomain _pickerFormDomain;
+        public PickerFormController(IUnitOfWork uow, IHostingEnvironment environment, PickerFormDomain pickerFormDomain) : base(uow)
         {
             _env = environment;
+            this._pickerFormDomain = pickerFormDomain;
         }
 
         #region SEARCH
         [HttpGet]
-        [Route("api/search-picker-form")]
+        [Route("search-picker-form")]
         public IActionResult SearchPickerForm([FromQuery] SearchModel model)
         {
             try
             {
-                var result = _uow.GetService<PickerFormDomain>().SearchPickerForm(model);
+                var result = _pickerFormDomain.SearchPickerForm(model);
                 if (result != null)
                     return Success(result);
                 return Success("Not have any picker form !");
@@ -44,12 +47,12 @@ namespace PetRescue.WebApi.Controllers
 
         #region GET BY ID
         [HttpGet]
-        [Route("api/get-picker-form-by-id/{id}")]
+        [Route("get-picker-form-by-id/{id}")]
         public IActionResult GetPickerFormById(Guid id)
         {
             try
             {
-                var result = _uow.GetService<PickerFormDomain>().GetPickerFormById(id);
+                var result = _pickerFormDomain.GetPickerFormById(id);
                 return Success(result);
             }
             catch (Exception ex)
@@ -61,13 +64,13 @@ namespace PetRescue.WebApi.Controllers
 
         #region UPDATE STATUS
         [HttpPut]
-        [Route("api/update-picker-form-status")]
+        [Route("update-picker-form-status")]
         public IActionResult UpdatePickerFormStatus(UpdateStatusModel model)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _uow.GetService<PickerFormDomain>().UpdatePickerFormStatus(model, Guid.Parse(currentUserId));
+                var result = _pickerFormDomain.UpdatePickerFormStatus(model, Guid.Parse(currentUserId));
                 return Success(result);
             }
             catch (Exception ex)
@@ -79,14 +82,18 @@ namespace PetRescue.WebApi.Controllers
 
         #region CREATE
         [HttpPost]
-        [Route("api/create-picker-form")]
+        [Route("create-picker-form")]
         public IActionResult CreatePickerForm(CreatePickerFormModel model)
         {
             try
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result =  _uow.GetService<PickerFormDomain>().CreatePickerForm(model, Guid.Parse(currentUserId));
-                return Success(result);
+                var result =  _pickerFormDomain.CreatePickerForm(model, Guid.Parse(currentUserId));
+                if(result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest(result);
             }
             catch (Exception ex)
             {

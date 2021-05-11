@@ -12,7 +12,7 @@ namespace PetRescue.Data.Models
 
         public Guid PetBreedId { get; set; }
         public string PetBreedName { get; set; }
-        public Guid PetTypeId { get; set; }
+        public Guid? PetTypeId { get; set; }
 
         public virtual PetType PetType { get; set; }
         public virtual ICollection<PetProfile> PetProfile { get; set; }

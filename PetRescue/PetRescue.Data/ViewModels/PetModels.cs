@@ -9,16 +9,15 @@ namespace PetRescue.Data.ViewModels
     {
         public Guid PetId { get; set; }
         public string PetName { get; set; }
-        public int PetGender { get; set; }
+        public int? PetGender { get; set; }
         public int? PetAge { get; set; }
         public string Description { get; set; }
-        public Guid PetBreedId { get; set; }
+        public Guid? PetBreedId { get; set; }
         public string PetBreedName { get; set; }
-        public Guid PetFurColorId { get; set; }
+        public Guid? PetFurColorId { get; set; }
         public string PetFurColorName { get; set; }
-
-        public int PetStatus { get; set; }
-        public Guid CenterId { get; set; }
+        public int? PetStatus { get; set; }
+        public Guid? CenterId { get; set; }
         public string ImgUrl { get; set; }
     }
     public class PetFilter
@@ -99,8 +98,6 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("petFurColorName")]
         public string PetFurColorName { get; set; }
-        [JsonProperty("petTypeId")]
-        public Guid PetTypeId { get; set; }
     }
     public class PetFurColorUpdateModel
     {
@@ -119,13 +116,15 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("petName")]
         public string PetName { get; set; }
         [JsonProperty("gender")]
-        public int Gender { get; set; }
+        public int? Gender { get; set; }
         [JsonProperty("age")]
-        public int Age { get; set; }
+        public int? Age { get; set; }
         [JsonProperty("breedName")]
         public string BreedName { get; set; }
         [JsonProperty("imgUrl")]
         public string ImageUrl { get; set; }
+        [JsonProperty("updatedAt")]
+        public DateTime? UpdatedAt { get; set; }
     }
     public class PetMobileViewModel
     {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PetRescue.Data.ConstantHelper;
 using PetRescue.Data.Models;
 using PetRescue.Data.ViewModels;
 using System;
@@ -31,8 +32,8 @@ namespace PetRescue.Data.Repositories
             var pickerForm = new PickerForm
             {
                 PickerFormId = Guid.NewGuid(),
-                PickerDescription = model.PickerDescription,
-                PickerImageUrl = model.PickerImageUrl,
+                Description = model.Description,
+                PickerFormImgUrl = model.PickerImageUrl,
                 InsertedBy = insertedBy,
                 InsertedAt = DateTime.UtcNow
             };
@@ -49,8 +50,8 @@ namespace PetRescue.Data.Repositories
             var result = new PickerFormModel
             {
                 PickerFormId = pickerForm.PickerFormId,
-                PickerDescription = pickerForm.PickerDescription,
-                PickerImageUrl = pickerForm.PickerImageUrl,
+                Description = pickerForm.Description,
+                PickerImageUrl = pickerForm.PickerFormImgUrl,
                 InsertedBy = pickerForm.InsertedBy,
                 InsertedAt = pickerForm.InsertedAt
             };
@@ -67,8 +68,8 @@ namespace PetRescue.Data.Repositories
                 .Select(p => new PickerFormModel
                 {
                     PickerFormId = p.PickerFormId,
-                    PickerDescription = p.PickerDescription,
-                    PickerImageUrl = p.PickerImageUrl,
+                    Description = p.Description,
+                    PickerImageUrl = p.PickerFormImgUrl,
                     InsertedBy = p.InsertedBy,
                     InsertedAt = p.InsertedAt
                 }).FirstOrDefault();
@@ -84,8 +85,8 @@ namespace PetRescue.Data.Repositories
                     .Select(p => new PickerForm
                     {
                         PickerFormId = model.Id,
-                        PickerDescription = p.PickerDescription,
-                        PickerImageUrl = p.PickerImageUrl,
+                        Description = p.Description,
+                        PickerFormImgUrl = p.PickerFormImgUrl,
                         InsertedBy = p.InsertedBy,
                         InsertedAt = p.InsertedAt
                     }).FirstOrDefault();
@@ -103,8 +104,8 @@ namespace PetRescue.Data.Repositories
                     .Select(p => new PickerFormModel
                     {
                         PickerFormId = p.PickerFormId,
-                        PickerDescription = p.PickerDescription,
-                        PickerImageUrl = p.PickerImageUrl,
+                        Description = p.Description,
+                        PickerImageUrl = p.PickerFormImgUrl,
                         InsertedBy = p.InsertedBy,
                         InsertedAt = p.InsertedAt
                     }).FirstOrDefault();

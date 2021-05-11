@@ -10,16 +10,26 @@ using System.Text;
 
 namespace PetRescue.Data.Domains
 {
+    
     public class CenterDomain : BaseDomain
     {
-        public CenterDomain(IUnitOfWork uow) : base(uow)
+        private readonly ICenterRepository _centerRepo;
+        private readonly IRescueDocumentRepository _rescueDocumentRepo;
+        private readonly IPetProfileRepository _petProfileRepo;
+        public CenterDomain(IUnitOfWork uow, 
+            ICenterRepository centerRepo, 
+            IRescueDocumentRepository rescueDocumentRepo, 
+            IPetProfileRepository petProfileRepo) : base(uow)
         {
+            this._centerRepo = centerRepo;            
+            this._rescueDocumentRepo = rescueDocumentRepo;
+            this._petProfileRepo = petProfileRepo;
         }
 
         #region SEARCH
         public SearchReturnModel SearchCenter(SearchModel model)
         {
-            var records = uow.GetService<ICenterRepository>().Get().AsQueryable();
+            var records = _centerRepo.Get().AsQueryable();
 
             if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrWhiteSpace(model.Keyword))
                 records = records.Where(c => c.CenterName.Contains(model.Keyword));
@@ -38,9 +48,10 @@ namespace PetRescue.Data.Domains
                     Long = c.Lng,
                     CenterStatus = c.CenterStatus,
                     Phone = c.Phone,
+                    CenterImageUrl = c.CenterImgUrl,
                     InsertedAt = c.InsertedAt,
                     UpdatedAt = c.UpdatedAt,
-                    
+                    LastedDocuments = _uow.GetService<RescueDocumentDomain>().GetLastedRescueDocument(c.CenterId),
                 }).ToList();
             return new SearchReturnModel
             {
@@ -53,7 +64,7 @@ namespace PetRescue.Data.Domains
         #region GET BY ID
         public CenterModel GetCenterById(Guid id)
         {
-            var center = uow.GetService<ICenterRepository>().GetCenterById(id);
+            var center = _centerRepo.GetCenterById(id);
             return center;
         }
         #endregion
@@ -61,8 +72,8 @@ namespace PetRescue.Data.Domains
         #region DELETE
         public CenterModel DeleteCenter(Guid id, Guid updateBy)
         {
-            var center = uow.GetService<ICenterRepository>().DeleteCenter(id, updateBy);
-            uow.saveChanges();
+            var center = _centerRepo.DeleteCenter(id, updateBy);
+            _uow.SaveChanges();
             return center;
         }
         #endregion
@@ -70,70 +81,50 @@ namespace PetRescue.Data.Domains
         #region CREATE
         public CenterModel CreateCenter(CreateCenterModel model, Guid insertBy)
         {
-            var center = uow.GetService<ICenterRepository>().CreateCenter(model, insertBy);
+            var center = _centerRepo.CreateCenter(model, insertBy);
             return center;
         }
         #endregion
 
         #region UPDATE
-        public string UpdateCenter(UpdateCenterModel model, Guid currentUserId)
+        public string UpdateCenter(UpdateCenterModel model, Guid updatedBy)
         {
             //call CenterService
-            var center_service = uow.GetService<ICenterRepository>();
-
-            //check Duplicate  phone
-            var check_dup_phone = center_service.Get()
-                .Where(c => c.Phone.Equals(model.Phone));
-
-            //check Duplicate address
-            var check_dup_address = center_service.Get()
-               .Where(c => c.Address.Equals(model.Address));
-
-            //dup phone & address
-            if (check_dup_phone.Any() && check_dup_address.Any())
-                return "This phone and address  is already registered !";
-
-            //dup phone
-            if (check_dup_phone.Any())
-                return "This phone is already registered !";
-
-            //dup address
-            if (check_dup_address.Any())
-                return "This address is already registered !";
-
-            var center = center_service.UpdateCenter(model, currentUserId);
-            uow.saveChanges();
+            var center = _centerRepo.UpdateCenter(model, updatedBy);
+            _uow.SaveChanges();
             return center.CenterId.ToString();
         }
+        #endregion
 
-        //public CenterStatistic GetStatisticAboutCenter(Guid centerId)
-        //{
-        //    var centerRepo = uow.GetService<ICenterRepository>();
-        //    var finderFormService = uow.GetService<IFinderFormRepository>();
-        //    var petProfileService = uow.GetService<IPetProfileRepository>();
-        //    var result = new CenterStatistic();
-        //    result.RescueCase = finderFormService.Get().Where(s => s.PetDocument.PetDocumentNavigation.CenterId.Equals(centerId)).Count();
-        //    result.PetFindTheOwner = petProfileService.Get().Where(s => s.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
-        //    result.PetAdoption = petProfileService.Get().Where(s => s.PetStatus == PetStatusConst.ADOPTED).Count();
-        //    return result;
-        //}
+        #region GET COUNT FOR CENTER HOMEPAGE
+        public object GetCountForCenterHomePage(Guid centerId)
+        {
+            var records = _centerRepo.Get().AsQueryable();
+            int rescues = _rescueDocumentRepo.Get()
+                .Where(d => d.CenterId.Equals(centerId)).Count();
+
+            int pets_adopted = _petProfileRepo.Get()
+                .Where(p => p.CenterId.Equals(centerId))
+                .Where(p => p.PetStatus == PetStatusConst.ADOPTED).Count();
+
+            int pets_finding_owner = _petProfileRepo.Get()
+                .Where(p => p.CenterId.Equals(centerId))
+                .Where(p => p.PetStatus == PetStatusConst.FINDINGOWNER).Count();
+            return new
+            {
+                rescues = rescues,
+                petsAdopted = pets_adopted,
+                petsFindingOwner = pets_finding_owner,
+            };
+        }
         #endregion
         public List<CenterLocationModel> GetListCenterLocation()
         {
-            var centerRepo = uow.GetService<ICenterRepository>();
-            var userRoleRepo = uow.GetService<IUserRoleRepository>();
-            var userRoles = userRoleRepo.Get().Where(s => (bool)s.User.IsBelongToCenter && s.IsActive && s.Role.RoleName.Equals(RoleConstant.VOLUNTEER)).ToList();
             var setCenterId = new HashSet<Guid>();
-            foreach (var userRole in userRoles)
-            {
-                setCenterId.Add((Guid)userRole.User.CenterId);
-            }
             var result = new List<CenterLocationModel>();
-            if (setCenterId.Count != 0)
-            {
                 foreach (var centerId in setCenterId.ToList())
                 {
-                    var temp = centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId));
+                    var temp = _centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId) && s.CenterStatus == CenterStatusConst.OPENNING);
                     result.Add(new CenterLocationModel
                     {
                         CenterId = temp.CenterId.ToString(),
@@ -141,15 +132,12 @@ namespace PetRescue.Data.Domains
                         Lng = (double)temp.Lng
                     });
                 }
-            }
             return result;
         }
-
         public List<CenterViewModel> GetListCenter()
         {
-            var centerRepo = uow.GetService<ICenterRepository>();
             var result = new List<CenterViewModel>();
-            var centers = centerRepo.Get().Where(s=>s.CenterStatus == CenterStatusConst.OPENNING).ToList();
+            var centers = _centerRepo.Get().Where(s=>s.CenterStatus == CenterStatusConst.OPENNING).ToList();
             foreach(var center in centers)
             {
                 result.Add(new CenterViewModel 
@@ -165,18 +153,17 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-
-        public int ChangeStateOfCenter(UpdateCenterStatus model, Guid centerId)
+        public bool ChangeStateOfCenter(UpdateCenterStatus model, Guid centerId)
         {
-            var centerRepo = uow.GetService<ICenterRepository>();
-            var center = centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId));
+            var center = _centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId));
             center.CenterStatus = model.Status;
-            var result = centerRepo.Update(center).Entity;
+            var result = _centerRepo.Update(center).Entity;
             if(result != null)
             {
-                return 1;
+                _uow.SaveChanges();
+                return true;
             }
-            return 0;
+            return false;
         }
     }
 }

@@ -17,8 +17,8 @@ namespace PetRescue.Data.Models
         public string Address { get; set; }
         public string Phone { get; set; }
         public string CenterImgUrl { get; set; }
-        public int CenterStatus { get; set; }
-        public DateTime InsertedAt { get; set; }
+        public int? CenterStatus { get; set; }
+        public DateTime? InsertedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
