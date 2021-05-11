@@ -15,12 +15,12 @@ namespace PetRescue.Data.Extensions
         public List<CenterDistanceModel> FindListShortestCenter(string origin, List<CenterLocationModel> centers)
         {
             var destinationStr = "";
-            var listCenterId = new List<string>();
+            var listCenterId = new List<Guid>();
             foreach (var center in centers)
             {
                 var temp = center.Lat + ", " + center.Lng;
                 destinationStr += temp + "|";
-                listCenterId.Add(center.CenterId.ToString());
+                listCenterId.Add(center.CenterId);
             }
             if (destinationStr.Length != 0)
             {

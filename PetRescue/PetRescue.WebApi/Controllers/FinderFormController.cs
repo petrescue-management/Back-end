@@ -126,9 +126,9 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         //[Authorize(Roles = RoleConstant.VOLUNTEER)]
-        [HttpGet]
+        [HttpPost]
         [Route("get-list-finder-form")]
-        public IActionResult GetListFinderForm([FromQuery] FinderFormModelForVoLunteer model)
+        public IActionResult GetListFinderForm([FromBody] DistanceModel model)
         {
             try
             {

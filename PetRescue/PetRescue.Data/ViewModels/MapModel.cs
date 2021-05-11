@@ -36,7 +36,7 @@ namespace PetRescue.Data.ViewModels
     public class CenterDistanceModel : IComparable<CenterDistanceModel>
     {
         public double Value { get; set; }
-        public string CenterId { get; set; }
+        public Guid CenterId { get; set; }
         public int CompareTo(CenterDistanceModel model)
         {
             if (model == null) return 1;

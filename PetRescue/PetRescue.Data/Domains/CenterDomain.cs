@@ -1,4 +1,5 @@
 ﻿using PetRescue.Data.ConstantHelper;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Models;
 using PetRescue.Data.Repositories;
 using PetRescue.Data.Uow;
@@ -120,16 +121,15 @@ namespace PetRescue.Data.Domains
         #endregion
         public List<CenterLocationModel> GetListCenterLocation()
         {
-            var setCenterId = new HashSet<Guid>();
+            var centers = _centerRepo.Get().Where(s => s.CenterStatus == CenterStatusConst.OPENNING);
             var result = new List<CenterLocationModel>();
-                foreach (var centerId in setCenterId.ToList())
+                foreach (var center in centers)
                 {
-                    var temp = _centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(centerId) && s.CenterStatus == CenterStatusConst.OPENNING);
                     result.Add(new CenterLocationModel
                     {
-                        CenterId = temp.CenterId.ToString(),
-                        Lat = (double)temp.Lat,
-                        Lng = (double)temp.Lng
+                        CenterId = center.CenterId,
+                        Lat = (double)center.Lat,
+                        Lng = (double)center.Lng
                     });
                 }
             return result;
@@ -164,6 +164,51 @@ namespace PetRescue.Data.Domains
                 return true;
             }
             return false;
+        }
+        public object GetListCenterDistance(DistanceModel model)
+        {
+            var centers = _uow.GetService<CenterDomain>().GetListCenterLocation();
+            var googleMapExtension = new GoogleMapExtensions();
+            var location = model.Lat + ", " + model.Lng;
+            var records = googleMapExtension.FindListShortestCenter(location, centers);
+            var result = new List<CenterLocationViewModel>();
+            if(records.Count != 0)
+            {
+                if(records.Count > 2)
+                {
+                    var center = _centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(records[0].CenterId));
+                    result.Add(new CenterLocationViewModel
+                    {
+                        CenterId = records[0].CenterId,
+                        CenterAddrees = center.Address,
+                        CenterName = center.CenterName,
+                        Phone = center.Phone,
+                        Distance = Math.Round(records[0].Value / 1000, 2)
+                    });
+                    center = _centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(records[1].CenterId));
+                    result.Add(new CenterLocationViewModel
+                    {
+                        CenterId = records[1].CenterId,
+                        CenterAddrees = center.Address,
+                        CenterName = center.CenterName,
+                        Phone = center.Phone,
+                        Distance = Math.Round(records[1].Value / 1000, 2)
+                    });
+                }
+                else
+                {
+                    var center = _centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(records[0].CenterId));
+                    result.Add(new CenterLocationViewModel
+                    {
+                        CenterId = records[0].CenterId,
+                        CenterAddrees = center.Address,
+                        CenterName = center.CenterName,
+                        Phone = center.Phone,
+                        Distance = Math.Round(records[0].Value / 1000, 2)
+                    });
+                }
+            }
+            return result;
         }
     }
 }

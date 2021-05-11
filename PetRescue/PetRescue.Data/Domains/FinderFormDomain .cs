@@ -273,25 +273,25 @@ namespace PetRescue.Data.Domains
             string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
 
             File.WriteAllText(FILEPATH, output);
-            var centers = _uow.GetService<CenterDomain>().GetListCenterLocation();
-            var googleMapExtension = new GoogleMapExtensions();
-            var location = model.Lat + ", " + model.Lng;
-            var records = googleMapExtension.FindListShortestCenter(location, centers);
-            var listCenterId = new List<string>();
+            //var centers = _uow.GetService<CenterDomain>().GetListCenterLocation();
+            //var googleMapExtension = new GoogleMapExtensions();
+            //var location = model.Lat + ", " + model.Lng;
+            //var records = googleMapExtension.FindListShortestCenter(location, centers);
+            //var listCenterId = new List<Guid>();
 
-            if (records.Count != 0)
-            {
-                if (records.Count >= 2)
-                {
-                    listCenterId.Add(records[0].CenterId);
-                    listCenterId.Add(records[1].CenterId);
-                }
-                else
-                {
-                    listCenterId.Add(records[0].CenterId);
-                }
-            }
-            await _uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listCenterId);
+            //if (records.Count != 0)
+            //{
+            //    if (records.Count >= 2)
+            //    {
+            //        listCenterId.Add(records[0].CenterId);
+            //        listCenterId.Add(records[1].CenterId);
+            //    }
+            //    else
+            //    {
+            //        listCenterId.Add(records[0].CenterId);
+            //    }
+            //}
+            //await _uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listCenterId);
             _uow.SaveChanges();
             return finderForm;
         }
@@ -319,7 +319,7 @@ namespace PetRescue.Data.Domains
         }
 
         #endregion
-        public object GetAllListFinderForm(FinderFormModelForVoLunteer model)
+        public object GetAllListFinderForm(DistanceModel model)
         {
             
             var result = new List<FinderFormDetailModel3>();
@@ -342,7 +342,6 @@ namespace PetRescue.Data.Domains
                 });
             }
             var records = googleMapExtension.FindDistanceRescueRequest(location, listFinderFormLocation);
-            var list = new List<object>();
             foreach (var record in records)
             {
                 var finderForm = _finderFormRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(record.FinderFormId));
@@ -394,6 +393,7 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
+        
         public List<FinderFormDetailModel> GetListByUserId(Guid userId)
         {
             var finderForms = _finderFormRepo.Get().Where(s => s.InsertedBy.Equals(userId));

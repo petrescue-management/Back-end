@@ -113,7 +113,7 @@ namespace PetRescue.Data.ViewModels
         [JsonProperty("distance")]
         public double? Distance { get; set; }
     }
-    public class FinderFormModelForVoLunteer
+    public class DistanceModel
     {
         public double Lat { get; set; }
         public double Lng { get; set; }

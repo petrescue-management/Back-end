@@ -132,6 +132,20 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex.Message);
             }
         }
+        [HttpPost]
+        [Route("get-list-distance-centers")]
+        public IActionResult GetListDistanceCenter([FromBody] DistanceModel model)
+        {
+            try
+            {
+                var result = _centerDomain.GetListCenterDistance(model);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
         [Authorize(Roles = RoleConstant.MANAGER)]
         [HttpPut]
         [Route("change-status-of-center")]

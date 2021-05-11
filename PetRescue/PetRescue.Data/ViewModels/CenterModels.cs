@@ -50,7 +50,7 @@ namespace PetRescue.Data.ViewModels
 
     public class CenterLocationModel
     {
-        public string CenterId { get; set; }
+        public Guid CenterId { get; set; }
         public double Lat { get; set; }
         public double Lng { get; set; }
     }
@@ -79,5 +79,14 @@ namespace PetRescue.Data.ViewModels
     {
         public string CenterName { get; set; }
         public string CenterAddrress { get; set; }
+    }
+    public class CenterLocationViewModel 
+    {
+        public Guid? CenterId { get; set; }
+        public string CenterAddrees { get; set; }
+        public string CenterName { get; set; }
+        public string Phone { get; set; }
+        public double? Distance { get; set; }
+
     }
 }
