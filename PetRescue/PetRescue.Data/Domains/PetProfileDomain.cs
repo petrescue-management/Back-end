@@ -454,6 +454,35 @@ namespace PetRescue.Data.Domains
                     Lng = rescueDocument.FinderForm.Lng,
                     FinderFormVidUrl = rescueDocument.FinderForm.FinderFormVidUrl
                 };
+               
+                var adoptionRegistrationForm = _adoptionRegistrationFormRepo.Get()
+                    .FirstOrDefault(f => f.PetProfileId.Equals(petProfileId) &&
+                    f.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED);
+                if (adoptionRegistrationForm != null)
+                {
+                    var adoption = new AdoptionRegistrationFormViewModel
+                    {
+                        Address = adoptionRegistrationForm.Address,
+                        AdoptionRegistrationId = adoptionRegistrationForm.AdoptionRegistrationFormId,
+                        AdoptionRegistrationStatus = adoptionRegistrationForm.AdoptionRegistrationFormStatus,
+                        BeViolentTendencies = adoptionRegistrationForm.BeViolentTendencies,
+                        ChildAge = adoptionRegistrationForm.ChildAge,
+                        Email = adoptionRegistrationForm.Email,
+                        FrequencyAtHome = adoptionRegistrationForm.FrequencyAtHome,
+                        HaveAgreement = adoptionRegistrationForm.HaveAgreement,
+                        HaveChildren = adoptionRegistrationForm.HaveChildren,
+                        HavePet = adoptionRegistrationForm.HavePet,
+                        HouseType = adoptionRegistrationForm.HouseType,
+                        InsertedAt = adoptionRegistrationForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                        InsertedBy = adoptionRegistrationForm.InsertedBy,
+                        Job = adoptionRegistrationForm.Job,
+                        UpdatedAt = adoptionRegistrationForm.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                        UpdatedBy = adoptionRegistrationForm.UpdatedBy,
+                        UserName = adoptionRegistrationForm.UserName,
+                        Phone = adoptionRegistrationForm.Phone,
+                    };
+                    result.AdoptionRegistrationForm = adoption;
+                }
                 var tracks = petProfile.PetTracking.ToList();
                 var list = new List<PetTrackingViewModel>();
                 foreach (var track in tracks)
@@ -471,7 +500,7 @@ namespace PetRescue.Data.Domains
                 }
                 result.FinderForm = finderForm;
                 result.PetAttribute = rescueDocument.FinderForm.PetAttribute;
-                result.PickerForm = pickerForm;
+                result.PickerForm = pickerForm;                
                 result.PetProfile = new PetProfileModel
                 {
                     CenterId = petProfile.CenterId,
