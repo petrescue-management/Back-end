@@ -109,7 +109,7 @@ namespace PetRescue.Data.Domains
 
             int pets_finding_owner = _petProfileRepo.Get()
                 .Where(p => p.CenterId.Equals(centerId))
-                .Where(p => p.PetStatus == PetStatusConst.FINDINGADOPTER).Count();
+                .Where(p => p.PetStatus == PetStatusConst.FINDINGOWNER).Count();
             return new
             {
                 rescues = rescues,

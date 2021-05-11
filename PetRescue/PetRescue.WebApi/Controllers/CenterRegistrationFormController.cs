@@ -36,7 +36,7 @@ namespace PetRescue.WebApi.Controllers
         }
         #region SEARCH
         [HttpGet]
-        [Route("api/search-center-registration-form")]
+        [Route("search-center-registration-form")]
         public IActionResult SearchCenterRegistrationForm([FromHeader] SearchModel model)
         {
             try
@@ -80,7 +80,10 @@ namespace PetRescue.WebApi.Controllers
                 string result = _centerRegistrationFormDomain.CreateCenterRegistrationForm(model);
                 await _notificationTokenDomain.NotificationForAdminWhenHaveNewCenterRegisterForm(path);
                 if (result.Contains("is already"))
+                {
                     return BadRequest(result);
+                }
+                await _notificationTokenDomain.NotificationForAdminWhenHaveNewCenterRegisterForm(path);
                 return Success(result);
             }
             catch (Exception ex)

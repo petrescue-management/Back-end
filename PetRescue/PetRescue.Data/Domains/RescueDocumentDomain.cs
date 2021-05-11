@@ -165,9 +165,9 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public bool CreateRescueDocument(RescueDocumentCreateModel model, Guid centerId)
+        public bool CreateRescueDocument(RescueDocumentCreateModel model)
         {
-            var result = _rescueDocumentRepo.Create(model, centerId);
+            var result = _rescueDocumentRepo.Create(model);
             if (IsValid(model.FinderFormId, model.PickerFormId))
             {
                 if (result != null)

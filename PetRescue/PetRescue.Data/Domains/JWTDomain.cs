@@ -188,7 +188,6 @@ namespace PetRescue.Data.Domains
 
             return Convert.ToBase64String(hash);
         }
-
         public string LoginBySysAdmin(UserLoginBySysadminModel model)
         {
             string hashedPassword = GenarateHash(model.Password);
@@ -232,7 +231,7 @@ namespace PetRescue.Data.Domains
             }
             return null;
         }
-        public async Task<string> LoginByVolunteer(UserLoginModel model, string path)
+        public async Task<string> LoginByVolunteer(UserLoginModel model)
         {
             //Get FirebaseToken and get claims
             var handler = new JwtSecurityTokenHandler();

@@ -95,11 +95,11 @@ namespace PetRescue.WebApi
                 c.CronExpression = @"* * * * *";
             });
 
-            services.AddCronJob<MyCronJob2>(c =>
-            {
-                c.TimeZoneInfo = TimeZoneInfo.Local;
-                c.CronExpression = @"* * * * *";
-            });
+            //services.AddCronJob<MyCronJob2>(c =>
+            //{
+            //    c.TimeZoneInfo = TimeZoneInfo.Local;
+            //    c.CronExpression = @"* * * * *";
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

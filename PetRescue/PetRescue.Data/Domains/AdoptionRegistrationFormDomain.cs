@@ -167,7 +167,7 @@ namespace PetRescue.Data.Domains
                         var updatePetModel = new UpdatePetProfileModel
                         {
                             PetProfileId = form.PetProfileId,
-                            PetStatus = PetStatusConst.WAITING
+                            PetStatus = PetStatusConst.WAITINGOWNER
                         };
                         _petProfileRepo.UpdatePetProfile(updatePetModel, updateBy);
                         _uow.SaveChanges();
@@ -329,7 +329,7 @@ namespace PetRescue.Data.Domains
                 _petProfileRepo.UpdatePetProfile(new UpdatePetProfileModel 
                 {
                     PetProfileId = form.PetProfileId,
-                    PetStatus = PetStatusConst.FINDINGADOPTER
+                    PetStatus = PetStatusConst.FINDINGOWNER
                 }, updatedBy);
                 var result = new RejectAdoptionViewModel
                 {

@@ -89,7 +89,11 @@ namespace PetRescue.WebApi.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result =  _pickerFormDomain.CreatePickerForm(model, Guid.Parse(currentUserId));
-                return Success(result);
+                if(result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest(result);
             }
             catch (Exception ex)
             {

@@ -31,7 +31,7 @@ namespace PetRescue.Data.Domains
         {
             var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserEmail.Equals(model.Email));
             var result = "";
-            if (!IsExisted(model.Email, model.CenterId))
+            if (!IsExisted(model.Email))
             {
                 Message message = new Message
                 {
@@ -44,7 +44,7 @@ namespace PetRescue.Data.Domains
                 if (currentUser == null)
                 {
                     var form = _volunteerRegistrationFormRepo.Create(model);
-                    await _uow.GetService<NotificationTokenDomain>().NotificationForManager(path,model.CenterId, message);
+                    await _uow.GetService<NotificationTokenDomain>().NotificationForAdmin(path, message);
                     _uow.SaveChanges();
                     result = form.VolunteerRegistrationFormId.ToString();
                 }
@@ -53,7 +53,7 @@ namespace PetRescue.Data.Domains
                     if (!_uow.GetService<UserRoleDomain>().IsAdmin(model.Email))
                     {
                         var form = _volunteerRegistrationFormRepo.Create(model);
-                        await _uow.GetService<NotificationTokenDomain>().NotificationForManager(path, model.CenterId, message);
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForAdmin(path, message);
                         _uow.SaveChanges();
                         result = form.VolunteerRegistrationFormId.ToString();
                     }
@@ -166,7 +166,7 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        private bool IsExisted(string email, Guid centerId)
+        private bool IsExisted(string email)
         {
             var result = _volunteerRegistrationFormRepo.Get().FirstOrDefault(s => s.Email.Equals(email) && 
                 s.VolunteerRegistrationFormStatus == VolunteerRegistrationFormConst.PROCESSING);

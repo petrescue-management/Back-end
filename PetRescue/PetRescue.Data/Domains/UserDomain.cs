@@ -69,8 +69,16 @@ namespace PetRescue.Data.Domains
                     Gender = userProfile.Gender,
                     LastName = userProfile.LastName,
                     ImgUrl = userProfile.UserImgUrl,
-                    UpdatedAt = userProfile.UpdatedAt
+                    UpdatedAt = userProfile.UpdatedAt,
                 };
+                var center = new CenterProfileViewModel();
+                if (user.CenterId != null)
+                {
+                    var centerProfile = _centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(user.CenterId));
+                    center.CenterAddrress = centerProfile.Address;
+                    center.CenterName = centerProfile.CenterName;
+                }
+                returnResult.Center = center;
                 return returnResult;
             }
             else

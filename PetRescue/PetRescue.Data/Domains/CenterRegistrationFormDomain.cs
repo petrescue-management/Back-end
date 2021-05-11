@@ -73,45 +73,30 @@ namespace PetRescue.Data.Domains
         #region CREATE
         public string CreateCenterRegistrationForm(CreateCenterRegistrationFormModel model)
         {
-            //check Duplicate  phone
-            var check_dup_phone = _centerRepo.Get()
-                .Where(c => c.Phone.Equals(model.Phone));
-
-            //check Duplicate email
-            var check_dup_email = _userRepo.Get()
-               .Where(u => u.UserEmail.Contains(model.Email));
-
-            //check Duplicate address
-            var check_dup_address = _centerRepo.Get()
-               .Where(c => c.Address.Equals(model.CenterAddress));
-
-            //dup phone & email
-            if (check_dup_phone.Any() && check_dup_email.Any())
-                return "This phone and email  is already registered !";
-
-            //dup phone & address
-            if (check_dup_phone.Any() && check_dup_address.Any())
-                return "This phone and address  is already registered !";
-
-            //dup email & address
-            if (check_dup_email.Any() && check_dup_address.Any())
-                return "This email and address  is already registered !";
-
-            //dup phone
-            if (check_dup_phone.Any())
-                return "This phone is already registered !";
-
-            //dup email
-            if (check_dup_email.Any())
-                return "This email is already registered !";
-
-            //dup address
-            if (check_dup_address.Any())
-                return "This address is already registered !";
-
-            var form = _centerRegistrationRepo.CreateCenterRegistrationForm(model);
-            _uow.SaveChanges();
-            return form.CenterRegistrationFormId.ToString();
+            var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserEmail.Equals(model.Email));
+            if(currentUser != null)
+            {
+                var roles = _uow.GetService<UserDomain>().GetRoleOfUser(currentUser.UserId);
+                if (roles.Contains(RoleConstant.MANAGER))
+                {
+                    return "Invalid email";
+                }
+                else
+                {
+                    var form = _centerRegistrationRepo.CreateCenterRegistrationForm(model);
+                    _uow.SaveChanges();
+                    return form.CenterRegistrationFormId.ToString();
+                }
+            }
+            else
+            {
+                var form = _centerRegistrationRepo.CreateCenterRegistrationForm(model);
+                _uow.SaveChanges();
+                return form.CenterRegistrationFormId.ToString();
+            }
+            
+            
+            
         }
         #endregion
 

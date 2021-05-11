@@ -14,7 +14,6 @@ namespace PetRescue.Data.Repositories
     {
         PetProfileModel CreatePetProfile(CreatePetProfileModel model, Guid insertedBy, Guid centerId);
         PetProfileModel UpdatePetProfile(UpdatePetProfileModel model, Guid updatedBy);
-
         PetProfileModel GetPetProfileById(Guid id);
         PetProfileModel2 GetPetProfileById2(Guid id);
     }

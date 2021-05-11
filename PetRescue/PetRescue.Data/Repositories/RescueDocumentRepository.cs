@@ -10,7 +10,7 @@ namespace PetRescue.Data.Repositories
 {
     public partial interface IRescueDocumentRepository : IBaseRepository<RescueDocument, string>
     {
-        RescueDocument Create(RescueDocumentCreateModel model, Guid centerId);
+        RescueDocument Create(RescueDocumentCreateModel model);
         RescueDocument Edit(RescueDocument entity, RescueDocumentUpdateModel model);
     }
     public partial class RescueDocumentRepository : BaseRepository<RescueDocument, string>, IRescueDocumentRepository
@@ -18,16 +18,16 @@ namespace PetRescue.Data.Repositories
         public RescueDocumentRepository(DbContext context) : base(context)
         {
         }
-        public RescueDocument Create(RescueDocumentCreateModel model, Guid centerId)
+        public RescueDocument Create(RescueDocumentCreateModel model)
         {
-            var result = PrepareCreate(model, centerId);
+            var result = PrepareCreate(model);
             return Create(result).Entity;
         }
-        private RescueDocument PrepareCreate(RescueDocumentCreateModel model, Guid centerId)
+        private RescueDocument PrepareCreate(RescueDocumentCreateModel model)
         {
             var RescueDocument = new RescueDocument
             {
-                CenterId = centerId,
+                CenterId = model.CenterId,
                 FinderFormId = model.FinderFormId,
                 RescueDocumentId = Guid.NewGuid(),
                 RescueDocumentStatus = RescueDocumentConst.WAITING,

@@ -63,8 +63,8 @@ namespace PetRescue.Data.Repositories
                 CenterAddress = model.CenterAddress,
                 Description = model.Description,
                 CenterRegistrationFormStatus = 1,
-                UpdatedAt = null,
-                CenterImgUrl = model.ImageUrl
+                CenterImgUrl = model.ImageUrl,
+                InsertedAt = DateTime.UtcNow
             };
             return form;
         }

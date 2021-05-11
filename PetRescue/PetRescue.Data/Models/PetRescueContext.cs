@@ -132,7 +132,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.Description)
                     .HasColumnName("description")
-                    .HasMaxLength(100);
+                    .HasMaxLength(1000);
 
                 entity.Property(e => e.InsertedAt)
                     .HasColumnName("inserted_at")
@@ -191,7 +191,7 @@ namespace PetRescue.Data.Models
                     .WithOne(p => p.Center)
                     .HasForeignKey<Center>(d => d.CenterId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Center_CenterRegistrationForm");
+                    .HasConstraintName("FK_Center_CenterRegistrationForm1");
             });
 
             modelBuilder.Entity<CenterRegistrationForm>(entity =>
@@ -216,7 +216,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.Description)
                     .HasColumnName("description")
-                    .HasMaxLength(100);
+                    .HasMaxLength(1000);
 
                 entity.Property(e => e.Email)
                     .HasColumnName("email")
@@ -253,7 +253,7 @@ namespace PetRescue.Data.Models
 
                 entity.Property(e => e.Description)
                     .HasColumnName("description")
-                    .HasMaxLength(100);
+                    .HasMaxLength(1000);
 
                 entity.Property(e => e.DroppedReason)
                     .HasColumnName("dropped_reason")
@@ -545,11 +545,6 @@ namespace PetRescue.Data.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.UserStatus).HasColumnName("user_status");
-
-                entity.HasOne(d => d.Center)
-                    .WithMany(p => p.User)
-                    .HasForeignKey(d => d.CenterId)
-                    .HasConstraintName("FK_User_Center");
             });
 
             modelBuilder.Entity<UserProfile>(entity =>

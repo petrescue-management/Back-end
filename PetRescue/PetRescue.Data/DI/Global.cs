@@ -36,8 +36,6 @@ namespace PetRescue.Data.DI
                 .AddScoped<IPetFurColorRepository, PetFurColorRepository>()
                 .AddScoped<IPetTypeRepository, PetTypeRepository>()
                 .AddScoped<IPetProfileRepository, PetProfileRepository>()
-                .AddScoped<IAdoptionRepository, AdoptionRepository>()
-                .AddScoped<AdoptionDomain>()
                 .AddScoped<IAdoptionRegistrationFormRepository, AdoptionRegistrationFormRepository>()
                 .AddScoped<AdoptionRegistrationFormDomain>()
                 .AddScoped<INotificationTokenRepository, NotificationTokenRepository>()

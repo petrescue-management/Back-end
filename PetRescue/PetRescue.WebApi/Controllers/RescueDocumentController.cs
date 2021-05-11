@@ -74,8 +74,7 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
-                var result = _rescueDocumentDomain.CreateRescueDocument(model, Guid.Parse(currentCenterId));
+                var result = _rescueDocumentDomain.CreateRescueDocument(model);
                 if (result)
                 {
                     return Success(result);

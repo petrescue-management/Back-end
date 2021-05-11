@@ -8,7 +8,6 @@ namespace PetRescue.Data.Models
         public Center()
         {
             PetProfile = new HashSet<PetProfile>();
-            User = new HashSet<User>();
         }
 
         public Guid CenterId { get; set; }
@@ -25,6 +24,5 @@ namespace PetRescue.Data.Models
 
         public virtual CenterRegistrationForm CenterNavigation { get; set; }
         public virtual ICollection<PetProfile> PetProfile { get; set; }
-        public virtual ICollection<User> User { get; set; }
     }
 }

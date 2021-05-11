@@ -22,14 +22,17 @@ namespace PetRescue.Data.Domains
         private readonly IAdoptionRegistrationFormRepository _adoptionRegistrationFormRepo;
         private readonly IRescueDocumentRepository _rescueDocumentRepo;
         private readonly IUserRepository _userRepo;
-        public PetProfileDomain(IUnitOfWork uow, 
-            IPetTypeRepository petTypeRepo, 
-            IPetProfileRepository petProfileRepo, 
-            IPetFurColorRepository petFurColorRepo, 
-            IPetBreedRepository petBreedRepo, 
-            IAdoptionRegistrationFormRepository adoptionRegistrationFormRepo, 
-            IRescueDocumentRepository rescueDocumentRepo, 
-            IUserRepository userRepo) : base(uow)
+        private readonly IPetTrackingRepository _petTrackingRepo;
+        public PetProfileDomain(IUnitOfWork uow,
+            IPetTypeRepository petTypeRepo,
+            IPetProfileRepository petProfileRepo,
+            IPetFurColorRepository petFurColorRepo,
+            IPetBreedRepository petBreedRepo,
+            IAdoptionRegistrationFormRepository adoptionRegistrationFormRepo,
+            IRescueDocumentRepository rescueDocumentRepo,
+            IUserRepository userRepo,
+            IPetTrackingRepository petTrackingRepo
+            ) : base(uow)
         {
             this._petBreedRepo = petBreedRepo;
             this._petFurColorRepo = petFurColorRepo;
@@ -38,6 +41,7 @@ namespace PetRescue.Data.Domains
             this._adoptionRegistrationFormRepo = adoptionRegistrationFormRepo;
             this._rescueDocumentRepo = rescueDocumentRepo;
             this._userRepo = userRepo;
+            this._petTrackingRepo = petTrackingRepo;
         }
         public List<PetBreedModel> GetPetBreedsByTypeId(Guid id)
         {
@@ -114,7 +118,7 @@ namespace PetRescue.Data.Domains
         public PetProfileModel CreatePetProfile(CreatePetProfileModel model, Guid insertBy, Guid centerId)
         {
             var petProfile = _petProfileRepo.CreatePetProfile(model, insertBy, centerId);
-            if(petProfile != null)
+            if (petProfile != null)
             {
                 _uow.SaveChanges();
                 return petProfile;
@@ -126,7 +130,7 @@ namespace PetRescue.Data.Domains
         public PetProfileModel UpdatePetProfile(UpdatePetProfileModel model, Guid updatedBy)
         {
             var petProfile = _petProfileRepo.UpdatePetProfile(model, updatedBy);
-            if(petProfile != null)
+            if (petProfile != null)
             {
                 _uow.SaveChanges();
                 return petProfile;
@@ -211,7 +215,7 @@ namespace PetRescue.Data.Domains
             var result = new List<PetAdoptionRegisterFormModel>();
             foreach (var petProfile in petProfiles)
             {
-                if(filter.PetStatus == PetStatusConst.FINDINGADOPTER)
+                if (filter.PetStatus == PetStatusConst.FINDINGOWNER)
                 {
                     var count = _adoptionRegistrationFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Count();
                     if (count > 0)
@@ -229,7 +233,7 @@ namespace PetRescue.Data.Domains
                         });
                     }
                 }
-                else if(filter.PetStatus == PetStatusConst.WAITING)
+                else if (filter.PetStatus == PetStatusConst.WAITINGOWNER)
                 {
                     var count = _adoptionRegistrationFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED).Count();
                     if (count > 0)
@@ -247,7 +251,24 @@ namespace PetRescue.Data.Domains
                         });
                     }
                 }
-                
+                else if (filter.PetStatus == PetStatusConst.ADOPTED)
+                {
+                    var count = _adoptionRegistrationFormRepo.Get().Where(s => s.PetProfileId.Equals(petProfile.PetProfileId) && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED).Count();
+                    if (count > 0)
+                    {
+                        result.Add(new PetAdoptionRegisterFormModel
+                        {
+                            Count = count,
+                            PetId = petProfile.PetProfileId,
+                            PetName = petProfile.PetName,
+                            Age = (int)petProfile.PetAge,
+                            BreedName = petProfile.PetBreed.PetBreedName,
+                            Gender = petProfile.PetGender,
+                            ImageUrl = petProfile.PetImgUrl,
+                            UpdatedAt = petProfile.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM)
+                        });
+                    }
+                }
             }
             return result;
         }
@@ -274,36 +295,9 @@ namespace PetRescue.Data.Domains
                 },
                 AdoptionRegisterforms = new List<AdoptionRegistrationFormViewModel>()
             };
-            if(currentPet.PetStatus == PetStatusConst.FINDINGADOPTER)
+            if (currentPet.PetStatus == PetStatusConst.FINDINGOWNER)
             {
                 forms = forms.Where(s => s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.PROCESSING);
-                foreach (var form in forms)
-                {
-                    result.AdoptionRegisterforms.Add(new AdoptionRegistrationFormViewModel
-                    {
-                        Address = form.Address,
-                        AdoptionRegistrationId = form.AdoptionRegistrationFormId,
-                        AdoptionRegistrationStatus = form.AdoptionRegistrationFormStatus,
-                        BeViolentTendencies = form.BeViolentTendencies,
-                        ChildAge = form.ChildAge,
-                        Email = form.Email,
-                        FrequencyAtHome = form.FrequencyAtHome,
-                        HaveAgreement = form.HaveAgreement,
-                        HaveChildren = form.HaveChildren,
-                        HavePet = form.HavePet,
-                        HouseType = form.HouseType,
-                        InsertedAt = form.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
-                        InsertedBy = form.InsertedBy,
-                        Job = form.Job,
-                        UpdatedAt = form.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM),
-                        UpdatedBy = form.UpdatedBy,
-                        UserName = form.UserName,
-                        Phone = form.Phone,
-                    });
-                }
-            }else if(currentPet.PetStatus == PetStatusConst.WAITING)
-            {
-                forms = forms.Where(s => s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED);
                 foreach (var form in forms)
                 {
                     result.AdoptionRegisterforms.Add(new AdoptionRegistrationFormViewModel
@@ -355,7 +349,7 @@ namespace PetRescue.Data.Domains
                 var records = _petProfileRepo.Get()
                     .Include(p => p.PetBreed)
                     .Include(p => p.PetFurColor)
-                    .Where(p => p.PetBreed.PetType.PetTypeName.Equals(petType.PetTypeName) && p.PetStatus == PetStatusConst.FINDINGADOPTER);
+                    .Where(p => p.PetBreed.PetType.PetTypeName.Equals(petType.PetTypeName) && p.PetStatus == PetStatusConst.FINDINGOWNER);
                 if (filter.PetFurColorName != null)
                     records = records.Where(p => p.PetFurColor.PetFurColorName.Equals(filter.PetFurColorName));
                 if (filter.PetAge != 0)
@@ -397,15 +391,13 @@ namespace PetRescue.Data.Domains
         #endregion
         public RescueDocumentViewModel GetRescueDocumentByPetId(Guid petProfileId)
         {
-            
-
             var result = new RescueDocumentViewModel();
             var petProfile = _petProfileRepo.Get().FirstOrDefault(s => s.PetProfileId.Equals(petProfileId));
             var rescueDocument = _rescueDocumentRepo.Get().FirstOrDefault(s => s.RescueDocumentId.Equals(petProfile.RescueDocumentId));
             if (rescueDocument != null)
             {
                 var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
-                var fullName = currentUser.UserProfile.LastName + " "+currentUser.UserProfile.FirstName;
+                var fullName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName;
                 var pickerForm = new PickerFormViewModel
                 {
                     PickerDate = rescueDocument.PickerForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
@@ -505,11 +497,11 @@ namespace PetRescue.Data.Domains
                         Description = petProfile.Description,
                         PetStatus = petProfile.PetStatus,
                         PetProfileId = petProfile.PetProfileId,
-                         PetType = new PetTypeUpdateModel
-                         {
-                             PetTypeId = petProfile.PetBreed.PetType.PetTypeId,
-                             PetTypeName = petProfile.PetBreed.PetType.PetTypeName
-                         }
+                        PetType = new PetTypeUpdateModel
+                        {
+                            PetTypeId = petProfile.PetBreed.PetType.PetTypeId,
+                            PetTypeName = petProfile.PetBreed.PetType.PetTypeName
+                        }
                     };
                 }
             }
@@ -518,9 +510,9 @@ namespace PetRescue.Data.Domains
         public object GetAllPetBreeds()
         {
             var result = new List<PetBreedDetailModel>();
-            foreach(var petBreed in _petBreedRepo.Get().ToList())
+            foreach (var petBreed in _petBreedRepo.Get().ToList())
             {
-                result.Add(new PetBreedDetailModel 
+                result.Add(new PetBreedDetailModel
                 {
                     PetBreedId = petBreed.PetBreedId,
                     PetBreedName = petBreed.PetBreedName,
@@ -529,5 +521,261 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
+        public ReturnAdoptionViewModel PickPet(Guid adoptionRegistrationFormId, Guid insertedBy, string path)
+        {
+            var form = _adoptionRegistrationFormRepo.Get().FirstOrDefault(s => s.AdoptionRegistrationFormId.Equals(adoptionRegistrationFormId));
+            var model = new ReturnAdoptionViewModel();
+            var petProfile = _petProfileRepo.UpdatePetProfile(new UpdatePetProfileModel
+            {
+                PetProfileId = form.PetProfileId,
+                PetStatus = PetStatusConst.ADOPTED
+            }, insertedBy);
+            model.Approve = new AdoptionFormModel
+            {
+                AdoptionFormId = form.AdoptionRegistrationFormId,
+                UserId = form.InsertedBy
+            };
+            model.Rejects = _adoptionRegistrationFormRepo.Get()
+                    .Where(s => s.PetProfileId.Equals(form.PetProfileId)
+                    && !s.AdoptionRegistrationFormId.Equals(form.AdoptionRegistrationFormId)
+                    && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.PROCESSING).Select(s => new AdoptionFormModel
+                    {
+                        AdoptionFormId = s.AdoptionRegistrationFormId,
+                        UserId = s.InsertedBy
+                    }).ToList();
+            foreach (var reject in model.Rejects)
+            {
+                _adoptionRegistrationFormRepo.UpdateAdoptionRegistrationFormStatus(new UpdateViewModel
+                {
+                    Id = reject.AdoptionFormId,
+                    Status = AdoptionRegistrationFormStatusConst.REJECTED,
+                    Reason = ErrorConst.CancelReasonAdoptionForm
+                }, insertedBy);
+            }
+            _uow.SaveChanges();
+            return model;
+        }
+        public object GetListAdoptionPetByUserId(Guid userId)
+        {
+            var forms = _adoptionRegistrationFormRepo.Get().Where(s => s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED && s.InsertedBy.Equals(userId) && s.PetProfile.PetStatus == PetStatusConst.ADOPTED);
+            var result = new List<PetAdoptionProfile>();
+            foreach (var form in forms)
+            {
+                var user = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(form.InsertedBy));
+                result.Add(new PetAdoptionProfile
+                {
+                    Owner = new UserModel
+                    {
+                        Dob = user.UserProfile.Dob,
+                        FirstName = user.UserProfile.FirstName,
+                        Gender = user.UserProfile.Gender,
+                        ImageUrl = user.UserProfile.UserImgUrl,
+                        LastName = user.UserProfile.LastName,
+                        Phone = user.UserProfile.Phone,
+                        UserEmail = user.UserEmail,
+                        UserId = user.UserId
+                    },
+                    Address = form.Address,
+                    Email = form.Email,
+                    Job = form.Job,
+                    PetBreedName = form.PetProfile.PetBreed.PetBreedName,
+                    PetFurColorName = form.PetProfile.PetFurColor.PetFurColorName,
+                    PetImgUrl = form.PetProfile.PetImgUrl,
+                    PetName = form.PetProfile.PetName,
+                    Phone = form.Phone,
+                    Username = form.UserName,
+                    Age = form.PetProfile.PetAge,
+                    Gender = form.PetProfile.PetGender,
+                    CenterName = form.PetProfile.Center.CenterName,
+                    CenterAddress = form.PetProfile.Center.Address,
+                    PetProfileId = form.PetProfile.PetProfileId
+                });
+            }
+            return result;
+        }
+        public object GetListAdoptionByCenterId(Guid centerId, int page, int limit)
+        {
+            var pets = _petProfileRepo.Get().Where(s => s.PetStatus == PetStatusConst.ADOPTED && s.CenterId.Equals(centerId));
+
+            var total = 0;
+            if (limit == 0)
+            {
+                limit = 1;
+            }
+            if (limit > -1)
+            {
+                total = pets.Count() / limit;
+            }
+            pets = pets.OrderByDescending(s => s.InsertedBy);
+            if (limit > -1 && page >= 0)
+            {
+                pets = pets.Skip(page * limit).Take(limit);
+            }
+            var listPet = new List<PetAdoptionProfile>();
+            foreach (var pet in pets)
+            {
+                var form = _adoptionRegistrationFormRepo.Get().FirstOrDefault(s => s.PetProfileId.Equals(pet.PetProfileId) && s.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED);
+                var user = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(form.InsertedBy));
+                listPet.Add(new PetAdoptionProfile
+                {
+                    Owner = new UserModel
+                    {
+                        Dob = user.UserProfile.Dob,
+                        FirstName = user.UserProfile.FirstName,
+                        Gender = user.UserProfile.Gender,
+                        ImageUrl = user.UserProfile.UserImgUrl,
+                        LastName = user.UserProfile.LastName,
+                        Phone = user.UserProfile.Phone,
+                        UserEmail = user.UserEmail,
+                        UserId = user.UserId
+                    },
+                    Address = form.Address,
+                    Email = form.Email,
+                    Job = form.Job,
+                    PetBreedName = form.PetProfile.PetBreed.PetBreedName,
+                    PetFurColorName = form.PetProfile.PetFurColor.PetFurColorName,
+                    PetImgUrl = form.PetProfile.PetImgUrl,
+                    PetName = form.PetProfile.PetName,
+                    Phone = form.Phone,
+                    Username = form.UserName,
+                    Age = form.PetProfile.PetAge,
+                    Gender = form.PetProfile.PetGender,
+                    CenterName = form.PetProfile.Center.CenterName,
+                    CenterAddress = form.PetProfile.Center.Address,
+                    PetProfileId = form.PetProfile.PetProfileId
+                });
+            }
+            var result = new Dictionary<string, object>()
+            {
+                ["totalPages"] = total,
+                ["result"] = listPet
+            };
+            return result;
+        }
+        public object GetAdoptionByPetId(Guid petProfileId)
+        {
+            var pet = _petProfileRepo.Get().FirstOrDefault(s => s.PetProfileId.Equals(petProfileId) && s.PetStatus == PetStatusConst.ADOPTED);
+            var result = new PetAdoptionViewModel();
+            if (pet != null)
+            {
+                var petTrackings = _petTrackingRepo.Get().Where(s => s.PetProfile.PetProfileId.Equals(pet.PetProfileId));
+                var list = new List<PetTrackingViewModel>();
+                foreach (var petTracking in petTrackings)
+                {
+                    var trackingUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petTracking.InsertedBy));
+                    list.Add(new PetTrackingViewModel
+                    {
+                        Description = petTracking.Description,
+                        ImageUrl = petTracking.PetTrackingImgUrl,
+                        InsertAt = petTracking.InsertedAt,
+                        IsSterilized = petTracking.IsSterilized,
+                        IsVaccinated = petTracking.IsVaccinated,
+                        PetTrackingId = petTracking.PetTrackingId,
+                        Weight = petTracking.Weight,
+                        Author = trackingUser.UserProfile.LastName + " " + trackingUser.UserProfile.FirstName
+                    });
+                }
+                var form = _adoptionRegistrationFormRepo.Get().FirstOrDefault(f => f.AdoptionRegistrationFormStatus == AdoptionRegistrationFormStatusConst.APPROVED && f.PetProfileId.Equals(pet.PetProfileId));
+                var user = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(form.InsertedBy));
+                result.Owner = new UserModel
+                {
+                    Dob = user.UserProfile.Dob,
+                    FirstName = user.UserProfile.FirstName,
+                    Gender = user.UserProfile.Gender,
+                    ImageUrl = user.UserProfile.UserImgUrl,
+                    LastName = user.UserProfile.LastName,
+                    Phone = user.UserProfile.Phone,
+                    UserEmail = user.UserEmail,
+                    UserId = user.UserId
+                };
+                result.Address = form.Address;
+                result.Email = form.Email;
+                result.Job = form.Job;
+                result.PetBreedName = form.PetProfile.PetBreed.PetBreedName;
+                result.PetColorName = form.PetProfile.PetFurColor.PetFurColorName;
+                result.PetImgUrl = form.PetProfile.PetImgUrl;
+                result.PetName = form.PetProfile.PetName;
+                result.PetTypeName = form.PetProfile.PetBreed.PetType.PetTypeName;
+                result.Phone = form.Phone;
+                result.Username = form.UserName;
+                result.PetTrackings = list;
+            }
+            return result;
+        }
+
+        //public object GetAdoptionByAdoptionId(Guid adoptionId)
+        //{
+        //    var userRepo = _uow.GetService<IUserRepository>();
+        //    var petTrackingRepo = _uow.GetService<IPetTrackingRepository>();
+        //    var adoptionReportTrackingRepo = _uow.GetService<IAdoptionReportTrackingRepository>();
+        //    var adoption = _adoptionRepo.Get().FirstOrDefault(s => s.AdoptionRegistrationId.Equals(adoptionId));
+        //    var result = new AdoptionViewModelWeb();
+        //    if (adoption != null)
+        //    {
+        //        var petTrackings = petTrackingRepo.Get().Where(s => s.PetProfile.PetProfileId.Equals(adoption.AdoptionRegistration.PetProfileId));
+        //        var reports = adoptionReportTrackingRepo.Get().Where(s => s.PetProfileId.Equals(adoption.AdoptionRegistration.PetProfileId));
+        //        var list = new List<PetTrackingViewModel>();
+        //        var listReport = new List<AdoptionReportTrackingViewModel>();
+
+        //        foreach (var petTracking in petTrackings)
+        //        {
+        //            var trackingUser = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(petTracking.InsertedBy));
+        //            list.Add(new PetTrackingViewModel
+        //            {
+        //                Description = petTracking.Description,
+        //                ImageUrl = petTracking.PetTrackingImgUrl,
+        //                InsertAt = petTracking.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+        //                IsSterilized = petTracking.IsSterilized,
+        //                IsVaccinated = petTracking.IsVaccinated,
+        //                PetTrackingId = petTracking.PetTrackingId,
+        //                Weight = petTracking.Weight,
+        //                Author = trackingUser.UserProfile.LastName + " " + trackingUser.UserProfile.FirstName
+        //            });
+        //        }
+        //        foreach (var report in reports)
+        //        {
+        //            var userCreate = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(report.InsertedBy));
+        //            listReport.Add(new AdoptionReportTrackingViewModel
+        //            {
+        //                AdoptionReportTrackingId = report.AdoptionReportTrackingId,
+        //                AdoptionReportTrackingImgUrl = report.AdoptionReportTrackingImgUrl,
+        //                Description = report.Description,
+        //                InsertedAt = report.InsertedAt,
+        //                Author = userCreate.UserProfile.LastName + " " + userCreate.UserProfile.FirstName,
+        //                InsertedBy = report.InsertedBy,
+        //                PetProfileId = report.PetProfileId
+        //            });
+        //        }
+        //        var user = userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoption.AdoptionRegistration.InsertedBy));
+        //        result.AdoptedAt = adoption.InsertedAt.AddHours(ConstHelper.UTC_VIETNAM);
+        //        result.AdoptionRegistrationId = adoption.AdoptionRegistrationId;
+        //        result.AdoptionStatus = adoption.AdoptionStatus;
+        //        result.ReturnedAt = adoption.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM);
+        //        result.Owner = new UserModel
+        //        {
+        //            Dob = user.UserProfile.Dob,
+        //            FirstName = user.UserProfile.FirstName,
+        //            Gender = user.UserProfile.Gender,
+        //            ImageUrl = user.UserProfile.UserImgUrl,
+        //            LastName = user.UserProfile.LastName,
+        //            Phone = user.UserProfile.Phone,
+        //            UserEmail = user.UserEmail,
+        //            UserId = user.UserId
+        //        };
+        //        result.Address = adoption.AdoptionRegistration.Address;
+        //        result.Email = adoption.AdoptionRegistration.Email;
+        //        result.Job = adoption.AdoptionRegistration.Job;
+        //        result.PetBreedName = adoption.AdoptionRegistration.PetProfile.PetBreed.PetBreedName;
+        //        result.PetColorName = adoption.AdoptionRegistration.PetProfile.PetFurColor.PetFurColorName;
+        //        result.PetImgUrl = adoption.AdoptionRegistration.PetProfile.PetImgUrl;
+        //        result.PetName = adoption.AdoptionRegistration.PetProfile.PetName;
+        //        result.PetTypeName = adoption.AdoptionRegistration.PetProfile.PetBreed.PetType.PetTypeName;
+        //        result.Phone = adoption.AdoptionRegistration.Phone;
+        //        result.Username = adoption.AdoptionRegistration.UserName;
+        //        result.PetTrackings = list;
+        //        result.AdoptionReports = listReport;
+        //    }
+        //    return result;
+        //}
     }
 }

@@ -34,6 +34,7 @@ namespace PetRescue.Data.ViewModels
     {
         public Guid PickerFormId { get; set; }
         public Guid FinderFormId { get; set; }
+        public Guid CenterId { get; set; }
     }
 
 }

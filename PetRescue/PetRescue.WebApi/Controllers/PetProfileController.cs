@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PetRescue.Data.ConstantHelper;
@@ -24,9 +25,11 @@ namespace PetRescue.WebApi.Controllers
     public class PetProfileController : BaseController
     {
         private readonly PetProfileDomain _petProfileDomain;
-        public PetProfileController(IUnitOfWork uow, PetProfileDomain petProfileDomain) : base(uow)
+        private readonly IHostingEnvironment _env;
+        public PetProfileController(IUnitOfWork uow, PetProfileDomain petProfileDomain, IHostingEnvironment env) : base(uow)
         {
             this._petProfileDomain = petProfileDomain;
+            this._env = env;
         }
         #region GET
         [HttpGet]
@@ -183,6 +186,53 @@ namespace PetRescue.WebApi.Controllers
                     return Success(result);
                 }
                 return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [Authorize]
+        [HttpGet]
+        [Route("get-adoption-by-userId")]
+        public IActionResult GetAdoptionByUserId()
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _petProfileDomain.GetListAdoptionPetByUserId(Guid.Parse(currentUserId));
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpGet]
+        [Route("get-adoption-by-centerid")]
+        public IActionResult GetAdoptionByCenterId([FromQuery] int page = 0, [FromQuery] int limit = -1)
+        {
+            try
+            {
+                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
+                var result = _petProfileDomain.GetListAdoptionByCenterId(Guid.Parse(currentCenterId), page, limit);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [Authorize]
+        [HttpGet]
+        [Route("api/get-adoption-by-petprofileid")]
+        public IActionResult GetAdoptionByPetProfileId([FromQuery] Guid petProfileId)
+        {
+            try
+            {
+                var result = _petProfileDomain.GetAdoptionByPetId(petProfileId);
+                return Success(result);
             }
             catch (Exception ex)
             {
@@ -391,6 +441,27 @@ namespace PetRescue.WebApi.Controllers
             catch (Exception e)
             {
                 return Error(e.Message);
+            }
+        }
+        [Authorize(Roles = RoleConstant.MANAGER)]
+        [HttpPut]
+        [Route("pick-pet")]
+        public IActionResult PickPet([FromBody] PetAdoptionCreateModel model)
+        {
+            var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+            var path = _env.ContentRootPath;
+            var result =  _petProfileDomain.PickPet(model.AdoptionRegistrationFormId, Guid.Parse(currentUserId), path);
+            try
+            {
+                if (result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
             }
         }
         #endregion

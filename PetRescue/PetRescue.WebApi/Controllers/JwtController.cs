@@ -63,8 +63,7 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                string path = _env.ContentRootPath;
-                var result = await _jwtDomain.LoginByVolunteer(model,path);
+                var result = await _jwtDomain.LoginByVolunteer(model);
                 if(result != null)
                 {
                     return Success(result);
