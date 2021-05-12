@@ -101,7 +101,8 @@ namespace PetRescue.Data.Domains
             {
                 var newUserModel = new UserCreateByAppModel
                 {
-                    Email = email,    
+                    Email = email,
+                    Status = null
                 };
                 user = _userRepo.CreateUser(newUserModel);
                 if(user != null)

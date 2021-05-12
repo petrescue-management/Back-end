@@ -100,6 +100,51 @@ namespace PetRescue.Data.Extensions
             result.Sort();
             return result;
         }
+
+        public List<UserDistanceModel> FindDistanceVoLunteer(string origin, Dictionary<Guid,UserLocation> locations)
+        {
+            var destinationStr = "";
+            var listUserId = new List<Guid>();
+            foreach (KeyValuePair<Guid, UserLocation> location in locations)
+            {
+                var temp = location.Value.Lat + ", " + location.Value.Long;
+                destinationStr += temp + "|";
+                listUserId.Add(location.Key);
+            }
+            if (destinationStr.Length != 0)
+            {
+                destinationStr = destinationStr.Remove(destinationStr.LastIndexOf("|"));
+            }
+            var urlRewriting = GoogleMapConst.URL +
+                "units=" + GoogleMapConst.UNITS +
+                "&origins=" + origin +
+                "&destinations=" + destinationStr +
+                "&key= " + GoogleMapConst.API_KEY;
+            WebRequest request = WebRequest.Create(urlRewriting);
+
+            WebResponse response = request.GetResponse();
+
+            Stream data = response.GetResponseStream();
+
+            StreamReader reader = new StreamReader(data);
+            string responseFromServer = reader.ReadToEnd();
+            MapModel list = JsonConvert.DeserializeObject<MapModel>(responseFromServer);
+            var result = new List<UserDistanceModel>();
+            var listDistance = list.rows[0].elements;
+            for (int index = 0; index < listUserId.Count; index++)
+            {
+                if (listDistance[index].distance != null)
+                {
+                    result.Add(new UserDistanceModel
+                    {
+                        UserId = listUserId[index],
+                        Value = listDistance[index].distance.value
+                    });
+                }
+            }
+            result.Sort();
+            return result;
+        }
     }
     
 }

@@ -31,8 +31,6 @@ namespace PetRescue.Data.ViewModels
     {
         [JsonProperty("userId")]
         public Guid UserId { get; set; }
-        [JsonProperty("centerId")]
-        public Guid CenterId { get; set; }
         [JsonProperty("insertBy")]
         public Guid InsertBy { get; set; }
         [JsonProperty("description")]

@@ -88,7 +88,7 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public async Task<object> UpdateFinderFormStatusAsync(UpdateStatusModel model, Guid updatedBy, string path)
+        public async Task<object> UpdateFinderFormStatusAsync(UpdateStatusFinderFormModel model, Guid updatedBy, string path)
         {
             if (IsTaken(model, updatedBy))
             {
@@ -97,7 +97,11 @@ namespace PetRescue.Data.Domains
                 {
                     IsolationLevel = IsolationLevel.RepeatableRead
                 };
-                var finderForm = _finderFormRepo.UpdateFinderFormStatus(model, updatedBy);
+                var finderForm = _finderFormRepo.UpdateFinderFormStatus(new UpdateStatusModel 
+                {
+                    Id = model.Id,
+                    Status = model.Status
+                }, updatedBy);
                 using (var tran = new TransactionScope(TransactionScopeOption.Required, topt))
                 {
                     
@@ -153,27 +157,27 @@ namespace PetRescue.Data.Domains
                        ApplicationNameHelper.USER_APP);
                     }
                 }
-                //else if (model.Status == FinderFormStatusConst.ARRIVED)
-                //{
-                    
-                //    await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, (Guid)finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
-                //    {
-                //        Notification = new Notification
-                //        {
-                //            Title = NotificationTitleHelper.ARRIVED_RESCUE_PET_TITLE,
-                //            Body = NotificationBodyHelper.ARRIVED_RESCUE_PET_BODY
-                //        }
-                //    });
-                //    await _uow.GetService<NotificationTokenDomain>().NotificationForManager(path, centerId,
-                //    new Message
-                //    {
-                //        Notification = new Notification
-                //        {
-                //            Title = NotificationTitleHelper.VOLUNTEER_ARRVING_TITLE,
-                //            Body = NotificationBodyHelper.VOLUNTEER_ARRVING_BODY
-                //        }
-                //    });
-                //}
+                else if (model.Status == FinderFormStatusConst.ARRIVED)
+                {
+
+                    await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, (Guid)finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
+                    {
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.ARRIVED_RESCUE_PET_TITLE,
+                            Body = NotificationBodyHelper.ARRIVED_RESCUE_PET_BODY
+                        }
+                    });
+                    await _uow.GetService<NotificationTokenDomain>().NotificationForManager(path, (Guid)model.CenterId,
+                    new Message
+                    {
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.VOLUNTEER_ARRVING_TITLE,
+                            Body = NotificationBodyHelper.VOLUNTEER_ARRVING_BODY
+                        }
+                    });
+                }
                 else if (model.Status == FinderFormStatusConst.DONE)
                 {
                     await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, (Guid)finderForm.InsertedBy, ApplicationNameHelper.USER_APP,
@@ -238,11 +242,40 @@ namespace PetRescue.Data.Domains
         public async Task<FinderFormModel> CreateFinderForm(CreateFinderFormModel model, Guid insertedBy, string path)
         {
             DateTime currentTime = DateTime.UtcNow;
-
-
             var finderForm = _finderFormRepo.CreateFinderForm(model, insertedBy);
-            _uow.SaveChanges();
-
+            if(finderForm == null)
+            {
+                return null;
+            }
+            string realPath = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "SystemParameters.json");
+            var fileTxt = File.ReadAllText(realPath);
+            var systemParameter = JObject.Parse(fileTxt);
+            var availableDistance = double.Parse(systemParameter["NearestDistance"].Value<string>());
+            var origin = model.Lat + ", " + model.Lng;
+            var fileExtension = new FileExtension();
+            var googleMapExtensions = new GoogleMapExtensions();
+            var locations = fileExtension.GetAvailableVolunteerLocation();
+            var distances = googleMapExtensions.FindDistanceVoLunteer(origin, locations);
+            if (distances != null)
+            {
+                foreach (var distance in distances)
+                {
+                    if (distance.Value <= availableDistance)
+                    {
+                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, 
+                            distance.UserId,
+                            ApplicationNameHelper.VOLUNTEER_APP,
+                            new Message 
+                            {
+                                Notification = new Notification
+                                {
+                                    Body = NotificationBodyHelper.NEW_RESCUE_FORM_BODY,
+                                    Title = NotificationTitleHelper.NEW_RESCUE_FORM_TITLE
+                                }
+                            });
+                    }
+                }
+            }
             //tạo object lưu xuống json
             var newJson
                 = new NotificationToVolunteers
@@ -273,25 +306,6 @@ namespace PetRescue.Data.Domains
             string output = Newtonsoft.Json.JsonConvert.SerializeObject(objJson, Newtonsoft.Json.Formatting.Indented);
 
             File.WriteAllText(FILEPATH, output);
-            //var centers = _uow.GetService<CenterDomain>().GetListCenterLocation();
-            //var googleMapExtension = new GoogleMapExtensions();
-            //var location = model.Lat + ", " + model.Lng;
-            //var records = googleMapExtension.FindListShortestCenter(location, centers);
-            //var listCenterId = new List<Guid>();
-
-            //if (records.Count != 0)
-            //{
-            //    if (records.Count >= 2)
-            //    {
-            //        listCenterId.Add(records[0].CenterId);
-            //        listCenterId.Add(records[1].CenterId);
-            //    }
-            //    else
-            //    {
-            //        listCenterId.Add(records[0].CenterId);
-            //    }
-            //}
-            //await _uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, listCenterId);
             _uow.SaveChanges();
             return finderForm;
         }
@@ -309,7 +323,7 @@ namespace PetRescue.Data.Domains
         {
             if (_finderFormRepo.GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
             {
-                await UpdateFinderFormStatusAsync(new UpdateStatusModel
+                await UpdateFinderFormStatusAsync(new UpdateStatusFinderFormModel
                 {
                     Id = finderFormId,
                     Status = FinderFormStatusConst.DROPPED
@@ -319,13 +333,19 @@ namespace PetRescue.Data.Domains
         }
 
         #endregion
-        public object GetAllListFinderForm(DistanceModel model)
+        public object GetAllListFinderForm(Guid userId)
         {
-            
             var result = new List<FinderFormDetailModel3>();
             var finderForms = _finderFormRepo.Get().Where(s => s.FinderFormStatus == FinderFormStatusConst.PROCESSING);
             var googleMapExtension = new GoogleMapExtensions();
-            var location = model.Lat + ", " + model.Lng;
+            var fileExtension = new FileExtension();
+            var listLocation = fileExtension.GetAvailableVolunteerLocation();
+            var location = new UserLocation();
+            bool hasValue = listLocation.TryGetValue(userId, out location);
+            if (!hasValue)
+            {
+                return result;
+            }
             var listFinderFormLocation = new List<FinderFormLocationModel>();
             string FILEPATH =Path.Combine(Directory.GetCurrentDirectory(), "JSON", "SystemParameters.json");
             var fileJson = File.ReadAllText(FILEPATH);
@@ -341,7 +361,7 @@ namespace PetRescue.Data.Domains
                     Lng = finderForm.Lng
                 });
             }
-            var records = googleMapExtension.FindDistanceRescueRequest(location, listFinderFormLocation);
+            var records = googleMapExtension.FindDistanceRescueRequest(location.Lat +", " + location.Long, listFinderFormLocation);
             foreach (var record in records)
             {
                 var finderForm = _finderFormRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(record.FinderFormId));
@@ -476,7 +496,7 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public bool IsTaken(UpdateStatusModel model, Guid updatedBy)
+        public bool IsTaken(UpdateStatusFinderFormModel model, Guid updatedBy)
         {
             var finderForm = _finderFormRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(model.Id));
             if (finderForm.UpdatedBy == null)

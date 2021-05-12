@@ -41,13 +41,12 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e);
             }
         }
-        [Authorize(Roles =RoleConstant.MANAGER)]
+        [Authorize(Roles =RoleConstant.ADMIN)]
         [HttpGet("get-list-volunteer-profile-of-center")]
         public IActionResult GetListVolunteerProfileOfCenter()
         {
             try
             {
-                var currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var result = _userDomain.GetListProfileOfVolunter();
                 return Success(result);
             }
@@ -113,20 +112,55 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
+        [Authorize(Roles =(RoleConstant.VOLUNTEER))]
+        [Authorize]
+        [HttpPost("update-location")]
+        public IActionResult UpdateLocationForVolunteer([FromBody] UserLocation model)
+        {
+            try
+            {
+                var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _userDomain.UpdateLocationOfVolunteer(model, Guid.Parse(_currentUserId));
+                if (result)
+                {
+                    return Success(result);
+                }
+                return BadRequest(result);
+            }
+            catch (Exception e)
+            {
+                return Error(e.Message);
+            }
+        }
+        #endregion
+        #region PUT
+        [Authorize(Roles = (RoleConstant.VOLUNTEER))]
+        [HttpPut("change-status-for-volunteer")]
+        public IActionResult ChangeStatusForVolunteer([FromBody] ChangeStatusModel model)
+        {
+            try
+            {
+                
+                var result = _userDomain.ChangeStatusForUser(model);
+                return Success(result);
+            }
+            catch (Exception e)
+            {
+                return Error(e.Message);
+            }
+        }
         #endregion
         #region DELETE
-        [Authorize(Roles = RoleConstant.MANAGER)]
+        [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpDelete("remove-role-volunteer-for-user")]
         public IActionResult RemoveRoleForUser ([FromQuery] RemoveRoleVolunteerModel model)
         {
             try
             {
-                var _currentCenterId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("centerId")).Value;
                 var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var path = _env.ContentRootPath;
                 var result = _userDomain.RemoveVolunteerOfCenter(new RemoveVolunteerRoleModel
                 {
-                    CenterId = Guid.Parse(_currentCenterId),
                     InsertBy = Guid.Parse(_currentUserId),
                     UserId = model.UserId,
                     Description = model.Description

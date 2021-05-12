@@ -9,6 +9,7 @@ using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -341,6 +342,38 @@ namespace PetRescue.Data.Domains
                 return currentUser.UserId;
             }
             return Guid.Empty;
+        }
+        public bool UpdateLocationOfVolunteer(UserLocation model, Guid userId)
+        {
+            FileExtension fileExtension = new FileExtension();
+            var listLocation = fileExtension.GetAvailableVolunteerLocation();
+            listLocation.Add(userId, model);
+            var check = fileExtension.WriteLocationFile(listLocation);
+            return check;
+        }
+        public bool ChangeStatusForUser(ChangeStatusModel model) 
+        {
+            var user = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(model.UserId));
+            user = _userRepo.UpdateUserStatus(user, model.Status);
+            FileExtension fileExtension = new FileExtension();
+            bool check = false;
+            var listLocation = fileExtension.GetAvailableVolunteerLocation();
+            if (model.Status == UserStatus.ONLINE)
+            {
+                check = true;
+            }else if(model.Status == UserStatus.OFFLINE)
+            {
+                listLocation.Remove(user.UserId);
+                fileExtension.WriteLocationFile(listLocation);
+                check = true;
+            }else if(model.Status == UserStatus.BUSY)
+            {
+                listLocation.Remove(user.UserId);
+                fileExtension.WriteLocationFile(listLocation);
+                check = true;
+            }
+            if (check) _uow.SaveChanges();
+            return check;
         }
     }
 }

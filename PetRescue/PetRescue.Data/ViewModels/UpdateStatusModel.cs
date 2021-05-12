@@ -32,4 +32,11 @@ namespace PetRescue.Data.ViewModels
         public bool IsImage { get; set; }
         public string AnotherReason { get; set; }
     }
+    public class UpdateStatusFinderFormModel
+    {
+        [Required]
+        public Guid Id { get; set; }
+        public byte Status { get; set; }
+        public Guid? CenterId { get; set; }
+    }
 }

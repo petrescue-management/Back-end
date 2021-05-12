@@ -63,9 +63,10 @@ namespace PetRescue.WebApi.Controllers
         #endregion
 
         #region UPDATE STATUS
+        [Authorize]
         [HttpPost]
         [Route("update-finder-form-status")]
-        public async Task<IActionResult> UpdateFinderFormStatus(UpdateStatusModel model)
+        public async Task<IActionResult> UpdateFinderFormStatus(UpdateStatusFinderFormModel model)
         {
             try
             {
@@ -96,7 +97,11 @@ namespace PetRescue.WebApi.Controllers
                 string path = _env.ContentRootPath;
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = await _finderFormDomain.CreateFinderForm(model, Guid.Parse(currentUserId), path);
-                return Success(result);
+                if(result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest();
             }
             catch (Exception ex)
             {
@@ -125,14 +130,15 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
-        //[Authorize(Roles = RoleConstant.VOLUNTEER)]
-        [HttpPost]
+        [Authorize(Roles = RoleConstant.VOLUNTEER)]
+        [HttpGet]
         [Route("get-list-finder-form")]
-        public IActionResult GetListFinderForm([FromBody] DistanceModel model)
+        public IActionResult GetListFinderForm()
         {
             try
             {
-                var result = _finderFormDomain.GetAllListFinderForm(model);
+                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _finderFormDomain.GetAllListFinderForm(Guid.Parse(currentUserId));
                 return Success(result);
             }
             catch (Exception ex)

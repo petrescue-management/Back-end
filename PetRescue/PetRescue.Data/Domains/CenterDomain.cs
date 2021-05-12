@@ -17,14 +17,17 @@ namespace PetRescue.Data.Domains
         private readonly ICenterRepository _centerRepo;
         private readonly IRescueDocumentRepository _rescueDocumentRepo;
         private readonly IPetProfileRepository _petProfileRepo;
+        private readonly IFinderFormRepository _finderFormRepo;
         public CenterDomain(IUnitOfWork uow, 
             ICenterRepository centerRepo, 
             IRescueDocumentRepository rescueDocumentRepo, 
-            IPetProfileRepository petProfileRepo) : base(uow)
+            IPetProfileRepository petProfileRepo,
+            IFinderFormRepository finderFormRepo) : base(uow)
         {
             this._centerRepo = centerRepo;            
             this._rescueDocumentRepo = rescueDocumentRepo;
             this._petProfileRepo = petProfileRepo;
+            this._finderFormRepo = finderFormRepo;
         }
 
         #region SEARCH
@@ -165,11 +168,12 @@ namespace PetRescue.Data.Domains
             }
             return false;
         }
-        public object GetListCenterDistance(DistanceModel model)
+        public object GetListCenterDistance(Guid finderFormId)
         {
-            var centers = _uow.GetService<CenterDomain>().GetListCenterLocation();
+            var finderForm = _finderFormRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(finderFormId));
+            var centers = GetListCenterLocation();
             var googleMapExtension = new GoogleMapExtensions();
-            var location = model.Lat + ", " + model.Lng;
+            var location = finderForm.Lat + ", " + finderForm.Lng;
             var records = googleMapExtension.FindListShortestCenter(location, centers);
             var result = new List<CenterLocationViewModel>();
             if(records.Count != 0)

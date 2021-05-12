@@ -158,6 +158,35 @@ namespace PetRescue.Data.ViewModels
         public byte Gender { get; set; }
         public string Phone { get; set; }
     }
+    public class ChangeStatusModel
+    {
+        public Guid UserId { get; set; }
+        public int? Status { get; set; }
+    }
+    public class UserLocation 
+    {
+        public double? Lat { get; set; }
+        public double? Long { get; set; }
+    }
+    public class UserLocationModel
+    {
+        public Guid UserId { get; set; }
+        public double? Lat { get; set; }
+        public double? Long { get; set; }
+    }
+    public class UserDistanceModel : IComparable<UserDistanceModel>
+    {
+        public double Value { get; set; }
+        public Guid UserId { get; set; }
+        public int CompareTo(UserDistanceModel model)
+        {
+            if (model == null) return 1;
+            else
+            {
+                return this.Value.CompareTo(model.Value);
+            }
+        }
+    }
 
-   
+
 }
