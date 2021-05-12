@@ -431,6 +431,7 @@ namespace PetRescue.Data.Domains
             var result = new RescueDocumentViewModel();
             var petProfile = _petProfileRepo.Get().FirstOrDefault(s => s.PetProfileId.Equals(petProfileId));
             var rescueDocument = _rescueDocumentRepo.Get().FirstOrDefault(s => s.RescueDocumentId.Equals(petProfile.RescueDocumentId));
+            var listAdoptionReport = new List<AdoptionReportTrackingViewModel>();
             if (rescueDocument != null)
             {
                 var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(rescueDocument.PickerForm.InsertedBy));
@@ -453,8 +454,7 @@ namespace PetRescue.Data.Domains
                     Lat = rescueDocument.FinderForm.Lat,
                     Lng = rescueDocument.FinderForm.Lng,
                     FinderFormVidUrl = rescueDocument.FinderForm.FinderFormVidUrl
-                };
-                         
+                };   
                 var tracks = petProfile.PetTracking.ToList();
                 var list = new List<PetTrackingViewModel>();
                 foreach (var track in tracks)
@@ -497,6 +497,24 @@ namespace PetRescue.Data.Domains
                     }
                 };
                 result.ListTracking = list;
+                if(petProfile.AdoptionReportTracking != null)
+                {
+                    foreach (var adoptionReport in petProfile.AdoptionReportTracking)
+                    {
+                        currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoptionReport.InsertedBy));
+                        listAdoptionReport.Add(new AdoptionReportTrackingViewModel
+                        {
+                            AdoptionReportTrackingId = adoptionReport.AdoptionReportTrackingId,
+                            AdoptionReportTrackingImgUrl = adoptionReport.AdoptionReportTrackingImgUrl,
+                            Description = adoptionReport.Description,
+                            InsertedAt = adoptionReport.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                            InsertedBy = adoptionReport.InsertedBy,
+                            PetProfileId = adoptionReport.PetProfileId,
+                            Author = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName
+                        });
+                    }
+                }
+                result.ListAdoptionReport = listAdoptionReport;
             }
             else
             {
@@ -570,6 +588,24 @@ namespace PetRescue.Data.Domains
                     };
                     result.AdoptionRegistrationForm = adoption;
                 }
+                if (petProfile.AdoptionReportTracking != null)
+                {
+                    foreach (var adoptionReport in petProfile.AdoptionReportTracking)
+                    {
+                        var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(adoptionReport.InsertedBy));
+                        listAdoptionReport.Add(new AdoptionReportTrackingViewModel
+                        {
+                            AdoptionReportTrackingId = adoptionReport.AdoptionReportTrackingId,
+                            AdoptionReportTrackingImgUrl = adoptionReport.AdoptionReportTrackingImgUrl,
+                            Description = adoptionReport.Description,
+                            InsertedAt = adoptionReport.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                            InsertedBy = adoptionReport.InsertedBy,
+                            PetProfileId = adoptionReport.PetProfileId,
+                            Author = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName
+                        });
+                    }
+                }
+                result.ListAdoptionReport = listAdoptionReport;
             }
             return result;
         }

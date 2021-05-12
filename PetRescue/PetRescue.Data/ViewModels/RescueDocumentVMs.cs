@@ -14,6 +14,7 @@ namespace PetRescue.Data.ViewModels
         public int? PetAttribute { get; set; }
         public PetProfileModel PetProfile { get; set; }
         public List<PetTrackingViewModel> ListTracking { get; set; }
+        public List<AdoptionReportTrackingViewModel> ListAdoptionReport { get; set; }
     }
     public class RescueDocumentModel
     {
