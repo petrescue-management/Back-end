@@ -44,13 +44,15 @@ namespace PetRescue.WebApi.Controllers
         [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpPost]
         [Route("configure-systems-parameters")]
-        public IActionResult ConfigTimeToNotification([FromQuery] int reNotiTime, int destroyNotiTime, int remindTime, int imgFinder, int imgPicker, double nearestDistance)
+        public IActionResult ConfigTimeToNotification([FromQuery] int reNotiTimeForOnline, int reNotiTimeForAll, int notiTimeForDestroy,
+            int remindTime, int imgFinder, int imgPicker, double nearestDistance)
         {
             try
             {
-                var result = _configDomain.ConfigTimeToNotification(reNotiTime, destroyNotiTime, remindTime, imgFinder, imgPicker, nearestDistance);
+                var result = _configDomain.ConfigTimeToNotification(reNotiTimeForOnline, reNotiTimeForAll, notiTimeForDestroy, remindTime, imgFinder, imgPicker, nearestDistance);
                 if (result == false)
-                    return BadRequest("Time for Destroy Notification must be larger than Time for Re-Notification !");
+                    return BadRequest("Time for Destroy Notification must be larger than Time for Re-Notification All" +
+                        "and Time for Re-notification All must be larger than Time for Re-notification Online!");
                 return Success(result);
             }
             catch (Exception ex)

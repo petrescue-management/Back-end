@@ -34,8 +34,9 @@ namespace PetRescue.Data.Domains
                 var time = JObject.Parse(fileJson);
           
                 return new {
-                    reNotiTimeForRescue = int.Parse(time["ReNotiTimeForRescue"].Value<string>()),
-                    destroyNotiTimeForRescue = int.Parse(time["DestroyNotiTimeForRescue"].Value<string>()),
+                    reNotiTimeForOnlineRescue = int.Parse(time["ReNotiTimeForOnlineRescue"].Value<string>()),
+                    reNotiTimeForAllRescue = int.Parse(time["ReNotiTimeForAllRescue"].Value<string>()),
+                    notiTimeForDestroyRescue = int.Parse(time["NotiTimeForDestroyRescue"].Value<string>()),
                     remindTimeAfterAdopt = int.Parse(time["RemindTimeAfterAdopt"].Value<string>()),
                     imageForFinder = int.Parse(time["ImageForFinder"].Value<string>()),
                     imageForPicker = int.Parse(time["ImageForPicker"].Value<string>()),
@@ -45,17 +46,21 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region CONFIG TIME TO NOTIFICATION
-        public bool ConfigTimeToNotification(int reNotiTime, int destroyNotiTime, int remindTime, int imgFinder, int imgPicker, double nearestDistance)
+        public bool ConfigTimeToNotification(int reNotiTimeForOnline, int reNotiTimeForAll, int notiTimeForDestroy, 
+            int remindTime, int imgFinder, int imgPicker, double nearestDistance)
         {
-            if (reNotiTime < destroyNotiTime)
+            if (reNotiTimeForOnline < reNotiTimeForAll 
+                && reNotiTimeForAll < notiTimeForDestroy 
+                && reNotiTimeForOnline < notiTimeForDestroy)
             {
                 string FILEPATH =
                     Path.Combine(Directory.GetCurrentDirectory(), "JSON", "SystemParameters.json");
 
 
                 string newJson = "{" +
-                  "'ReNotiTimeForRescue': '" + reNotiTime + "'," +
-                  "'DestroyNotiTimeForRescue': '" + destroyNotiTime + "'," +
+                  "'ReNotiTimeForOnlineRescue': '" + reNotiTimeForOnline + "'," +
+                  "'ReNotiTimeForAllRescue': '" + reNotiTimeForAll + "'," +
+                  "'NotiTimeForDestroyRescue': '" + notiTimeForDestroy + "'," +
                   "'RemindTimeAfterAdopt': '" + remindTime + "'," +
                   "'NearestDistance': '" + nearestDistance + "'," +
                   "'ImageForFinder': '" + imgFinder + "'," +

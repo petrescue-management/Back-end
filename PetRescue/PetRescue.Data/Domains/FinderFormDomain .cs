@@ -310,12 +310,21 @@ namespace PetRescue.Data.Domains
             return finderForm;
         }
 
-        public async void ReNotification(Guid finderFormId, string path)
+        public async void ReNotificationForOnline(Guid finderFormId, string path)
         {
             if (_finderFormRepo.GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
             {
                 var records = _uow.GetService<CenterDomain>().GetListCenter().Select(c => c.CenterId.ToString()).ToList();
                 await _uow.GetService<NotificationTokenDomain>().NotificationForOnlineVolunteers(path);
+            }
+        }
+
+        public async void ReNotificationForAll(Guid finderFormId, string path)
+        {
+            if (_finderFormRepo.GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
+            {
+                var records = _uow.GetService<CenterDomain>().GetListCenter().Select(c => c.CenterId.ToString()).ToList();
+                await _uow.GetService<NotificationTokenDomain>().NotificationForAllVolunteers(path);
             }
         }
 
