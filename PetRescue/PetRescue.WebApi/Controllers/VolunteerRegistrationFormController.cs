@@ -39,6 +39,21 @@ namespace PetRescue.Data.ViewModels
                 return Error(ex.Message);
             }
         }
+        [Authorize(Roles = RoleConstant.ADMIN)]
+        [HttpGet]
+        [Route("get-volunteer-registration-form-by-id")]
+        public IActionResult GetListVolunteerRegistrationForm([FromQuery] Guid volunteerFormId)
+        {
+            try
+            {
+                var result = _volunteerRegistrationFormDomain.GetVolunteerFormById(volunteerFormId);
+                return Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
         [HttpPost]
         [Route("create-volunteer-registration-form")]
         public async Task<IActionResult> CreateVolunteerRegistrationForm([FromBody]VolunteerRegistrationFormCreateModel model)
@@ -59,7 +74,7 @@ namespace PetRescue.Data.ViewModels
                 return Error(ex.Message);
             }
         }
-        [Authorize(Roles = RoleConstant.MANAGER)]
+        [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpPut]
         [Route("progressing-volunteer-registration-form")]
         public IActionResult ProgressingVolunteerRegistrationForm([FromBody] VolunteerRegistrationFormUpdateModel model)
@@ -68,7 +83,6 @@ namespace PetRescue.Data.ViewModels
             {
                 var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
                 var result = _volunteerRegistrationFormDomain.Edit(model, Guid.Parse(currentUserId));
-
                 if (result.Contains("This"))
                 {
                     return BadRequest(result);
@@ -83,6 +97,7 @@ namespace PetRescue.Data.ViewModels
                 return Error(ex.Message);
             }
         }
+
 
     }
 }

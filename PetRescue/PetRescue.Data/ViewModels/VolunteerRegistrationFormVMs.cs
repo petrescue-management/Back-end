@@ -40,6 +40,5 @@ namespace PetRescue.Data.ViewModels
         public Guid? FormId { get; set; }
         public DateTime? InsertAt { get; set; }
         public string ImageUrl { get; set; }
-        public Guid VolunteerRegistrationFormId { get; set; }
     }
 }

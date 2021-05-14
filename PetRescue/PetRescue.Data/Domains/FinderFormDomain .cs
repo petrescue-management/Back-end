@@ -255,24 +255,27 @@ namespace PetRescue.Data.Domains
             var fileExtension = new FileExtension();
             var googleMapExtensions = new GoogleMapExtensions();
             var locations = fileExtension.GetAvailableVolunteerLocation();
-            var distances = googleMapExtensions.FindDistanceVoLunteer(origin, locations);
-            if (distances != null)
+            if(locations != null)
             {
-                foreach (var distance in distances)
+                var distances = googleMapExtensions.FindDistanceVoLunteer(origin, locations);
+                if (distances != null)
                 {
-                    if (distance.Value <= availableDistance)
+                    foreach (var distance in distances)
                     {
-                        await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, 
-                            distance.UserId,
-                            ApplicationNameHelper.VOLUNTEER_APP,
-                            new Message 
-                            {
-                                Notification = new Notification
+                        if (distance.Value <= availableDistance)
+                        {
+                            await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path,
+                                distance.UserId,
+                                ApplicationNameHelper.VOLUNTEER_APP,
+                                new Message
                                 {
-                                    Body = NotificationBodyHelper.NEW_RESCUE_NEAREST_FORM_BODY,
-                                    Title = NotificationTitleHelper.NEW_RESCUE_NEAREST_FORM_TITLE
-                                }
-                            });
+                                    Notification = new Notification
+                                    {
+                                        Body = NotificationBodyHelper.NEW_RESCUE_NEAREST_FORM_BODY,
+                                        Title = NotificationTitleHelper.NEW_RESCUE_NEAREST_FORM_TITLE
+                                    }
+                                });
+                        }
                     }
                 }
             }

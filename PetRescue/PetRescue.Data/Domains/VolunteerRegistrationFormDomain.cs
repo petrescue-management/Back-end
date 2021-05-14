@@ -109,7 +109,7 @@ namespace PetRescue.Data.Domains
                         FirstName = formData.FirstName,
                         LastName = formData.LastName,
                     };
-                    //MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationVolunteer(volunteerFormModel, centerModel), MailConstant.APPROVE_REGISTRATION_VOLUNTEER);
+                    MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationVolunteer(volunteerFormModel), MailConstant.APPROVE_REGISTRATION_VOLUNTEER);
                     //MailExtensions.SendBySendGrid(mailArguments, null, null);
                     _uow.SaveChanges();
                 }
@@ -158,7 +158,6 @@ namespace PetRescue.Data.Domains
                     FormId = form.VolunteerRegistrationFormId,
                     InsertAt =form.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
                     ImageUrl = form.VolunteerRegistrationFormImgUrl,
-                    VolunteerRegistrationFormId = form.VolunteerRegistrationFormId
                 });
             }
             return result;
@@ -172,6 +171,29 @@ namespace PetRescue.Data.Domains
                 return true;
             }
             return false;
+        }
+
+        public VolunteerRegistrationFormViewModel GetVolunteerFormById(Guid id)
+        {
+            var form = _volunteerRegistrationFormRepo.Get().FirstOrDefault(s => s.VolunteerRegistrationFormId.Equals(id));
+            var result = new VolunteerRegistrationFormViewModel();
+            if(form != null)
+            {
+                return new VolunteerRegistrationFormViewModel
+                {
+                    Dob = form.Dob,
+                    Email = form.Email,
+                    FirstName = form.FirstName,
+                    LastName = form.LastName,
+                    Phone = form.Phone,
+                    FormId = form.VolunteerRegistrationFormId,
+                    Gender = form.Gender,
+                    ImageUrl = form.VolunteerRegistrationFormImgUrl,
+                    InsertAt = form.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                    Status = form.VolunteerRegistrationFormStatus
+                };
+            }
+            return result;
         }
     }
 }

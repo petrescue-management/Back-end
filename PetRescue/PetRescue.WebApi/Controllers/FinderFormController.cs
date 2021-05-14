@@ -130,7 +130,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
-        [Authorize(Roles = RoleConstant.VOLUNTEER)]
+        [Authorize]
         [HttpGet]
         [Route("get-list-finder-form")]
         public IActionResult GetListFinderForm()

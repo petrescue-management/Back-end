@@ -75,7 +75,7 @@ namespace PetRescue.Data.ConstantHelper
                 MAIL +
                 " </sub></p></body></html>";
         }
-        public static string ApproveRegistrationVolunteer(VolunteerRegistrationFormViewModel volunteerModel, CenterViewModel model)
+        public static string ApproveRegistrationVolunteer(VolunteerRegistrationFormViewModel volunteerModel)
         {
             return "<!DOCTYPE html><html><head><title></title></head>" +
                 "<body data-new-gr-c-s-loaded='14.1002.0' spellcheck='false'><p style = 'text-align: left;'><strong><span style ='font-size: 22px;'> " +
@@ -84,8 +84,8 @@ namespace PetRescue.Data.ConstantHelper
                 volunteerModel.LastName + " " + volunteerModel.FirstName +
                 " </p><p> Chúng tôi đến từ hệ thống cứu hộ <strong> " +
                 ORG_NAME +
-                "</strong></p><p> Chúc mừng bạn, bạn đã trở thành một tình nguyện viên của <strong>" +
-                model.CenterName +
+                "</strong></p><p> Chúc mừng bạn, bạn đã trở thành một tình nguyện viên của hệ thống<strong>" +
+                
                 "</strong></p><p> Bạn sẽ phải cần đăng nhập tại ứng dụng<span style= 'color: rgb(44, 130, 201);'> " +
                 APP_VOLUNTEER_NAME +
                 "</span></p><p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi </p>" +
@@ -94,13 +94,13 @@ namespace PetRescue.Data.ConstantHelper
                 "<p style  = 'line-height: 1;'><span style = 'font-size: 14px;'>" +
                 " Mọi thông tin chi tiết xin liên hệ :</span></p>" +
                 "<p><span style = 'font-size: 14px;'> " +
-                model.CenterName +
+                //model.CenterName +
                 "</span></p><p><span style = 'font-size: 14px;'> SDT: " +
-                model.Phone +
+                //model.Phone +
                 " </span></p><p><span style = 'font-size: 14px;'> Địa chỉ: " +
-                model.Address +
+                //model.Address +
                  " </span></p><p><span style = 'font-size: 14px;'> Email: " +
-                model.Email +
+                //model.Email +
                 "</span></p><p> --------------------------------------------------</p><p>" +
                 "<p><sub>Hệ Thống Cứu Hộ " +
                 ORG_NAME +
