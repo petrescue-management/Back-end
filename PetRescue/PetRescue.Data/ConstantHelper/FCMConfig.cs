@@ -38,6 +38,7 @@ namespace PetRescue.Data.ConstantHelper
         public const string RETURNED_ADOPTION_TITLE = "Bạn có một thông báo về thú cưng";
         public const string VOLUNTEER_ARRVING_TITLE = "Bạn có một thông báo về tình nguyện viên";
         public const string VOLUNTEER_REJECT_FINDER_FORM_TITLE = "Bạn có một thông báo về yêu cầu cứu hộ";
+        public const string NEW_RESCUE_NEAREST_FORM_TITLE = "Bạn có một yêu cầu cứu hộ";
     }
     public class NotificationBodyHelper
     {
@@ -58,5 +59,6 @@ namespace PetRescue.Data.ConstantHelper
         public const string RETURNED_ADOPTION_BODY = "Thú cưng của bạn được yêu cầu trả lại";
         public const string VOLUNTEER_ARRVING_BODY = "Tình nguyện viên của trung tâm bạn đã đến nơi cứu hộ";
         public const string VOLUNTEER_REJECT_FINDER_FORM_BODY = "Tình nguyện viên đã hủy yêu cầu của bạn";
+        public const string NEW_RESCUE_NEAREST_FORM_BODY = "Có một yêu cầu cứu hộ đang ở gần vị trí của bạn";
     }
 }

@@ -88,7 +88,7 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public async Task<object> UpdateFinderFormStatusAsync(UpdateStatusFinderFormModel model, Guid updatedBy, string path)
+        public async Task<FinderFormModel> UpdateFinderFormStatusAsync(UpdateStatusFinderFormModel model, Guid updatedBy, string path)
         {
             if (IsTaken(model, updatedBy))
             {
@@ -269,8 +269,8 @@ namespace PetRescue.Data.Domains
                             {
                                 Notification = new Notification
                                 {
-                                    Body = NotificationBodyHelper.NEW_RESCUE_FORM_BODY,
-                                    Title = NotificationTitleHelper.NEW_RESCUE_FORM_TITLE
+                                    Body = NotificationBodyHelper.NEW_RESCUE_NEAREST_FORM_BODY,
+                                    Title = NotificationTitleHelper.NEW_RESCUE_NEAREST_FORM_TITLE
                                 }
                             });
                     }
@@ -315,7 +315,7 @@ namespace PetRescue.Data.Domains
             if (_finderFormRepo.GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
             {
                 var records = _uow.GetService<CenterDomain>().GetListCenter().Select(c => c.CenterId.ToString()).ToList();
-                await _uow.GetService<NotificationTokenDomain>().NotificationForListVolunteerOfCenter(path, records);
+                await _uow.GetService<NotificationTokenDomain>().NotificationForOnlineVolunteers(path);
             }
         }
 
@@ -323,11 +323,12 @@ namespace PetRescue.Data.Domains
         {
             if (_finderFormRepo.GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
             {
-                await UpdateFinderFormStatusAsync(new UpdateStatusFinderFormModel
+                var form = await UpdateFinderFormStatusAsync(new UpdateStatusFinderFormModel
                 {
                     Id = finderFormId,
                     Status = FinderFormStatusConst.DROPPED
                 }, Guid.Empty, path);
+                await _uow.GetService<NotificationTokenDomain>().NotificationForUserWhenFinderFormDelete(path, (Guid)form.InsertedBy, ApplicationNameHelper.USER_APP);
                 _uow.SaveChanges();
             }
         }

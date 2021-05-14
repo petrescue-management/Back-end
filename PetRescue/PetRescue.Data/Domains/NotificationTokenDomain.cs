@@ -93,8 +93,6 @@ namespace PetRescue.Data.Domains
             {
                 return false;
             }
-            
-            
         }
         public async Task<bool> NotificationForManagerWhenHaveNewAdoptionRegisterForm(string path, Guid centerId)
         {
@@ -123,7 +121,6 @@ namespace PetRescue.Data.Domains
             {
                 return false;
             }
-            
         }
         public async Task<bool> NotificationForUserWhenAdoptionFormToBeApprove(string path, Guid insertBy)
         {
@@ -183,13 +180,15 @@ namespace PetRescue.Data.Domains
                 return false;
             }
         }
-        public async Task<bool> NotificationForListVolunteerOfCenter(string path, List<string> topics)
+        public async Task<bool> NotificationForOnlineVolunteers(string path)
         {
             try
             {
                 var firebaseExtensions = new FireBaseExtentions();
+                var fileExtensions = new FileExtension();
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
+                var volunteers = fileExtensions.GetAvailableVolunteerLocation();
                 Message message = new Message()
                 {
                     Notification = new Notification
@@ -198,10 +197,15 @@ namespace PetRescue.Data.Domains
                         Body = NotificationBodyHelper.NEW_RESCUE_FORM_BODY,
                     },
                 };
-                foreach (var topic in topics)
+                
+                foreach (KeyValuePair<Guid, UserLocation> volunteer in volunteers)
                 {
-                    message.Topic = topic;
-                    await fcm.SendAsync(message);
+                    var token = FindByApplicationNameAndUserId(ApplicationNameHelper.VOLUNTEER_APP, volunteer.Key);
+                    if(token != null)
+                    {
+                        message.Token = token.DeviceToken;
+                        await fcm.SendAsync(message);
+                    }
                 }
                 app.Delete();
                 return true;
