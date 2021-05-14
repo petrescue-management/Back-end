@@ -354,6 +354,10 @@ namespace PetRescue.Data.Domains
             var fileExtension = new FileExtension();
             var listLocation = fileExtension.GetAvailableVolunteerLocation();
             var location = new UserLocation();
+            if(listLocation == null)
+            {
+                return result;
+            }
             bool hasValue = listLocation.TryGetValue(userId, out location);
             if (!hasValue)
             {
