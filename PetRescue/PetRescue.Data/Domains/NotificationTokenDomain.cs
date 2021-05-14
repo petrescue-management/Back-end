@@ -215,6 +215,45 @@ namespace PetRescue.Data.Domains
                 return false;
             }
         }
+        public async Task<bool> NotificationForAllVolunteers(string path)
+        {
+            var volunteers = _userRoleRepo.Get().Where(s => s.Role.RoleName.Equals(RoleConstant.VOLUNTEER) && (bool)s.IsActived);
+            if(volunteers != null)
+            {
+                try
+                {
+                    var firebaseExtensions = new FireBaseExtentions();
+                    var fileExtensions = new FileExtension();
+                    var app = firebaseExtensions.GetFirebaseApp(path);
+                    var fcm = FirebaseMessaging.GetMessaging(app);
+                    Message message = new Message()
+                    {
+                        Notification = new Notification
+                        {
+                            Title = NotificationTitleHelper.NEW_RESCUE_FORM_TITLE,
+                            Body = NotificationBodyHelper.NEW_RESCUE_FORM_BODY,
+                        },
+                    };
+
+                    foreach (var volunteer in volunteers)
+                    {
+                        var token = FindByApplicationNameAndUserId(ApplicationNameHelper.VOLUNTEER_APP, volunteer.UserId);
+                        if (token != null)
+                        {
+                            message.Token = token.DeviceToken;
+                            await fcm.SendAsync(message);
+                        }
+                    }
+                    app.Delete();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
         public async Task<bool> NofiticationForDeviceToken(string path, List<string> deviceTokens, Message message)
         {
             try
@@ -331,7 +370,6 @@ namespace PetRescue.Data.Domains
             {
                 return false;
             }
-            
         }
         public async Task<bool> NotificationForUserWhenFinderFormDelete(string path, Guid userId, string applicationName)
         {
