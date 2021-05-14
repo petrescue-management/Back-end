@@ -1,6 +1,7 @@
 {
-  "ReNotiTimeForRescue": "5",
-  "DestroyNotiTimeForRescue": "6",
+  "ReNotiTimeForOnlineRescue": "4",
+  "ReNotiTimeForAllRescue": "5",
+  "NotiTimeForDestroyRescue": "6",
   "RemindTimeAfterAdopt": "3",
   "ImageForFinder": "3",
   "ImageForPicker": "3",

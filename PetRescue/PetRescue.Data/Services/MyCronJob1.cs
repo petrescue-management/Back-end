@@ -66,14 +66,21 @@ namespace PetRescue.Data.Services
                     var objJsonConfigTime = JObject.Parse(fileJsonConfigTime);
 
                     foreach (var noti in notiArrary.Children().ToList()) {
-                        if (noti["InsertedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["ReNotiTimeForRescue"].Value<string>())).Minute
+                        if (noti["InsertedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["ReNotiTimeForOnlineRescue"].Value<string>())).Minute
                             == DateTime.UtcNow.Minute)
                         {
-                            _domain.ReNotification(Guid.Parse(noti["FinderFormId"].Value<string>()), noti["Path"].Value<string>());
-                            /*_logger.LogInformation("noti lại nè heeee !!!!");*/
+                            _domain.ReNotificationForOnline(Guid.Parse(noti["FinderFormId"].Value<string>()), noti["Path"].Value<string>());
+                            /*_logger.LogInformation("noti onl nè heeee !!!!");*/
                         }
 
-                        if (noti["InsertedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["DestroyNotiTimeForRescue"].Value<string>())).Minute
+                        if (noti["InsertedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["ReNotiTimeForAllRescue"].Value<string>())).Minute
+                            == DateTime.UtcNow.Minute)
+                        {
+                            _domain.ReNotificationForAll(Guid.Parse(noti["FinderFormId"].Value<string>()), noti["Path"].Value<string>());
+                            /*_logger.LogInformation("noti all nè heeee !!!!");*/
+                        }
+
+                        if (noti["InsertedAt"].Value<DateTime>().AddMinutes(int.Parse(objJsonConfigTime["NotiTimeForDestroyRescue"].Value<string>())).Minute
                             == DateTime.UtcNow.Minute)
                         {
                             if (_domain.GetFinderFormById(Guid.Parse(noti["FinderFormId"].Value<string>())).FinderFormStatus == FinderFormStatusConst.PROCESSING)
