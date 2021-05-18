@@ -13,7 +13,7 @@ namespace PetRescue.Data.Extensions
             var mailArguments = new MailArguments
             {
                 MailFrom = MailConstant.MAIL,
-                Password = MailConstant.PASSWORD,
+                Password = MailConstant.PASSWORD1 + MailConstant.PASSWORD2 + MailConstant.PASSWORD3,
                 MailTo = mailTo,
                 Subject = subject,
                 Port = MailConstant.PORT,

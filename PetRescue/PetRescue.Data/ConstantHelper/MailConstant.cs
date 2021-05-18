@@ -8,8 +8,9 @@ namespace PetRescue.Data.ConstantHelper
     public class MailConstant
     {
         public const string MAIL = "petrescue2021@gmail.com";
-        //public const string PASSWORD = "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";
-        public const string PASSWORD = "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";
+        public const string PASSWORD1 = "SG.";
+        public const string PASSWORD2 = "973ytHTvRKKEM1SnTFitvw";
+        public const string PASSWORD3 = ".P2a2PHuZ8WWNWn5fdAHuGzWMfo9NoQpzy3gPzc3PW3w";
         public const int PORT = 587;
         public const string HOST = "smtp.sendgrid.net";
         public const string NAME = "PetResuce";
@@ -90,18 +91,6 @@ namespace PetRescue.Data.ConstantHelper
                 APP_VOLUNTEER_NAME +
                 "</span></p><p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi </p>" +
                 "<p> Thân ái </p>" +
-                "<p> --------------------------------------------------</p>" +
-                "<p style  = 'line-height: 1;'><span style = 'font-size: 14px;'>" +
-                " Mọi thông tin chi tiết xin liên hệ :</span></p>" +
-                "<p><span style = 'font-size: 14px;'> " +
-                //model.CenterName +
-                "</span></p><p><span style = 'font-size: 14px;'> SDT: " +
-                //model.Phone +
-                " </span></p><p><span style = 'font-size: 14px;'> Địa chỉ: " +
-                //model.Address +
-                 " </span></p><p><span style = 'font-size: 14px;'> Email: " +
-                //model.Email +
-                "</span></p><p> --------------------------------------------------</p><p>" +
                 "<p><sub>Hệ Thống Cứu Hộ " +
                 ORG_NAME +
                 "</sub></p><p><sub> Góp ý cho hệ thống qua mail: " +
@@ -119,20 +108,9 @@ namespace PetRescue.Data.ConstantHelper
                 model.CenterName +
                 "</strong>. Nhưng chúng tối rất tiếc phải thông báo rằng, <strong>" +
                 model.CenterName +
-                "</strong> đã từ chối đơn đăng ký của bạn với lý do như sau:</p><ul>" +
+                "</strong> chúng tôi đã phải từ chối đơn đăng ký của bạn với lý do như sau:</p><ul>" +
                 error +
                 "</ul><p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi.</p><p> Thân ái </p>" +
-                "<p> --------------------------------------------------</p>" +
-                "<p style = 'line-height: 1;'><span style = 'font-size: 14px;'> Mọi thông tin chi tiết xin liên hệ :</span>" +
-                "</p><p><span style = 'font-size: 14px;'><strong> " +
-                model.CenterName +
-                "</strong></span></p><p style = 'line-height: 0.5;'><span style = 'font-size: 14px;'> SĐT: " +
-                model.Phone +
-                "</span></p>" +
-                "<p><span style = 'font-size: 14px;'> Địa chỉ: " +
-                model.Address +
-                "<p><span style = 'font-size: 14px;'> Email: " +
-                model.Email +
                 "</span></p><p> --------------------------------------------------</p>" +
                 "<p><sub> Hệ Thống Cứu Hộ " +
                 ORG_NAME +

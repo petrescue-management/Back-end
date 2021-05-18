@@ -74,15 +74,15 @@ namespace PetRescue.Data.ViewModels
                 return Error(ex.Message);
             }
         }
-        [Authorize(Roles = RoleConstant.ADMIN)]
+        //[Authorize(Roles = RoleConstant.ADMIN)]
         [HttpPut]
         [Route("progressing-volunteer-registration-form")]
         public IActionResult ProgressingVolunteerRegistrationForm([FromBody] VolunteerRegistrationFormUpdateModel model)
         {
             try
             {
-                var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
-                var result = _volunteerRegistrationFormDomain.Edit(model, Guid.Parse(currentUserId));
+                //var currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _volunteerRegistrationFormDomain.Edit(model, Guid.NewGuid());
                 if (result.Contains("This"))
                 {
                     return BadRequest(result);

@@ -110,7 +110,7 @@ namespace PetRescue.Data.Domains
                         LastName = formData.LastName,
                     };
                     MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.ApproveRegistrationVolunteer(volunteerFormModel), MailConstant.APPROVE_REGISTRATION_VOLUNTEER);
-                    //MailExtensions.SendBySendGrid(mailArguments, null, null);
+                    MailExtensions.SendBySendGrid(mailArguments, null, null);
                     _uow.SaveChanges();
                 }
                 return result;

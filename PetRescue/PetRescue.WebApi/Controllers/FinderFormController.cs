@@ -146,7 +146,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
-        [Authorize(Roles = RoleConstant.VOLUNTEER)]
+        [Authorize]
         [HttpGet]
         [Route("get-list-finder-form-by-status")]
         public IActionResult GetListFinderFormByStatus([FromQuery]int status)
@@ -178,7 +178,7 @@ namespace PetRescue.WebApi.Controllers
                 return Error(ex);
             }
         }
-        [Authorize(Roles = RoleConstant.VOLUNTEER)]
+        [Authorize]
         [HttpGet]
         [Route("get-list-finder-form-finish-by-userid")]
         public IActionResult GetListFinderFormFinishByUserId()

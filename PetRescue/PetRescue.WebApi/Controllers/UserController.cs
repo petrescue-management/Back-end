@@ -112,7 +112,6 @@ namespace PetRescue.WebApi.Controllers
                 return Error(e.Message);
             }
         }
-        [Authorize(Roles =(RoleConstant.VOLUNTEER))]
         [Authorize]
         [HttpPost("update-location")]
         public IActionResult UpdateLocationForVolunteer([FromBody] UserLocation model)
@@ -134,7 +133,7 @@ namespace PetRescue.WebApi.Controllers
         }
         #endregion
         #region PUT
-        [Authorize(Roles = (RoleConstant.VOLUNTEER))]
+        [Authorize]
         [HttpPut("change-status-for-volunteer")]
         public IActionResult ChangeStatusForVolunteer([FromBody] ChangeStatusModel model)
         {
