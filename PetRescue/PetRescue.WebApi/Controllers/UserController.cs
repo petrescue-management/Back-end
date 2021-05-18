@@ -139,8 +139,8 @@ namespace PetRescue.WebApi.Controllers
         {
             try
             {
-                
-                var result = _userDomain.ChangeStatusForUser(model);
+                var _currentUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Actor)).Value;
+                var result = _userDomain.ChangeStatusForUser(model, Guid.Parse(_currentUserId));
                 return Success(result);
             }
             catch (Exception e)

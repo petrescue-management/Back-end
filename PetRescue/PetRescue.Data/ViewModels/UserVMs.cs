@@ -160,7 +160,6 @@ namespace PetRescue.Data.ViewModels
     }
     public class ChangeStatusModel
     {
-        public Guid UserId { get; set; }
         public int? Status { get; set; }
     }
     public class UserLocation 

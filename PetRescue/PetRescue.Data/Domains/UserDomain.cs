@@ -347,13 +347,24 @@ namespace PetRescue.Data.Domains
         {
             FileExtension fileExtension = new FileExtension();
             var listLocation = fileExtension.GetAvailableVolunteerLocation();
-            listLocation.Add(userId, model);
+            if(listLocation == null)
+            {
+                listLocation = new Dictionary<Guid, UserLocation>();
+            }
+            if (listLocation.ContainsKey(userId))
+            {
+                listLocation[userId] = model;
+            }
+            else
+            {
+                listLocation.Add(userId, model);
+            }
             var check = fileExtension.WriteLocationFile(listLocation);
             return check;
         }
-        public bool ChangeStatusForUser(ChangeStatusModel model) 
+        public bool ChangeStatusForUser(ChangeStatusModel model, Guid userId) 
         {
-            var user = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(model.UserId));
+            var user = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(userId));
             user = _userRepo.UpdateUserStatus(user, model.Status);
             FileExtension fileExtension = new FileExtension();
             bool check = false;
@@ -363,14 +374,34 @@ namespace PetRescue.Data.Domains
                 check = true;
             }else if(model.Status == UserStatus.OFFLINE)
             {
-                listLocation.Remove(user.UserId);
-                fileExtension.WriteLocationFile(listLocation);
-                check = true;
+                if (listLocation == null)
+                {
+                    check = true;
+                }
+                else
+                {
+                    if (listLocation.ContainsKey(userId))
+                    {
+                        listLocation.Remove(user.UserId);
+                        fileExtension.WriteLocationFile(listLocation);
+                    }
+                    check = true;
+                }
             }else if(model.Status == UserStatus.BUSY)
             {
-                listLocation.Remove(user.UserId);
-                fileExtension.WriteLocationFile(listLocation);
-                check = true;
+                if (listLocation == null)
+                {
+                    check = true;
+                }
+                else
+                {
+                    if (listLocation.ContainsKey(userId))
+                    {
+                        listLocation.Remove(user.UserId);
+                        fileExtension.WriteLocationFile(listLocation);
+                    }
+                    check = true;
+                }
             }
             if (check) _uow.SaveChanges();
             return check;
