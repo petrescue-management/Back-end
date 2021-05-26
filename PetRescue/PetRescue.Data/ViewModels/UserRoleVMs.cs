@@ -33,8 +33,10 @@ namespace PetRescue.Data.ViewModels
         public Guid UserId { get; set; }
         [JsonProperty("insertBy")]
         public Guid InsertBy { get; set; }
-        [JsonProperty("description")]
-        public string Description { get; set; }
+        [JsonProperty("isWorking")]
+        public bool IsWorking { get; set; }
+        [JsonProperty("anotherReason")]
+        public string AnotherReason { get; set; }
     }
     public class UserRoleUpdateEntityModel
     {

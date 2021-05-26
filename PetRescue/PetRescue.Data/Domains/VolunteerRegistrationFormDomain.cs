@@ -133,14 +133,14 @@ namespace PetRescue.Data.Domains
                     LastName = formData.LastName,
                 };
                 _uow.SaveChanges();
-                MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationVolunteer(volunteerFormModel, reason, null), MailConstant.REJECT_REGISTRATION_FORM);
+                MailArguments mailArguments = MailFormat.MailModel(form.Email, MailConstant.RejectRegistrationVolunteer(volunteerFormModel, reason), MailConstant.REJECT_REGISTRATION_FORM);
                 MailExtensions.SendBySendGrid(mailArguments, null, null);
             }
             return result;
         }
         public VolunteerViewModel GetListVolunteerRegistrationForm()
         {
-            var listForm = _volunteerRegistrationFormRepo.Get().Where(s => s.VolunteerRegistrationFormStatus == VolunteerRegistrationFormConst.PROCESSING).ToList();
+            var listForm = _volunteerRegistrationFormRepo.Get().OrderBy(s=>s.InsertedAt).ToList();
             var result = new VolunteerViewModel() { };
             result.Count = listForm.Count();
             result.List = new List<VolunteerRegistrationFormViewModel>();

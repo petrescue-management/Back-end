@@ -23,6 +23,7 @@ namespace PetRescue.Data.Domains
         private readonly IRoleRepository _roleRepo;
         private readonly IUserRoleRepository _userRoleRepo;
         private readonly INotificationTokenRepository _notificationTokenRepo;
+        private readonly IFinderFormRepository _finderFormRepo;
         private readonly DbContext _context;
         public UserDomain(IUnitOfWork uow, 
             IUserProfileRepository userProfileRepo, 
@@ -30,7 +31,8 @@ namespace PetRescue.Data.Domains
             ICenterRepository centerRepo, 
             IRoleRepository roleRepo, 
             IUserRoleRepository userRoleRepo, 
-            INotificationTokenRepository notificationTokenRepo, 
+            INotificationTokenRepository notificationTokenRepo,
+            IFinderFormRepository finderFormRepo,
             DbContext context) : base(uow)
         {
             this._userProfileRepo = userProfileRepo;
@@ -40,6 +42,7 @@ namespace PetRescue.Data.Domains
             this._userRoleRepo = userRoleRepo;
             this._notificationTokenRepo = notificationTokenRepo;
             this._context = context;
+            this._finderFormRepo = finderFormRepo;
         }
         public object GetUserDetail(string token)
         {
@@ -249,27 +252,55 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public object GetListProfileOfVolunter()
+        public object GetListProfileOfVolunteer(int page, int limit)
         {
-            var result = new List<UserProfileViewModel2>();
             var role = _roleRepo.Get().FirstOrDefault(s => s.RoleName.Equals(RoleConstant.VOLUNTEER));
             var userRoles = _userRoleRepo.Get().Where(s => s.RoleId.Equals(role.RoleId) && (bool)s.IsActived);
-            foreach(var userRole in userRoles)
+            if(userRoles != null)
             {
-                result.Add(new UserProfileViewModel2 
+                var total = 0;
+                if (limit == 0)
                 {
-                    DateStarted = userRole.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
-                    DoB = userRole.User.UserProfile.Dob,
-                    Email = userRole.User.UserEmail,
-                    FirstName = userRole.User.UserProfile.FirstName,
-                    LastName = userRole.User.UserProfile.LastName,
-                    Gender = userRole.User.UserProfile.Gender,
-                    ImgUrl = userRole.User.UserProfile.UserImgUrl,
-                    Phone = userRole.User.UserProfile.Phone,
-                    UserId = userRole.UserId
-                });
+                    limit = 1;
+                }
+                if (limit > -1)
+                {
+                    total = userRoles.Count() / limit;
+                }
+                userRoles = userRoles.OrderBy(s => s.InsertedAt);
+                if (limit > -1 && page >= 0)
+                {
+                    userRoles = userRoles.Skip(page * limit).Take(limit);
+                }
+                var listVolunteers = new List<VolunteerProfileViewModel>();
+                foreach (var userRole in userRoles)
+                {
+                    var cancelCase = _finderFormRepo.Get().Where(s => s.FinderFormStatus == FinderFormStatusConst.DROPPED && s.UpdatedBy.Equals(userRole.UserId)).Count();
+                    var successCase = _finderFormRepo.Get().Where(s => s.FinderFormStatus == FinderFormStatusConst.DONE && s.UpdatedBy.Equals(userRole.UserId)).Count();
+                    listVolunteers.Add(new VolunteerProfileViewModel
+                    {
+                        DateStarted = userRole.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                        DoB = userRole.User.UserProfile.Dob,
+                        Email = userRole.User.UserEmail,
+                        FirstName = userRole.User.UserProfile.FirstName,
+                        LastName = userRole.User.UserProfile.LastName,
+                        Gender = userRole.User.UserProfile.Gender,
+                        ImgUrl = userRole.User.UserProfile.UserImgUrl,
+                        Phone = userRole.User.UserProfile.Phone,
+                        UserId = userRole.UserId,
+                        RoleName = RoleConstant.VOLUNTEER,
+                        CancelCase = cancelCase,
+                        SuccessCase = successCase
+                    });
+                }
+                var result = new Dictionary<string, object>()
+                {
+                    ["totalPages"] = total,
+                    ["result"] = listVolunteers
+                };
+                return result;
             }
-            return result;
+            return new VolunteerProfileViewModel();
         }
         public object GetListProfileMember(int page, int limit)
         {
@@ -293,17 +324,21 @@ namespace PetRescue.Data.Domains
                 var listUsers = new List<UserProfileViewModel>();
                 foreach(var user in users)
                 {
-                    listUsers.Add(new UserProfileViewModel 
+                    if(user.UserRole.FirstOrDefault(s=> (bool)s.IsActived) == null)
                     {
-                        Email = user.UserEmail,
-                        DoB = user.UserProfile.Dob,
-                        FirstName = user.UserProfile.FirstName,
-                        Gender = user.UserProfile.Gender,
-                        ImgUrl = user.UserProfile.UserImgUrl,
-                        LastName = user.UserProfile.LastName,
-                        Phone = user.UserProfile.Phone,
-                        UserId = user.UserId
-                    });
+                        listUsers.Add(new UserProfileViewModel
+                        {
+                            Email = user.UserEmail,
+                            DoB = user.UserProfile.Dob,
+                            FirstName = user.UserProfile.FirstName,
+                            Gender = user.UserProfile.Gender,
+                            ImgUrl = user.UserProfile.UserImgUrl,
+                            LastName = user.UserProfile.LastName,
+                            Phone = user.UserProfile.Phone,
+                            UserId = user.UserId
+                        });
+                    }
+                   
                 }
                 var result = new Dictionary<string, object>()
                 {

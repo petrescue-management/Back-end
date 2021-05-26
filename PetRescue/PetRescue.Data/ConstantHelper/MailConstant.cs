@@ -96,7 +96,7 @@ namespace PetRescue.Data.ConstantHelper
                 "</sub></p><p><sub> Góp ý cho hệ thống qua mail: " +
                 MAIL +" </sub></p></body></html>";
         }
-        public static string RejectRegistrationVolunteer(VolunteerRegistrationFormViewModel volunteerModel, string error, CenterViewModel model)
+        public static string RejectRegistrationVolunteer(VolunteerRegistrationFormViewModel volunteerModel, string error)
         {
             return "<!DOCTYPE html><html><head><title></title></head><body data-new-gr-c-s-loaded = '14.1002.0' spellcheck = 'false'><p style = 'text-align: left;' ><strong><span style='font-size: 22px;'> " +
                 ORG_NAME +
@@ -104,10 +104,8 @@ namespace PetRescue.Data.ConstantHelper
                 volunteerModel.LastName + " " + volunteerModel.FirstName +
                 "</p><p> Chúng tôi đến từ hệ thống cứu hộ <strong>" +
                 ORG_NAME +
-                "</strong></p><p> Cảm ơn bạn đã đăng ký để trở thành tình nguyện viện của <strong>" +
-                model.CenterName +
+                "</strong></p><p> Cảm ơn bạn đã đăng ký để trở thành tình nguyện viện của hệ thống<strong>" +
                 "</strong>. Nhưng chúng tối rất tiếc phải thông báo rằng, <strong>" +
-                model.CenterName +
                 "</strong> chúng tôi đã phải từ chối đơn đăng ký của bạn với lý do như sau:</p><ul>" +
                 error +
                 "</ul><p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi.</p><p> Thân ái </p>" +
@@ -116,7 +114,27 @@ namespace PetRescue.Data.ConstantHelper
                 ORG_NAME +
                 "</sub></p><p><sub> Góp ý cho hệ thống qua mail: " +
                 MAIL + 
-                "</body></html> ";
+                "</body></html>";
+        }
+        public static string RemoveVolunteer(VolunteerRegistrationFormViewModel model, string error)
+        {
+            return "<!DOCTYPE html><html><head><title></title></head><body data-new-gr-c-s-loaded = '14.1002.0' spellcheck = 'false'><p style = 'text-align: left;' ><strong><span style='font-size: 22px;'> " +
+                ORG_NAME +
+                " </span></strong></p><p>Chào bạn, " +
+                model.LastName + " " + model.FirstName +
+                "</p><p> Chúng tôi đến từ hệ thống cứu hộ <strong>" +
+                ORG_NAME +
+                "</strong></p><p> Cảm ơn bạn đã đăng ký để trở thành tình nguyện viện của hệ thống<strong>" +
+                "</strong>. Nhưng chúng tôi rất tiếc phải thông báo rằng, <strong>" +
+                "</strong> chúng tôi đã phải hủy quyền tình nguyện viên của bạn với lý do như sau:</p><ul>" +
+                error +
+                "</ul><p> Cảm ơn sự giúp đỡ của bạn đối với hệ thống của chúng tôi.</p><p> Thân ái </p>" +
+                "</span></p><p> --------------------------------------------------</p>" +
+                "<p><sub> Hệ Thống Cứu Hộ " +
+                ORG_NAME +
+                "</sub></p><p><sub> Góp ý cho hệ thống qua mail: " +
+                MAIL +
+                "</body></html>";
         }
         public static string ApproveAdoption(CenterViewModel model, string petName, string username)
         {

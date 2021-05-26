@@ -49,7 +49,7 @@ namespace PetRescue.Data.Repositories
         }
         private VolunteerRegistrationForm PrepareEdit(VolunteerRegistrationForm entity, VolunteerRegistrationFormUpdateModel model)
         {
-            //entity.Status = model.Status;
+            entity.VolunteerRegistrationFormStatus = model.Status;
             return entity;
         }
     }

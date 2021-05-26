@@ -187,7 +187,8 @@ namespace PetRescue.Data.Domains
                         CenterAddrees = center.Address,
                         CenterName = center.CenterName,
                         Phone = center.Phone,
-                        Distance = Math.Round(records[0].Value / 1000, 2)
+                        Distance = Math.Round(records[0].Value / 1000, 2),
+                        CenterImgUrl = center.CenterImgUrl
                     });
                     center = _centerRepo.Get().FirstOrDefault(s => s.CenterId.Equals(records[1].CenterId));
                     result.Add(new CenterLocationViewModel
@@ -196,7 +197,8 @@ namespace PetRescue.Data.Domains
                         CenterAddrees = center.Address,
                         CenterName = center.CenterName,
                         Phone = center.Phone,
-                        Distance = Math.Round(records[1].Value / 1000, 2)
+                        Distance = Math.Round(records[1].Value / 1000, 2),
+                        CenterImgUrl = center.CenterImgUrl
                     });
                 }
                 else
@@ -208,7 +210,8 @@ namespace PetRescue.Data.Domains
                         CenterAddrees = center.Address,
                         CenterName = center.CenterName,
                         Phone = center.Phone,
-                        Distance = Math.Round(records[0].Value / 1000, 2)
+                        Distance = Math.Round(records[0].Value / 1000, 2),
+                        CenterImgUrl = center.CenterImgUrl
                     });
                 }
             }

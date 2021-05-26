@@ -87,6 +87,6 @@ namespace PetRescue.Data.ViewModels
         public string CenterName { get; set; }
         public string Phone { get; set; }
         public double? Distance { get; set; }
-
+        public string CenterImgUrl { get; set; }
     }
 }

@@ -42,12 +42,12 @@ namespace PetRescue.WebApi.Controllers
             }
         }
         [Authorize(Roles =RoleConstant.ADMIN)]
-        [HttpGet("get-list-volunteer-profile-of-center")]
-        public IActionResult GetListVolunteerProfileOfCenter()
+        [HttpGet("get-list-of-volunteer-profiles")]
+        public IActionResult GetListVolunteerProfileOfCenter([FromQuery] int page = 0, [FromQuery] int limit = -1)
         {
             try
             {
-                var result = _userDomain.GetListProfileOfVolunter();
+                var result = _userDomain.GetListProfileOfVolunteer(page, limit);
                 return Success(result);
             }
             catch(Exception ex)
@@ -152,7 +152,7 @@ namespace PetRescue.WebApi.Controllers
         #region DELETE
         [Authorize(Roles = RoleConstant.ADMIN)]
         [HttpDelete("remove-role-volunteer-for-user")]
-        public IActionResult RemoveRoleForUser ([FromQuery] RemoveRoleVolunteerModel model)
+        public IActionResult RemoveRoleForUser ([FromBody] RemoveRoleVolunteerModel model)
         {
             try
             {
@@ -162,7 +162,8 @@ namespace PetRescue.WebApi.Controllers
                 {
                     InsertBy = Guid.Parse(_currentUserId),
                     UserId = model.UserId,
-                    Description = model.Description
+                    AnotherReason = model.AnotherReason,
+                    IsWorking = model.IsWorking
                 });
                 if (result.Equals(""))
                 {

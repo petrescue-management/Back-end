@@ -349,13 +349,42 @@ namespace PetRescue.Data.Domains
         public object GetAllListFinderForm(Guid userId)
         {
             var result = new List<FinderFormDetailModel3>();
-            var finderForms = _finderFormRepo.Get().Where(s => s.FinderFormStatus == FinderFormStatusConst.PROCESSING);
+            var finderForms = _finderFormRepo.Get().Where(s => s.FinderFormStatus == FinderFormStatusConst.PROCESSING).ToList();
             var googleMapExtension = new GoogleMapExtensions();
             var fileExtension = new FileExtension();
             var listLocation = fileExtension.GetAvailableVolunteerLocation();
             var location = new UserLocation();
-            if(listLocation == null)
+            var listFinderFormLocation = new List<FinderFormLocationModel>();
+            string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "SystemParameters.json");
+            var fileJson = File.ReadAllText(FILEPATH);
+            var time = JObject.Parse(fileJson);
+            var nearestDistance = double.Parse(time["NearestDistance"].Value<string>());
+            var ReNotiTimeForAllRescue = double.Parse(time["ReNotiTimeForAllRescue"].Value<string>());
+            if (listLocation == null)
             {
+                foreach(var finderForm in finderForms)
+                {
+                    if (DateTime.UtcNow.Subtract((DateTime)finderForm.InsertedAt).TotalSeconds >= ReNotiTimeForAllRescue * 60)
+                    {
+                        var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
+                        result.Add(new FinderFormDetailModel3
+                        {
+                            CanceledReason = finderForm.DroppedReason,
+                            FinderFormId = finderForm.FinderFormId,
+                            Description = finderForm.Description,
+                            FinderDate = finderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                            FinderFormStatus = finderForm.FinderFormStatus,
+                            FinderFormVidUrl = finderForm.FinderFormVidUrl,
+                            FinderImageUrl = finderForm.FinderFormImgUrl,
+                            FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
+                            InsertedBy = currentUser.UserId,
+                            Lat = finderForm.Lat,
+                            Lng = finderForm.Lng,
+                            PetAttribute = finderForm.PetAttribute,
+                            Phone = finderForm.Phone,
+                        });
+                    }
+                }
                 return result;
             }
             bool hasValue = listLocation.TryGetValue(userId, out location);
@@ -363,49 +392,22 @@ namespace PetRescue.Data.Domains
             {
                 return result;
             }
-            var listFinderFormLocation = new List<FinderFormLocationModel>();
-            string FILEPATH =Path.Combine(Directory.GetCurrentDirectory(), "JSON", "SystemParameters.json");
-            var fileJson = File.ReadAllText(FILEPATH);
-            var time = JObject.Parse(fileJson);
-            var nearestDistance = double.Parse(time["NearestDistance"].Value<string>());
-            var ReNotiTimeForRescue = double.Parse(time["ReNotiTimeForRescue"].Value<string>());
-            foreach (var finderForm in finderForms)
+            if(finderForms.Count() >= 1)
             {
-                listFinderFormLocation.Add(new FinderFormLocationModel 
+                foreach (var finderForm in finderForms)
                 {
-                    FinderFormId = finderForm.FinderFormId,
-                    Lat = finderForm.Lat,
-                    Lng = finderForm.Lng
-                });
-            }
-            var records = googleMapExtension.FindDistanceRescueRequest(location.Lat +", " + location.Long, listFinderFormLocation);
-            foreach (var record in records)
-            {
-                var finderForm = _finderFormRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(record.FinderFormId));
-                if (record.Value <= nearestDistance)
-                {
-                    var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
-                    result.Add(new FinderFormDetailModel3
+                    listFinderFormLocation.Add(new FinderFormLocationModel
                     {
-                        CanceledReason = finderForm.DroppedReason,
                         FinderFormId = finderForm.FinderFormId,
-                        Description = finderForm.Description,
-                        FinderDate = finderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
-                        FinderFormStatus = finderForm.FinderFormStatus,
-                        FinderFormVidUrl = finderForm.FinderFormVidUrl,
-                        FinderImageUrl = finderForm.FinderFormImgUrl,
-                        FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
-                        InsertedBy = currentUser.UserId,
                         Lat = finderForm.Lat,
-                        Lng = finderForm.Lng,
-                        PetAttribute = finderForm.PetAttribute,
-                        Phone = finderForm.Phone,
-                        Distance = Math.Round(record.Value / 1000, 2)
+                        Lng = finderForm.Lng
                     });
                 }
-                else
+                var records = googleMapExtension.FindDistanceRescueRequest(location.Lat + ", " + location.Long, listFinderFormLocation);
+                foreach (var record in records)
                 {
-                    if(DateTime.UtcNow.Subtract((DateTime)finderForm.InsertedAt).TotalSeconds >= ReNotiTimeForRescue * 60)
+                    var finderForm = _finderFormRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(record.FinderFormId));
+                    if (record.Value <= nearestDistance)
                     {
                         var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
                         result.Add(new FinderFormDetailModel3
@@ -426,9 +428,38 @@ namespace PetRescue.Data.Domains
                             Distance = Math.Round(record.Value / 1000, 2)
                         });
                     }
+                    else
+                    {
+                        if (DateTime.UtcNow.Subtract((DateTime)finderForm.InsertedAt).TotalSeconds >= ReNotiTimeForAllRescue * 60)
+                        {
+                            var currentUser = _userRepo.Get().FirstOrDefault(s => s.UserId.Equals(finderForm.InsertedBy));
+                            result.Add(new FinderFormDetailModel3
+                            {
+                                CanceledReason = finderForm.DroppedReason,
+                                FinderFormId = finderForm.FinderFormId,
+                                Description = finderForm.Description,
+                                FinderDate = finderForm.InsertedAt?.AddHours(ConstHelper.UTC_VIETNAM),
+                                FinderFormStatus = finderForm.FinderFormStatus,
+                                FinderFormVidUrl = finderForm.FinderFormVidUrl,
+                                FinderImageUrl = finderForm.FinderFormImgUrl,
+                                FinderName = currentUser.UserProfile.LastName + " " + currentUser.UserProfile.FirstName,
+                                InsertedBy = currentUser.UserId,
+                                Lat = finderForm.Lat,
+                                Lng = finderForm.Lng,
+                                PetAttribute = finderForm.PetAttribute,
+                                Phone = finderForm.Phone,
+                                Distance = Math.Round(record.Value / 1000, 2)
+                            });
+                        }
+                    }
                 }
+                return result;
             }
-            return result;
+            else
+            {
+                return result;
+            }
+           
         }
         
         public List<FinderFormDetailModel> GetListByUserId(Guid userId)

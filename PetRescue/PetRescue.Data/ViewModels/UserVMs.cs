@@ -74,6 +74,22 @@ namespace PetRescue.Data.ViewModels
         public DateTime? DateStarted { get; set; }
 
     }
+    public class VolunteerProfileViewModel
+    {
+        public string Email { get; set; }
+        public Guid UserId { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public DateTime? DoB { get; set; }
+        public int? Gender { get; set; }
+        public string Phone { get; set; }
+        public string ImgUrl { get; set; }
+        public DateTime? DateStarted { get; set; }
+        public string RoleName { get; set; }
+        public int SuccessCase { get; set; }
+        public int CancelCase { get; set; }
+
+    }
     public class UserUpdateCenterModel
     {
         [JsonProperty("userId")]
@@ -120,7 +136,8 @@ namespace PetRescue.Data.ViewModels
     public class RemoveRoleVolunteerModel
     {
         public Guid UserId { get; set; }
-        public string Description { get; set; }
+        public bool IsWorking { get; set; }
+        public string AnotherReason { get; set; }
     }
     public class UserModel
     {

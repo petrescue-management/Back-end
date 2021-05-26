@@ -12,5 +12,6 @@ namespace PetRescue.Data.ConstantHelper
         public const string ErrorName = "<li><p>Tên không phù hợp</p></li>";
         public const string ErrorImage = "<li><p>Hình ảnh không hợp lệ</p></li>";
         public const string CancelReasonAdoptionForm = "Xin lỗi chúng tôi đã tìm ra người chủ của bé";
+        public const string ErrorDontWork = "<li><p>Không hoạt động</p></li>";
     }
 }
