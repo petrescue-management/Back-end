@@ -66,7 +66,7 @@ namespace PetRescue.WebApi.Controllers
         [Authorize]
         [HttpPost]
         [Route("update-finder-form-status")]
-        public async Task<IActionResult> UpdateFinderFormStatus(UpdateStatusFinderFormModel model)
+        public async Task<IActionResult> UpdateFinderFormStatus(UpdateStatusFinderFormModel2 model)
         {
             try
             {

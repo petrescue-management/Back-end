@@ -22,12 +22,15 @@ namespace PetRescue.Data.Domains
     {
         private readonly IFinderFormRepository _finderFormRepo;
         private readonly IUserRepository _userRepo;
+        private readonly IRescueDocumentRepository _rescueDocumentRepo;
         public FinderFormDomain(IUnitOfWork uow,
             IFinderFormRepository finderFormRepo,
-            IUserRepository userRepo) : base(uow)
+            IUserRepository userRepo, 
+            IRescueDocumentRepository rescueDocumentRepo) : base(uow)
         {
             this._finderFormRepo = finderFormRepo;
             this._userRepo = userRepo;
+            this._rescueDocumentRepo = rescueDocumentRepo;
         }
         #region SEARCH
         public SearchReturnModel SearchFinderForm(SearchModel model)
@@ -88,7 +91,7 @@ namespace PetRescue.Data.Domains
         #endregion
 
         #region UPDATE STATUS
-        public async Task<FinderFormModel> UpdateFinderFormStatusAsync(UpdateStatusFinderFormModel model, Guid updatedBy, string path)
+        public async Task<FinderFormModel> UpdateFinderFormStatusAsync(UpdateStatusFinderFormModel2 model, Guid updatedBy, string path)
         {
             if (IsTaken(model, updatedBy))
             {
@@ -159,7 +162,7 @@ namespace PetRescue.Data.Domains
                 }
                 else if (model.Status == FinderFormStatusConst.ARRIVED)
                 {
-
+                    var centerId = _rescueDocumentRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(finderForm.FinderFormId)).CenterId;
                     await _uow.GetService<NotificationTokenDomain>().NotificationForUser(path, (Guid)finderForm.InsertedBy, ApplicationNameHelper.USER_APP, new Message
                     {
                         Notification = new Notification
@@ -168,7 +171,7 @@ namespace PetRescue.Data.Domains
                             Body = NotificationBodyHelper.ARRIVED_RESCUE_PET_BODY
                         }
                     });
-                    await _uow.GetService<NotificationTokenDomain>().NotificationForManager(path, (Guid)model.CenterId,
+                    await _uow.GetService<NotificationTokenDomain>().NotificationForManager(path, centerId,
                     new Message
                     {
                         Notification = new Notification
@@ -254,7 +257,7 @@ namespace PetRescue.Data.Domains
             var origin = model.Lat + ", " + model.Lng;
             var fileExtension = new FileExtension();
             var googleMapExtensions = new GoogleMapExtensions();
-            var locations = fileExtension.GetAvailableVolunteerLocation();
+            var locations =   fileExtension.GetAvailableVolunteerLocationAsync();
             if(locations != null)
             {
                 var distances = googleMapExtensions.FindDistanceVoLunteer(origin, locations);
@@ -335,7 +338,7 @@ namespace PetRescue.Data.Domains
         {
             if (_finderFormRepo.GetFinderFormById(finderFormId).FinderFormStatus == FinderFormStatusConst.PROCESSING)
             {
-                var form = await UpdateFinderFormStatusAsync(new UpdateStatusFinderFormModel
+                var form = await UpdateFinderFormStatusAsync(new UpdateStatusFinderFormModel2
                 {
                     Id = finderFormId,
                     Status = FinderFormStatusConst.DROPPED
@@ -352,7 +355,7 @@ namespace PetRescue.Data.Domains
             var finderForms = _finderFormRepo.Get().Where(s => s.FinderFormStatus == FinderFormStatusConst.PROCESSING).ToList();
             var googleMapExtension = new GoogleMapExtensions();
             var fileExtension = new FileExtension();
-            var listLocation = fileExtension.GetAvailableVolunteerLocation();
+            var listLocation = fileExtension.GetAvailableVolunteerLocationAsync();
             var location = new UserLocation();
             var listFinderFormLocation = new List<FinderFormLocationModel>();
             string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "SystemParameters.json");
@@ -544,7 +547,7 @@ namespace PetRescue.Data.Domains
             }
             return result;
         }
-        public bool IsTaken(UpdateStatusFinderFormModel model, Guid updatedBy)
+        public bool IsTaken(UpdateStatusFinderFormModel2 model, Guid updatedBy)
         {
             var finderForm = _finderFormRepo.Get().FirstOrDefault(s => s.FinderFormId.Equals(model.Id));
             if (finderForm.UpdatedBy == null)

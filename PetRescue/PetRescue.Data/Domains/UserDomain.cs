@@ -381,7 +381,7 @@ namespace PetRescue.Data.Domains
         public bool UpdateLocationOfVolunteer(UserLocation model, Guid userId)
         {
             FileExtension fileExtension = new FileExtension();
-            var listLocation = fileExtension.GetAvailableVolunteerLocation();
+            var listLocation = fileExtension.GetAvailableVolunteerLocationAsync();
             if(listLocation == null)
             {
                 listLocation = new Dictionary<Guid, UserLocation>();
@@ -403,7 +403,7 @@ namespace PetRescue.Data.Domains
             user = _userRepo.UpdateUserStatus(user, model.Status);
             FileExtension fileExtension = new FileExtension();
             bool check = false;
-            var listLocation = fileExtension.GetAvailableVolunteerLocation();
+            var listLocation = fileExtension.GetAvailableVolunteerLocationAsync();
             if (model.Status == UserStatus.ONLINE)
             {
                 check = true;

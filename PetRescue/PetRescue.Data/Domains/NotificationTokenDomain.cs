@@ -188,7 +188,7 @@ namespace PetRescue.Data.Domains
                 var fileExtensions = new FileExtension();
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
-                var volunteers = fileExtensions.GetAvailableVolunteerLocation();
+                var volunteers = fileExtensions.GetAvailableVolunteerLocationAsync();
                 Message message = new Message()
                 {
                     Notification = new Notification
@@ -295,12 +295,12 @@ namespace PetRescue.Data.Domains
                 return false;
             }
         }
-        public async Task<bool> NotificationForManager(string path, Guid centerId, Message message)
+        public async Task<bool> NotificationForManager(string path, Guid? centerId, Message message)
         {
             try
             {
                 var firebaseExtensions = new FireBaseExtentions();
-                var notificationToken = _uow.GetService<UserDomain>().GetManagerDeviceTokenByCenterId(centerId);
+                var notificationToken = _uow.GetService<UserDomain>().GetManagerDeviceTokenByCenterId((Guid)centerId);
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
                 if (notificationToken != null)
