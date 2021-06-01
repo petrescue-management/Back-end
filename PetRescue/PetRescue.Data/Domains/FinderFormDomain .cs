@@ -257,7 +257,7 @@ namespace PetRescue.Data.Domains
             var origin = model.Lat + ", " + model.Lng;
             var fileExtension = new FileExtension();
             var googleMapExtensions = new GoogleMapExtensions();
-            var locations = fileExtension.GetAvailableVolunteerLocation();
+            var locations =   fileExtension.GetAvailableVolunteerLocationAsync();
             if(locations != null)
             {
                 var distances = googleMapExtensions.FindDistanceVoLunteer(origin, locations);
@@ -355,7 +355,7 @@ namespace PetRescue.Data.Domains
             var finderForms = _finderFormRepo.Get().Where(s => s.FinderFormStatus == FinderFormStatusConst.PROCESSING).ToList();
             var googleMapExtension = new GoogleMapExtensions();
             var fileExtension = new FileExtension();
-            var listLocation = fileExtension.GetAvailableVolunteerLocation();
+            var listLocation = fileExtension.GetAvailableVolunteerLocationAsync();
             var location = new UserLocation();
             var listFinderFormLocation = new List<FinderFormLocationModel>();
             string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "SystemParameters.json");

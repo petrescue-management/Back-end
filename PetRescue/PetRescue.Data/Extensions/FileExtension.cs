@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PetRescue.Data.Extensions
 {
@@ -13,7 +14,7 @@ namespace PetRescue.Data.Extensions
         public FileExtension()
         {
         }
-        public Dictionary<Guid,UserLocation> GetAvailableVolunteerLocation()
+        public Dictionary<Guid, UserLocation> GetAvailableVolunteerLocationAsync()
         {
 
             var result = new Dictionary<Guid, UserLocation>();
@@ -22,7 +23,7 @@ namespace PetRescue.Data.Extensions
                 try
                 {
                     string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "VolunteersLocation.json");
-                    var json = File.ReadAllText(FILEPATH);
+                    var json =  File.ReadAllText(FILEPATH);
                     result = JsonConvert.DeserializeObject<Dictionary<Guid, UserLocation>>(json);
                     check = false;
                 }

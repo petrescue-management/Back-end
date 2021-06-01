@@ -188,7 +188,7 @@ namespace PetRescue.Data.Domains
                 var fileExtensions = new FileExtension();
                 var app = firebaseExtensions.GetFirebaseApp(path);
                 var fcm = FirebaseMessaging.GetMessaging(app);
-                var volunteers = fileExtensions.GetAvailableVolunteerLocation();
+                var volunteers = fileExtensions.GetAvailableVolunteerLocationAsync();
                 Message message = new Message()
                 {
                     Notification = new Notification
