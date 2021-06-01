@@ -15,25 +15,39 @@ namespace PetRescue.Data.Extensions
         }
         public Dictionary<Guid,UserLocation> GetAvailableVolunteerLocation()
         {
+
             var result = new Dictionary<Guid, UserLocation>();
-            string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "VolunteersLocation.json");
-            var json = File.ReadAllText(FILEPATH);
-            result = JsonConvert.DeserializeObject<Dictionary<Guid, UserLocation>>(json);
+            bool check = true;
+            while (check) {
+                try
+                {
+                    string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "VolunteersLocation.json");
+                    var json = File.ReadAllText(FILEPATH);
+                    result = JsonConvert.DeserializeObject<Dictionary<Guid, UserLocation>>(json);
+                    check = false;
+                }
+                catch {
+                    check = true;
+                }
+            }
             return result;
         }
         public bool WriteLocationFile(Dictionary<Guid, UserLocation> result)
         {
-            try
-            {
-                string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "VolunteersLocation.json");
-                var json = JsonConvert.SerializeObject(result);
-                File.WriteAllText(FILEPATH, json);
-                return true;
+            bool check = false;
+            while (!check) {
+                try
+                {
+                    string FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "VolunteersLocation.json");
+                    var json = JsonConvert.SerializeObject(result);
+                    File.WriteAllText(FILEPATH, json);
+                    check = true;
+                }
+                catch {
+                    check = false;
+                }
             }
-            catch
-            {
-                return false;
-            }
+            return check;
         }
     }
 }

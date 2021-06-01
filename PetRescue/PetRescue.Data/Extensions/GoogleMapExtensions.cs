@@ -131,15 +131,17 @@ namespace PetRescue.Data.Extensions
             MapModel list = JsonConvert.DeserializeObject<MapModel>(responseFromServer);
             var result = new List<UserDistanceModel>();
             var listDistance = list.rows[0].elements;
-            for (int index = 0; index < listUserId.Count; index++)
-            {
-                if (listDistance[index].distance != null)
+            if (list != null) {
+                for (int index = 0; index < listUserId.Count; index++)
                 {
-                    result.Add(new UserDistanceModel
+                    if (listDistance[index].distance != null)
                     {
-                        UserId = listUserId[index],
-                        Value = listDistance[index].distance.value
-                    });
+                        result.Add(new UserDistanceModel
+                        {
+                            UserId = listUserId[index],
+                            Value = listDistance[index].distance.value
+                        });
+                    }
                 }
             }
             result.Sort();

@@ -173,6 +173,7 @@ namespace PetRescue.Data.ViewModels
         public string CenterName { get; set; }
         public string CenterAddress { get; set; }
         public Guid PetProfileId { get; set; }
+        public DateTime? AdoptedAt { get; set; }
     }
     public class PetAdoptionViewModel
     {

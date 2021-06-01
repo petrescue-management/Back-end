@@ -721,7 +721,9 @@ namespace PetRescue.Data.Domains
                     Gender = form.PetProfile.PetGender,
                     CenterName = form.PetProfile.Center.CenterName,
                     CenterAddress = form.PetProfile.Center.Address,
-                    PetProfileId = form.PetProfile.PetProfileId
+                    PetProfileId = form.PetProfile.PetProfileId,
+                    AdoptionRegistrationId = form.AdoptionRegistrationFormId,
+                    AdoptedAt = form.UpdatedAt?.AddHours(ConstHelper.UTC_VIETNAM)
                 });
             }
             return result;
