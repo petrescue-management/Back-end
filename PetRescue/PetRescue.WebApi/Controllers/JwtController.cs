@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using PetRescue.Data.Domains;
+using PetRescue.Data.Extensions;
 using PetRescue.Data.Uow;
+using PetRescue.Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,21 +15,63 @@ namespace PetRescue.WebApi.Controllers
     [Route("/jwt")]
     public class JwtController : BaseController
     {
-        public JwtController(IUnitOfWork uow) : base(uow)
+        private readonly IHostingEnvironment _env;
+        private readonly JWTDomain _jwtDomain;
+        public JwtController(IUnitOfWork uow, IHostingEnvironment environment, JWTDomain jwtDomain) : base(uow)
         {
+            _env = environment;
+            this._jwtDomain = jwtDomain;
         }
         [HttpGet]
-        public  IActionResult GetToken([FromQuery]string token)
+        public  IActionResult GetToken([FromQuery]UserLoginModel model)
         {
             try
             {
-                var jwtDomain = _uow.GetService<JWTDomain>();
-                var returnToken = jwtDomain.DecodeJwt(token);
-                _uow.saveChanges();
-                return Success(returnToken);
+                if (ValidationExtensions.IsNotNullOrEmptyOrWhiteSpace(model.Token))
+                {
+                    var result = _jwtDomain.DecodeJwt(model);
+                    if (result != null)
+                    {
+                        return Success(result.Jwt);
+                    }
+                }
+                return BadRequest();
             }catch(Exception e)
             {
-                return Error(e);
+                return Error(e.Message);
+            }
+        }
+        [HttpPost("login-by-sysadmin")]
+        public IActionResult LoginBySystemAdmin([FromBody] UserLoginBySysadminModel model)
+        {
+            try
+            {
+                var result = _jwtDomain.LoginBySysAdmin(model);
+                if(result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest("");
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+        [HttpPost("login-by-volunteer")]
+        public async Task<IActionResult> LoginByVolunteer([FromBody] UserLoginModel model)
+        {
+            try
+            {
+                var result = await _jwtDomain.LoginByVolunteer(model);
+                if(result != null)
+                {
+                    return Success(result);
+                }
+                return BadRequest(result);
+            }catch(Exception ex)
+            {
+                return Error(ex.Message);
             }
         }
     }

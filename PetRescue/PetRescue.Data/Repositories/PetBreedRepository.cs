@@ -36,7 +36,7 @@ namespace PetRescue.Data.Repositories
         public PetBreed Edit(PetBreedUpdateModel model, PetBreed entity)
         {
             entity.PetBreedName = model.PetBreedName;
-            return entity;
+            return Update(entity).Entity;
         }
 
         public PetBreedModel GetPetBreedById(Guid id)

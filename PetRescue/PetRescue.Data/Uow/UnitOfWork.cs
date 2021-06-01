@@ -3,13 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PetRescue.Data.Uow
 {
     public partial interface IUnitOfWork
     {
         T GetService<T>();
-        int saveChanges();
+        int SaveChanges();
+        Task<int> SaveChangesAsync();
     }
 
     public partial class UnitOfWork : IUnitOfWork
@@ -27,9 +29,13 @@ namespace PetRescue.Data.Uow
             return scope.GetService<T>();
         }
 
-        public int saveChanges()
+        public int SaveChanges()
         {
             return this.context.SaveChanges();
+        }
+        public Task<int> SaveChangesAsync()
+        {
+            return this.context.SaveChangesAsync();
         }
     }
 }

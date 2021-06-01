@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json;
+using PetRescue.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace PetRescue.Data.ViewModels
 {
-   
+
     public class UserDetailModel
     {
         [JsonProperty("email")]
@@ -14,44 +15,194 @@ namespace PetRescue.Data.ViewModels
         public string Id { get; set; }
         [JsonProperty("roles")]
         public string[] Roles { get; set; }
-        [JsonProperty("full-name")]
-        public string FullName { get; set; }
+        [JsonProperty("centerId")]
+        public Guid? CenterId { get; set; }
+        [JsonProperty("lastName")]
+        public string LastName { get; set; }
+        [JsonProperty("firstName")]
+        public string FirstName { get; set; }
+        [JsonProperty("dob")]
+        public DateTime? DoB { get; set; }
+        [JsonProperty("gender")]
+        public int? Gender { get; set; }
+        [JsonProperty("phone")]
+        public string Phone { get; set; }
+        [JsonProperty("imgUrl")]
+        public string ImgUrl { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public CenterProfileViewModel Center { get; set; }
 
     }
     public class UserProfileUpdateModel
     {
-        [JsonProperty("user-id")]
+        [JsonProperty("userId")]
         public Guid UserId { get; set; }
-        [JsonProperty("last-name")]
+        [JsonProperty("lastName")]
         public string LastName { get; set; }
-        [JsonProperty("first-name")]
+        [JsonProperty("firstName")]
         public string FirstName { get; set; }
         [JsonProperty("dob")]
-        public DateTime DoB { get; set; }
-        [JsonProperty("address")]
-        public string Address { get; set; }
+        public DateTime? DoB { get; set; }
         [JsonProperty("gender")]
-        public bool Gender { get; set; }
+        public int? Gender { get; set; }
         [JsonProperty("phone")]
         public string Phone { get; set; }
+        [JsonProperty("imgUrl")]
+        public string ImgUrl { get; set; }
+    }
+    public class UserProfileViewModel
+    {
+        public string Email { get; set; }
+        public Guid UserId { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public DateTime? DoB { get; set; }
+        public int? Gender { get; set; }
+        public string Phone { get; set; }
+        public string ImgUrl { get; set; }
+    }
+    public class UserProfileViewModel2
+    {
+        public string Email { get; set; }
+        public Guid UserId { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public DateTime? DoB { get; set; }
+        public int? Gender { get; set; }
+        public string Phone { get; set; }
+        public string ImgUrl { get; set; }
+        public DateTime? DateStarted { get; set; }
+
+    }
+    public class VolunteerProfileViewModel
+    {
+        public string Email { get; set; }
+        public Guid UserId { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public DateTime? DoB { get; set; }
+        public int? Gender { get; set; }
+        public string Phone { get; set; }
+        public string ImgUrl { get; set; }
+        public DateTime? DateStarted { get; set; }
+        public string RoleName { get; set; }
+        public int SuccessCase { get; set; }
+        public int CancelCase { get; set; }
+
     }
     public class UserUpdateCenterModel
     {
-        [JsonProperty("user-id")]
+        [JsonProperty("userId")]
         public Guid UserId { get; set; }
-        [JsonProperty("center-id")]
+        [JsonProperty("centerId")]
         public Guid CenterId { get; set; }
     }
     public class UserCreateModel
     {
         [JsonProperty("email")]
         public string Email { get; set; }
-        [JsonProperty("center-id")]
-        public Guid CenterId { get; set; }
-        [JsonProperty("is_belong_to_center")]
-        public bool isBelongToCenter { get; set; }
-        
-           
+        [JsonProperty("centerId")]
+        public Guid? CenterId { get; set; }
     }
+    public class UserCreateByAppModel
+    {
+        [JsonProperty("email")]
+        public string Email { get; set; }
+        [JsonProperty("status")]
+        public int? Status { get; set; }
+
+    }
+    public class UserLoginBySysadminModel
+    {
+        [JsonProperty("email")]
+        public string Email { get; set; }
+        [JsonProperty("password")]
+        public string Password { get; set; }
+        [JsonProperty("deviceToken")]
+        public string DeviceToken { get; set; }
+        [JsonProperty("applicationName")]
+        public string ApplicationName { get; set; }
+    }
+    public class UserUpdateModel
+    {
+        [JsonProperty("centerId")]
+        public Guid CenterId { get; set; }
+    }
+    public class UserUpdateVolunteerStatus
+    {
+        [JsonProperty("status")]
+        public int? Status { get; set; }
+    }
+    public class RemoveRoleVolunteerModel
+    {
+        public Guid UserId { get; set; }
+        public bool IsWorking { get; set; }
+        public string AnotherReason { get; set; }
+    }
+    public class UserModel
+    {
+        public Guid UserId { get; set; }
+        public string UserEmail { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public DateTime? Dob { get; set; }
+        public string Phone { get; set; }
+        public int? Gender { get; set; }
+        public string ImageUrl { get; set; }
+
+    }
+    public class UserLoginModel 
+    {
+        [JsonProperty("token")]
+        public string Token { get; set; }
+        [JsonProperty("deviceToken")]
+        public string DeviceToken { get; set; }
+        [JsonProperty("applicationName")]
+        public string ApplicationName { get; set; }
+    }
+    public class JWTReturnModel
+    {
+        public object Jwt { get; set; }
+        public NotificationToken NotificationToken { get; set; }
+
+    }
+    public class CreateVolunteerModel
+    {
+        public string Email { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public DateTime Dob { get; set; }
+        public byte Gender { get; set; }
+        public string Phone { get; set; }
+    }
+    public class ChangeStatusModel
+    {
+        public int? Status { get; set; }
+    }
+    public class UserLocation 
+    {
+        public double? Lat { get; set; }
+        public double? Long { get; set; }
+    }
+    public class UserLocationModel
+    {
+        public Guid UserId { get; set; }
+        public double? Lat { get; set; }
+        public double? Long { get; set; }
+    }
+    public class UserDistanceModel : IComparable<UserDistanceModel>
+    {
+        public double Value { get; set; }
+        public Guid UserId { get; set; }
+        public int CompareTo(UserDistanceModel model)
+        {
+            if (model == null) return 1;
+            else
+            {
+                return this.Value.CompareTo(model.Value);
+            }
+        }
+    }
+
 
 }

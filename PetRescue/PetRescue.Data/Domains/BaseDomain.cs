@@ -7,11 +7,11 @@ namespace PetRescue.Data.Domains
 {
     public abstract class BaseDomain
     {
-        protected readonly IUnitOfWork uow;
+        protected readonly IUnitOfWork _uow;
 
         public BaseDomain(IUnitOfWork uow)
         {
-            this.uow = uow;
+            this._uow = uow;
         }
     }
 }

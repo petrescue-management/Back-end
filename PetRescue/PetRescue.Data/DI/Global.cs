@@ -8,6 +8,7 @@ using PetRescue.Data.Uow;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using test2;
 
 namespace PetRescue.Data.DI
 {
@@ -23,37 +24,39 @@ namespace PetRescue.Data.DI
                 .AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<UserDomain>()
                 .AddScoped<JWTDomain>()
-
                 .AddScoped<ICenterRepository, CenterRepository>()
                 .AddScoped<CenterDomain>()
-
                 .AddScoped<ICenterRegistrationFormRepository, CenterRegistrationFormRepository>()
                 .AddScoped<CenterRegistrationFormDomain>()
-
-                .AddScoped<IUserRoleRepository,UserRoleRepository>()
+                .AddScoped<IUserRoleRepository, UserRoleRepository>()
                 .AddScoped<UserRoleDomain>()
-                .AddScoped<IRoleRepository,RoleRepository>()
-                .AddScoped<IUserProfileRepository,UserProfileRepository>()
-
-                .AddScoped<IRescueReportRepository, RescueReportRepository>()
-                .AddScoped<IRescueReportDetailRepository, RescueReportDetailRepository>()
-                .AddScoped<RescueReportDomain>()
-
+                .AddScoped<IRoleRepository, RoleRepository>()
+                .AddScoped<IUserProfileRepository, UserProfileRepository>()
                 .AddScoped<IPetBreedRepository, PetBreedRepository>()
                 .AddScoped<IPetFurColorRepository, PetFurColorRepository>()
                 .AddScoped<IPetTypeRepository, PetTypeRepository>()
                 .AddScoped<IPetProfileRepository, PetProfileRepository>()
-                .AddScoped<IPetRepository, PetRepository>()
-                .AddScoped<PetDomain>()
+                .AddScoped<IAdoptionRegistrationFormRepository, AdoptionRegistrationFormRepository>()
+                .AddScoped<AdoptionRegistrationFormDomain>()
+                .AddScoped<INotificationTokenRepository, NotificationTokenRepository>()
+                .AddScoped<NotificationTokenDomain>()
+                .AddScoped<IFinderFormRepository, FinderFormRepository>()
+                .AddScoped<FinderFormDomain>()
+                .AddScoped<IPickerFormRepository, PickerFormRepository>()
+                .AddScoped<PickerFormDomain>()
+                .AddScoped<IVolunteerRegistrationFormRepository, VolunteerRegistrationFormRepository>()
+                .AddScoped<VolunteerRegistrationFormDomain>()
+                .AddScoped<PetProfileDomain>()
+                .AddScoped<IPetTrackingRepository, PetTrackingRepository>()
+                .AddScoped<PetTrackingDomain>()
+                .AddScoped<IRescueDocumentRepository, RescueDocumentRepository>()
+                .AddScoped<RescueDocumentDomain>()
+                .AddScoped<IAdoptionReportTrackingRepository, AdoptionReportTrackingRepository>()
+                .AddScoped<AdoptionReportTrackingDomain>()
+                .AddSingleton<IMyScopedService, MyScopedService>()
+                .AddScoped<ConfigDomain>();
 
-
-                .AddScoped<IAdoptionRepository, AdoptionRepository>()
-                .AddScoped<AdoptionDomain>()
-
-                 .AddScoped<IAdoptionRegisterFormRepository, AdoptionRegisterFormRepository>()
-                .AddScoped<AdoptionRegisterFormDomain>()
-                ;
         }
-       
+
     }
 }
